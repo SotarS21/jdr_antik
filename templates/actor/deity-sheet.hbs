@@ -1,0 +1,29 @@
+<form class="antique sheet actor deity" autocomplete="off">
+
+  <div class="deity-content">
+
+    {{!-- Portrait --}}
+    <div class="deity-portrait-wrapper">
+      <img class="deity-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    </div>
+
+    {{!-- Name --}}
+    <h1 class="deity-name">
+      <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'ANTIQUE.Deity.Name'}}" />
+    </h1>
+
+    {{!-- Decorative Separator --}}
+    <div class="deity-separator">
+      <span class="deity-separator-line"></span>
+      <span class="deity-separator-icon"><i class="fas fa-sun"></i></span>
+      <span class="deity-separator-line"></span>
+    </div>
+
+    {{!-- Description --}}
+    <div class="deity-description">
+      {{editor system.description target="system.description" button=true editable=isEditable}}
+    </div>
+
+  </div>
+
+</form>

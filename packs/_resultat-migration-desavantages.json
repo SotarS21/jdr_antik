@@ -1,0 +1,99 @@
+{
+  "date": "2026-04-26T19:44:38.150Z",
+  "result": {
+    "added": 9,
+    "already": 5,
+    "skipped": 81,
+    "errors": 0
+  },
+  "effectsAdded": {
+    "aDis000000000002": [],
+    "aDis000000000009": [],
+    "aDis000000000012": [],
+    "aDis000000000013": [],
+    "aDis000000000014": [],
+    "aDis000000000011": [
+      {
+        "key": "system.skills.baratin.bonus",
+        "mode": 2,
+        "value": -2
+      },
+      {
+        "key": "system.skills.seduction.bonus",
+        "mode": 2,
+        "value": -2
+      },
+      {
+        "key": "system.skills.commandement.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000016": [
+      {
+        "key": "system.skills.baratin.bonus",
+        "mode": 2,
+        "value": -2
+      },
+      {
+        "key": "system.skills.seduction.bonus",
+        "mode": 2,
+        "value": -2
+      },
+      {
+        "key": "system.skills.commandement.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000019": [
+      {
+        "key": "system.skills.dressage.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000020": [
+      {
+        "key": "system.saves.volonte.base",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000052": [
+      {
+        "key": "system.attributes.difficulty",
+        "mode": 2,
+        "value": 1
+      }
+    ],
+    "aDis000000000060": [
+      {
+        "key": "system.attackBonuses.armeADistance.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000064": [
+      {
+        "key": "system.skills.nature.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ],
+    "aDis000000000068": [
+      {
+        "key": "system.attributes.prices",
+        "mode": 2,
+        "value": 1.2
+      }
+    ],
+    "aDis000000000080": [
+      {
+        "key": "system.saves.robustesse.base",
+        "mode": 2,
+        "value": -2
+      }
+    ]
+  }
+}

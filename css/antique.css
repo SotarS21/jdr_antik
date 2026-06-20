@@ -1,0 +1,2453 @@
+/* ============================================= */
+/*  ANTIQUE - Game System CSS                    */
+/*  Theme: Greek Antiquity                       */
+/* ============================================= */
+
+:root {
+  --antique-gold: #c9a227;
+  --antique-dark-gold: #8b6914;
+  --antique-brown: #5c3d2e;
+  --antique-dark: #2c1810;
+  --antique-cream: #f5e6c8;
+  --antique-parchment: #f0ddb8;
+  --antique-light: #faf3e3;
+  --antique-red: #8b2500;
+  --antique-green: #556b2f;
+  --antique-border: #8b7355;
+
+  /* Ability colors */
+  --ability-for: #c44b2c;
+  --ability-dex: #2e8b57;
+  --ability-con: #b35900;
+  --ability-int: #4169e1;
+  --ability-ast: #9370db;
+  --ability-cha: #d4881e;
+}
+
+/* ---- Sheet Base ---- */
+.antique.sheet {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  color: var(--antique-dark);
+  background: var(--antique-light);
+  border: 2px solid var(--antique-border);
+}
+
+.antique.sheet input,
+.antique.sheet select,
+.antique.sheet textarea {
+  font-family: inherit;
+  color: var(--antique-dark);
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.antique.sheet input:focus,
+.antique.sheet textarea:focus {
+  border-color: var(--antique-gold);
+  box-shadow: 0 0 4px rgba(201, 162, 39, 0.3);
+  outline: none;
+}
+
+.antique.sheet input[type="number"] {
+  width: 50px;
+  text-align: center;
+}
+
+.antique.sheet input[type="checkbox"] {
+  accent-color: var(--antique-gold);
+}
+
+/* ---- Header ---- */
+.antique .sheet-header {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  background: linear-gradient(135deg, var(--antique-parchment), var(--antique-cream));
+  border-bottom: 3px double var(--antique-gold);
+}
+
+.antique .profile-img {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--antique-gold);
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.antique .header-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.antique .charname {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.antique .charname input {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: var(--antique-brown);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--antique-gold);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.antique .header-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.antique .header-row .field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 120px;
+}
+
+.antique .header-row label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+}
+
+/* ---- Header Stats (PV + CA) ---- */
+.antique .header-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ---- PV Bar ---- */
+.antique .pv-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.antique .pv-bar label {
+  color: var(--antique-red);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.antique .pv-current {
+  width: 50px;
+  text-align: center;
+  font-weight: bold;
+  color: var(--antique-red);
+  font-size: 1.1em;
+}
+
+.antique .pv-max {
+  width: 50px;
+  text-align: center;
+}
+
+/* ---- PM Bar (Mana) ---- */
+.antique .pm-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.antique .pm-bar label {
+  color: #5b3a9e;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.antique .pm-current {
+  width: 50px;
+  text-align: center;
+  font-weight: bold;
+  color: #5b3a9e;
+  font-size: 1.1em;
+}
+
+.antique .pm-max {
+  width: 50px;
+  text-align: center;
+}
+
+/* ---- Long Rest Button ---- */
+.antique .long-rest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  color: var(--antique-gold);
+  font-size: 1em;
+  border: 1px solid var(--antique-gold);
+  border-radius: 4px;
+  background: var(--antique-dark);
+  transition: all 0.2s;
+  margin-left: 6px;
+}
+
+.antique .long-rest:hover {
+  background: var(--antique-gold);
+  color: var(--antique-dark);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.6);
+}
+
+/* ---- Rest Chat Message ---- */
+.antique.rest-message {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+/* ---- CA Badge ---- */
+.antique .ca-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--antique-dark);
+  border: 2px solid var(--antique-gold);
+  border-radius: 4px;
+  padding: 2px 10px;
+}
+
+.antique .ca-badge label {
+  font-size: 0.7em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-gold);
+}
+
+.antique .ca-badge-value {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--antique-gold);
+}
+
+/* ---- Header Traits Reminder ---- */
+.antique .header-traits {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  flex-wrap: nowrap;
+  padding: 2px 0;
+}
+
+.antique .header-trait-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.antique .header-trait-icon img {
+  border: none;
+  border-radius: 2px;
+}
+
+.antique .header-trait-icon.advantage {
+  border-color: var(--antique-green);
+}
+
+.antique .header-trait-icon.disadvantage {
+  border-color: var(--antique-red);
+}
+
+.antique .header-trait-icon:hover {
+  transform: scale(1.2);
+  z-index: 1;
+  box-shadow: 0 0 6px rgba(201, 162, 39, 0.6);
+}
+
+.antique .header-traits-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--antique-border);
+  margin: 0 4px;
+}
+
+/* Highlight animation when clicking a header trait icon */
+@keyframes trait-flash {
+  0%   { background: rgba(201, 162, 39, 0.5); }
+  100% { background: transparent; }
+}
+
+.antique .trait-highlight {
+  animation: trait-flash 1.5s ease-out;
+}
+
+/* Tooltip for header trait icons */
+.antique-trait-tooltip {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  max-width: 280px;
+}
+
+/* ---- Tabs ---- */
+.antique .sheet-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--antique-gold);
+  background: linear-gradient(180deg, #d4a828, #b8922a);
+  flex-wrap: wrap;
+}
+
+.antique .sheet-tabs .item {
+  padding: 6px 14px;
+  font-weight: bold;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique .sheet-tabs .item:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.antique .sheet-tabs .item.active {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom-color: #fff;
+}
+
+/* ---- Sheet Body ---- */
+.antique .sheet-body {
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.antique .sheet-body .tab {
+  display: none;
+}
+
+.antique .sheet-body .tab.active {
+  display: block;
+}
+
+/* ---- Editors: scroll on overflow ---- */
+.antique .editor {
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.antique .editor .editor-content,
+.antique .editor .ProseMirror {
+  overflow-y: auto;
+  max-height: inherit;
+}
+
+/* ---- Editors: expand when editing (toolbar visible) ---- */
+.antique .editor:has(.ProseMirror-menubar) {
+  min-height: 200px;
+  max-height: 400px;
+}
+
+.antique .editor:has(.ProseMirror-menubar) .ProseMirror-menubar {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.antique .editor:has(.ProseMirror-menubar) .ProseMirror {
+  min-height: 150px;
+  max-height: 350px;
+}
+
+/* ---- Identity Tab ---- */
+.antique .identity-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.antique .identity-grid .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.antique .identity-grid label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+}
+
+.antique .historique-section {
+  margin-top: 8px;
+}
+
+.antique .historique-section label {
+  font-size: 0.85em;
+  text-transform: uppercase;
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.antique .historique-section textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* ---- Favorites Bar ---- */
+.antique .favorites-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid var(--antique-gold);
+  border-radius: 4px;
+}
+
+.antique .favorites-title {
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark-gold);
+  white-space: nowrap;
+}
+
+.antique .favorites-title i {
+  color: var(--antique-gold);
+  margin-right: 3px;
+}
+
+.antique .favorites-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.antique .favorite-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-gold);
+  border-radius: 12px;
+  font-size: 0.78em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.antique .favorite-chip:hover {
+  background: var(--antique-dark);
+  color: var(--antique-gold);
+  border-color: var(--antique-dark-gold);
+}
+
+.antique .favorite-chip i:first-child {
+  font-size: 0.85em;
+  color: var(--antique-dark-gold);
+}
+
+.antique .favorite-chip:hover i:first-child {
+  color: var(--antique-gold);
+}
+
+.antique .favorite-chip-total {
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+}
+
+.antique .favorite-chip:hover .favorite-chip-total {
+  color: var(--antique-gold);
+}
+
+.antique .favorite-chip-remove {
+  display: none;
+  margin-left: 2px;
+  font-size: 0.8em;
+  color: var(--antique-border);
+}
+
+.antique .favorite-chip:hover .favorite-chip-remove {
+  display: inline;
+}
+
+.antique .favorite-chip-remove:hover {
+  color: var(--antique-red);
+}
+
+/* ---- Skill Favorite Indicator ---- */
+.antique .skill-fav-star {
+  font-size: 0.7em;
+  color: var(--antique-gold);
+  flex-shrink: 0;
+}
+
+.antique .skill-row.favorite {
+  border-left: 2px solid var(--antique-gold);
+  padding-left: 4px;
+}
+
+/* ---- Abilities + Skills Layout (D&D 5e style) ---- */
+.antique .abilities-skills-layout {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+/* -- Abilities Sidebar (left column) -- */
+.antique .abilities-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.antique .ability-block {
+  text-align: center;
+  background: var(--antique-parchment);
+  border: 2px solid var(--antique-border);
+  border-radius: 6px;
+  padding: 4px 4px 12px;
+  position: relative;
+}
+
+.antique .ability-label {
+  margin: 0 0 2px;
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--antique-brown);
+  cursor: pointer;
+}
+
+.antique .ability-label:hover {
+  color: var(--antique-gold);
+}
+
+/* -- Ability Block Colors -- */
+.antique .ability-block.ability-for { border-color: var(--ability-for); background: rgba(196, 75, 44, 0.08); }
+.antique .ability-block.ability-dex { border-color: var(--ability-dex); background: rgba(46, 139, 87, 0.08); }
+.antique .ability-block.ability-con { border-color: var(--ability-con); background: rgba(179, 89, 0, 0.08); }
+.antique .ability-block.ability-int { border-color: var(--ability-int); background: rgba(65, 105, 225, 0.08); }
+.antique .ability-block.ability-ast { border-color: var(--ability-ast); background: rgba(147, 112, 219, 0.08); }
+.antique .ability-block.ability-cha { border-color: var(--ability-cha); background: rgba(212, 136, 30, 0.08); }
+
+.antique .ability-block.ability-for .ability-label { color: var(--ability-for); }
+.antique .ability-block.ability-dex .ability-label { color: var(--ability-dex); }
+.antique .ability-block.ability-con .ability-label { color: var(--ability-con); }
+.antique .ability-block.ability-int .ability-label { color: var(--ability-int); }
+.antique .ability-block.ability-ast .ability-label { color: var(--ability-ast); }
+.antique .ability-block.ability-cha .ability-label { color: var(--ability-cha); }
+
+.antique .ability-block.ability-for .ability-mod-value { border-color: var(--ability-for); }
+.antique .ability-block.ability-dex .ability-mod-value { border-color: var(--ability-dex); }
+.antique .ability-block.ability-con .ability-mod-value { border-color: var(--ability-con); }
+.antique .ability-block.ability-int .ability-mod-value { border-color: var(--ability-int); }
+.antique .ability-block.ability-ast .ability-mod-value { border-color: var(--ability-ast); }
+.antique .ability-block.ability-cha .ability-mod-value { border-color: var(--ability-cha); }
+
+.antique .ability-mod-value {
+  display: inline-block;
+  font-size: 1.4em;
+  font-weight: bold;
+  width: 48px;
+  line-height: 48px;
+  text-align: center;
+  background: var(--antique-dark);
+  color: var(--antique-gold);
+  border: 2px solid var(--antique-gold);
+  border-radius: 50%;
+}
+
+.antique .ability-score {
+  margin-top: 4px;
+}
+
+.antique .ability-score input {
+  font-size: 0.8em;
+  font-weight: bold;
+  width: 36px;
+  text-align: center;
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 12px;
+  padding: 1px 2px;
+}
+
+/* -- Saves Row (horizontal below skills) -- */
+.antique .saves-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 24px 0;
+  padding: 8px 12px;
+  background: var(--antique-parchment);
+  border: 2px solid var(--antique-gold);
+  border-radius: 6px;
+}
+
+.antique .saves-row-title {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--antique-brown);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.antique .saves-row-items {
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  justify-content: space-evenly;
+}
+
+.antique .save-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.antique .save-card .save-label {
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.antique .save-card .save-label:hover {
+  color: var(--antique-gold);
+}
+
+.antique .save-inputs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.antique .save-inputs input {
+  width: 32px;
+  font-size: 0.8em;
+  text-align: center;
+  padding: 2px;
+}
+
+.antique .save-plus {
+  font-size: 0.75em;
+  color: var(--antique-brown);
+}
+
+.antique .save-total {
+  font-size: 1em;
+  font-weight: bold;
+  min-width: 28px;
+  text-align: center;
+}
+
+/* -- Skills Panel (right area) -- */
+.antique .skills-panel {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  align-content: start;
+}
+
+.antique .skill-group {
+  margin-bottom: 8px;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.antique .skill-group-title {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--antique-dark-gold);
+  border-bottom: 2px solid var(--antique-gold);
+  padding-bottom: 2px;
+  margin: 0 0 4px;
+}
+
+/* -- Skill Group Colors (light background + colored title/border) -- */
+.antique .skill-group-for { background: rgba(196, 75, 44, 0.05); }
+.antique .skill-group-dex { background: rgba(46, 139, 87, 0.05); }
+.antique .skill-group-con { background: rgba(179, 89, 0, 0.05); }
+.antique .skill-group-int { background: rgba(65, 105, 225, 0.05); }
+.antique .skill-group-ast { background: rgba(147, 112, 219, 0.05); }
+.antique .skill-group-cha { background: rgba(212, 136, 30, 0.05); }
+
+.antique .skill-group-for .skill-group-title { color: var(--ability-for); border-bottom-color: var(--ability-for); }
+.antique .skill-group-dex .skill-group-title { color: var(--ability-dex); border-bottom-color: var(--ability-dex); }
+.antique .skill-group-con .skill-group-title { color: var(--ability-con); border-bottom-color: var(--ability-con); }
+.antique .skill-group-int .skill-group-title { color: var(--ability-int); border-bottom-color: var(--ability-int); }
+.antique .skill-group-ast .skill-group-title { color: var(--ability-ast); border-bottom-color: var(--ability-ast); }
+.antique .skill-group-cha .skill-group-title { color: var(--ability-cha); border-bottom-color: var(--ability-cha); }
+
+.antique .skill-group-for .skill-total { color: var(--ability-for); }
+.antique .skill-group-dex .skill-total { color: var(--ability-dex); }
+.antique .skill-group-con .skill-total { color: var(--ability-con); }
+.antique .skill-group-int .skill-total { color: var(--ability-int); }
+.antique .skill-group-ast .skill-total { color: var(--ability-ast); }
+.antique .skill-group-cha .skill-total { color: var(--ability-cha); }
+
+.antique .skill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.antique .skill-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 2px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.15);
+  font-size: 0.82em;
+}
+
+.antique .skill-row:hover {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+/* -- Trained skill highlight -- */
+.antique .skill-row.trained {
+  background: rgba(201, 162, 39, 0.12);
+  border-radius: 3px;
+}
+
+.antique .skill-row.trained .skill-name {
+  font-weight: 700;
+}
+
+.antique .skill-row.trained .skill-icon {
+  opacity: 1;
+}
+
+.antique .skill-row.trained .skill-bonus-input {
+  background: var(--antique-dark);
+  color: var(--antique-gold);
+  border-color: var(--antique-gold);
+  font-weight: bold;
+  border-radius: 3px;
+}
+
+.antique .skill-row.trained .skill-total {
+  font-size: 1.1em;
+}
+
+.antique .skill-row .skill-trained {
+  -webkit-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--antique-border);
+  background: var(--antique-cream);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 0;
+  padding: 0;
+}
+
+.antique .skill-row .skill-trained:checked {
+  background: var(--antique-gold);
+  border-color: var(--antique-dark-gold);
+  box-shadow: 0 0 4px rgba(201, 162, 39, 0.5);
+}
+
+.antique .skill-row .skill-trained:hover {
+  border-color: var(--antique-gold);
+}
+
+.antique .skill-icon {
+  width: 14px;
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--antique-brown);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.antique .skill-group-for .skill-icon { color: var(--ability-for); }
+.antique .skill-group-dex .skill-icon { color: var(--ability-dex); }
+.antique .skill-group-con .skill-icon { color: var(--ability-con); }
+.antique .skill-group-int .skill-icon { color: var(--ability-int); }
+.antique .skill-group-ast .skill-icon { color: var(--ability-ast); }
+.antique .skill-group-cha .skill-icon { color: var(--ability-cha); }
+
+.antique .skill-name {
+  flex: 1;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.antique .skill-name:hover {
+  color: var(--antique-gold);
+}
+
+.antique .skill-bonus-input {
+  width: 32px;
+  font-size: 0.9em;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.antique .skill-total {
+  min-width: 28px;
+  text-align: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.antique .computed {
+  font-weight: bold;
+  text-align: center;
+}
+
+.antique .computed.total {
+  color: var(--antique-dark-gold);
+  font-size: 1.05em;
+}
+
+/* ---- Combat Tab ---- */
+.antique .combat-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.antique .ca-section,
+.antique .initiative-section {
+  background: var(--antique-parchment);
+  border: 2px solid var(--antique-gold);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+
+.antique .ca-section {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.antique .ca-section h2,
+.antique .initiative-section h2,
+.antique .attack-bonuses h2 {
+  margin: 0 0 8px;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--antique-brown);
+}
+
+.antique .ca-total,
+.antique .initiative-total {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+}
+
+.antique .ca-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.8em;
+}
+
+.antique .ca-details .field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.antique .ca-details label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  color: var(--antique-dark-gold);
+}
+
+.antique .initiative-section.initiative-roll {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique .initiative-section.initiative-roll:hover {
+  border-color: var(--antique-dark-gold);
+  background: var(--antique-cream);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
+}
+
+.antique .initiative-section.initiative-roll:hover h2 {
+  color: var(--antique-dark-gold);
+}
+
+.antique .initiative-section.initiative-roll:hover .initiative-total {
+  color: var(--antique-gold);
+}
+
+.antique .initiative-section h2 .fa-dice-d20 {
+  margin-right: 4px;
+  font-size: 0.9em;
+}
+
+.antique.npc .npc-stat-box.npc-rollable {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique.npc .npc-stat-box.npc-rollable:hover {
+  border-color: var(--antique-dark-gold);
+  background: var(--antique-cream);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
+}
+
+.antique.npc .npc-stat-box.npc-rollable label i {
+  margin-right: 3px;
+}
+
+.antique .attack-bonuses {
+  flex: 1;
+  min-width: 300px;
+}
+
+.antique .attack-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.antique .attack-table th {
+  text-align: left;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  border-bottom: 1px solid var(--antique-border);
+  padding: 2px 4px;
+}
+
+.antique .attack-table td {
+  padding: 3px 4px;
+}
+
+/* ---- Weapons ---- */
+.antique .weapons-section h2,
+.antique .equipment-section h2,
+.antique .traits-section h2 {
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--antique-brown);
+  border-bottom: 2px solid var(--antique-gold);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.antique .weapons-list {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+
+.antique .weapons-list th {
+  text-align: left;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  border-bottom: 1px solid var(--antique-border);
+  padding: 6px 6px;
+}
+
+.antique .weapons-list td {
+  padding: 8px 6px;
+}
+
+.antique .clickable {
+  cursor: pointer;
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+}
+
+.antique .clickable:hover {
+  color: var(--antique-gold);
+}
+
+/* ---- Weapon Images (Combat Tab) ---- */
+.antique .weapon-img-col {
+  width: 30px;
+}
+
+.antique .weapon-img {
+  text-align: center;
+}
+
+.antique .weapon-img img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  vertical-align: middle;
+  background: #2b2b2b;
+}
+
+.antique .weapon-img.item-chat {
+  cursor: pointer;
+}
+
+.antique .weapon-img.item-chat img:hover {
+  border-color: var(--antique-gold);
+  box-shadow: 0 0 4px rgba(201, 162, 39, 0.4);
+}
+
+/* ---- Inventory Tab ---- */
+.antique .currency-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: var(--antique-dark-gold);
+}
+
+.antique .currency-section input {
+  width: 80px;
+  font-size: 1em;
+}
+
+/* ---- Traits Tab ---- */
+.antique .traits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.antique .traits-list .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.antique .traits-list .item:hover {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.antique .trait-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.antique .trait-value {
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+}
+
+.antique .trait-effect {
+  flex: 2;
+  font-style: italic;
+  color: var(--antique-brown);
+}
+
+.antique .item-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.antique .item-controls a {
+  color: var(--antique-border);
+  cursor: pointer;
+}
+
+.antique .item-controls a:hover {
+  color: var(--antique-gold);
+}
+
+.antique .item-create {
+  color: var(--antique-green);
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.antique .item-create:hover {
+  color: var(--antique-gold);
+}
+
+/* ---- Trait Balance ---- */
+.antique .trait-balance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.antique .trait-balance.balanced {
+  background: rgba(85, 107, 47, 0.15);
+  border: 2px solid var(--antique-green);
+  color: var(--antique-green);
+}
+
+.antique .trait-balance.unbalanced {
+  background: rgba(139, 37, 0, 0.12);
+  border: 2px solid var(--antique-red);
+  color: var(--antique-red);
+}
+
+.antique .trait-balance-value {
+  font-size: 1.3em;
+}
+
+.antique .trait-balance-status {
+  margin-left: auto;
+}
+
+/* ---- Traits Table ---- */
+.antique .traits-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+  margin-bottom: 8px;
+}
+
+.antique .traits-table thead th {
+  text-align: left;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: var(--antique-brown);
+  border-bottom: 1px solid var(--antique-border);
+  padding: 2px 6px;
+}
+
+.antique .traits-table tbody tr {
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.antique .traits-table tbody tr:hover {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.antique .traits-table td {
+  padding: 4px 6px;
+}
+
+.antique .trait-cout-col {
+  width: 60px;
+  text-align: center;
+}
+
+.antique .trait-cout {
+  font-weight: bold;
+  text-align: center;
+}
+
+.antique .trait-cout.negative {
+  color: var(--antique-green);
+}
+
+.antique .trait-cout.positive {
+  color: var(--antique-red);
+}
+
+.antique .cout-hint {
+  font-size: 0.8em;
+  font-style: italic;
+  color: var(--antique-brown);
+  font-weight: normal;
+}
+
+/* ---- Spells Table ---- */
+.antique .spells-table .spell-effect {
+  font-style: italic;
+  color: var(--antique-brown);
+}
+
+.antique .spells-table .spell-cost {
+  text-align: center;
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+}
+
+.antique .spells-table .spell-cost-ingredients {
+  font-weight: normal;
+  font-size: 0.9em;
+  color: #8B008B;
+}
+
+.antique .spells-table .ritual-badge {
+  display: inline-block;
+  background: #8B008B;
+  color: #fff;
+  font-size: 0.7em;
+  font-weight: bold;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.antique .spells-table .spell-limitation {
+  text-align: center;
+}
+
+.antique .spells-table .limitation-value {
+  font-weight: bold;
+}
+.antique .spells-table .limitation-value.empty {
+  color: var(--antique-red);
+}
+
+.antique .spells-table .limitation-unlimited {
+  font-size: 1.2em;
+  color: var(--antique-green);
+}
+
+.antique .spells-table .spell-range,
+.antique .spells-table .spell-duration {
+  text-align: center;
+}
+
+/* Spell sheet limitation fields */
+.antique .limitation-fields {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.antique .limitation-fields input {
+  width: 60px;
+}
+.antique .limitation-counter {
+  font-style: italic;
+  color: var(--antique-brown);
+}
+
+/* ---- Effects List (Actor Sheet) ---- */
+.antique .effects-list-actor .effect-active-toggle {
+  cursor: pointer;
+  font-size: 1.1em;
+  margin: 0 4px;
+}
+
+.antique .effects-list-actor .effect-toggle-on {
+  color: var(--antique-green);
+}
+
+.antique .effects-list-actor .effect-toggle-off {
+  color: var(--antique-border);
+}
+
+.antique .effects-list-actor .effect-active-toggle:hover .effect-toggle-on,
+.antique .effects-list-actor .effect-active-toggle:hover .effect-toggle-off {
+  color: var(--antique-gold);
+}
+
+.antique .effect-inactive {
+  opacity: 0.45;
+}
+
+.antique .avantage-temporaire-section {
+  margin-top: 16px;
+  padding: 8px;
+  background: var(--antique-parchment);
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+}
+
+.antique .avantage-temporaire-info {
+  margin: 4px 0 0;
+  font-size: 0.8em;
+  font-style: italic;
+  color: var(--antique-brown);
+  opacity: 0.8;
+}
+
+.antique .avantage-temporaire-info i {
+  margin-right: 3px;
+}
+
+/* ---- Equipment List (Inventory) ---- */
+.antique .equip-img-col {
+  width: 30px;
+}
+
+.antique .equip-img {
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.antique .equip-img img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  vertical-align: middle;
+  transition: opacity 0.2s;
+  background: #2b2b2b;
+}
+
+.antique .equip-img:hover img {
+  opacity: 0.3;
+}
+
+.antique .equip-img::after {
+  content: "\f075";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--antique-gold);
+  font-size: 0.85em;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.antique .equip-img:hover::after {
+  opacity: 1;
+}
+
+.antique .equip-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.antique .equip-name {
+  flex: 1;
+}
+
+/* ---- Equipment Toggle Description ---- */
+.antique .equip-toggle {
+  cursor: pointer;
+  color: var(--antique-border);
+  font-size: 0.85em;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+}
+
+.antique .equip-toggle:hover {
+  color: var(--antique-gold);
+}
+
+.antique .equip-toggle-icon {
+  transition: transform 0.2s;
+}
+
+.antique .equip-toggle.open .equip-toggle-icon {
+  transform: rotate(90deg);
+}
+
+.antique .equip-desc-row td {
+  padding: 0 6px 8px 38px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.antique .equip-desc-content {
+  font-size: 0.85em;
+  font-style: italic;
+  color: var(--antique-brown);
+  line-height: 1.4;
+}
+
+/* ---- Item Chat Card ---- */
+.antique.item-chat-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.antique.item-chat-card .card-header img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border, #8b7355);
+  flex-shrink: 0;
+}
+
+.antique.item-chat-card .card-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--antique-brown, #5c3d2e);
+}
+
+.antique.item-chat-card .card-content {
+  font-size: 0.9em;
+  border-top: 1px solid var(--antique-border, #8b7355);
+  padding-top: 4px;
+}
+
+/* ---- Attack Result (Chat) ---- */
+.antique.attack-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+
+.antique.attack-result .attack-vs {
+  color: #3a2a1a;
+}
+
+.antique.attack-result .attack-outcome {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.antique.attack-result.attack-hit {
+  background: rgba(85, 107, 47, 0.18);
+  border: 1px solid #556b2f;
+}
+
+.antique.attack-result.attack-hit .attack-outcome {
+  color: #3d5a1e;
+}
+
+.antique.attack-result.attack-miss {
+  background: rgba(139, 37, 0, 0.12);
+  border: 1px solid #8b2500;
+}
+
+.antique.attack-result.attack-miss .attack-outcome {
+  color: #8b2500;
+}
+
+/* ---- Item Sheets ---- */
+.antique.sheet.item .sheet-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.antique.sheet.item .item-img {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--antique-gold);
+  border-radius: 4px;
+}
+
+.antique.sheet.item .item-name input {
+  font-size: 1.2em;
+  font-weight: bold;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--antique-gold);
+}
+
+.antique.sheet.item .sheet-body {
+  padding: 10px;
+}
+
+.antique.sheet.item .form-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.antique.sheet.item .form-group label {
+  font-weight: bold;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  color: var(--antique-dark-gold);
+  min-width: 100px;
+}
+
+.antique.sheet.item .form-group.description {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.antique.sheet.item .form-group.description .editor {
+  min-height: 200px;
+  max-height: 400px;
+}
+
+/* ============================================= */
+/*  NPC Sheet                                    */
+/* ============================================= */
+
+.antique.npc .npc-abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.antique.npc .npc-combat-quick {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.antique.npc .npc-stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--antique-parchment);
+  border: 2px solid var(--antique-gold);
+  border-radius: 6px;
+  padding: 10px 20px;
+  min-width: 100px;
+}
+
+.antique.npc .npc-stat-box label {
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-brown);
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+.antique.npc .npc-stat-box label:hover {
+  color: var(--antique-gold);
+}
+
+.antique.npc .npc-big-input {
+  width: 60px;
+  font-size: 1.6em;
+  font-weight: bold;
+  text-align: center;
+  color: var(--antique-dark-gold);
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+}
+
+.antique.npc .npc-description {
+  margin-top: 8px;
+}
+
+.antique.npc .npc-description > label {
+  display: block;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--antique-dark-gold);
+  margin-bottom: 4px;
+}
+
+.antique.npc .npc-notes {
+  height: 100%;
+  min-height: 200px;
+}
+
+/* ============================================= */
+/*  Active Effects UI                            */
+/* ============================================= */
+
+/* -- Effects Header (Item Sheets) -- */
+.antique .effects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--antique-gold);
+}
+
+.antique .effects-header h3 {
+  margin: 0;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--antique-brown);
+}
+
+.antique .effects-header .effect-create {
+  color: var(--antique-green);
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.antique .effects-header .effect-create:hover {
+  color: var(--antique-gold);
+}
+
+/* -- Effects List -- */
+.antique .effects-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.antique .effect-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  border-radius: 3px;
+}
+
+.antique .effect-row:hover {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.antique .effect-row.disabled {
+  opacity: 0.5;
+}
+
+.antique .effect-icon {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  flex-shrink: 0;
+}
+
+.antique .effect-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.antique .effect-name {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: var(--antique-dark);
+}
+
+.antique .effect-changes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.antique .effect-change-badge {
+  font-size: 0.75em;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.antique .effect-change-badge.advantage {
+  background: rgba(85, 107, 47, 0.2);
+  color: var(--antique-green);
+  border: 1px solid var(--antique-green);
+}
+
+.antique .effect-change-badge.disadvantage {
+  background: rgba(139, 37, 0, 0.15);
+  color: var(--antique-red);
+  border: 1px solid var(--antique-red);
+}
+
+.antique .effect-change-badge.empty {
+  background: rgba(139, 115, 85, 0.1);
+  color: var(--antique-brown);
+  border: 1px solid var(--antique-border);
+  font-style: italic;
+  font-weight: normal;
+}
+
+.antique .effect-controls {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.antique .effect-controls a {
+  color: var(--antique-border);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.antique .effect-controls a:hover {
+  color: var(--antique-gold);
+}
+
+.antique .effect-toggle .fa-check-circle {
+  color: var(--antique-green);
+}
+
+.antique .effect-toggle .fa-times-circle {
+  color: var(--antique-red);
+}
+
+.antique .effects-empty {
+  text-align: center;
+  color: var(--antique-brown);
+  font-style: italic;
+  padding: 20px;
+  font-size: 0.9em;
+}
+
+/* -- Trait Icons & Effects in Character Sheet -- */
+.antique .trait-img-col {
+  width: 30px;
+}
+
+.antique .trait-img {
+  text-align: center;
+}
+
+.antique .trait-img img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  vertical-align: middle;
+  background: #2b2b2b;
+}
+
+.antique .trait-list-img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  vertical-align: middle;
+  margin-right: 6px;
+  background: #2b2b2b;
+}
+
+.antique .trait-effects-col {
+  min-width: 100px;
+}
+
+.antique .trait-effects-summary {
+  font-size: 0.8em;
+}
+
+.antique .trait-effect-text {
+  font-style: italic;
+  font-size: 0.85em;
+  color: var(--antique-brown);
+}
+
+.antique .effect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8em;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.antique .effect-badge.advantage {
+  background: rgba(85, 107, 47, 0.15);
+  color: var(--antique-green);
+}
+
+.antique .effect-badge.disadvantage {
+  background: rgba(139, 37, 0, 0.12);
+  color: var(--antique-red);
+}
+
+.antique .effect-badge.blessing {
+  background: rgba(201, 162, 39, 0.2);
+  color: var(--antique-dark-gold);
+}
+
+.antique .effect-badge i {
+  font-size: 0.8em;
+}
+
+/* -- Item Sheet Tabs (for advantage/disadvantage/blessing) -- */
+.antique.sheet.item .sheet-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--antique-gold);
+  background: var(--antique-parchment);
+}
+
+.antique.sheet.item .sheet-tabs .item {
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-brown);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique.sheet.item .sheet-tabs .item:hover {
+  color: var(--antique-gold);
+}
+
+.antique.sheet.item .sheet-tabs .item.active {
+  color: var(--antique-dark-gold);
+  border-bottom-color: var(--antique-gold);
+}
+
+.antique.sheet.item .sheet-body .tab {
+  display: none;
+}
+
+.antique.sheet.item .sheet-body .tab.active {
+  display: block;
+}
+
+/* ============================================= */
+/*  Consumable Buttons                           */
+/* ============================================= */
+
+.antique .munitions-cell,
+.antique .quantity-cell {
+  white-space: nowrap;
+}
+
+.antique .munitions-value,
+.antique .quantity-value {
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+  margin-right: 4px;
+}
+
+.antique .munitions-value.empty,
+.antique .quantity-value.empty {
+  color: var(--antique-red);
+}
+
+.antique .item-consume {
+  cursor: pointer;
+  color: var(--antique-brown);
+  font-size: 0.85em;
+  transition: color 0.2s;
+}
+
+.antique .item-consume:hover {
+  color: var(--antique-gold);
+}
+
+/* ---- Linked Ammo Badge ---- */
+.antique .linked-ammo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.85em;
+}
+
+.antique .linked-ammo-badge .fa-link {
+  font-size: 0.75em;
+  color: var(--antique-border);
+}
+
+.antique .linked-ammo-name {
+  font-size: 0.8em;
+  font-style: italic;
+  color: var(--antique-brown);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================= */
+/*  Background Tab                               */
+/* ============================================= */
+
+.antique .background-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.antique .bg-field {
+  background: var(--antique-parchment);
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+  padding: 8px;
+  min-height: 100px;
+}
+
+.antique .bg-field h3 {
+  margin: 0 0 6px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-brown);
+  border-bottom: 1px solid var(--antique-gold);
+  padding-bottom: 4px;
+}
+
+.antique .bg-field h3 i {
+  color: var(--antique-dark-gold);
+  margin-right: 4px;
+  width: 14px;
+  text-align: center;
+}
+
+.antique .bg-magic-practitioner {
+  grid-column: 1 / -1;
+  min-height: auto;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.antique .bg-histoire {
+  grid-column: 1 / -1;
+  min-height: 140px;
+}
+
+.antique .bg-expressions {
+  grid-column: 1 / -1;
+}
+
+.antique .bg-field .editor {
+  min-height: 60px;
+  max-height: 150px;
+}
+
+.antique .bg-histoire .editor {
+  min-height: 100px;
+  max-height: 250px;
+}
+
+/* -- Actor Reference Cards (Drag & Drop Allies/Enemies) -- */
+.antique .actor-ref-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+  min-height: 40px;
+  padding: 4px;
+  border: 2px dashed rgba(139, 115, 85, 0.3);
+  border-radius: 4px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.antique .bg-field[data-drop-target]:hover .actor-ref-list,
+.antique .bg-field[data-drop-target].dragover .actor-ref-list {
+  border-color: var(--antique-gold);
+  background: rgba(201, 162, 39, 0.06);
+}
+
+.antique .actor-ref-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+  padding: 3px 8px 3px 3px;
+  transition: border-color 0.2s;
+}
+
+.antique .actor-ref-card:hover {
+  border-color: var(--antique-gold);
+}
+
+.antique .actor-ref-img {
+  border-radius: 3px;
+  border: 1px solid var(--antique-border);
+  object-fit: cover;
+}
+
+.antique .actor-ref-name {
+  font-weight: 500;
+  font-size: 0.85em;
+  cursor: pointer;
+  color: var(--antique-dark);
+}
+
+.antique .actor-ref-name:hover {
+  color: var(--antique-gold);
+}
+
+.antique .actor-ref-comment-icon {
+  font-size: 0.7em;
+  color: var(--antique-dark-gold);
+  flex-shrink: 0;
+}
+
+.antique .actor-ref-card.has-comment {
+  border-color: var(--antique-dark-gold);
+}
+
+.antique #context-menu {
+  z-index: 9999;
+}
+
+.antique .actor-ref-remove {
+  cursor: pointer;
+  color: var(--antique-border);
+  font-size: 0.8em;
+  margin-left: 2px;
+}
+
+.antique .actor-ref-remove:hover {
+  color: var(--antique-red);
+}
+
+.antique .actor-ref-drop-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75em;
+  font-style: italic;
+  color: var(--antique-brown);
+  opacity: 0.6;
+  padding: 2px 6px;
+}
+
+.antique .actor-ref-drop-hint i {
+  font-size: 0.9em;
+}
+
+/* -- Actor Reference Groups (Allies/Enemies) -- */
+.antique .actor-ref-group {
+  position: relative;
+  margin-bottom: 8px;
+  border: 2px solid var(--group-color, var(--antique-gold));
+  border-radius: 6px;
+}
+
+.antique .actor-ref-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--antique-parchment);
+  border-bottom: 1px solid var(--group-color, var(--antique-gold));
+  border-radius: 4px 4px 0 0;
+}
+
+.antique .group-name-input {
+  flex: 1;
+  font-size: 0.82em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 2px 4px;
+}
+
+.antique .group-name-input:focus {
+  border-bottom-color: var(--group-color, var(--antique-gold));
+  outline: none;
+}
+
+.antique .group-name-label {
+  flex: 1;
+  font-size: 0.82em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark);
+  padding: 2px 4px;
+}
+
+.antique .group-color-input {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--antique-border);
+  border-radius: 3px;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.antique .group-color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.antique .group-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.antique .group-delete {
+  cursor: pointer;
+  color: var(--antique-border);
+  font-size: 0.8em;
+  flex-shrink: 0;
+}
+
+.antique .group-delete:hover {
+  color: var(--antique-red);
+}
+
+.antique .group-create {
+  cursor: pointer;
+  color: var(--antique-green);
+  font-size: 0.85em;
+  margin-left: auto;
+}
+
+.antique .group-create:hover {
+  color: var(--antique-gold);
+}
+
+.antique .actor-ref-list-grouped {
+  border: none;
+  min-height: 36px;
+}
+
+/* ============================================= */
+/*  Player Notes (visible to players)            */
+/* ============================================= */
+
+.antique .player-notes-section {
+  padding: 10px;
+  background: rgba(85, 107, 47, 0.06);
+  border: 2px solid var(--antique-green);
+  border-radius: 6px;
+}
+
+.antique .player-notes-section h3 {
+  margin: 0 0 8px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-green);
+  border-bottom: 1px solid rgba(85, 107, 47, 0.3);
+  padding-bottom: 4px;
+}
+
+.antique .player-notes-section h3 i {
+  margin-right: 4px;
+}
+
+.antique .player-notes-section .npc-notes .editor {
+  min-height: 120px;
+  max-height: 300px;
+}
+
+/* ============================================= */
+/*  GM Notes (hidden from players)               */
+/* ============================================= */
+
+.antique .gm-notes-section {
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(139, 37, 0, 0.06);
+  border: 2px solid var(--antique-red);
+  border-radius: 6px;
+  border-style: dashed;
+}
+
+.antique .gm-notes-section h3 {
+  margin: 0 0 8px;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-red);
+  border-bottom: 1px solid rgba(139, 37, 0, 0.3);
+  padding-bottom: 4px;
+}
+
+.antique .gm-notes-section h3 i {
+  margin-right: 4px;
+}
+
+.antique .gm-notes-editor .editor {
+  min-height: 80px;
+  max-height: 200px;
+}
+
+.antique.npc .gm-notes-section {
+  margin-top: 16px;
+}
+
+.antique.npc .gm-notes-editor .editor {
+  min-height: 120px;
+  max-height: 300px;
+}
+
+/* ============================================= */
+/*  Deity Sheet                                  */
+/* ============================================= */
+
+.antique.deity {
+  background: linear-gradient(180deg, var(--antique-dark) 0%, #3a2a1a 30%, var(--antique-parchment) 100%);
+}
+
+.antique.deity .deity-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 12px;
+}
+
+/* -- Portrait -- */
+.antique.deity .deity-portrait-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.4) 0%, transparent 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.antique.deity .deity-portrait {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 3px solid var(--antique-gold);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.5), 0 0 40px rgba(201, 162, 39, 0.2);
+  object-fit: cover;
+}
+
+/* -- Name -- */
+.antique.deity .deity-name {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+.antique.deity .deity-name input {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: var(--antique-gold);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--antique-gold);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.antique.deity .deity-name input:focus {
+  outline: none;
+  box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+}
+
+/* -- Decorative Separator -- */
+.antique.deity .deity-separator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 80%;
+}
+
+.antique.deity .deity-separator-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--antique-gold), transparent);
+}
+
+.antique.deity .deity-separator-icon {
+  color: var(--antique-gold);
+  font-size: 0.9em;
+}
+
+/* -- Description -- */
+.antique.deity .deity-description {
+  width: 100%;
+}
+
+.antique.deity .deity-description .editor {
+  min-height: 200px;
+  max-height: none;
+  overflow-y: auto;
+}
+
+.antique.deity .deity-description .editor .editor-content,
+.antique.deity .deity-description .editor .ProseMirror {
+  max-height: none;
+}
+
+/* ============================================= */
+/*  Random Draw (Chat)                           */
+/* ============================================= */
+
+.antique.item-chat-card .random-draw-source {
+  font-size: 0.8em;
+  font-style: italic;
+  color: var(--antique-brown, #5c3d2e);
+  margin-bottom: 4px;
+}
+
+.antique.item-chat-card .random-draw-roll {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--antique-dark-gold, #8b6914);
+  margin-bottom: 4px;
+}
+
+.antique.item-chat-card .random-draw-desc {
+  border-top: 1px solid var(--antique-border, #8b7355);
+  padding-top: 4px;
+  font-size: 0.9em;
+}
+
+/* ============================================= */
+/*  Damage Application (Chat)                    */
+/* ============================================= */
+
+.antique.damage-chat-card .damage-roll-result {
+  margin-bottom: 6px;
+}
+
+.antique.damage-chat-card .apply-damage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 12px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(180deg, #8b2500, #6b1c00);
+  border: 2px solid #a33;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique.damage-chat-card .apply-damage:hover {
+  background: linear-gradient(180deg, #a33000, #8b2500);
+  border-color: #c44;
+  box-shadow: 0 0 8px rgba(139, 37, 0, 0.5);
+}
+
+.antique.damage-applied-message {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: 0.9em;
+  line-height: 1.5;
+  padding: 4px 0;
+}
+
+/* ============================================= */
+/*  Spell Chat Card                              */
+/* ============================================= */
+
+.antique.spell-chat-card {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+.antique.item-chat-card.spell-chat-card .spell-chat-details {
+  border-top: 1px solid var(--antique-border, #8b7355);
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+
+.antique.item-chat-card.spell-chat-card .spell-chat-detail {
+  font-size: 0.9em;
+  padding: 1px 0;
+}
+
+.antique.item-chat-card.spell-chat-card .spell-chat-detail i {
+  width: 14px;
+  text-align: center;
+  margin-right: 2px;
+  color: #5b3a9e;
+}
+
+/* Spell cast button */
+.antique .spells-table .spell-cast-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 0.82em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(180deg, #7b4fbf, #5b3a9e);
+  border: 1px solid #4a2e82;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.antique .spells-table .spell-cast-btn:hover {
+  background: linear-gradient(180deg, #9462d9, #7b4fbf);
+  border-color: var(--antique-gold);
+  box-shadow: 0 0 8px rgba(91, 58, 158, 0.5);
+  color: #fff;
+}
+
+.antique .spells-table .spell-cast-btn i {
+  font-size: 1em;
+}
+
+/* Spell name clickable (post to chat) */
+.antique .spells-table .spell-chat {
+  cursor: pointer;
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+}
+.antique .spells-table .spell-chat:hover {
+  color: var(--antique-gold);
+}
+
+/* Spell image clickable in trait-img (same hover as weapon-img) */
+.antique .trait-img.item-chat {
+  cursor: pointer;
+}
+
+.antique .trait-img.item-chat img:hover {
+  border-color: var(--antique-gold);
+  box-shadow: 0 0 4px rgba(201, 162, 39, 0.4);
+}

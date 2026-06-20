@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Zeus",
+    "type": "deity",
+    "img": "icons/svg/lightning.svg",
+    "system": {
+      "description": "<h2>Zeus — Roi des Dieux</h2><p><strong>Domaines :</strong> Ciel, foudre, justice, souveraineté</p><p>Fils de Cronos et de Rhéa, Zeus est le souverain de l'Olympe et le père de nombreux dieux et héros. Il règne sur le ciel et brandit la foudre forgée par les Cyclopes. Garant de l'ordre cosmique et de l'hospitalité (<em>xenia</em>), il est aussi connu pour ses innombrables amours divines et mortelles. Son aigle et son sceptre sont ses attributs les plus reconnaissables.</p>"
+    }
+  },
+  {
+    "name": "Héra",
+    "type": "deity",
+    "img": "icons/svg/daze.svg",
+    "system": {
+      "description": "<h2>Héra — Reine des Dieux</h2><p><strong>Domaines :</strong> Mariage, famille, fidélité, royauté</p><p>Épouse et sœur de Zeus, Héra est la protectrice du mariage et de la famille. Majestueuse et jalouse, elle poursuit sans relâche les amantes de Zeus et leurs enfants illégitimes. Malgré sa colère légendaire, elle incarne la dignité royale et la stabilité du foyer. Le paon et la vache lui sont consacrés.</p>"
+    }
+  },
+  {
+    "name": "Poséidon",
+    "type": "deity",
+    "img": "icons/svg/waterfall.svg",
+    "system": {
+      "description": "<h2>Poséidon — Seigneur des Mers</h2><p><strong>Domaines :</strong> Mer, tremblements de terre, chevaux, tempêtes</p><p>Frère de Zeus, Poséidon règne sur les océans et les eaux douces depuis son palais sous-marin. D'un coup de trident, il peut déchaîner les tempêtes ou faire surgir des sources. Colérique et rancunier — comme en témoigne la longue errance d'Ulysse — il est aussi le créateur du cheval et le protecteur des navigateurs.</p>"
+    }
+  },
+  {
+    "name": "Athéna",
+    "type": "deity",
+    "img": "icons/svg/shield.svg",
+    "system": {
+      "description": "<h2>Athéna — Déesse de la Sagesse</h2><p><strong>Domaines :</strong> Sagesse, stratégie guerrière, artisanat, justice</p><p>Née tout armée du crâne de Zeus, Athéna est la déesse vierge de la sagesse et de la guerre stratégique. Contrairement à Arès, elle privilégie la ruse et l'intelligence au combat. Patronne d'Athènes, elle offrit l'olivier à la cité. Elle guide les héros — Ulysse, Persée, Héraclès — et protège les artisans. La chouette et l'égide sont ses symboles.</p>"
+    }
+  },
+  {
+    "name": "Apollon",
+    "type": "deity",
+    "img": "icons/svg/sun.svg",
+    "system": {
+      "description": "<h2>Apollon — Dieu de la Lumière</h2><p><strong>Domaines :</strong> Soleil, musique, poésie, prophétie, guérison, tir à l'arc</p><p>Fils de Zeus et de Léto, frère jumeau d'Artémis, Apollon est le dieu radieux par excellence. Il conduit le char du soleil, préside l'oracle de Delphes et inspire les arts. Archer infaillible, il peut apporter la peste comme la guérison. Beau et terrible, il incarne l'harmonie et la mesure — le fameux « connais-toi toi-même » de son temple.</p>"
+    }
+  },
+  {
+    "name": "Artémis",
+    "type": "deity",
+    "img": "icons/svg/moon.svg",
+    "system": {
+      "description": "<h2>Artémis — Déesse de la Chasse</h2><p><strong>Domaines :</strong> Chasse, lune, nature sauvage, virginité, accouchement</p><p>Sœur jumelle d'Apollon, Artémis parcourt les forêts avec ses nymphes et son arc d'argent. Farouchement vierge, elle punit quiconque menace sa pudeur — comme le malheureux Actéon, changé en cerf. Protectrice des animaux sauvages et des jeunes filles, elle est aussi invoquée lors des accouchements. Le cerf et le cyprès lui sont consacrés.</p>"
+    }
+  },
+  {
+    "name": "Arès",
+    "type": "deity",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "description": "<h2>Arès — Dieu de la Guerre</h2><p><strong>Domaines :</strong> Guerre, violence, carnage, courage brut</p><p>Fils de Zeus et d'Héra, Arès incarne la brutalité sanglante du combat, à l'opposé de la stratégie d'Athéna. Peu aimé des autres dieux, il est néanmoins un combattant redoutable. Amant d'Aphrodite, il est le père de Phobos (la peur) et Déimos (la terreur). Le vautour et le chien lui sont associés.</p>"
+    }
+  },
+  {
+    "name": "Aphrodite",
+    "type": "deity",
+    "img": "icons/svg/angel.svg",
+    "system": {
+      "description": "<h2>Aphrodite — Déesse de l'Amour</h2><p><strong>Domaines :</strong> Amour, beauté, désir, fertilité</p><p>Née de l'écume de la mer, Aphrodite est la plus belle des déesses. Elle possède une ceinture magique qui rend irrésistible quiconque la porte. Mariée à Héphaïstos mais amante d'Arès, elle manipule les cœurs des mortels comme des dieux. C'est elle qui provoqua la guerre de Troie en promettant Hélène à Pâris. La colombe, la rose et le myrte lui sont consacrés.</p>"
+    }
+  },
+  {
+    "name": "Héphaïstos",
+    "type": "deity",
+    "img": "icons/svg/fire.svg",
+    "system": {
+      "description": "<h2>Héphaïstos — Dieu de la Forge</h2><p><strong>Domaines :</strong> Forge, feu, artisanat, métallurgie, volcans</p><p>Seul dieu laid de l'Olympe, Héphaïstos fut jeté du ciel par Héra à sa naissance. Boiteux mais génial, il forge dans ses ateliers sous l'Etna les armes des dieux : la foudre de Zeus, le trident de Poséidon, le bouclier d'Achille. Époux trompé d'Aphrodite, il se venge par des pièges mécaniques ingénieux. Il est le patron de tous les artisans.</p>"
+    }
+  },
+  {
+    "name": "Hermès",
+    "type": "deity",
+    "img": "icons/svg/wing.svg",
+    "system": {
+      "description": "<h2>Hermès — Messager des Dieux</h2><p><strong>Domaines :</strong> Commerce, voyageurs, voleurs, messagers, éloquence, frontières</p><p>Fils de Zeus et de la nymphe Maïa, Hermès est le plus rusé et le plus rapide des dieux. Dès sa naissance, il vola le troupeau d'Apollon et inventa la lyre. Messager de l'Olympe grâce à ses sandales ailées, il guide aussi les âmes des morts vers les Enfers (<em>psychopompe</em>). Patron des marchands et des voleurs, il est le maître des carrefours.</p>"
+    }
+  },
+  {
+    "name": "Déméter",
+    "type": "deity",
+    "img": "icons/svg/oak.svg",
+    "system": {
+      "description": "<h2>Déméter — Déesse des Moissons</h2><p><strong>Domaines :</strong> Agriculture, moissons, fertilité de la terre, saisons</p><p>Sœur de Zeus, Déméter est la mère nourricière qui fait pousser les céréales et les fruits. Lorsque sa fille Perséphone fut enlevée par Hadès, son chagrin plongea le monde dans un hiver éternel. Le compromis trouvé — Perséphone passe six mois aux Enfers — explique le cycle des saisons. L'épi de blé et le porc lui sont consacrés.</p>"
+    }
+  },
+  {
+    "name": "Dionysos",
+    "type": "deity",
+    "img": "icons/svg/tankard.svg",
+    "system": {
+      "description": "<h2>Dionysos — Dieu du Vin</h2><p><strong>Domaines :</strong> Vin, fête, théâtre, extase, folie</p><p>Fils de Zeus et de la mortelle Sémélé, Dionysos est le dieu deux fois né — sauvé de la foudre puis porté dans la cuisse de Zeus. Il parcourt le monde avec son cortège de Ménades et de Satyres, apportant la vigne et l'ivresse. Dieu du théâtre et de la transformation, il brouille les frontières entre l'humain et le divin, l'ordre et le chaos. Le lierre et le thyrse sont ses attributs.</p>"
+    }
+  },
+  {
+    "name": "Hadès",
+    "type": "deity",
+    "img": "icons/svg/skull.svg",
+    "system": {
+      "description": "<h2>Hadès — Seigneur des Enfers</h2><p><strong>Domaines :</strong> Mort, monde souterrain, richesses de la terre</p><p>Frère aîné de Zeus, Hadès reçut en partage le royaume des morts après la victoire sur les Titans. Craint mais pas maléfique, il règne avec justice sur les ombres des défunts. Son casque d'invisibilité, forgé par les Cyclopes, en fait un dieu insaisissable. Époux de Perséphone, il est aussi le gardien des richesses enfouies dans la terre. Cerbère, le chien à trois têtes, garde l'entrée de son royaume.</p>"
+    }
+  },
+  {
+    "name": "Hestia",
+    "type": "deity",
+    "img": "icons/svg/fire-shield.svg",
+    "system": {
+      "description": "<h2>Hestia — Déesse du Foyer</h2><p><strong>Domaines :</strong> Foyer, famille, feu sacré, hospitalité</p><p>Sœur aînée de Zeus, Hestia est la plus discrète des divinités olympiennes. Vierge éternelle, elle céda sa place parmi les Douze à Dionysos pour éviter tout conflit. Elle veille sur le feu sacré de chaque foyer et de chaque cité. Sans mythes spectaculaires, elle incarne la stabilité, la paix domestique et la continuité des traditions. Chaque repas commence et finit par une offrande en son honneur.</p>"
+    }
+  },
+  {
+    "name": "Perséphone",
+    "type": "deity",
+    "img": "icons/svg/frozen.svg",
+    "system": {
+      "description": "<h2>Perséphone — Reine des Enfers</h2><p><strong>Domaines :</strong> Printemps, monde souterrain, renaissance, germination</p><p>Fille de Zeus et de Déméter, Perséphone fut enlevée par Hadès pour devenir reine des Enfers. Ayant mangé six grains de grenade, elle est condamnée à passer la moitié de l'année sous terre — son retour au printemps fait refleurir la nature. Double déesse, elle incarne à la fois la jeunesse printanière et la majesté sombre du monde des morts. La grenade et le narcisse sont ses symboles.</p>"
+    }
+  }
+]

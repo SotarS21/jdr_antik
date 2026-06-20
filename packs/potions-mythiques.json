@@ -1,0 +1,128 @@
+[
+  {
+    "name": "Potion de soin",
+    "type": "equipment",
+    "img": "icons/svg/heal.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Décoction d'herbes médicinales préparée par un guérisseur. Un liquide verdâtre au goût amer qui accélère la guérison naturelle du corps.</p><p><strong>Consommable</strong> — Restaure <strong>2d8+2 PV</strong> à l'utilisation. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Potion de soin majeure",
+    "type": "equipment",
+    "img": "icons/svg/heal.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Puissante mixture alchimique mêlant des herbes rares cueillies au solstice et de l'eau de source sacrée. Le liquide doré scintille d'une lumière intérieure.</p><p><strong>Consommable</strong> — Restaure <strong>4d8+4 PV</strong> à l'utilisation. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Nectar des dieux",
+    "type": "equipment",
+    "img": "icons/svg/sun.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Le nectar divin, boisson des Olympiens, obtenu par un rare acte de générosité divine. Ce liquide ambré au parfum enivrant guérit toutes les blessures mortelles et restaure la vitalité complète du corps.</p><p><strong>Consommable très rare</strong> — Restaure <strong>tous les PV</strong> au maximum. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Ambroisie",
+    "type": "equipment",
+    "img": "icons/svg/angel.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>La nourriture des dieux elle-même, substance légendaire qui confère la jeunesse éternelle aux immortels. Pour un mortel, en consommer procure une vigueur surhumaine temporaire mais les effets sont éphémères.</p><p><strong>Consommable légendaire</strong> — Restaure tous les PV et accorde <strong>+2 à toutes les caractéristiques</strong> pendant 1 heure. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Élixir de Force d'Héraclès",
+    "type": "equipment",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Breuvage rouge sang préparé selon un rite ancien dédié à Héraclès. La légende dit qu'il contient une goutte du sang du héros lui-même. Celui qui le boit sent une puissance colossale envahir ses muscles.</p><p><strong>Consommable</strong> — Accorde <strong>+2 FOR (mod)</strong> pendant 10 minutes. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Huile de sagesse d'Athéna",
+    "type": "equipment",
+    "img": "icons/svg/eye.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Huile d'olive consacrée au temple d'Athéna, infusée pendant une lunaison entière avec des feuilles de laurier sacré. Oindre ses tempes de cette huile affûte l'esprit et clarifie la pensée.</p><p><strong>Consommable</strong> — Accorde <strong>+2 INT (mod)</strong> et <strong>+2 Tactique</strong> pendant 10 minutes. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Philtre d'amour d'Aphrodite",
+    "type": "equipment",
+    "img": "icons/svg/aura.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Potion rosée aux reflets irisés, concoctée par les prêtresses d'Aphrodite à Chypre. Son parfum envoûtant rend celui qui la boit irrésistiblement charmant. Attention : les effets sont imprévisibles et peuvent attirer des attentions indésirables.</p><p><strong>Consommable</strong> — Accorde <strong>+4 CHA (mod)</strong> pendant 10 minutes, mais <strong>-2 Discrétion</strong>. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Vin de Dionysos",
+    "type": "equipment",
+    "img": "icons/svg/tankard.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Vin sombre aux reflets pourpres, béni par Dionysos lui-même lors d'un festival sacré. Celui qui en boit entre dans une transe guerrière — une furie sacrée qui décuple la force mais anéantit toute prudence.</p><p><strong>Consommable</strong> — Accorde <strong>+3 FOR (mod)</strong> et <strong>+2 aux bonus d'attaque</strong>, mais <strong>-4 Esquive</strong> et <strong>-2 CA (temp)</strong> pendant 5 minutes. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Onguent d'Asclépios",
+    "type": "equipment",
+    "img": "icons/svg/regen.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Baume cicatrisant préparé dans les temples d'Asclépios, dieu de la médecine. Composé de miel, de myrrhe et d'herbes sacrées, il est appliqué sur les plaies pour les refermer et sur la peau empoisonnée pour purifier le sang.</p><p><strong>Consommable</strong> — Soigne <strong>1d8 PV</strong> et guérit un <strong>poison</strong> ou une <strong>maladie</strong>. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Eau du Styx",
+    "type": "equipment",
+    "img": "icons/svg/frozen.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Fiole d'eau noire comme la nuit, recueillie au fleuve Styx des Enfers. Selon la légende, c'est dans ces eaux que Thétis plongea Achille pour le rendre invulnérable. Un mortel qui en boit gagne une résistance surnaturelle pendant un bref instant.</p><p><strong>Consommable très rare</strong> — Accorde <strong>+5 CA (temp)</strong> et <strong>résistance aux dégâts</strong> pendant 3 rounds. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Larmes de Niobé",
+    "type": "equipment",
+    "img": "icons/svg/daze.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Liquide cristallin collecté des rochers où Niobé, pétrifiée de chagrin, pleure éternellement ses enfants. Ces larmes divines purifient l'âme et le corps, dissipant les malédictions et les afflictions surnaturelles.</p><p><strong>Consommable rare</strong> — Supprime tous les <strong>effets négatifs</strong>, malédictions et afflictions magiques. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Sang de Méduse",
+    "type": "equipment",
+    "img": "icons/svg/poison.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Fiole contenant le sang noir de la Gorgone Méduse. Selon la légende, le sang de sa veine droite guérit, celui de sa veine gauche est un poison mortel. Cette fiole contient le sang gauche — un poison foudroyant.</p><p><strong>Poison</strong> — Peut être appliqué sur une arme ou versé dans une boisson. La cible doit réussir un jet de <strong>Robustesse DD 15</strong> ou subir <strong>3d6 dégâts de poison</strong> et être <strong>affaiblie</strong> (-2 FOR, -2 CON) pendant 1 heure.</p>"
+    }
+  },
+  {
+    "name": "Poudre de sommeil d'Hypnos",
+    "type": "equipment",
+    "img": "icons/svg/sleep.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Poudre dorée provenant des champs de pavots du dieu Hypnos. Soufflée au visage d'une cible ou dispersée dans l'air, elle plonge les êtres vivants dans un sommeil profond et paisible peuplé de rêves prophétiques.</p><p><strong>Consommable</strong> — Cibles dans un rayon de 3 m doivent réussir un jet de <strong>Volonté DD 13</strong> ou s'endormir pendant <strong>1d4 heures</strong>. Réduire la quantité de 1 après usage.</p>"
+    }
+  },
+  {
+    "name": "Antidote universel",
+    "type": "equipment",
+    "img": "icons/svg/pill.svg",
+    "system": {
+      "quantity": 1,
+      "description": "<p>Mélange de thériaque et d'herbes rares, recette transmise par les prêtres d'Asclépios. Ce contrepoison est efficace contre la plupart des venins naturels et surnaturels connus dans le monde hellénique.</p><p><strong>Consommable</strong> — Guérit immédiatement un <strong>empoisonnement</strong> en cours et accorde <strong>+4 Résistance poisons</strong> pendant 1 heure. Réduire la quantité de 1 après usage.</p>"
+    }
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "name": "Marchand itinérant",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Commerçant voyageant entre les cités grecques malgré les dangers de la guerre. Vend provisions, armes de base et rumeurs.</p>",
+    "taille": "1m68",
+    "type": "Humain - Marchand",
+    "pv": { "value": 10, "max": 10 },
+    "abilities": {
+      "for": { "value": 9, "mod": -1 },
+      "dex": { "value": 11, "mod": 0 },
+      "con": { "value": 10, "mod": 0 },
+      "int": { "value": 14, "mod": 2 },
+      "ast": { "value": 15, "mod": 2 },
+      "cha": { "value": 16, "mod": 3 }
+    },
+    "ca": { "value": 10 },
+    "initiative": { "value": 2 },
+    "attaque": { "value": 0 },
+    "notes": "<p><strong>Commerce :</strong> Peut vendre rations, outils, flèches, herbes médicinales. Prix majorés en zone de guerre (+50%).</p><p><strong>Rumeurs :</strong> Source d'informations sur les mouvements de troupes et les événements dans les cités voisines.</p><p><strong>Comportement :</strong> Avide mais pas stupide. Respecte ceux qui le protègent sur la route.</p>"
+  },
+  "items": []
+}

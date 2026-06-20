@@ -1,0 +1,46 @@
+{
+  "name": "Prince Égisthe",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Prince allié de l'alliance, posté au temple de Déméter avec Agloros. Homme bourru et direct, il s'entend bien avec les combattants francs. Connaît le terrain autour du camp ennemi.</p>",
+    "taille": "1m80",
+    "type": "Humain - Noble guerrier",
+    "pv": { "value": 42, "max": 42 },
+    "abilities": {
+      "for": { "value": 17, "mod": 3 },
+      "dex": { "value": 13, "mod": 1 },
+      "con": { "value": 15, "mod": 2 },
+      "int": { "value": 12, "mod": 1 },
+      "ast": { "value": 11, "mod": 0 },
+      "cha": { "value": 14, "mod": 2 }
+    },
+    "ca": { "value": 17 },
+    "initiative": { "value": 1 },
+    "attaque": { "value": 7 },
+    "notes": "<p><strong>Rôle :</strong> Prince commandant les troupes au temple de Déméter.</p><p><strong>Comportement :</strong> Bourru, direct, aime se battre. Devient \"BROS\" facilement avec les combattants francs (ex: Xenos).</p><p><strong>Intel :</strong> Connaît les emplacements des patrouilleurs ennemis et la disposition de la muraille en bois du camp cible.</p>"
+  },
+  "items": [
+    {
+      "name": "Lance de guerre",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 10,
+        "damage": "1d8+4",
+        "critical": "20/x3",
+        "typeDamage": "Perforant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Bouclier rond",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "Bouclier en bois cerclé de bronze." }
+    }
+  ]
+}

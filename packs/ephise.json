@@ -1,0 +1,315 @@
+{
+  "name": "Éphise - fils d'Eros",
+  "type": "character",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "cite": "Corinthe",
+    "devotion": "Aphrodite",
+    "joueur": "Mr Banane",
+    "age": 20,
+    "yeux": "Marron",
+    "peaux": "Tané",
+    "cheveux": "Chatain",
+    "pilosite": "Rasé",
+    "taille": "1m60",
+    "poid": "80 kg",
+    "sexe": "M",
+    "historique": "Demi dieu mineur\nBonne arme : Arc\nBénédiction divine\nAllié Bourgeois\nRoi ennemi",
+    "avantageTemporaire": true,
+    "pv": {
+      "value": 30,
+      "max": 30
+    },
+    "abilities": {
+      "for": { "value": 10, "mod": 0 },
+      "dex": { "value": 19, "mod": 4 },
+      "con": { "value": 14, "mod": 2 },
+      "int": { "value": 16, "mod": 3 },
+      "ast": { "value": 16, "mod": 3 },
+      "cha": { "value": 16, "mod": 3 }
+    },
+    "skills": {
+      "combatMainNue":   { "trained": false, "bonus": 0 },
+      "armeBlanche":     { "trained": false, "bonus": 0 },
+      "armeDeJet":       { "trained": false, "bonus": 0 },
+      "levage":          { "trained": false, "bonus": 0 },
+      "parade":          { "trained": true,  "bonus": 0 },
+      "armeExotique":    { "trained": true,  "bonus": 1 },
+      "combatDeuxMains": { "trained": false, "bonus": 0 },
+      "artisanatFor":    { "trained": false, "bonus": 0 },
+
+      "esquive":      { "trained": false, "bonus": 0 },
+      "armeADistance": { "trained": true,  "bonus": 2 },
+      "escamotage":   { "trained": false, "bonus": 2 },
+      "acrobatie":    { "trained": true,  "bonus": 2 },
+      "discretion":   { "trained": false, "bonus": 0 },
+      "dressage":     { "trained": false, "bonus": 1 },
+      "jeux":         { "trained": false, "bonus": 0 },
+      "artisanatDex": { "trained": false, "bonus": 0 },
+
+      "resistancePoisons":  { "trained": false, "bonus": 0 },
+      "resistanceDouleur":  { "trained": false, "bonus": 0 },
+      "athletisme":         { "trained": false, "bonus": 1 },
+      "equitation":         { "trained": false, "bonus": 0 },
+      "natation":           { "trained": false, "bonus": 0 },
+      "vigueur":            { "trained": false, "bonus": 0 },
+      "survie":             { "trained": true,  "bonus": 0 },
+
+      "culture":    { "trained": false, "bonus": 0 },
+      "politique":  { "trained": false, "bonus": 0 },
+      "nature":     { "trained": false, "bonus": 0 },
+      "histoire":   { "trained": false, "bonus": 0 },
+      "mythologie": { "trained": true,  "bonus": 0 },
+      "tactique":   { "trained": false, "bonus": 0 },
+      "geographie": { "trained": false, "bonus": 0 },
+      "etiquette":  { "trained": true,  "bonus": 1 },
+
+      "premierSoin":   { "trained": true,  "bonus": 2 },
+      "investigation": { "trained": false, "bonus": 0 },
+      "mysticisme":    { "trained": false, "bonus": 0 },
+      "navigation":    { "trained": false, "bonus": 0 },
+      "linguistique":  { "trained": false, "bonus": 0 },
+      "vigilance":     { "trained": true,  "bonus": 0 },
+      "empathie":      { "trained": true,  "bonus": 1 },
+      "perception":    { "trained": true,  "bonus": 2 },
+
+      "intimidation":   { "trained": false, "bonus": 0 },
+      "dissimulation":  { "trained": false, "bonus": 0 },
+      "commandement":   { "trained": false, "bonus": 1 },
+      "seduction":      { "trained": true,  "bonus": 2 },
+      "baratin":        { "trained": true,  "bonus": 2 },
+      "psychologie":    { "trained": false, "bonus": 1 },
+      "marchandage":    { "trained": false, "bonus": 1 },
+      "representation": { "trained": false, "bonus": 0 }
+    },
+    "saves": {
+      "reflexes":   { "base": 1, "temp": 0 },
+      "robustesse": { "base": 1, "temp": 0 },
+      "volonte":    { "base": 1, "temp": 0 }
+    },
+    "ca": {
+      "base": 12,
+      "armure": 1,
+      "bouclier": 0,
+      "bonusVigueur": -2,
+      "temp": 2
+    },
+    "attackBonuses": {
+      "mainNue":      { "bonus": -4 },
+      "armeBlanche":  { "bonus": -4 },
+      "armeDeJet":    { "bonus": -4 },
+      "armeExotique": { "bonus": 1 },
+      "armeADistance": { "bonus": 6 }
+    },
+    "or": 0
+  },
+  "items": [
+    {
+      "name": "Arc",
+      "type": "weapon",
+      "img": "icons/weapons/bows/shortbow-recurve-yellow.webp",
+      "system": {
+        "attBonus": 10,
+        "damage": "1d10+2",
+        "critical": "19/x3",
+        "typeDamage": "Pénétrant",
+        "portee": 25,
+        "hasPortee": true,
+        "munitions": 25,
+        "description": ""
+      }
+    },
+    {
+      "name": "Gamel, cuillère",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "" }
+    },
+    {
+      "name": "Outre à eau (1l)",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "" }
+    },
+    {
+      "name": "Sac de couchage",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "" }
+    },
+    {
+      "name": "Silex à amadou",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "" }
+    },
+    {
+      "name": "Rations",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 2, "description": "Rations de voyage (2 jours)" }
+    },
+    {
+      "name": "Cape cirée noire",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "" }
+    },
+    {
+      "name": "Carquois (25 flèches)",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 25, "description": "Flèches standard" }
+    },
+    {
+      "name": "Flèches de feu",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 0, "description": "Flèches incendiaires" }
+    },
+    {
+      "name": "Aura d'Aphrodite",
+      "type": "advantage",
+      "img": "icons/svg/aura.svg",
+      "system": {
+        "cout": -3,
+        "description": "<p>L'aura divine d'Aphrodite enveloppe Éphise, lui conférant un charme surnaturel irrésistible. Les personnes à proximité ressentent une attirance instinctive, facilitant les interactions sociales et la persuasion.</p>"
+      },
+      "effects": [
+        {
+          "name": "Aura d'Aphrodite",
+          "icon": "icons/svg/aura.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.skills.seduction.bonus", "mode": 2, "value": "3", "priority": null },
+            { "key": "system.skills.baratin.bonus", "mode": 2, "value": "2", "priority": null },
+            { "key": "system.skills.empathie.bonus", "mode": 2, "value": "1", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Beauté d'Aphrodite",
+      "type": "advantage",
+      "img": "icons/svg/angel.svg",
+      "system": {
+        "cout": -1,
+        "description": "<p>Éphise possède une beauté héritée de la déesse Aphrodite elle-même. Ses traits sont d'une perfection surnaturelle qui inspire l'admiration et la confiance.</p>"
+      },
+      "effects": [
+        {
+          "name": "Beauté d'Aphrodite",
+          "icon": "icons/svg/angel.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.skills.representation.bonus", "mode": 2, "value": "2", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Rage d'Arès",
+      "type": "advantage",
+      "img": "icons/svg/combat.svg",
+      "system": {
+        "cout": -1,
+        "description": "<p>La fureur du dieu de la guerre coule dans les veines d'Éphise. En combat, une rage divine peut s'emparer de lui, décuplant sa férocité et sa puissance de frappe.</p>"
+      },
+      "effects": [
+        {
+          "name": "Rage d'Arès",
+          "icon": "icons/svg/combat.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.skills.combatMainNue.bonus", "mode": 2, "value": "2", "priority": null },
+            { "key": "system.skills.intimidation.bonus", "mode": 2, "value": "1", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Présence d'Aphrodite",
+      "type": "disadvantage",
+      "img": "icons/svg/eye.svg",
+      "system": {
+        "cout": 2,
+        "description": "<p>La présence divine d'Aphrodite qui habite Éphise attire inévitablement les regards et les convoitises. Impossible de passer inaperçu dans une foule, les jalousies et les désirs non sollicités compliquent sa vie quotidienne.</p>"
+      },
+      "effects": [
+        {
+          "name": "Présence d'Aphrodite",
+          "icon": "icons/svg/eye.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.skills.discretion.bonus", "mode": 2, "value": "-3", "priority": null },
+            { "key": "system.skills.dissimulation.bonus", "mode": 2, "value": "-2", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dette ++",
+      "type": "disadvantage",
+      "img": "icons/svg/downgrade.svg",
+      "system": {
+        "cout": 3,
+        "description": "<p>Éphise croule sous des dettes considérables contractées auprès de créanciers puissants. Cette pression financière limite ses ressources, ses possibilités d'achat, et l'expose à des représailles si les remboursements tardent.</p>"
+      },
+      "effects": [
+        {
+          "name": "Dette ++",
+          "icon": "icons/svg/downgrade.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.skills.marchandage.bonus", "mode": 2, "value": "-2", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Beauté divine",
+      "type": "blessing",
+      "img": "icons/svg/sun.svg",
+      "system": {
+        "effect": "-1 difficulté jets de charisme",
+        "description": "<p>Bénédiction accordée par Aphrodite. La grâce divine facilite tous les jets liés au charisme, réduisant la difficulté des interactions sociales.</p>"
+      },
+      "effects": [
+        {
+          "name": "Beauté divine",
+          "icon": "icons/svg/sun.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.abilities.cha.mod", "mode": 2, "value": "1", "priority": null }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Corps d'Arès",
+      "type": "blessing",
+      "img": "icons/svg/fire-shield.svg",
+      "system": {
+        "effect": "+2 CA (compris dans la base)",
+        "description": "<p>Bénédiction du dieu de la guerre. Le corps d'Éphise est renforcé par la vigueur divine d'Arès, lui octroyant une protection naturelle supplémentaire en combat.</p>"
+      },
+      "effects": [
+        {
+          "name": "Corps d'Arès",
+          "icon": "icons/svg/fire-shield.svg",
+          "transfer": true,
+          "disabled": false,
+          "changes": [
+            { "key": "system.ca.temp", "mode": 2, "value": "2", "priority": null }
+          ]
+        }
+      ]
+    }
+  ]
+}

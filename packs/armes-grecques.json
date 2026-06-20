@@ -1,0 +1,182 @@
+[
+  {
+    "name": "Xiphos",
+    "type": "weapon",
+    "img": "icons/svg/sword.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d6",
+      "critical": "19/x2",
+      "typeDamage": "Tranchant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Épée courte à double tranchant, arme de prédilection des hoplites grecs pour le combat rapproché. Sa lame en forme de feuille est idéale pour les frappes d'estoc et de taille dans la mêlée serrée.</p>"
+    }
+  },
+  {
+    "name": "Kopis",
+    "type": "weapon",
+    "img": "icons/svg/sword.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d8",
+      "critical": "18/x2",
+      "typeDamage": "Tranchant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Épée recourbée à un seul tranchant, redoutable arme de cavalerie. Sa lame incurvée vers l'avant concentre la force du coup, infligeant des blessures dévastatrices. Prisée des mercenaires et des cavaliers.</p>"
+    }
+  },
+  {
+    "name": "Dory",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d8",
+      "critical": "20/x3",
+      "typeDamage": "Perçant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Lance d'hoplite de 2 à 3 mètres, arme principale de la phalange grecque. Maniée à une main avec le bouclier, elle permet de frapper par-dessus le mur de boucliers. Pointe en bronze à une extrémité, contrepoids en fer à l'autre.</p>"
+    }
+  },
+  {
+    "name": "Sarissa",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": -1,
+      "damage": "1d10",
+      "critical": "20/x3",
+      "typeDamage": "Perçant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Longue pique macédonienne de 4 à 6 mètres, arme redoutable de la phalange. Requiert deux mains et une formation rigoureuse. Sa portée immense empêche l'ennemi d'approcher, mais elle est encombrante en mêlée.</p>"
+    }
+  },
+  {
+    "name": "Javeline",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d6",
+      "critical": "20/x2",
+      "typeDamage": "Perçant",
+      "portee": 10,
+      "hasPortee": true,
+      "munitions": 3,
+      "description": "<p>Javelot de lancer léger utilisé par les peltastes et les troupes légères. Arme polyvalente pouvant servir au corps à corps comme au lancer. Les soldats en portent généralement deux ou trois.</p>"
+    }
+  },
+  {
+    "name": "Dague",
+    "type": "weapon",
+    "img": "icons/svg/sword.svg",
+    "system": {
+      "attBonus": 1,
+      "damage": "1d4",
+      "critical": "19/x2",
+      "typeDamage": "Perçant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Petit poignard à lame fine, arme de dernier recours ou d'assassin. Facile à dissimuler sous les plis d'un chiton. Rapide et précise, elle trouve les failles des armures.</p>"
+    }
+  },
+  {
+    "name": "Labrys",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": -1,
+      "damage": "1d12",
+      "critical": "20/x3",
+      "typeDamage": "Tranchant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Double hache cérémonielle minoenne, symbole sacré de la déesse mère. Arme à deux mains d'une puissance dévastatrice, mais lourde et lente. Associée au culte du Minotaure et au palais de Cnossos.</p>"
+    }
+  },
+  {
+    "name": "Trident",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d8",
+      "critical": "20/x2",
+      "typeDamage": "Perçant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Arme à trois pointes associée au dieu Poséidon. Utilisée à l'origine par les pêcheurs, elle est aussi l'arme des gladiateurs rétiaires. Ses trois pointes rendent les blessures particulièrement difficiles à soigner.</p>"
+    }
+  },
+  {
+    "name": "Massue",
+    "type": "weapon",
+    "img": "icons/svg/combat.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d8",
+      "critical": "20/x2",
+      "typeDamage": "Contondant",
+      "portee": 0,
+      "hasPortee": false,
+      "munitions": 0,
+      "description": "<p>Gourdin en bois d'olivier noueux, l'arme emblématique d'Héraclès. Simple mais efficace, elle broie les os et défonce les armures. Arme du peuple et des héros mythiques.</p>"
+    }
+  },
+  {
+    "name": "Arc court",
+    "type": "weapon",
+    "img": "icons/svg/target.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d6",
+      "critical": "20/x3",
+      "typeDamage": "Perçant",
+      "portee": 15,
+      "hasPortee": true,
+      "munitions": 20,
+      "description": "<p>Arc simple en bois d'if ou de corne, arme des chasseurs et des éclaireurs. Plus maniable que l'arc composite, il est idéal pour le tir rapide à courte portée. Arme favorite d'Artémis.</p>"
+    }
+  },
+  {
+    "name": "Arc composite",
+    "type": "weapon",
+    "img": "icons/svg/target.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d8",
+      "critical": "20/x3",
+      "typeDamage": "Perçant",
+      "portee": 25,
+      "hasPortee": true,
+      "munitions": 20,
+      "description": "<p>Arc puissant fabriqué de couches de bois, corne et tendon. Originaire des peuples d'Orient, il offre une portée et une puissance supérieures à l'arc simple. Arme d'élite nécessitant un entraînement rigoureux.</p>"
+    }
+  },
+  {
+    "name": "Fronde",
+    "type": "weapon",
+    "img": "icons/svg/target.svg",
+    "system": {
+      "attBonus": 0,
+      "damage": "1d4",
+      "critical": "20/x2",
+      "typeDamage": "Contondant",
+      "portee": 15,
+      "hasPortee": true,
+      "munitions": 30,
+      "description": "<p>Lanière de cuir permettant de projeter des pierres ou des balles de plomb avec une force létale. Arme des bergers et des troupes légères, les frondeurs de Rhodes et des Baléares sont renommés pour leur précision mortelle.</p>"
+    }
+  }
+]

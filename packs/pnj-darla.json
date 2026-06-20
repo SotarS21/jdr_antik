@@ -1,0 +1,24 @@
+{
+  "name": "Darla",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Vieille dame croisée au marché, agressée par des voyous alors qu'elle distribuait de la nourriture. Dégage une aura divine que certains perçoivent parfois. Pourrait être un avatar d'<strong>Hécate</strong>, déesse titanide des carrefours, de la magie, des choix et de la lune.</p>",
+    "taille": "1m55",
+    "type": "??? - Avatar divin ?",
+    "pv": { "value": 15, "max": 15 },
+    "abilities": {
+      "for": { "value": 8, "mod": -1 },
+      "dex": { "value": 10, "mod": 0 },
+      "con": { "value": 10, "mod": 0 },
+      "int": { "value": 20, "mod": 5 },
+      "ast": { "value": 22, "mod": 6 },
+      "cha": { "value": 18, "mod": 4 }
+    },
+    "ca": { "value": 10 },
+    "initiative": { "value": 6 },
+    "attaque": { "value": 0 },
+    "notes": "<p><strong>Identité secrète :</strong> Probablement Hécate, déesse des carrefours, de la magie, des choix et de la lune.</p><p><strong>Aura :</strong> Dégage une aura divine perceptible par certains — repérée parfois comme Hécate.</p><p><strong>Comportement :</strong> Bienveillante, nourrit les démunis. A offert un repas aux PJ. A dit : <em>\"Aux dieux et à ceux qui pensent aux petits / à la fin de cette guerre\"</em>.</p><p><strong>Attention :</strong> Ses statistiques apparentes cachent sans doute sa vraie puissance. Ne pas sous-estimer.</p>"
+  },
+  "items": []
+}

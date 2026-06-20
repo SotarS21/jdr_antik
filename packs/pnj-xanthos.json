@@ -1,0 +1,46 @@
+{
+  "name": "Général Xanthos",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Général au service d'Agamemnon. Homme mystérieux qui commande la légion de la chouette. Distribue les oboles aux recrues avant de disparaître dans un sifflement.</p>",
+    "taille": "1m85",
+    "type": "Humain - Officier",
+    "pv": { "value": 55, "max": 55 },
+    "abilities": {
+      "for": { "value": 16, "mod": 3 },
+      "dex": { "value": 14, "mod": 2 },
+      "con": { "value": 16, "mod": 3 },
+      "int": { "value": 15, "mod": 2 },
+      "ast": { "value": 14, "mod": 2 },
+      "cha": { "value": 13, "mod": 1 }
+    },
+    "ca": { "value": 18 },
+    "initiative": { "value": 4 },
+    "attaque": { "value": 8 },
+    "notes": "<p><strong>Rôle :</strong> Commandant de la légion de la chouette (temple de Déméter).</p><p><strong>Comportement :</strong> Apparaît et disparaît sans prévenir. Donne des ordres clairs et concis. Ne tolère pas la désobéissance.</p><p><strong>Lien avec les PJ :</strong> A donné l'obole de la chouette au groupe.</p>"
+  },
+  "items": [
+    {
+      "name": "Épée longue",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 11,
+        "damage": "1d8+3",
+        "critical": "19/x2",
+        "typeDamage": "Tranchant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Armure de bronze",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "Armure de plaques en bronze, gravée de motifs de chouettes." }
+    }
+  ]
+}

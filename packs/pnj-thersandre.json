@@ -1,0 +1,40 @@
+{
+  "name": "Thersandre",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Se présente comme le véritable roi de Thèbes. Prétend que son cousin Laodamas a dupé les soldats pour usurper le pouvoir. Organise l'offensive en trois fronts pour reprendre la cité.</p>",
+    "taille": "1m78",
+    "type": "Humain - Prétendant au trône",
+    "pv": { "value": 38, "max": 38 },
+    "abilities": {
+      "for": { "value": 14, "mod": 2 },
+      "dex": { "value": 12, "mod": 1 },
+      "con": { "value": 13, "mod": 1 },
+      "int": { "value": 16, "mod": 3 },
+      "ast": { "value": 14, "mod": 2 },
+      "cha": { "value": 17, "mod": 3 }
+    },
+    "ca": { "value": 16 },
+    "initiative": { "value": 3 },
+    "attaque": { "value": 6 },
+    "notes": "<p><strong>Rôle :</strong> Meneur de l'assaut sur Thèbes, se dit roi légitime.</p><p><strong>Plan d'attaque :</strong> 3 places fortes à prendre. L'une d'elles cache Laodamas et le sceptre de régence.</p><p><strong>Répartition :</strong></p><ul><li>Chouette (Xanthos) → Temple de Déméter</li><li>Cheval (Ménélas) → Au temps de Poséidon</li><li>Lyon (Agamemnon) → Reste sur place</li></ul><p><strong>Fiabilité :</strong> Ses motivations semblent sincères mais à vérifier.</p>"
+  },
+  "items": [
+    {
+      "name": "Épée royale",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 8,
+        "damage": "1d8+3",
+        "critical": "19/x2",
+        "typeDamage": "Tranchant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    }
+  ]
+}

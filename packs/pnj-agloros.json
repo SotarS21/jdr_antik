@@ -1,0 +1,40 @@
+{
+  "name": "Agloros",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Représentante de Ménéster et des intérêts d'Athènes au sein de l'alliance. Porte le symbole d'Athéna. Un étrange reflet argenté émane d'elle par moments. Diplomate aguerrie, elle cache ses véritables motivations derrière une façade polie.</p>",
+    "taille": "1m70",
+    "type": "Humain - Diplomate",
+    "pv": { "value": 28, "max": 28 },
+    "abilities": {
+      "for": { "value": 10, "mod": 0 },
+      "dex": { "value": 12, "mod": 1 },
+      "con": { "value": 11, "mod": 0 },
+      "int": { "value": 17, "mod": 3 },
+      "ast": { "value": 16, "mod": 3 },
+      "cha": { "value": 18, "mod": 4 }
+    },
+    "ca": { "value": 12 },
+    "initiative": { "value": 4 },
+    "attaque": { "value": 2 },
+    "notes": "<p><strong>Rôle :</strong> Émissaire d'Athènes dans l'alliance.</p><p><strong>Comportement :</strong> Polie mais évasive. <em>Elle ment</em> quand elle parle des bienfaits de l'alliance — lui reposer la question plus tard. N'apprécie pas qu'on parle des problèmes du peuple en public.</p><p><strong>Reflet argenté :</strong> Lien possible avec Athéna ? À surveiller.</p><p><strong>Secret :</strong> Ses motivations réelles restent inconnues.</p>"
+  },
+  "items": [
+    {
+      "name": "Dague cérémonielle",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 3,
+        "damage": "1d4+1",
+        "critical": "19/x2",
+        "typeDamage": "Perforant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    }
+  ]
+}

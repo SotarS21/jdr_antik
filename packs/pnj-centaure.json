@@ -1,0 +1,70 @@
+{
+  "name": "Centaure sauvage",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Mi-homme mi-cheval, ce centaure vit dans les forêts et collines loin des cités. Farouche et territorial, il peut être raisonné si on fait preuve de respect envers la nature et les anciens dieux.</p>",
+    "taille": "2m20",
+    "type": "Créature mythologique",
+    "pv": { "value": 40, "max": 40 },
+    "abilities": {
+      "for": { "value": 20, "mod": 5 },
+      "dex": { "value": 16, "mod": 3 },
+      "con": { "value": 18, "mod": 4 },
+      "int": { "value": 10, "mod": 0 },
+      "ast": { "value": 14, "mod": 2 },
+      "cha": { "value": 8, "mod": -1 }
+    },
+    "ca": { "value": 16 },
+    "initiative": { "value": 5 },
+    "attaque": { "value": 9 },
+    "notes": "<p><strong>Capacités spéciales :</strong></p><ul><li><strong>Charge :</strong> Si le centaure se déplace d'au moins 10m en ligne droite, son attaque de lance inflige +1d6 dégâts supplémentaires.</li><li><strong>Piétinement :</strong> Peut attaquer avec ses sabots en bonus (1d6+5 contondant) contre un ennemi au sol.</li><li><strong>Vitesse :</strong> Déplacement double d'un humain normal.</li></ul><p><strong>Comportement :</strong> Territorial. Attaque si on pénètre dans son domaine sans permission. Peut être apaisé par un jet de CHA ou un tribut de nourriture/vin.</p>"
+  },
+  "items": [
+    {
+      "name": "Lance de bois durci",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 9,
+        "damage": "1d8+5",
+        "critical": "20/x3",
+        "typeDamage": "Perforant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Sabots",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 9,
+        "damage": "1d6+5",
+        "critical": "20/x2",
+        "typeDamage": "Contondant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": "Attaque bonus contre un ennemi au sol."
+      }
+    },
+    {
+      "name": "Arc de chasse",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 7,
+        "damage": "1d8+3",
+        "critical": "20/x3",
+        "typeDamage": "Pénétrant",
+        "portee": 20,
+        "hasPortee": true,
+        "munitions": 12,
+        "description": ""
+      }
+    }
+  ]
+}

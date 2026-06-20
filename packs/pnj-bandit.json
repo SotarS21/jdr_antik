@@ -1,0 +1,55 @@
+{
+  "name": "Bandit de grand chemin",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Brigand profitant du chaos de la guerre pour détrousser voyageurs et réfugiés sur les routes entre les cités.</p>",
+    "taille": "1m72",
+    "type": "Humain - Bandit",
+    "pv": { "value": 12, "max": 12 },
+    "abilities": {
+      "for": { "value": 12, "mod": 1 },
+      "dex": { "value": 14, "mod": 2 },
+      "con": { "value": 11, "mod": 0 },
+      "int": { "value": 10, "mod": 0 },
+      "ast": { "value": 12, "mod": 1 },
+      "cha": { "value": 8, "mod": -1 }
+    },
+    "ca": { "value": 13 },
+    "initiative": { "value": 3 },
+    "attaque": { "value": 3 },
+    "notes": "<p><strong>Tactique :</strong> Embuscade, supériorité numérique. Fuit dès que le rapport de force tourne. Ne se bat jamais seul.</p>"
+  },
+  "items": [
+    {
+      "name": "Dague rouillée",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 3,
+        "damage": "1d4+1",
+        "critical": "19/x2",
+        "typeDamage": "Perforant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Fronde",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 4,
+        "damage": "1d4+1",
+        "critical": "20/x2",
+        "typeDamage": "Contondant",
+        "portee": 15,
+        "hasPortee": true,
+        "munitions": 10,
+        "description": ""
+      }
+    }
+  ]
+}

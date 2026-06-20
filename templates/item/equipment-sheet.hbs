@@ -1,0 +1,79 @@
+<form class="antique sheet item equipment" autocomplete="off">
+  <header class="sheet-header">
+    <img class="item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <h1 class="item-name"><input name="name" type="text" value="{{item.name}}" /></h1>
+  </header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">{{localize "ANTIQUE.Tab.Description"}}</a>
+    <a class="item" data-tab="effects">{{localize "ANTIQUE.Tab.Effects"}} ({{effects.length}})</a>
+  </nav>
+
+  <section class="sheet-body">
+
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.Quantity"}}</label>
+        <input type="number" name="system.quantity" value="{{system.quantity}}" />
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="system.consumable" {{#if system.consumable}}checked{{/if}} />
+          {{localize "ANTIQUE.Item.Consumable"}}
+        </label>
+      </div>
+      <div class="form-group description">
+        <label>{{localize "ANTIQUE.Description"}}</label>
+        {{editor system.description target="system.description" button=true editable=isEditable}}
+      </div>
+      {{#if isGM}}
+      <div class="gm-notes-section">
+        <h3><i class="fas fa-eye-slash"></i> {{localize "ANTIQUE.GmNotes.Title"}}</h3>
+        <div class="gm-notes-editor">
+          {{editor system.gmNotes target="system.gmNotes" button=true editable=isEditable}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+
+    {{!-- Effects Tab --}}
+    <div class="tab" data-group="primary" data-tab="effects">
+      <div class="effects-header">
+        <h3>{{localize "ANTIQUE.Effects.Title"}}</h3>
+        <a class="effect-create"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Effects.Add"}}</a>
+      </div>
+
+      {{#if hasEffects}}
+      <ol class="effects-list">
+        {{#each effects as |effect|}}
+        <li class="effect-row {{#if effect.disabled}}disabled{{/if}}" data-effect-id="{{effect.id}}">
+          <img class="effect-icon" src="{{effect.icon}}" width="24" height="24" />
+          <div class="effect-info">
+            <span class="effect-name">{{effect.name}}</span>
+            <span class="effect-changes-list">
+              {{#each effect.changes as |change|}}
+              <span class="effect-change-badge advantage">{{change.label}}</span>
+              {{/each}}
+              {{#unless effect.changesCount}}
+              <span class="effect-change-badge empty">Aucune modification</span>
+              {{/unless}}
+            </span>
+          </div>
+          <div class="effect-controls">
+            <a class="effect-toggle" title="{{#if effect.disabled}}{{localize 'ANTIQUE.Effects.Disabled'}}{{else}}{{localize 'ANTIQUE.Effects.Active'}}{{/if}}">
+              <i class="fas {{#if effect.disabled}}fa-times-circle{{else}}fa-check-circle{{/if}}"></i>
+            </a>
+            <a class="effect-edit" title="Edit"><i class="fas fa-edit"></i></a>
+            <a class="effect-delete" title="Delete"><i class="fas fa-trash"></i></a>
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+      {{else}}
+      <p class="effects-empty">{{localize "ANTIQUE.Effects.NoEffects"}}</p>
+      {{/if}}
+    </div>
+
+  </section>
+</form>

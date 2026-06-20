@@ -1,0 +1,109 @@
+{
+  "date": "2026-04-26T19:39:47.229Z",
+  "result": {
+    "added": 14,
+    "already": 41,
+    "skipped": 39,
+    "errors": 0
+  },
+  "effectsAdded": {
+    "aAdv000000000001": [
+      {
+        "key": "system.attackBonuses.armeBlanche.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000009": [
+      {
+        "key": "system.skills.marchandage.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000010": [
+      {
+        "key": "system.skills.discretion.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000035": [
+      {
+        "key": "system.attackBonuses.armeBlanche.bonus",
+        "mode": 2,
+        "value": 3
+      }
+    ],
+    "aAdv000000000039": [
+      {
+        "key": "system.skills.psychologie.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000071": [
+      {
+        "key": "system.skills.seduction.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000075": [
+      {
+        "key": "system.skills.escamotage.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000024": [
+      {
+        "key": "system.skills.dressage.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000025": [
+      {
+        "key": "system.attackBonuses.armeBlanche.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000026": [
+      {
+        "key": "system.skills.artisanatFor.bonus",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000068": [
+      {
+        "key": "system.attackBonuses.armeBlanche.bonus",
+        "mode": 2,
+        "value": 3
+      }
+    ],
+    "aAdv000000000080": [
+      {
+        "key": "system.saves.robustesse.base",
+        "mode": 2,
+        "value": 2
+      }
+    ],
+    "aAdv000000000064": [
+      {
+        "key": "system.attackBonuses.armeADistance.bonus",
+        "mode": 2,
+        "value": 3
+      }
+    ],
+    "aAdv000000000072": [
+      {
+        "key": "system.attributes.attackRoll.bonus",
+        "mode": 2,
+        "value": -2
+      }
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "Actor": {
+    "types": ["character", "npc", "deity"],
+    "character": {
+      "templates": []
+    },
+    "npc": {
+      "templates": []
+    },
+    "deity": {
+      "templates": []
+    }
+  },
+  "Item": {
+    "types": ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "effect"],
+    "weapon": {
+      "templates": []
+    },
+    "equipment": {
+      "templates": []
+    },
+    "advantage": {
+      "templates": []
+    },
+    "disadvantage": {
+      "templates": []
+    },
+    "blessing": {
+      "templates": []
+    },
+    "spell": {
+      "templates": []
+    },
+    "effect": {
+      "templates": []
+    }
+  }
+}

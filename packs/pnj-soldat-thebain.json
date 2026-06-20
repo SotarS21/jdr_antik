@@ -1,0 +1,61 @@
+{
+  "name": "Soldat thébain",
+  "type": "npc",
+  "img": "icons/svg/mystery-man.svg",
+  "system": {
+    "description": "<p>Soldat de garnison défendant les fortifications de Thèbes sous les ordres de Laodamas. Entraîné mais démoralisé par les mois de siège.</p>",
+    "taille": "1m75",
+    "type": "Humain - Soldat",
+    "pv": { "value": 18, "max": 18 },
+    "abilities": {
+      "for": { "value": 14, "mod": 2 },
+      "dex": { "value": 12, "mod": 1 },
+      "con": { "value": 13, "mod": 1 },
+      "int": { "value": 10, "mod": 0 },
+      "ast": { "value": 10, "mod": 0 },
+      "cha": { "value": 9, "mod": -1 }
+    },
+    "ca": { "value": 15 },
+    "initiative": { "value": 1 },
+    "attaque": { "value": 4 },
+    "notes": "<p><strong>Tactique :</strong> Combat en formation. Essaie de rester groupé avec d'autres soldats. Fuit si isolé et blessé sous 50% PV.</p>"
+  },
+  "items": [
+    {
+      "name": "Lance",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 4,
+        "damage": "1d8+2",
+        "critical": "20/x3",
+        "typeDamage": "Perforant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Glaive court",
+      "type": "weapon",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "attBonus": 4,
+        "damage": "1d6+2",
+        "critical": "19/x2",
+        "typeDamage": "Tranchant",
+        "portee": 0,
+        "hasPortee": false,
+        "munitions": 0,
+        "description": ""
+      }
+    },
+    {
+      "name": "Bouclier et armure de cuir",
+      "type": "equipment",
+      "img": "icons/svg/item-bag.svg",
+      "system": { "quantity": 1, "description": "Armure légère en cuir avec bouclier rond en bois." }
+    }
+  ]
+}
