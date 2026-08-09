@@ -111,9 +111,9 @@ ANTIQUE.equipmentSlots = {
 };
 
 /**
- * Categories shown in the character sheet's Apothicaire tab (sac d'apothicaire).
- * Any "equipment" item tagged with one of these keys (system.apothCategory)
- * appears grouped there instead of only in the generic Inventory list.
+ * Categories shown in the character sheet's Ingrédients tab. Any "equipment"
+ * item tagged with one of these keys (system.apothCategory) appears grouped
+ * there instead of in the generic Inventory list.
  */
 ANTIQUE.apothCategories = {
   ingredientCommun:    { label: "ANTIQUE.Apoth.IngredientCommun" },

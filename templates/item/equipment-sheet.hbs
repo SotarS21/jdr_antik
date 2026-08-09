@@ -6,6 +6,10 @@
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "ANTIQUE.Tab.Description"}}</a>
+    <a class="item" data-tab="details">{{localize "ANTIQUE.Tab.Details"}}</a>
+    {{#if system.isIngredientBag}}
+    <a class="item" data-tab="ingredients">{{localize "ANTIQUE.Tab.Ingredients"}}</a>
+    {{/if}}
     <a class="item" data-tab="effects">{{localize "ANTIQUE.Tab.Effects"}} ({{effects.length}})</a>
   </nav>
 
@@ -13,6 +17,22 @@
 
     {{!-- Description Tab --}}
     <div class="tab" data-group="primary" data-tab="description">
+      <div class="form-group description">
+        <label>{{localize "ANTIQUE.Description"}}</label>
+        {{richEditor "system.description" system.description editable=isEditable}}
+      </div>
+      {{#if isGM}}
+      <div class="gm-notes-section">
+        <h3><i class="fas fa-eye-slash"></i> {{localize "ANTIQUE.GmNotes.Title"}}</h3>
+        <div class="gm-notes-editor">
+          {{richEditor "system.gmNotes" system.gmNotes editable=isEditable}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+
+    {{!-- Details Tab --}}
+    <div class="tab" data-group="primary" data-tab="details">
       <div class="form-group">
         <label>{{localize "ANTIQUE.Equipment.Quantity"}}</label>
         <input type="number" name="system.quantity" value="{{system.quantity}}" />
@@ -44,6 +64,7 @@
         </label>
       </div>
       {{/if}}
+      {{#unless system.isIngredientBag}}
       <div class="form-group">
         <label>{{localize "ANTIQUE.Equipment.CaBonus"}}</label>
         <input type="number" name="system.caBonus" value="{{system.caBonus}}" title="{{localize 'ANTIQUE.Equipment.CaBonusHint'}}" />
@@ -78,19 +99,34 @@
         <input type="text" name="system.apothType" value="{{system.apothType}}" title="{{localize 'ANTIQUE.Equipment.ApothTypeHint'}}" />
       </div>
       {{/if}}
-      <div class="form-group description">
-        <label>{{localize "ANTIQUE.Description"}}</label>
-        {{richEditor "system.description" system.description editable=isEditable}}
+      {{/unless}}
+      <div class="form-group">
+        <label title="{{localize 'ANTIQUE.Equipment.IsIngredientBagHint'}}">
+          <input type="checkbox" name="system.isIngredientBag" {{#if system.isIngredientBag}}checked{{/if}} />
+          {{localize "ANTIQUE.Equipment.IsIngredientBag"}}
+        </label>
       </div>
-      {{#if isGM}}
-      <div class="gm-notes-section">
-        <h3><i class="fas fa-eye-slash"></i> {{localize "ANTIQUE.GmNotes.Title"}}</h3>
-        <div class="gm-notes-editor">
-          {{richEditor "system.gmNotes" system.gmNotes editable=isEditable}}
-        </div>
+    </div>
+
+    {{!-- Ingredients Tab (only for an item marked as an Ingredient Bag) --}}
+    {{#if system.isIngredientBag}}
+    <div class="tab" data-group="primary" data-tab="ingredients">
+      {{#if possessedIngredientSections.length}}
+      {{#each possessedIngredientSections as |section|}}
+      <div class="ingredient-bag-category">
+        <span class="ingredient-bag-category-label">{{section.label}}</span>
+        <ul class="ingredient-bag-list">
+          {{#each section.items as |ing|}}
+          <li><img src="{{ing.img}}" width="16" height="16" /> {{ing.name}} <span class="ingredient-bag-qty">×{{ing.system.quantity}}</span></li>
+          {{/each}}
+        </ul>
       </div>
+      {{/each}}
+      {{else}}
+      <p class="ingredient-bag-empty">{{localize "ANTIQUE.Apoth.Empty"}}</p>
       {{/if}}
     </div>
+    {{/if}}
 
     {{!-- Effects Tab --}}
     <div class="tab" data-group="primary" data-tab="effects">

@@ -353,6 +353,7 @@
               <td class="equip-name-cell">
                 <a class="equip-toggle"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
                 {{#ifEquals equip.kind "weapon"}}<i class="fas fa-khanda inventory-kind-icon" title="{{localize 'ANTIQUE.Combat.Weapons'}}"></i>{{/ifEquals}}
+                {{#if equip.isIngredientBag}}<i class="fas fa-mortar-pestle inventory-kind-icon" title="{{localize 'ANTIQUE.Equipment.IsIngredientBag'}}"></i>{{/if}}
                 <span class="equip-name">{{equip.name}}</span>
               </td>
               <td class="quantity-cell">

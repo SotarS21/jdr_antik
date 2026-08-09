@@ -163,10 +163,12 @@
   "ANTIQUE.Equipment.Unequip": "Unequip",
   "ANTIQUE.Equipment.ChooseSlot": "Choose a slot to equip",
   "ANTIQUE.Equipment.DropWrongType": "This item cannot be equipped in that slot",
-  "ANTIQUE.Equipment.ApothCategory": "Category (Apothecary Bag)",
+  "ANTIQUE.Equipment.ApothCategory": "Ingredient category",
   "ANTIQUE.Equipment.ApothType": "Type (ingredient nature)",
   "ANTIQUE.Equipment.ApothTypeHint": "E.g. Plant, Mineral, Liquid, Animal extract...",
   "ANTIQUE.Equipment.NoApothCategory": "None (regular item)",
+  "ANTIQUE.Equipment.IsIngredientBag": "Is an Ingredient Bag",
+  "ANTIQUE.Equipment.IsIngredientBagHint": "This item shows, in its own Ingredients tab, a live list of every ingredient currently owned by the character (quantity > 0).",
 
   "ANTIQUE.Apoth.IngredientCommun": "Common Ingredients",
   "ANTIQUE.Apoth.IngredientPeuCommun": "Uncommon Ingredients",
@@ -286,6 +288,7 @@
   "TYPES.Item.curse": "Curse",
 
   "ANTIQUE.Tab.Description": "Description",
+  "ANTIQUE.Tab.Details": "Details",
   "ANTIQUE.Tab.Ingredients": "Ingredients",
   "ANTIQUE.Ingredients.Title": "Required Ingredients",
   "ANTIQUE.Ingredients.Add": "Add an ingredient",

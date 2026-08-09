@@ -12,6 +12,7 @@ export class AntiqueEquipment extends foundry.abstract.TypeDataModel {
       price: new fields.StringField({ initial: "", blank: true }),
       apothCategory: new fields.StringField({ initial: "", blank: true }),
       apothType: new fields.StringField({ initial: "", blank: true }),
+      isIngredientBag: new fields.BooleanField({ initial: false }),
       description: new fields.HTMLField({ initial: "" }),
       gmNotes: new fields.HTMLField({ initial: "" })
     };

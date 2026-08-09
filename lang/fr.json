@@ -163,10 +163,12 @@
   "ANTIQUE.Equipment.Unequip": "Retirer",
   "ANTIQUE.Equipment.ChooseSlot": "Choisir un emplacement pour équiper",
   "ANTIQUE.Equipment.DropWrongType": "Cet objet ne peut pas être équipé dans cet emplacement",
-  "ANTIQUE.Equipment.ApothCategory": "Catégorie (Sac d'Apothicaire)",
+  "ANTIQUE.Equipment.ApothCategory": "Catégorie d'ingrédient",
   "ANTIQUE.Equipment.ApothType": "Type (nature de l'ingrédient)",
   "ANTIQUE.Equipment.ApothTypeHint": "Ex. Plante, Minéral, Liquide, Extrait animal...",
   "ANTIQUE.Equipment.NoApothCategory": "Aucune (objet normal)",
+  "ANTIQUE.Equipment.IsIngredientBag": "Est une Besace d'ingrédients",
+  "ANTIQUE.Equipment.IsIngredientBagHint": "Cet objet affiche, dans son propre onglet Ingrédients, la liste en temps réel de tous les ingrédients actuellement possédés par le personnage (quantité > 0).",
 
   "ANTIQUE.Apoth.IngredientCommun": "Ingrédients Communs",
   "ANTIQUE.Apoth.IngredientPeuCommun": "Ingrédients Peu Communs",
@@ -286,6 +288,7 @@
   "TYPES.Item.curse": "Malédiction",
 
   "ANTIQUE.Tab.Description": "Description",
+  "ANTIQUE.Tab.Details": "Détails",
   "ANTIQUE.Tab.Ingredients": "Ingrédients",
   "ANTIQUE.Ingredients.Title": "Ingrédients nécessaires",
   "ANTIQUE.Ingredients.Add": "Ajouter un ingrédient",

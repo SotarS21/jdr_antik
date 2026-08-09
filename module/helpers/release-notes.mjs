@@ -5,6 +5,16 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.15": {
+    title: "Version 0.6.15 — Besace d'ingrédients",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : les ingrédients ne s'affichent plus comme objets séparés dans l'onglet Inventaire (ils restent listés dans l'onglet « Ingrédients »).</li>
+        <li><strong>Nouveau</strong> : un objet d'équipement peut être marqué « Est une Besace d'ingrédients » — sa propre fiche affiche alors un onglet « Ingrédients » listant en temps réel tout ce que le personnage possède actuellement (quantité > 0), regroupé par catégorie.</li>
+        <li><strong>Nouveau</strong> : la fiche d'un objet Équipement a maintenant un onglet « Détails » qui regroupe quantité, prix, consommable, emplacement, équipé, bonus CA, compétence liée et besace d'ingrédients.</li>
+        <li><strong>Modifié</strong> : le champ « Catégorie (Sac d'Apothicaire) » s'appelle désormais « Catégorie d'ingrédient ».</li>
+      </ul>`
+  },
   "0.6.14": {
     title: "Version 0.6.14 — Gabarit gris par défaut",
     html: `

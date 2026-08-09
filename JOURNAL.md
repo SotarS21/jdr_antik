@@ -2,6 +2,28 @@
 
 ---
 
+## Session du 9 août 2026 — Besace d'ingrédients (v0.6.14 → v0.6.15)
+
+Un objet d'équipement tagué `system.apothCategory` (un ingrédient) apparaissait à la fois dans l'onglet Inventaire et dans l'onglet dédié « Ingrédients » (ex-Apothicaire). Premier essai : masquer les ingrédients de l'Inventaire uniquement pour un Praticien de la magie, avec une case à cocher pour les réafficher (`system.showIngredientsInInventory`) — **abandonné en cours de session**, remplacé par l'approche ci-dessous.
+
+Approche retenue : les ingrédients ne s'affichent plus jamais comme lignes séparées dans l'Inventaire (`inventoryItems` dans `actor-sheet.mjs` exclut désormais tout equipment ayant un `apothCategory`, sans condition de Praticien). À la place, un objet d'équipement particulier peut être marqué « Est une Besace d'ingrédients » (nouveau champ `system.isIngredientBag` sur `AntiqueEquipment`, checkbox sur `equipment-sheet.hbs`) : dans l'Inventaire, ouvrir le détail de cet objet (même mécanisme de dépli que la description) affiche la liste en temps réel de tous les ingrédients actuellement possédés, regroupés par catégorie (Communs/Peu Communs/Rares/Potions via `context.possessedIngredientSections`, filtré `quantity > 0`, recalculé à chaque `getData()`). L'onglet « Ingrédients » n'est pas affecté — il continue de tout lister, y compris à quantité 0.
+
+**Bug corrigé en cours de session** : le filtre d'exclusion de l'Inventaire (`!i.system.apothCategory`) excluait aussi la besace elle-même dès qu'elle portait un `apothCategory` (ex. créée depuis le bouton "+" d'une section de l'onglet Ingrédients) — elle disparaissait purement et simplement de l'Inventaire. Condition corrigée en `!i.system.apothCategory || i.system.isIngredientBag` : un objet marqué besace reste toujours visible dans l'Inventaire, même s'il a par ailleurs une catégorie d'ingrédient.
+
+### Onglet "Ingrédients" déplacé sur la fiche de la Besace elle-même
+Revu suite à retour utilisateur : l'affichage des ingrédients possédés ne se fait plus en dépliant la ligne de la besace dans l'Inventaire de la fiche perso — retiré de `character-sheet.hbs`/`actor-sheet.mjs` (`context.possessedIngredientSections` n'existe plus côté acteur). À la place, cocher "Est une Besace d'ingrédients" sur la fiche de l'objet Équipement lui-même (`equipment-sheet.hbs`) fait apparaître un onglet "Ingrédients" dédié sur **cette fiche d'objet**, qui liste en temps réel (regroupé par catégorie) tout ce que l'acteur parent (`this.item.actor`) possède actuellement en quantité > 0 (`item-sheet.mjs`, `_prepareContext`). N'affiche rien pour un objet non possédé par un acteur (compendium).
+
+Au passage, suppression de la mention obsolète "(Sac d'Apothicaire)" dans le libellé du champ `ANTIQUE.Equipment.ApothCategory` (devenu simplement "Catégorie d'ingrédient"), et nettoyage du commentaire correspondant dans `config.mjs`, qui référençait encore l'ancien nom de l'onglet avant son renommage en "Ingrédients" (v0.6.12).
+
+Une besace ne peut pas être elle-même un ingrédient : quand `system.isIngredientBag` est coché, les champs Bonus CA, Compétence liée (+ son bonus) et Catégorie d'ingrédient (+ Type) sont masqués sur `equipment-sheet.hbs` (`{{#unless system.isIngredientBag}}`). Pour que ça reste vrai même si une valeur résiduelle traîne dans `system.apothCategory` (ex. objet basculé en besace après coup), le filtre `apothItems` de `actor-sheet.mjs` (source de l'onglet Ingrédients de la fiche perso) exclut désormais explicitement `i.system.isIngredientBag`.
+
+### Onglet "Détails" sur la fiche d'objet Équipement
+La fiche d'objet Équipement n'avait que Description/Effets, avec tous les champs (quantité, prix, consommable, emplacement, équipé, bonus CA, compétence liée, catégorie/type d'ingrédient, besace) entassés dans l'onglet Description. Nouvel onglet "Détails" (`ANTIQUE.Tab.Details`) qui regroupe tous ces champs ; l'onglet Description ne contient plus que le texte riche (+ notes MJ). Purement une réorganisation de template (`equipment-sheet.hbs`) — aucun champ de données déplacé ou renommé, le mécanisme générique d'activation d'onglet (`item-sheet.mjs`, basé sur `data-tab`) n'a pas eu besoin d'être modifié.
+
+**Fichiers** : `module/data-models/items/item-equipment.mjs`, `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `templates/item/equipment-sheet.hbs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`. (`module/data-models/actor-character.mjs` : ajout puis retrait de `showIngredientsInInventory`, pas de trace résiduelle.)
+
+---
+
 ## Session du 8 août 2026 — Ingrédients de sort, audit rafraîchissement complet, remplissage Antalios, sorts à zone (v0.6.3 → v0.6.14)
 
 ### Contexte

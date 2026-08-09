@@ -150,10 +150,25 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
 
+    // --- Ingredients (equipment tagged with an apothCategory), shared by the
+    // "Ingrédients" tab and the Ingrédients tab of a Besace d'ingrédients item ---
+    const apothItems = this.actor.items
+      .filter(i => i.type === "equipment" && i.system.apothCategory && !i.system.isIngredientBag)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(i => ({ id: i.id, name: i.name, img: i.img, system: i.system }));
+
     // --- Unified inventory list (weapons + equipment) shown in the Inventory tab ---
+    // Ingredients (equipment tagged with an apothCategory) already have their own
+    // "Ingrédients" tab and don't get a standalone row here — they're surfaced live
+    // inside the dedicated Ingredients tab of whichever equipment item is flagged
+    // as the Besace d'ingrédients (isIngredientBag, see item-sheet.mjs). That flagged
+    // item itself must still show up here even if it also carries an apothCategory,
+    // otherwise it has nowhere to be equipped/opened from.
     context.inventoryItems = [
       ...this.actor.items.filter(i => i.type === "weapon").map(i => ({ item: i, kind: "weapon" })),
-      ...this.actor.items.filter(i => i.type === "equipment").map(i => ({ item: i, kind: "equipment" }))
+      ...this.actor.items
+        .filter(i => i.type === "equipment" && (!i.system.apothCategory || i.system.isIngredientBag))
+        .map(i => ({ item: i, kind: "equipment" }))
     ]
       .sort((a, b) => a.item.name.localeCompare(b.item.name))
       .map(({ item, kind }) => {
@@ -165,7 +180,8 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
           img: item.img,
           system: item.system,
           hasSlot: !!slotCfg,
-          slotLabel: slotCfg ? game.i18n.localize(slotCfg.label) : ""
+          slotLabel: slotCfg ? game.i18n.localize(slotCfg.label) : "",
+          isIngredientBag: kind === "equipment" && !!item.system.isIngredientBag
         };
       });
 
@@ -191,10 +207,6 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     // --- Apothicaire tab: equipment items tagged with an apothCategory ---
-    const apothItems = this.actor.items
-      .filter(i => i.type === "equipment" && i.system.apothCategory)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map(i => ({ id: i.id, name: i.name, img: i.img, system: i.system }));
     context.apothSections = Object.entries(CONFIG.ANTIQUE.apothCategories).map(([key, cfg]) => ({
       key,
       isPotion: key === "potion",

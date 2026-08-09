@@ -86,6 +86,18 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
         .sort((a, b) => a.label.localeCompare(b.label));
       context.apothCategoryOptions = Object.entries(CONFIG.ANTIQUE.apothCategories)
         .map(([key, cfg]) => ({ key, label: game.i18n.localize(cfg.label) }));
+
+      if (this.item.system.isIngredientBag) {
+        const possessed = (this.item.actor?.items ?? [])
+          .filter(i => i.type === "equipment" && i.system.apothCategory && (i.system.quantity ?? 0) > 0)
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(i => ({ id: i.id, name: i.name, img: i.img, system: i.system }));
+        context.possessedIngredientSections = Object.entries(CONFIG.ANTIQUE.apothCategories).map(([key, cfg]) => ({
+          key,
+          label: game.i18n.localize(cfg.label),
+          items: possessed.filter(i => i.system.apothCategory === key)
+        })).filter(section => section.items.length);
+      }
     }
 
     if (this.item.type === "equipment" || this.item.type === "weapon") {
