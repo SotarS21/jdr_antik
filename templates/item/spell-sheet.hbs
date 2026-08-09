@@ -1,11 +1,12 @@
-<form class="antique sheet item spell" autocomplete="off">
+<div class="antique sheet item spell">
   <header class="sheet-header">
-    <img class="item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <img class="item-img" src="{{item.img}}" data-edit="img" data-action="editImage" title="{{item.name}}" />
     <h1 class="item-name"><input name="name" type="text" value="{{item.name}}" /></h1>
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "ANTIQUE.Tab.Description"}}</a>
+    <a class="item" data-tab="ingredients">{{localize "ANTIQUE.Tab.Ingredients"}} ({{system.ingredients.length}})</a>
     <a class="item" data-tab="effects">{{localize "ANTIQUE.Tab.Effects"}} ({{effects.length}})</a>
   </nav>
 
@@ -55,17 +56,73 @@
         <label>{{localize "ANTIQUE.Spell.Components"}}</label>
         <input type="text" name="system.components" value="{{system.components}}" />
       </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Spell.CaBonus"}}</label>
+        <input type="number" name="system.caBonus" value="{{system.caBonus}}" />
+        <span class="cout-hint">{{localize "ANTIQUE.Spell.CaBonusHint"}}</span>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="system.hasTemplate" {{#if system.hasTemplate}}checked{{/if}} />
+          {{localize "ANTIQUE.Spell.HasTemplate"}}
+        </label>
+        <span class="cout-hint">{{localize "ANTIQUE.Spell.HasTemplateHint"}}</span>
+      </div>
+      {{#if system.hasTemplate}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Spell.TemplateRadius"}}</label>
+        <input type="number" name="system.templateRadius" value="{{system.templateRadius}}" min="1" />
+      </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Spell.TemplateTexture"}}</label>
+        <input type="text" name="system.templateTexture" value="{{system.templateTexture}}" title="{{localize 'ANTIQUE.Spell.TemplateTextureHint'}}" />
+      </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Spell.TemplateColor"}}</label>
+        <input type="color" name="system.templateColor" value="{{system.templateColor}}" />
+      </div>
+      {{/if}}
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
-        {{editor system.description target="system.description" button=true editable=isEditable}}
+        {{richEditor "system.description" system.description editable=isEditable}}
       </div>
       {{#if isGM}}
       <div class="gm-notes-section">
         <h3><i class="fas fa-eye-slash"></i> {{localize "ANTIQUE.GmNotes.Title"}}</h3>
         <div class="gm-notes-editor">
-          {{editor system.gmNotes target="system.gmNotes" button=true editable=isEditable}}
+          {{richEditor "system.gmNotes" system.gmNotes editable=isEditable}}
         </div>
       </div>
+      {{/if}}
+    </div>
+
+    {{!-- Ingredients Tab --}}
+    <div class="tab" data-group="primary" data-tab="ingredients">
+      <div class="effects-header">
+        <h3>{{localize "ANTIQUE.Ingredients.Title"}}</h3>
+        {{#if isEditable}}
+        <a class="ingredient-create"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Ingredients.Add"}}</a>
+        {{/if}}
+      </div>
+
+      {{#if system.ingredients.length}}
+      <ol class="ingredients-list">
+        {{#each system.ingredients as |ing|}}
+        <li class="ingredient-row" data-ingredient-id="{{ing.id}}">
+          <input type="checkbox" class="ingredient-possede-checkbox" {{#if ing.possede}}checked{{/if}}
+                 title="{{localize 'ANTIQUE.Ingredients.Possede'}}" {{#unless ../isEditable}}disabled{{/unless}} />
+          <input type="text" class="ingredient-name-input" value="{{ing.name}}"
+                 placeholder="{{localize 'ANTIQUE.Ingredients.Name'}}" {{#unless ../isEditable}}disabled{{/unless}} />
+          <input type="number" class="ingredient-quantity-input" value="{{ing.quantity}}" min="0"
+                 {{#unless ../isEditable}}disabled{{/unless}} />
+          {{#if ../isEditable}}
+          <a class="ingredient-delete" title="{{localize 'ANTIQUE.Ingredients.Delete'}}"><i class="fas fa-trash"></i></a>
+          {{/if}}
+        </li>
+        {{/each}}
+      </ol>
+      {{else}}
+      <p class="effects-empty">{{localize "ANTIQUE.Ingredients.Empty"}}</p>
       {{/if}}
     </div>
 
@@ -108,4 +165,4 @@
     </div>
 
   </section>
-</form>
+</div>

@@ -1,4 +1,5 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { refreshSheet } from "../helpers/sheet-utils.mjs";
 
 export class AntiqueItem extends Item {
 
@@ -13,6 +14,18 @@ export class AntiqueItem extends Item {
   async rollAttack() {
     if (this.type !== "weapon") return;
 
+    // Guard against a stray double-invocation (e.g. a click handler rebound twice
+    // across sheet re-renders) firing this before the first roll has resolved.
+    if (this._rollingAttack) return;
+    this._rollingAttack = true;
+    try {
+      return await this._doRollAttack();
+    } finally {
+      this._rollingAttack = false;
+    }
+  }
+
+  async _doRollAttack() {
     // Consumable weapons: consume linked ammo
     if (this.system.consumable) {
       const linkedAmmo = this.system.linkedAmmoId && this.actor
@@ -28,12 +41,55 @@ export class AntiqueItem extends Item {
           return;
         }
         await linkedAmmo.update({ "system.quantity": linkedAmmo.system.quantity - 1 });
+        refreshSheet(this.actor);
+        refreshSheet(linkedAmmo);
+        refreshSheet(this);
       }
     }
 
-    const roll = new Roll("1d20 + @attBonus", { attBonus: this.system.attBonus });
+    // Ranged weapons can also be used in melee — ask which attack bonus applies.
+    // Melee-only weapons skip straight to the roll, unchanged.
+    if (this.system.hasPortee) {
+      return new Promise(resolve => {
+        foundry.applications.api.DialogV2.wait({
+          window: { title: game.i18n.format("ANTIQUE.Weapon.ChooseAttackType", { name: this.name }) },
+          content: `<p>${game.i18n.localize("ANTIQUE.Weapon.ChooseAttackTypeHint")}</p>`,
+          buttons: [
+            {
+              action: "distance",
+              icon: "fas fa-bullseye",
+              label: game.i18n.localize("ANTIQUE.Weapon.AttackDistance"),
+              default: true,
+              callback: () => resolve(this._executeAttackRoll("distance"))
+            },
+            {
+              action: "melee",
+              icon: "fas fa-khanda",
+              label: game.i18n.localize("ANTIQUE.Weapon.AttackMelee"),
+              callback: () => resolve(this._executeAttackRoll("melee"))
+            }
+          ],
+          rejectClose: false
+        }).then(result => { if (result === null) resolve(null); });
+      });
+    }
+
+    return this._executeAttackRoll("melee");
+  }
+
+  /**
+   * Perform the actual 1d20 + bonus attack roll and post it to chat.
+   * @param {"melee"|"distance"} mode
+   */
+  async _executeAttackRoll(mode) {
+    const itemBonus = mode === "distance" ? this.system.attBonusDistance : this.system.attBonus;
+    const category = mode === "distance" ? this.system.categoryDistance : this.system.category;
+    const catTotal = this.actor?.system.attackBonuses?.[category]?.total ?? 0;
+    const attBonus = itemBonus + catTotal;
+    const roll = new Roll("1d20 + @attBonus", { attBonus });
     await roll.evaluate();
-    const flavor = buildAttackFlavor(`${this.name} - Jet d'attaque`, roll.total);
+    const modeLabel = game.i18n.localize(mode === "distance" ? "ANTIQUE.Weapon.AttackDistance" : "ANTIQUE.Weapon.AttackMelee");
+    const flavor = buildAttackFlavor(`${this.name} (${modeLabel}) - Jet d'attaque`, roll.total);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this.actor }),
       flavor
@@ -46,7 +102,9 @@ export class AntiqueItem extends Item {
    */
   async rollDamage() {
     if (this.type !== "weapon") return;
-    const roll = new Roll(this.system.damage);
+    const damageBonus = this.actor?.system.attackBonuses?.[this.system.category]?.damageBonus ?? 0;
+    const formula = damageBonus ? `${this.system.damage} + @damageBonus` : this.system.damage;
+    const roll = new Roll(formula, { damageBonus });
     await roll.evaluate();
     const rollHTML = await roll.render();
     const applyLabel = game.i18n.format("ANTIQUE.Damage.ApplyButton", { amount: roll.total });
@@ -137,6 +195,44 @@ export class AntiqueItem extends Item {
       return;
     }
 
+    // 1.5. Ingredient checklist (system.ingredients, the "Ingrédients" tab) only
+    // restricts player characters — a PNJ's spells are cast freely by the GM
+    // regardless of what's ticked there, so this whole block is skipped for
+    // anything other than actor.type === "character".
+    let consumeIngredients = false;
+    if (actor.type === "character" && this.system.ingredients.length) {
+      const missing = this.system.ingredients.filter(i => !i.possede);
+      if (missing.length) {
+        const names = missing.map(i => i.name || "?").join(", ");
+        ui.notifications.warn(`${this.name} : ${game.i18n.format("ANTIQUE.Spell.MissingIngredients", { names })}`);
+        return;
+      }
+
+      const choice = await foundry.applications.api.DialogV2.wait({
+        window: { title: game.i18n.format("ANTIQUE.Spell.ConsumeIngredientsTitle", { name: this.name }) },
+        content: `<p>${game.i18n.localize("ANTIQUE.Spell.ConsumeIngredientsHint")}</p>`,
+        buttons: [
+          {
+            action: "consume",
+            icon: "fas fa-mortar-pestle",
+            label: game.i18n.localize("ANTIQUE.Spell.ConsumeIngredients"),
+            default: true,
+            callback: () => true
+          },
+          {
+            action: "keep",
+            icon: "fas fa-recycle",
+            label: game.i18n.localize("ANTIQUE.Spell.KeepIngredients"),
+            callback: () => false
+          }
+        ],
+        rejectClose: false
+      });
+      // Closed without choosing (window X) — abort the cast rather than guess.
+      if (choice === null) return;
+      consumeIngredients = choice;
+    }
+
     let costInfo = "";
 
     // 2. Non-ritual spell: consume PM
@@ -147,6 +243,7 @@ export class AntiqueItem extends Item {
           return;
         }
         await actor.update({ "system.pm.value": actor.system.pm.value - this.system.cost });
+        refreshSheet(actor);
         costInfo = `<i class="fas fa-fire"></i> ${this.system.cost} ${game.i18n.localize("ANTIQUE.PM")} (${game.i18n.localize("ANTIQUE.Spell.PMConsumed")})`;
       }
     } else {
@@ -164,6 +261,8 @@ export class AntiqueItem extends Item {
           return;
         }
         await ingredient.update({ "system.quantity": ingredient.system.quantity - 1 });
+        refreshSheet(actor);
+        refreshSheet(ingredient);
         costInfo = `<i class="fas fa-mortar-pestle"></i> ${game.i18n.localize("ANTIQUE.Spell.IngredientConsumed")} : ${ingredient.name}`;
       }
     }
@@ -171,6 +270,17 @@ export class AntiqueItem extends Item {
     // 4. Decrement uses if limited
     if (this.system.limitation > 0) {
       await this.update({ "system.limitationValue": this.system.limitationValue - 1 });
+      refreshSheet(actor);
+      refreshSheet(this);
+    }
+
+    // 4.5. Un-tick every ingredient if the player chose to spend them — they'll
+    // need to re-tick "possédé" (after resupplying) before casting again.
+    if (consumeIngredients) {
+      const ingredients = this.system.ingredients.map(i => ({ ...i, possede: false }));
+      await this.update({ "system.ingredients": ingredients });
+      refreshSheet(actor);
+      refreshSheet(this);
     }
 
     // 5. Build chat message
@@ -186,14 +296,42 @@ export class AntiqueItem extends Item {
       parts.push(costInfo);
     }
 
+    if (actor.type === "character" && this.system.ingredients.length) {
+      parts.push(consumeIngredients
+        ? `<i class="fas fa-mortar-pestle"></i> ${game.i18n.localize("ANTIQUE.Spell.IngredientsConsumed")}`
+        : `<i class="fas fa-recycle"></i> ${game.i18n.localize("ANTIQUE.Spell.IngredientsKept")}`);
+    }
+
     // Uses remaining
     if (this.system.limitation > 0) {
       parts.push(`<i class="fas fa-hourglass-half"></i> ${this.system.limitationValue} / ${this.system.limitation} ${game.i18n.localize("ANTIQUE.Spell.UsesRemaining")}`);
     }
 
+    // 6. Buff spells (ex. Peau d'écorce) offer a button to apply their CA bonus —
+    // same pattern as the "apply-damage" button on rollDamage()'s chat card.
+    let applyEffectButton = "";
+    if (this.system.caBonus) {
+      const applyLabel = game.i18n.format("ANTIQUE.Effect.ApplyButton", { amount: this.system.caBonus });
+      applyEffectButton = `
+        <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}">
+          <i class="fas fa-shield-halved"></i> ${applyLabel}
+        </button>`;
+    }
+
+    // 7. Area spells (ex. Brouillard) offer a button to drag a circular template
+    // onto the scene, sized/textured per the spell's own configuration.
+    let placeTemplateButton = "";
+    if (this.system.hasTemplate) {
+      const placeLabel = game.i18n.localize("ANTIQUE.Spell.PlaceTemplate");
+      placeTemplateButton = `
+        <button type="button" class="place-template" data-radius="${this.system.templateRadius}" data-texture="${this.system.templateTexture}" data-color="${this.system.templateColor}" data-spell-name="${this.name}">
+          <i class="fas fa-circle-notch"></i> ${placeLabel}
+        </button>`;
+    }
+
     await ChatMessage.create({
       speaker,
-      content: `<div class="antique spell-chat-card">${parts.join("<br>")}</div>`
+      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}</div>`
     });
   }
 
@@ -212,6 +350,8 @@ export class AntiqueItem extends Item {
       }
       const newQty = this.system.quantity - 1;
       await this.update({ "system.quantity": newQty });
+      refreshSheet(this.actor);
+      refreshSheet(this);
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
         content: `<p><strong>${this.name}</strong> consommé. Reste : <strong>${newQty}</strong> unité(s).</p>`
@@ -226,6 +366,9 @@ export class AntiqueItem extends Item {
       }
       const newQty = linkedAmmo.system.quantity - 1;
       await linkedAmmo.update({ "system.quantity": newQty });
+      refreshSheet(this.actor);
+      refreshSheet(linkedAmmo);
+      refreshSheet(this);
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
         content: `<p><strong>${this.name}</strong> : munition tirée (${linkedAmmo.name}). Reste : <strong>${newQty}</strong> unité(s).</p>`

@@ -1,17 +1,15 @@
-<form class="antique sheet actor character" autocomplete="off">
+<div class="antique sheet actor character">
+
+  <div class="band"></div>
 
   {{!-- Header: Name, Portrait, PV --}}
   <header class="sheet-header">
-    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" data-action="editImage" title="{{actor.name}}" />
     <div class="header-fields">
       <h1 class="charname">
         <input name="name" type="text" value="{{actor.name}}" placeholder="Nom du personnage" />
       </h1>
       <div class="header-row">
-        <div class="field">
-          <label>{{localize "ANTIQUE.Identity.Cite"}}</label>
-          <input type="text" name="system.cite" value="{{system.cite}}" />
-        </div>
         <div class="field">
           <label>{{localize "ANTIQUE.Identity.Devotion"}}</label>
           <input type="text" name="system.devotion" value="{{system.devotion}}" />
@@ -40,6 +38,10 @@
         <div class="ca-badge" title="{{localize 'ANTIQUE.Combat.CA'}}">
           <label>CA</label>
           <span class="ca-badge-value">{{system.ca.total}}</span>
+        </div>
+        <div class="avantage-temp-badge {{#if system.avantageTemporaire}}active{{/if}}" title="{{localize 'ANTIQUE.Traits.AvantageTemporaireInfo'}}">
+          <img src="icons/svg/angel.svg" width="16" height="16" />
+          <span>{{localize "ANTIQUE.Traits.AvantageTemporaire"}}</span>
         </div>
       </div>
       {{#if hasTraits}}
@@ -70,6 +72,7 @@
     {{#if system.isMagicPractitioner}}
     <a class="item" data-tab="magic">{{localize "ANTIQUE.Tab.Magic"}}</a>
     {{/if}}
+    <a class="item" data-tab="apothicaire">{{localize "ANTIQUE.Tab.Apothicaire"}}</a>
     <a class="item" data-tab="background">{{localize "ANTIQUE.Tab.Background"}}</a>
   </nav>
 
@@ -79,6 +82,10 @@
     {{!-- ===================== IDENTITY TAB ===================== --}}
     <div class="tab" data-group="primary" data-tab="identity">
       <div class="identity-grid">
+        <div class="field">
+          <label>{{localize "ANTIQUE.Identity.Cite"}}</label>
+          <input type="text" name="system.cite" value="{{system.cite}}" />
+        </div>
         <div class="field">
           <label>{{localize "ANTIQUE.Identity.Age"}}</label>
           <input type="number" name="system.age" value="{{system.age}}" />
@@ -110,6 +117,13 @@
         <div class="field">
           <label>{{localize "ANTIQUE.Identity.Sexe"}}</label>
           <input type="text" name="system.sexe" value="{{system.sexe}}" />
+        </div>
+        <div class="field">
+          <label>{{localize "ANTIQUE.Identity.Deplacement"}}</label>
+          <div class="input-with-suffix">
+            <input type="number" name="system.deplacement" value="{{system.deplacement}}" />
+            <span class="field-suffix">m</span>
+          </div>
         </div>
       </div>
       <div class="historique-section">
@@ -165,11 +179,11 @@
             <ul class="skill-list">
               {{#each skills as |skill key|}}
               <li class="skill-row {{#if skill.trained}}trained{{/if}} {{#if skill.isFavorite}}favorite{{/if}}">
-                <input type="checkbox" class="skill-trained" data-skill="{{skill.key}}" {{#if skill.trained}}checked{{/if}} />
+                <button type="button" class="skill-trained" data-skill="{{skill.key}}" data-action="toggleSkillTrained"></button>
                 {{#if skill.icon}}<i class="skill-icon {{skill.icon}}"></i>{{/if}}
                 <span class="skill-name skill-roll" data-skill="{{skill.key}}">{{skill.labelLocalized}}</span>
                 {{#if skill.isFavorite}}<i class="fas fa-star skill-fav-star"></i>{{/if}}
-                <input type="number" class="skill-bonus-input" data-skill="{{skill.key}}" value="{{skill.bonus}}" title="Bonus" />
+                <input type="number" class="skill-bonus-input" name="system.skills.{{skill.key}}.bonus" data-skill="{{skill.key}}" value="{{skill.bonus}}" title="Bonus" />
                 <span class="skill-total computed total">{{signedNum skill.total}}</span>
               </li>
               {{/each}}
@@ -180,17 +194,16 @@
 
       </div>
 
-      {{!-- Saves row below skills --}}
+      {{!-- Saves row: less used, kept at the bottom of the tab --}}
       <div class="saves-row">
         <h3 class="saves-row-title">{{localize "ANTIQUE.Saves.Title"}}</h3>
         <div class="saves-row-items">
           {{#each savesData as |save key|}}
-          <div class="save-card">
+          <div class="save-card" title="{{save.tooltip}}">
             <span class="save-label save-roll" data-save="{{save.key}}">{{save.label}}</span>
             <div class="save-inputs">
-              <input type="number" name="system.saves.{{save.key}}.base" value="{{save.base}}" title="{{localize 'ANTIQUE.Saves.Base'}}" />
-              <span class="save-plus">+</span>
-              <input type="number" name="system.saves.{{save.key}}.temp" value="{{save.temp}}" title="{{localize 'ANTIQUE.Saves.Temp'}}" />
+              <label class="save-temp-label">{{localize 'ANTIQUE.Saves.Temp'}}</label>
+              <input type="number" name="system.saves.{{save.key}}.temp" value="{{save.temp}}" />
             </div>
             <span class="save-total computed total">{{signedNum save.total}}</span>
           </div>
@@ -203,30 +216,10 @@
     <div class="tab" data-group="primary" data-tab="combat">
       <div class="combat-stats">
         {{!-- CA --}}
-        <div class="ca-section">
+        <div class="ca-section" title="{{caTooltip}}">
           <h2>{{localize "ANTIQUE.Combat.CA"}}</h2>
           <div class="ca-total">{{system.ca.total}}</div>
           <div class="ca-details">
-            <div class="field">
-              <label>{{localize "ANTIQUE.Combat.CABase"}}</label>
-              <input type="number" name="system.ca.base" value="{{system.ca.base}}" />
-            </div>
-            <div class="field">
-              <label>{{localize "ANTIQUE.Combat.Armure"}}</label>
-              <input type="number" name="system.ca.armure" value="{{system.ca.armure}}" />
-            </div>
-            <div class="field">
-              <label>{{localize "ANTIQUE.Combat.Bouclier"}}</label>
-              <input type="number" name="system.ca.bouclier" value="{{system.ca.bouclier}}" />
-            </div>
-            <div class="field">
-              <label>{{localize "ANTIQUE.Combat.BonusVigueur"}}</label>
-              <input type="number" name="system.ca.bonusVigueur" value="{{system.ca.bonusVigueur}}" />
-            </div>
-            <div class="field">
-              <label>{{localize "ANTIQUE.Combat.ModCON"}}</label>
-              <span class="computed">{{signedNum system.ca.conMod}}</span>
-            </div>
             <div class="field">
               <label>{{localize "ANTIQUE.Combat.Temp"}}</label>
               <input type="number" name="system.ca.temp" value="{{system.ca.temp}}" />
@@ -238,32 +231,39 @@
         <div class="initiative-section initiative-roll" title="Lancer l'initiative (1d20 {{signedNum system.initiative}})">
           <h2><i class="fas fa-dice-d20"></i> {{localize "ANTIQUE.Combat.Initiative"}}</h2>
           <div class="initiative-total">{{signedNum system.initiative}}</div>
+          <div class="initiative-formula-hint">{{localize "ANTIQUE.Combat.InitiativeFormula"}}</div>
         </div>
 
-        {{!-- Attack Bonuses --}}
-        <div class="attack-bonuses">
-          <h2>{{localize "ANTIQUE.Combat.AttackBonuses"}}</h2>
-          <table class="attack-table">
-            <thead>
-              <tr>
-                <th>{{localize "ANTIQUE.Combat.Category"}}</th>
-                <th>{{localize "ANTIQUE.Combat.Bonus"}}</th>
-                <th>{{localize "ANTIQUE.Combat.AbilityMod"}}</th>
-                <th>{{localize "ANTIQUE.Saves.Total"}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each weaponCatsData as |cat key|}}
-              <tr>
-                <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
-                <td><input type="number" name="system.attackBonuses.{{cat.key}}.bonus" value="{{cat.bonus}}" /></td>
-                <td class="computed">{{signedNum cat.abilityMod}}</td>
-                <td class="computed total">{{signedNum cat.total}}</td>
-              </tr>
-              {{/each}}
-            </tbody>
-          </table>
+        {{!-- Movement --}}
+        <div class="deplacement-section">
+          <h2><i class="fas fa-shoe-prints"></i> {{localize "ANTIQUE.Identity.Deplacement"}}</h2>
+          <div class="deplacement-total">{{system.deplacement}} m</div>
         </div>
+      </div>
+
+      {{!-- Attack Bonuses --}}
+      <div class="attack-bonuses">
+        <h2>{{localize "ANTIQUE.Combat.AttackBonuses"}}</h2>
+        <table class="attack-table">
+          <thead>
+            <tr>
+              <th>{{localize "ANTIQUE.Combat.Category"}}</th>
+              <th>{{localize "ANTIQUE.Combat.AbilityMod"}}</th>
+              <th>{{localize "ANTIQUE.Combat.SkillBonus"}}</th>
+              <th>{{localize "ANTIQUE.Saves.Total"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each weaponCatsData as |cat key|}}
+            <tr>
+              <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
+              <td class="computed ability-mod-cell {{#unless cat.trained}}inactive{{/unless}}" title="{{#unless cat.trained}}{{localize 'ANTIQUE.Combat.AbilityModUntrained'}}{{/unless}}">{{cat.abilityLabel}} {{signedNum cat.abilityMod}}</td>
+              <td class="computed">{{signedNum cat.skillBonus}}</td>
+              <td class="computed total">{{signedNum cat.total}}</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
       </div>
 
       {{!-- Weapons List --}}
@@ -277,6 +277,7 @@
               <th class="weapon-img-col"></th>
               <th>{{localize "ANTIQUE.Weapon.Name"}}</th>
               <th>{{localize "ANTIQUE.Weapon.AttBonus"}}</th>
+              <th>{{localize "ANTIQUE.Weapon.AttBonusDistance"}}</th>
               <th>{{localize "ANTIQUE.Weapon.Damage"}}</th>
               <th>{{localize "ANTIQUE.Weapon.Critical"}}</th>
               <th>{{localize "ANTIQUE.Weapon.Type"}}</th>
@@ -290,7 +291,8 @@
             <tr class="item" data-item-id="{{weapon.id}}">
               <td class="weapon-img"><img src="{{weapon.img}}" width="24" height="24" /></td>
               <td class="weapon-name clickable weapon-attack">{{weapon.name}}</td>
-              <td class="clickable weapon-attack">{{weapon.system.attBonus}}</td>
+              <td class="clickable weapon-attack">{{weapon.attTotal}}</td>
+              <td class="clickable weapon-attack">{{#if weapon.system.hasPortee}}{{weapon.attTotalDistance}}{{else}}—{{/if}}</td>
               <td class="clickable weapon-damage">{{weapon.system.damage}}</td>
               <td>{{weapon.system.critical}}</td>
               <td>{{weapon.system.typeDamage}}</td>
@@ -327,31 +329,52 @@
         <input type="number" name="system.or" value="{{system.or}}" />
       </div>
 
-      <div class="equipment-section">
-        <h2>{{localize "ANTIQUE.Inventory.Equipment"}}
-          <a class="item-create" data-type="equipment" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
-        </h2>
-        <table class="item-list">
-          <thead>
-            <tr>
-              <th class="equip-img-col"></th>
-              <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
-              <th>{{localize "ANTIQUE.Equipment.Quantity"}}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each equipment as |equip|}}
-            <tr class="item equip-row" data-item-id="{{equip.id}}">
+      <div class="inventory-layout">
+        <div class="equipment-section">
+          <h2>{{localize "ANTIQUE.Inventory.Equipment"}}
+            <a class="item-create" data-type="equipment" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Inventory.Equipment"}}</a>
+            <a class="item-create" data-type="weapon" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Combat.Weapons"}}</a>
+          </h2>
+          <table class="item-list">
+            <thead>
+              <tr>
+                <th class="equip-img-col"></th>
+                <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+                <th>{{localize "ANTIQUE.Equipment.Quantity"}}</th>
+                <th>{{localize "ANTIQUE.Equipment.Price"}}</th>
+                <th>{{localize "ANTIQUE.Equipment.Equipped"}}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each inventoryItems as |equip|}}
+            <tr class="item draggable equip-row" data-item-id="{{equip.id}}">
               <td class="equip-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{equip.img}}" width="24" height="24" /></td>
               <td class="equip-name-cell">
                 <a class="equip-toggle"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
+                {{#ifEquals equip.kind "weapon"}}<i class="fas fa-khanda inventory-kind-icon" title="{{localize 'ANTIQUE.Combat.Weapons'}}"></i>{{/ifEquals}}
                 <span class="equip-name">{{equip.name}}</span>
               </td>
               <td class="quantity-cell">
+                {{#ifEquals equip.kind "equipment"}}
                 <span class="quantity-value {{#if (lt equip.system.quantity 1)}}empty{{/if}}">{{equip.system.quantity}}</span>
                 {{#if equip.system.consumable}}
                 <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Use'}}"><i class="fas fa-flask"></i></a>
+                {{/if}}
+                {{else}}
+                —
+                {{/ifEquals}}
+              </td>
+              <td class="price-cell">{{#if equip.system.price}}{{equip.system.price}}{{else}}—{{/if}}</td>
+              <td class="equip-btn-cell">
+                {{#if equip.hasSlot}}
+                <a class="item-equip-btn {{#if equip.system.equipped}}active{{/if}}" title="{{equip.slotLabel}}">
+                  <i class="fas {{#if equip.system.equipped}}fa-check-square{{else}}fa-square{{/if}}"></i>
+                </a>
+                {{else}}
+                <a class="item-equip-picker" data-item-id="{{equip.id}}" data-kind="{{equip.kind}}" title="{{localize 'ANTIQUE.Equipment.ChooseSlot'}}">
+                  <i class="fas fa-plus-circle"></i>
+                </a>
                 {{/if}}
               </td>
               <td class="item-controls">
@@ -360,13 +383,34 @@
               </td>
             </tr>
             <tr class="equip-desc-row" data-item-id="{{equip.id}}" style="display:none;">
-              <td colspan="4">
+              <td colspan="6">
                 <div class="equip-desc-content">{{{equip.system.description}}}</div>
               </td>
             </tr>
             {{/each}}
           </tbody>
         </table>
+        </div>
+
+        <div class="silhouette-column">
+          <h2 class="silhouette-title">{{localize "ANTIQUE.Inventory.EquippedGear"}}</h2>
+          <div class="equip-silhouette-panel">
+            <i class="fas fa-person silhouette-figure"></i>
+            {{#each slotsData as |slot|}}
+            <div class="equip-slot slot-{{slot.key}} {{#if slot.item}}filled{{else}}empty{{/if}}"
+                 data-slot="{{slot.key}}" data-item-id="{{slot.item.id}}" title="{{slot.label}}{{#if slot.item}} — {{slot.item.name}}{{/if}}">
+              {{#if slot.item}}
+                <img src="{{slot.item.img}}" />
+                {{#if slot.bonusLabel}}<span class="equip-slot-bonus">{{slot.bonusLabel}}</span>{{/if}}
+                <a class="equip-slot-unequip" title="{{localize 'ANTIQUE.Equipment.Unequip'}}"><i class="fas fa-times"></i></a>
+              {{else}}
+                <i class="{{slot.icon}} equip-slot-placeholder"></i>
+              {{/if}}
+              <span class="equip-slot-label">{{slot.label}}</span>
+            </div>
+            {{/each}}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -395,20 +439,28 @@
               <th class="trait-img-col"></th>
               <th>{{localize "ANTIQUE.Traits.TraitName"}}</th>
               <th class="trait-cout-col">{{localize "ANTIQUE.Traits.Cout"}}</th>
-              <th class="trait-effects-col">{{localize "ANTIQUE.Traits.Effect"}}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {{#each advantages as |adv|}}
-            <tr class="item" data-item-id="{{adv.id}}">
+            <tr class="item trait-row" data-item-id="{{adv.id}}">
               <td class="trait-img"><img src="{{adv.img}}" width="24" height="24" /></td>
-              <td class="trait-name">{{adv.name}}</td>
+              <td class="trait-name"><i class="fas fa-caret-right trait-toggle-icon"></i> {{adv.name}}</td>
               <td class="trait-cout negative">{{adv.cout}}</td>
-              <td class="trait-effect-text">{{adv.effect}}</td>
               <td class="item-controls">
                 <a class="item-edit"><i class="fas fa-edit"></i></a>
                 <a class="item-delete"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            <tr class="trait-detail-row" data-item-id="{{adv.id}}">
+              <td colspan="4">
+                <div class="trait-detail-content">
+                  {{{adv.system.description}}}
+                  {{#if adv.hasEffects}}
+                  <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{adv.effectsSummary}}</div>
+                  {{/if}}
+                </div>
               </td>
             </tr>
             {{/each}}
@@ -427,25 +479,64 @@
               <th class="trait-img-col"></th>
               <th>{{localize "ANTIQUE.Traits.TraitName"}}</th>
               <th class="trait-cout-col">{{localize "ANTIQUE.Traits.Cout"}}</th>
-              <th class="trait-effects-col">{{localize "ANTIQUE.Traits.Effect"}}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {{#each disadvantages as |dis|}}
-            <tr class="item" data-item-id="{{dis.id}}">
+            <tr class="item trait-row" data-item-id="{{dis.id}}">
               <td class="trait-img"><img src="{{dis.img}}" width="24" height="24" /></td>
-              <td class="trait-name">{{dis.name}}</td>
+              <td class="trait-name"><i class="fas fa-caret-right trait-toggle-icon"></i> {{dis.name}}</td>
               <td class="trait-cout positive">{{signedNum dis.cout}}</td>
-              <td class="trait-effect-text">{{dis.effect}}</td>
               <td class="item-controls">
                 <a class="item-edit"><i class="fas fa-edit"></i></a>
                 <a class="item-delete"><i class="fas fa-trash"></i></a>
               </td>
             </tr>
+            <tr class="trait-detail-row" data-item-id="{{dis.id}}">
+              <td colspan="4">
+                <div class="trait-detail-content">
+                  {{{dis.system.description}}}
+                  {{#if dis.hasEffects}}
+                  <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{dis.effectsSummary}}</div>
+                  {{/if}}
+                </div>
+              </td>
+            </tr>
             {{/each}}
           </tbody>
         </table>
+      </div>
+
+      {{!-- Curses (Malédictions) --}}
+      <div class="traits-section">
+        <h2>{{localize "ANTIQUE.Traits.Curses"}}
+          <a class="item-create" data-type="curse" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+        </h2>
+        <ul class="item-list traits-list">
+          {{#each curses as |curse|}}
+          <li class="item trait-row" data-item-id="{{curse.id}}">
+            <img class="trait-list-img" src="{{curse.img}}" width="24" height="24" />
+            <i class="fas fa-caret-right trait-toggle-icon"></i>
+            <span class="trait-name">{{curse.name}}</span>
+            {{#if curse.hasEffects}}
+            <span class="effect-badge disadvantage" title="{{curse.effectsSummary}}">
+              <i class="fas fa-skull-crossbones"></i>
+            </span>
+            {{/if}}
+            <span class="item-controls">
+              <a class="item-edit"><i class="fas fa-edit"></i></a>
+              <a class="item-delete"><i class="fas fa-trash"></i></a>
+            </span>
+            <div class="trait-detail-content">
+              {{{curse.system.description}}}
+              {{#if curse.hasEffects}}
+              <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{curse.effectsSummary}}</div>
+              {{/if}}
+            </div>
+          </li>
+          {{/each}}
+        </ul>
       </div>
 
       {{!-- Blessings --}}
@@ -455,10 +546,10 @@
         </h2>
         <ul class="item-list traits-list">
           {{#each blessings as |bless|}}
-          <li class="item" data-item-id="{{bless.id}}">
+          <li class="item trait-row" data-item-id="{{bless.id}}">
             <img class="trait-list-img" src="{{bless.img}}" width="24" height="24" />
+            <i class="fas fa-caret-right trait-toggle-icon"></i>
             <span class="trait-name">{{bless.name}}</span>
-            <span class="trait-effect">{{bless.effect}}</span>
             {{#if bless.hasEffects}}
             <span class="effect-badge blessing" title="{{bless.effectsSummary}}">
               <i class="fas fa-magic"></i>
@@ -468,6 +559,12 @@
               <a class="item-edit"><i class="fas fa-edit"></i></a>
               <a class="item-delete"><i class="fas fa-trash"></i></a>
             </span>
+            <div class="trait-detail-content">
+              {{{bless.system.description}}}
+              {{#if bless.hasEffects}}
+              <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{bless.effectsSummary}}</div>
+              {{/if}}
+            </div>
           </li>
           {{/each}}
         </ul>
@@ -495,22 +592,13 @@
           {{/each}}
         </ul>
       </div>
-
-      {{!-- Avantage Temporaire --}}
-      <div class="avantage-temporaire-section">
-        <label>
-          <input type="checkbox" name="system.avantageTemporaire" {{#if system.avantageTemporaire}}checked{{/if}} />
-          {{localize "ANTIQUE.Traits.AvantageTemporaire"}}
-        </label>
-        <p class="avantage-temporaire-info"><i class="fas fa-info-circle"></i> {{localize "ANTIQUE.Traits.AvantageTemporaireInfo"}}</p>
-      </div>
     </div>
 
     {{!-- ===================== MAGIC TAB ===================== --}}
     {{#if system.isMagicPractitioner}}
     <div class="tab" data-group="primary" data-tab="magic">
       <div class="traits-section">
-        <h2>{{localize "ANTIQUE.Traits.Spells"}}
+        <h2>{{localize "ANTIQUE.Traits.SpellsInstant"}}
           <a class="item-create" data-type="spell" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
         </h2>
         <table class="item-list traits-table spells-table">
@@ -526,20 +614,55 @@
             </tr>
           </thead>
           <tbody>
-            {{#each spells as |spell|}}
+            {{#each instantSpells as |spell|}}
             <tr class="item" data-item-id="{{spell.id}}">
               <td class="trait-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{spell.img}}" width="24" height="24" /></td>
-              <td class="trait-name spell-chat clickable">
-                {{#if spell.ritual}}<span class="ritual-badge" title="{{localize 'ANTIQUE.Spell.Ritual'}}">R</span>{{/if}}
-                {{spell.name}}
+              <td class="trait-name spell-chat clickable">{{spell.name}}</td>
+              <td class="spell-effect">{{spell.effect}}</td>
+              <td class="spell-cost">{{#if spell.cost}}{{spell.cost}} PM{{/if}}</td>
+              <td class="spell-duration">{{spell.duration}}</td>
+              <td class="spell-limitation">
+                {{#if (gt spell.limitation 0)}}
+                  <span class="limitation-value {{#if (lt spell.limitationValue 1)}}empty{{/if}}">{{spell.limitationValue}} / {{spell.limitation}}</span>
+                {{else}}
+                  <span class="limitation-unlimited">&infin;</span>
+                {{/if}}
               </td>
+              <td class="item-controls">
+                <a class="spell-cast-btn" title="{{localize 'ANTIQUE.Spell.CastButton'}}"><i class="fas fa-hand-sparkles"></i> {{localize "ANTIQUE.Spell.CastButton"}}</a>
+                <a class="item-edit"><i class="fas fa-edit"></i></a>
+                <a class="item-delete"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="traits-section">
+        <h2>{{localize "ANTIQUE.Traits.SpellsRitual"}}
+          <a class="item-create" data-type="spell" data-ritual="true" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+        </h2>
+        <table class="item-list traits-table spells-table">
+          <thead>
+            <tr>
+              <th class="trait-img-col"></th>
+              <th>{{localize "ANTIQUE.Weapon.Name"}}</th>
+              <th>{{localize "ANTIQUE.Spell.Effect"}}</th>
+              <th>{{localize "ANTIQUE.Spell.Cost"}}</th>
+              <th>{{localize "ANTIQUE.Spell.Duration"}}</th>
+              <th>{{localize "ANTIQUE.Spell.Limitation"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each ritualSpells as |spell|}}
+            <tr class="item" data-item-id="{{spell.id}}">
+              <td class="trait-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{spell.img}}" width="24" height="24" /></td>
+              <td class="trait-name spell-chat clickable">{{spell.name}}</td>
               <td class="spell-effect">{{spell.effect}}</td>
               <td class="spell-cost">
-                {{#if spell.ritual}}
-                  <span class="spell-cost-ingredients" title="{{spell.costText}}"><i class="fas fa-mortar-pestle"></i> {{spell.costText}}</span>
-                {{else}}
-                  {{#if spell.cost}}{{spell.cost}} PM{{/if}}
-                {{/if}}
+                <span class="spell-cost-ingredients" title="{{spell.costText}}"><i class="fas fa-mortar-pestle"></i> {{spell.costText}}</span>
               </td>
               <td class="spell-duration">{{spell.duration}}</td>
               <td class="spell-limitation">
@@ -562,6 +685,62 @@
     </div>
     {{/if}}
 
+    {{!-- ===================== APOTHICAIRE TAB ===================== --}}
+    <div class="tab" data-group="primary" data-tab="apothicaire">
+
+      {{#each apothSections as |section|}}
+      <div class="apoth-section">
+        <h2>{{section.label}}
+          <a class="item-create" data-type="equipment" data-apoth-category="{{section.key}}" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+        </h2>
+        {{#if section.items.length}}
+        <table class="item-list apoth-table">
+          <thead>
+            <tr>
+              <th class="equip-img-col"></th>
+              <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+              {{#unless section.isPotion}}<th>{{localize "ANTIQUE.Apoth.Type"}}</th>{{/unless}}
+              <th>{{localize "ANTIQUE.Equipment.Price"}}</th>
+              <th>{{localize "ANTIQUE.Equipment.Quantity"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each section.items as |ing|}}
+            <tr class="item equip-row apoth-row" data-item-id="{{ing.id}}">
+              <td class="equip-img"><img src="{{ing.img}}" width="24" height="24" /></td>
+              <td class="equip-name-cell">
+                <a class="equip-toggle"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
+                <span class="equip-name">{{ing.name}}</span>
+              </td>
+              {{#unless section.isPotion}}<td>{{ing.system.apothType}}</td>{{/unless}}
+              <td class="price-cell">{{#if ing.system.price}}{{ing.system.price}}{{else}}—{{/if}}</td>
+              <td class="quantity-cell">
+                <span class="quantity-value {{#if (lt ing.system.quantity 1)}}empty{{/if}}">{{ing.system.quantity}}</span>
+                {{#if ing.system.consumable}}
+                <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Use'}}"><i class="fas fa-flask"></i></a>
+                {{/if}}
+              </td>
+              <td class="item-controls">
+                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                <a class="item-delete" title="Delete"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            <tr class="equip-desc-row" data-item-id="{{ing.id}}" style="display:none;">
+              <td colspan="6">
+                <div class="equip-desc-content">{{{ing.system.description}}}</div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        {{else}}
+        <p class="apoth-empty">{{localize "ANTIQUE.Apoth.Empty"}}</p>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+
     {{!-- ===================== BACKGROUND TAB ===================== --}}
     <div class="tab" data-group="primary" data-tab="background">
       <div class="background-grid">
@@ -575,135 +754,53 @@
 
         <div class="bg-field bg-histoire">
           <h3><i class="fas fa-scroll"></i> {{localize "ANTIQUE.Background.Histoire"}}</h3>
-          {{editor system.background.histoire target="system.background.histoire" button=true editable=isEditable}}
+          {{richEditor "system.background.histoire" system.background.histoire editable=isEditable}}
         </div>
 
-        <div class="bg-field bg-allies" data-drop-target="alliesList">
-          <h3>
-            <i class="fas fa-handshake"></i> {{localize "ANTIQUE.Background.Allies"}}
-            {{#if isEditable}}
-            <a class="group-create" data-list="alliesList" title="{{localize 'ANTIQUE.Background.CreateGroup'}}"><i class="fas fa-folder-plus"></i></a>
-            {{/if}}
-          </h3>
+        {{> "systems/antique/templates/actor/parts/actor-ref-section.hbs"
+            listKey="alliesList"
+            icon="fas fa-handshake"
+            titleKey="ANTIQUE.Background.Allies"
+            grouped=alliesGrouped
+            isEditable=isEditable }}
 
-          {{#each alliesGrouped.groups as |group|}}
-          <div class="actor-ref-group" data-group-id="{{group.id}}" style="--group-color: {{group.color}}">
-            <div class="actor-ref-group-header">
-              {{#if @root.isEditable}}
-              <input type="color" class="group-color-input" value="{{group.color}}" title="{{localize 'ANTIQUE.Background.GroupColor'}}" />
-              <input type="text" class="group-name-input" value="{{group.name}}" placeholder="{{localize 'ANTIQUE.Background.NewGroup'}}" />
-              <a class="group-delete" title="{{localize 'ANTIQUE.Background.DeleteGroup'}}"><i class="fas fa-trash"></i></a>
-              {{else}}
-              <span class="group-name-label">{{group.name}}</span>
-              {{/if}}
-            </div>
-            <div class="actor-ref-list actor-ref-list-grouped">
-              {{#each group.members as |ally|}}
-              <div class="actor-ref-card {{#if ally.comment}}has-comment{{/if}}" data-uuid="{{ally.uuid}}" data-list="alliesList" {{#if ally.comment}}title="{{ally.comment}}"{{/if}}>
-                <img class="actor-ref-img" src="{{ally.img}}" width="32" height="32" />
-                <span class="actor-ref-name">{{ally.name}}</span>
-                {{#if ally.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
-                <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
-              </div>
-              {{/each}}
-              <div class="actor-ref-drop-hint">
-                <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
-              </div>
-            </div>
-          </div>
-          {{/each}}
-
-          <div class="actor-ref-list" data-group-id="">
-            {{#each alliesGrouped.ungrouped as |ally|}}
-            <div class="actor-ref-card {{#if ally.comment}}has-comment{{/if}}" data-uuid="{{ally.uuid}}" data-list="alliesList" {{#if ally.comment}}title="{{ally.comment}}"{{/if}}>
-              <img class="actor-ref-img" src="{{ally.img}}" width="32" height="32" />
-              <span class="actor-ref-name">{{ally.name}}</span>
-              {{#if ally.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
-              <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
-            </div>
-            {{/each}}
-            <div class="actor-ref-drop-hint">
-              <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
-            </div>
-          </div>
-
-          {{editor system.background.allies target="system.background.allies" button=true editable=isEditable}}
-        </div>
-
-        <div class="bg-field bg-ennemis" data-drop-target="ennemisList">
-          <h3>
-            <i class="fas fa-skull-crossbones"></i> {{localize "ANTIQUE.Background.Ennemis"}}
-            {{#if isEditable}}
-            <a class="group-create" data-list="ennemisList" title="{{localize 'ANTIQUE.Background.CreateGroup'}}"><i class="fas fa-folder-plus"></i></a>
-            {{/if}}
-          </h3>
-
-          {{#each ennemisGrouped.groups as |group|}}
-          <div class="actor-ref-group" data-group-id="{{group.id}}" style="--group-color: {{group.color}}">
-            <div class="actor-ref-group-header">
-              {{#if @root.isEditable}}
-              <input type="color" class="group-color-input" value="{{group.color}}" title="{{localize 'ANTIQUE.Background.GroupColor'}}" />
-              <input type="text" class="group-name-input" value="{{group.name}}" placeholder="{{localize 'ANTIQUE.Background.NewGroup'}}" />
-              <a class="group-delete" title="{{localize 'ANTIQUE.Background.DeleteGroup'}}"><i class="fas fa-trash"></i></a>
-              {{else}}
-              <span class="group-name-label">{{group.name}}</span>
-              {{/if}}
-            </div>
-            <div class="actor-ref-list actor-ref-list-grouped">
-              {{#each group.members as |enemy|}}
-              <div class="actor-ref-card {{#if enemy.comment}}has-comment{{/if}}" data-uuid="{{enemy.uuid}}" data-list="ennemisList" {{#if enemy.comment}}title="{{enemy.comment}}"{{/if}}>
-                <img class="actor-ref-img" src="{{enemy.img}}" width="32" height="32" />
-                <span class="actor-ref-name">{{enemy.name}}</span>
-                {{#if enemy.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
-                <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
-              </div>
-              {{/each}}
-              <div class="actor-ref-drop-hint">
-                <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
-              </div>
-            </div>
-          </div>
-          {{/each}}
-
-          <div class="actor-ref-list" data-group-id="">
-            {{#each ennemisGrouped.ungrouped as |enemy|}}
-            <div class="actor-ref-card {{#if enemy.comment}}has-comment{{/if}}" data-uuid="{{enemy.uuid}}" data-list="ennemisList" {{#if enemy.comment}}title="{{enemy.comment}}"{{/if}}>
-              <img class="actor-ref-img" src="{{enemy.img}}" width="32" height="32" />
-              <span class="actor-ref-name">{{enemy.name}}</span>
-              {{#if enemy.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
-              <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
-            </div>
-            {{/each}}
-            <div class="actor-ref-drop-hint">
-              <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
-            </div>
-          </div>
-
-          {{editor system.background.ennemis target="system.background.ennemis" button=true editable=isEditable}}
-        </div>
+        {{> "systems/antique/templates/actor/parts/actor-ref-section.hbs"
+            listKey="ennemisList"
+            icon="fas fa-skull-crossbones"
+            titleKey="ANTIQUE.Background.Ennemis"
+            grouped=ennemisGrouped
+            isEditable=isEditable }}
 
         <div class="bg-field bg-croyance">
-          <h3><i class="fas fa-sun"></i> {{localize "ANTIQUE.Background.Croyance"}}</h3>
-          {{editor system.background.croyance target="system.background.croyance" button=true editable=isEditable}}
+          <h3><i class="fas fa-sun"></i> {{localize "ANTIQUE.Background.Croyance"}}
+            {{#if isEditable}}<a class="bg-text-edit" data-field="croyance" data-title="ANTIQUE.Background.Croyance" title="{{localize 'ANTIQUE.Background.EditText'}}"><i class="fas fa-edit"></i></a>{{/if}}
+          </h3>
+          <div class="bg-text-preview">{{{enrichedCroyance}}}</div>
         </div>
 
         <div class="bg-field bg-aime">
-          <h3><i class="fas fa-heart"></i> {{localize "ANTIQUE.Background.Aime"}}</h3>
-          {{editor system.background.aime target="system.background.aime" button=true editable=isEditable}}
+          <h3><i class="fas fa-heart"></i> {{localize "ANTIQUE.Background.Aime"}}
+            {{#if isEditable}}<a class="bg-text-edit" data-field="aime" data-title="ANTIQUE.Background.Aime" title="{{localize 'ANTIQUE.Background.EditText'}}"><i class="fas fa-edit"></i></a>{{/if}}
+          </h3>
+          <div class="bg-text-preview">{{{enrichedAime}}}</div>
         </div>
 
         <div class="bg-field bg-naime-pas">
-          <h3><i class="fas fa-heart-broken"></i> {{localize "ANTIQUE.Background.NaimePas"}}</h3>
-          {{editor system.background.naimePas target="system.background.naimePas" button=true editable=isEditable}}
+          <h3><i class="fas fa-heart-broken"></i> {{localize "ANTIQUE.Background.NaimePas"}}
+            {{#if isEditable}}<a class="bg-text-edit" data-field="naimePas" data-title="ANTIQUE.Background.NaimePas" title="{{localize 'ANTIQUE.Background.EditText'}}"><i class="fas fa-edit"></i></a>{{/if}}
+          </h3>
+          <div class="bg-text-preview">{{{enrichedNaimePas}}}</div>
         </div>
 
         <div class="bg-field bg-expressions">
-          <h3><i class="fas fa-comment-dots"></i> {{localize "ANTIQUE.Background.Expressions"}}</h3>
-          {{editor system.background.expressions target="system.background.expressions" button=true editable=isEditable}}
+          <h3><i class="fas fa-comment-dots"></i> {{localize "ANTIQUE.Background.Expressions"}}
+            {{#if isEditable}}<a class="bg-text-edit" data-field="expressions" data-title="ANTIQUE.Background.Expressions" title="{{localize 'ANTIQUE.Background.EditText'}}"><i class="fas fa-edit"></i></a>{{/if}}
+          </h3>
+          <div class="bg-text-preview">{{{enrichedExpressions}}}</div>
         </div>
 
       </div>
     </div>
 
   </section>
-</form>
+</div>

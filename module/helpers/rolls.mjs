@@ -56,9 +56,15 @@ export function buildAttackFlavor(baseFlavor, rollTotal) {
     : game.i18n.localize("ANTIQUE.Attack.Miss");
   const vsLabel = game.i18n.localize("ANTIQUE.Attack.VsCA");
 
+  // Players must not see a monster's exact CA in the chat flavor — only the
+  // hit/miss outcome. The GM (or the CA of a player character, never secret
+  // here) still gets the number.
+  const showCA = game.user.isGM || targetActor.type === "character";
+  const caLabel = showCA ? ` (CA ${ca})` : "";
+
   return `${baseFlavor}
     <div class="antique attack-result ${resultClass}">
-      <span class="attack-vs">${vsLabel} <strong>${targetActor.name}</strong> (CA ${ca})</span>
+      <span class="attack-vs">${vsLabel} <strong>${targetActor.name}</strong>${caLabel}</span>
       <span class="attack-outcome">${resultLabel}</span>
     </div>`;
 }

@@ -1,6 +1,6 @@
-<form class="antique sheet item equipment" autocomplete="off">
+<div class="antique sheet item equipment">
   <header class="sheet-header">
-    <img class="item-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <img class="item-img" src="{{item.img}}" data-edit="img" data-action="editImage" title="{{item.name}}" />
     <h1 class="item-name"><input name="name" type="text" value="{{item.name}}" /></h1>
   </header>
 
@@ -18,20 +18,75 @@
         <input type="number" name="system.quantity" value="{{system.quantity}}" />
       </div>
       <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.Price"}}</label>
+        <input type="text" name="system.price" value="{{system.price}}" />
+      </div>
+      <div class="form-group">
         <label>
           <input type="checkbox" name="system.consumable" {{#if system.consumable}}checked{{/if}} />
           {{localize "ANTIQUE.Item.Consumable"}}
         </label>
       </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.Slot"}}</label>
+        <select name="system.slot">
+          <option value="">{{localize "ANTIQUE.Equipment.NoSlot"}}</option>
+          {{#each slotOptions as |opt|}}
+          <option value="{{opt.key}}" {{#ifEquals opt.key @root.system.slot}}selected{{/ifEquals}}>{{opt.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{#if system.slot}}
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="system.equipped" {{#if system.equipped}}checked{{/if}} />
+          {{localize "ANTIQUE.Equipment.Equipped"}}
+        </label>
+      </div>
+      {{/if}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.CaBonus"}}</label>
+        <input type="number" name="system.caBonus" value="{{system.caBonus}}" title="{{localize 'ANTIQUE.Equipment.CaBonusHint'}}" />
+      </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.LinkedSkill"}}</label>
+        <select name="system.linkedSkill">
+          <option value="">{{localize "ANTIQUE.Equipment.NoSkillBonus"}}</option>
+          {{#each skillOptions as |opt|}}
+          <option value="{{opt.key}}" {{#ifEquals opt.key @root.system.linkedSkill}}selected{{/ifEquals}}>{{opt.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{#if system.linkedSkill}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.SkillBonus"}}</label>
+        <input type="number" name="system.skillBonus" value="{{system.skillBonus}}" />
+      </div>
+      {{/if}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.ApothCategory"}}</label>
+        <select name="system.apothCategory">
+          <option value="">{{localize "ANTIQUE.Equipment.NoApothCategory"}}</option>
+          {{#each apothCategoryOptions as |opt|}}
+          <option value="{{opt.key}}" {{#ifEquals opt.key @root.system.apothCategory}}selected{{/ifEquals}}>{{opt.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{#if system.apothCategory}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Equipment.ApothType"}}</label>
+        <input type="text" name="system.apothType" value="{{system.apothType}}" title="{{localize 'ANTIQUE.Equipment.ApothTypeHint'}}" />
+      </div>
+      {{/if}}
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
-        {{editor system.description target="system.description" button=true editable=isEditable}}
+        {{richEditor "system.description" system.description editable=isEditable}}
       </div>
       {{#if isGM}}
       <div class="gm-notes-section">
         <h3><i class="fas fa-eye-slash"></i> {{localize "ANTIQUE.GmNotes.Title"}}</h3>
         <div class="gm-notes-editor">
-          {{editor system.gmNotes target="system.gmNotes" button=true editable=isEditable}}
+          {{richEditor "system.gmNotes" system.gmNotes editable=isEditable}}
         </div>
       </div>
       {{/if}}
@@ -76,4 +131,4 @@
     </div>
 
   </section>
-</form>
+</div>

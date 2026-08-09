@@ -1,6 +1,18 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
+import { refreshSheet } from "../helpers/sheet-utils.mjs";
+
+/** Fixed, deterministic ID for the "Avantage Temporaire" ActiveEffect (must be
+ *  exactly 16 chars). Foundry rejects creating a document whose _id already
+ *  exists in the collection, so this makes duplicate creation impossible at
+ *  the database level regardless of how many times _onUpdate is re-entered. */
+const AVANTAGE_TEMP_EFFECT_ID = "avantageTempEff1";
 
 export class AntiqueActor extends Actor {
+
+  /** Actor IDs currently syncing their "Avantage Temporaire" effect, to avoid
+   *  redundant create/delete attempts when _onUpdate re-enters concurrently. */
+  static #syncingAvantageTemporaire = new Set();
 
   /** @override */
   prepareData() {
@@ -31,17 +43,37 @@ export class AntiqueActor extends Actor {
 
     // Sync "Avantage Temporaire" ActiveEffect on the token when the boolean changes
     if (changed.system?.avantageTemporaire !== undefined && game.user.id === userId) {
-      const isActive = changed.system.avantageTemporaire;
-      const existing = this.effects.find(e => e.statuses.has("avantageTemporaire"));
+      // A synthetic token-actor whose Token was deleted from its scene can no longer
+      // resolve embedded-document operations — skip rather than crash.
+      if (isOrphanedTokenActor(this)) return;
 
-      if (isActive && !existing) {
-        await this.createEmbeddedDocuments("ActiveEffect", [{
-          name: "Avantage Temporaire",
-          icon: "icons/svg/angel.svg",
-          statuses: ["avantageTemporaire"]
-        }]);
-      } else if (!isActive && existing) {
-        await this.deleteEmbeddedDocuments("ActiveEffect", [existing.id]);
+      // _onUpdate can fire twice for the same change (local + server echo); a second
+      // concurrent run would see no ActiveEffect yet and create a duplicate.
+      if (AntiqueActor.#syncingAvantageTemporaire.has(this.id)) return;
+      AntiqueActor.#syncingAvantageTemporaire.add(this.id);
+
+      try {
+        const isActive = changed.system.avantageTemporaire;
+        const existing = this.effects.get(AVANTAGE_TEMP_EFFECT_ID);
+
+        if (isActive && !existing) {
+          await this.createEmbeddedDocuments("ActiveEffect", [{
+            _id: AVANTAGE_TEMP_EFFECT_ID,
+            name: game.i18n.localize("ANTIQUE.Traits.AvantageTemporaire"),
+            icon: "icons/svg/angel.svg",
+            statuses: ["avantageTemporaire"]
+          }], { keepId: true });
+        } else if (!isActive && existing) {
+          await this.deleteEmbeddedDocuments("ActiveEffect", [AVANTAGE_TEMP_EFFECT_ID]);
+        }
+        // The render this._onUpdate's caller triggers (e.g. the sheet's own
+        // submitOnChange force-render) can fire before this async create/delete
+        // above has resolved — refresh again now that it actually has.
+        refreshSheet(this);
+      } catch (err) {
+        console.warn("Antique | Synchronisation de l'ActiveEffect \"Avantage Temporaire\" impossible :", err);
+      } finally {
+        AntiqueActor.#syncingAvantageTemporaire.delete(this.id);
       }
     }
   }
@@ -144,7 +176,45 @@ export class AntiqueActor extends Actor {
     const current = this.system.pv.value;
     const newPv = Math.max(0, current - amount);
     await this.update({ "system.pv.value": newPv });
+
+    // Native Foundry status, not a homemade schema field (see the "Avantage Temporaire"
+    // anti-pattern above — CONFIG.statusEffects/toggleStatusEffect is the right tool here).
+    const isDead = this.statuses.has("dead");
+    if (newPv <= 0 && !isDead) await this.toggleStatusEffect("dead", { active: true });
+    else if (newPv > 0 && isDead) await this.toggleStatusEffect("dead", { active: false });
+
+    // Invoked from a chat message button (antique.mjs), not this actor's own sheet
+    // form — nothing else refreshes an already-open sheet for the damaged actor.
+    refreshSheet(this);
+
     return { before: current, after: newPv, amount };
+  }
+
+  /**
+   * Apply a temporary CA bonus ActiveEffect to this actor (e.g. a buff spell like
+   * "Peau d'écorce"), via `system.ca.temp` — the same field the CA block's manual
+   * "Temp" input already writes to, so the two stack rather than conflict.
+   * Re-applying the same `name` refreshes the existing effect instead of stacking
+   * duplicates (same idiom as the "Affamé" effect in longRest()).
+   * @param {number} amount
+   * @param {{name: string, icon?: string}} options
+   * @returns {Promise<{before: number, after: number, amount: number}>}
+   */
+  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg" }) {
+    const before = this.system.ca.total;
+    const changes = [{ key: "system.ca.temp", mode: 2, value: String(amount) }];
+
+    const existing = this.effects.find(e => e.name === name);
+    if (existing) await existing.update({ changes });
+    else await this.createEmbeddedDocuments("ActiveEffect", [{ name, icon, changes, transfer: true }]);
+
+    const after = this.system.ca.total;
+
+    // Same reasoning as applyDamage(): invoked from a chat message button, so this
+    // actor's own sheet (if open) needs an explicit refresh.
+    refreshSheet(this);
+
+    return { before, after, amount };
   }
 
   /**
@@ -169,6 +239,7 @@ export class AntiqueActor extends Actor {
     if (ration) {
       // Consume 1 ration
       await ration.update({ "system.quantity": ration.system.quantity - 1 });
+      refreshSheet(ration);
       rationConsumed = true;
 
       // Remove "Affamé" effect if present
@@ -208,12 +279,17 @@ export class AntiqueActor extends Actor {
 
     await this.update(updateData);
 
+    // A long rest restores PV to max — a character healed back up should never stay
+    // marked "dead" (see the equivalent toggle in applyDamage()).
+    if (this.statuses.has("dead")) await this.toggleStatusEffect("dead", { active: false });
+
     // Reset spell limitations
     let spellsReset = 0;
     const spells = this.items.filter(i => i.type === "spell" && i.system.limitation > 0);
     for (const spell of spells) {
       if (spell.system.limitationValue < spell.system.limitation) {
         await spell.update({ "system.limitationValue": spell.system.limitation });
+        refreshSheet(spell);
         spellsReset++;
       }
     }

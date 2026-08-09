@@ -7,7 +7,7 @@
  * Compatible with Foundry v12 and v13.
  */
 function _getPackFromLi(li) {
-  const packId = li.data("pack");
+  const packId = li instanceof HTMLElement ? li.dataset.pack : li.data?.("pack");
   if (!packId) {
     console.warn("Antique | random-tables: no pack id found on element");
     return null;
@@ -57,7 +57,7 @@ async function createRollTableFromCompendium(pack) {
     })
   );
 
-  table.sheet.render(true);
+  table.sheet.render({force: true});
 }
 
 /**
@@ -109,9 +109,9 @@ export function registerCompendiumContextMenu() {
   Hooks.on("getCompendiumDirectoryEntryContext", (html, options) => {
     options.push(
       {
-        name: game.i18n.localize("ANTIQUE.Compendium.CreateTable"),
+        label: game.i18n.localize("ANTIQUE.Compendium.CreateTable"),
         icon: '<i class="fas fa-dice"></i>',
-        callback: async (li) => {
+        onClick: async (event, li) => {
           const pack = _getPackFromLi(li);
           if (!pack) {
             ui.notifications.error(game.i18n.localize("ANTIQUE.Compendium.ErrorPackNotFound"));
@@ -121,9 +121,9 @@ export function registerCompendiumContextMenu() {
         }
       },
       {
-        name: game.i18n.localize("ANTIQUE.Compendium.DrawRandom"),
+        label: game.i18n.localize("ANTIQUE.Compendium.DrawRandom"),
         icon: '<i class="fas fa-question"></i>',
-        callback: async (li) => {
+        onClick: async (event, li) => {
           const pack = _getPackFromLi(li);
           if (!pack) {
             ui.notifications.error(game.i18n.localize("ANTIQUE.Compendium.ErrorPackNotFound"));

@@ -1,133 +1,142 @@
-{
-  "id": "antique",
-  "title": "Antique",
-  "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.1",
-  "compatibility": {
-    "minimum": "12",
-    "verified": "14"
-  },
-  "authors": [
-    {
-      "name": "Mr Banane"
-    },
-    {
-      "name": "Florico"
-    }
-  ],
-  "esmodules": ["antique.mjs"],
-  "styles": ["css/antique.css"],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json",
-      "flags": {}
-    },
-    {
-      "lang": "fr",
-      "name": "Français",
-      "path": "lang/fr.json",
-      "flags": {}
-    }
-  ],
-  "documentTypes": {
-    "Actor": {
-      "character": {},
-      "npc": {},
-      "deity": {}
-    },
-    "Item": {
-      "weapon": {},
-      "equipment": {},
-      "advantage": {},
-      "disadvantage": {},
-      "blessing": {},
-      "spell": {},
-      "effect": {}
-    }
-  },
-  "primaryTokenAttribute": "pv",
-  "grid": {
-    "type": 1,
-    "distance": 1.5,
-    "units": "m"
-  },
-  "packs": [
-    {
-      "name": "armes",
-      "label": "Armes, Armures & Boucliers",
-      "path": "packs/armes.db",
-      "type": "Item"
-    },
-    {
-      "name": "equipement",
-      "label": "\u00c9quipement & Potions",
-      "path": "packs/equipement.db",
-      "type": "Item"
-    },
-    {
-      "name": "avantages",
-      "label": "Avantages",
-      "path": "packs/avantages.db",
-      "type": "Item"
-    },
-    {
-      "name": "desavantages",
-      "label": "D\u00e9savantages",
-      "path": "packs/desavantages.db",
-      "type": "Item"
-    },
-    {
-      "name": "benedictions",
-      "label": "B\u00e9n\u00e9dictions",
-      "path": "packs/benedictions.db",
-      "type": "Item"
-    },
-    {
-      "name": "pnj",
-      "label": "Personnages & PNJ",
-      "path": "packs/pnj.db",
-      "type": "Actor"
-    },
-    {
-      "name": "dieux",
-      "label": "Divinités Grecques",
-      "path": "packs/dieux.db",
-      "type": "Actor"
-    },
-    {
-      "name": "creatures",
-      "label": "Créatures Mythologiques",
-      "path": "packs/creatures.db",
-      "type": "Actor"
-    },
-    {
-      "name": "historique",
-      "label": "Historique aléatoire",
-      "path": "packs/historique.db",
-      "type": "RollTable"
-    },
-    {
-      "name": "avantages-divins",
-      "label": "Avantages Divins",
-      "path": "packs/avantages-divins.db",
-      "type": "Item"
-    },
-    {
-      "name": "alchimie",
-      "label": "Alchimie",
-      "path": "packs/alchimie.db",
-      "type": "Item"
-    },
-    {
-      "name": "sorts",
-      "label": "Sorts & Rituels",
-      "path": "packs/sorts",
-      "type": "Item"
-    }
-  ],
-  "url": "",
-  "manifest": "",
-  "download": ""
-}
+{
+  "id": "antique",
+  "title": "Antique",
+  "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
+  "version": "0.6.14",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14"
+  },
+  "authors": [
+    {
+      "name": "Mr Banane"
+    },
+    {
+      "name": "Florico"
+    }
+  ],
+  "esmodules": ["antique.mjs"],
+  "styles": ["css/antique.css"],
+  "fonts": {
+    "Cinzel": {
+      "editor": true,
+      "fonts": [
+        { "urls": ["fonts/Cinzel-Regular.ttf"] },
+        { "urls": ["fonts/Cinzel-Bold.ttf"], "weight": 700 }
+      ]
+    }
+  },
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json",
+      "flags": {}
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json",
+      "flags": {}
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "character": {},
+      "npc": {},
+      "deity": {}
+    },
+    "Item": {
+      "weapon": {},
+      "equipment": {},
+      "advantage": {},
+      "disadvantage": {},
+      "blessing": {},
+      "spell": {},
+      "effect": {}
+    }
+  },
+  "primaryTokenAttribute": "pv",
+  "grid": {
+    "type": 1,
+    "distance": 1.5,
+    "units": "m"
+  },
+  "packs": [
+    {
+      "name": "armes",
+      "label": "Armes, Armures & Boucliers",
+      "path": "packs/armes.db",
+      "type": "Item"
+    },
+    {
+      "name": "equipement",
+      "label": "\u00c9quipement & Potions",
+      "path": "packs/equipement.db",
+      "type": "Item"
+    },
+    {
+      "name": "avantages",
+      "label": "Avantages",
+      "path": "packs/avantages.db",
+      "type": "Item"
+    },
+    {
+      "name": "desavantages",
+      "label": "D\u00e9savantages",
+      "path": "packs/desavantages.db",
+      "type": "Item"
+    },
+    {
+      "name": "benedictions",
+      "label": "B\u00e9n\u00e9dictions",
+      "path": "packs/benedictions.db",
+      "type": "Item"
+    },
+    {
+      "name": "pnj",
+      "label": "Personnages & PNJ",
+      "path": "packs/pnj.db",
+      "type": "Actor"
+    },
+    {
+      "name": "dieux",
+      "label": "Divinités Grecques",
+      "path": "packs/dieux.db",
+      "type": "Actor"
+    },
+    {
+      "name": "creatures",
+      "label": "Créatures Mythologiques",
+      "path": "packs/creatures.db",
+      "type": "Actor"
+    },
+    {
+      "name": "historique",
+      "label": "Historique aléatoire",
+      "path": "packs/historique.db",
+      "type": "RollTable"
+    },
+    {
+      "name": "avantages-divins",
+      "label": "Avantages Divins",
+      "path": "packs/avantages-divins.db",
+      "type": "Item"
+    },
+    {
+      "name": "alchimie",
+      "label": "Alchimie",
+      "path": "packs/alchimie.db",
+      "type": "Item"
+    },
+    {
+      "name": "sorts",
+      "label": "Sorts & Rituels",
+      "path": "packs/sorts.db",
+      "type": "Item"
+    }
+  ],
+  "url": "",
+  "manifest": "",
+  "download": ""
+}

@@ -4,24 +4,46 @@
 /* ============================================= */
 
 :root {
-  --antique-gold: #c9a227;
-  --antique-dark-gold: #8b6914;
-  --antique-brown: #5c3d2e;
+  /* Palette Méditerranéenne */
+  --antique-gold: #c39a3f;        /* Or */
+  --antique-dark-gold: #9a7726;   /* Or Sombre / Bronze */
+  --antique-brown: #1d5763;       /* Bleu Profond (remplace le brun) */
   --antique-dark: #2c1810;
-  --antique-cream: #f5e6c8;
-  --antique-parchment: #f0ddb8;
-  --antique-light: #faf3e3;
+  --antique-cream: #ece2cd;       /* Parchemin Clair */
+  --antique-parchment: #d9caa8;   /* Parchemin Moyen */
+  --antique-light: #f4eedf;       /* Fond Parchemin */
   --antique-red: #8b2500;
   --antique-green: #556b2f;
   --antique-border: #8b7355;
 
+  /* Alias pour le header .band */
+  --gold-deep: var(--antique-dark-gold);
+  --meander: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 24'%3E%3Cpath d='M0 18 V6 H6 V18 H12' fill='none' stroke='%239a7726' stroke-width='2'/%3E%3C/svg%3E");
+
   /* Ability colors */
-  --ability-for: #c44b2c;
-  --ability-dex: #2e8b57;
-  --ability-con: #b35900;
-  --ability-int: #4169e1;
-  --ability-ast: #9370db;
-  --ability-cha: #d4881e;
+  --ability-for: #8b1e1e;
+  --ability-dex: #2c4a7c;
+  --ability-con: #8b008b;
+  --ability-int: #c9a900;
+  --ability-ast: #1e5631;
+  --ability-cha: #008b8b;
+}
+
+/* ---- Header decorative band (motif méandre) ---- */
+.antique .band {
+  height: 24px;
+  background: var(--meander) repeat-x;
+  background-size: auto 24px;
+  border-bottom: 1px solid var(--gold-deep);
+  opacity: .95;
+}
+
+/* ---- Titles: display font ---- */
+.antique.sheet h1,
+.antique.sheet h2,
+.antique.sheet h3,
+.antique .sheet-tabs .item {
+  font-family: 'Cinzel', Georgia, serif;
 }
 
 /* ---- Sheet Base ---- */
@@ -30,6 +52,11 @@
   color: var(--antique-dark);
   background: var(--antique-light);
   border: 2px solid var(--antique-border);
+  container-type: inline-size;
+  container-name: antique-sheet;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .antique.sheet input,
@@ -76,6 +103,10 @@
   object-fit: cover;
 }
 
+.antique img[data-edit] {
+  cursor: pointer;
+}
+
 .antique .header-fields {
   flex: 1;
   display: flex;
@@ -87,7 +118,11 @@
 .antique .charname {
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
+  height: auto;
+  line-height: normal;
+  margin: 0;
+  padding: 0;
 }
 
 .antique .charname input {
@@ -99,6 +134,9 @@
   border-bottom: 2px solid var(--antique-gold);
   width: 100%;
   box-sizing: border-box;
+  height: auto;
+  line-height: 1.3;
+  padding: 2px 0;
 }
 
 .antique .header-row {
@@ -240,6 +278,47 @@
   color: var(--antique-gold);
 }
 
+/* ---- Avantage Temporaire Badge (header) ---- */
+.antique .avantage-temp-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 2px solid var(--antique-border);
+  border-radius: 4px;
+  padding: 2px 10px;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--antique-border);
+  opacity: 0.6;
+  transition: all 0.2s;
+}
+
+.antique .avantage-temp-badge img {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.antique .avantage-temp-badge:hover {
+  border-color: var(--antique-gold);
+  color: var(--antique-dark-gold);
+  opacity: 0.85;
+}
+
+.antique .avantage-temp-badge.active {
+  background: var(--antique-dark);
+  border-color: var(--antique-gold);
+  color: var(--antique-gold);
+  opacity: 1;
+}
+
+.antique .avantage-temp-badge.active img {
+  opacity: 1;
+}
+
 /* ---- Header Traits Reminder ---- */
 .antique .header-traits {
   display: flex;
@@ -254,8 +333,10 @@
   position: relative;
   width: 24px;
   height: 24px;
+  margin: 0 4px;
   border-radius: 3px;
   border: 1px solid transparent;
+  background: var(--antique-dark);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -264,8 +345,11 @@
 }
 
 .antique .header-trait-icon img {
+  width: 100%;
+  height: 100%;
   border: none;
   border-radius: 2px;
+  object-fit: cover;
 }
 
 .antique .header-trait-icon.advantage {
@@ -338,6 +422,8 @@
 
 /* ---- Sheet Body ---- */
 .antique .sheet-body {
+  flex: 1;
+  min-height: 0;
   padding: 8px;
   overflow-y: auto;
 }
@@ -346,36 +432,19 @@
   display: none;
 }
 
+/* This tab is (almost) nothing but 1-2 long text editors with room to spare below
+   them — flex-column lets those editors grow to fill it instead of staying stuck
+   at a small fixed height with an internal scrollbar. Scoped to data-tab="notes"
+   specifically (not every tab) since other tabs' grids/tables aren't verified safe
+   under a flex parent (implicit min-width:auto could force unwanted horizontal
+   overflow on a wide table). */
+.antique .sheet-body .tab.active[data-tab="notes"] {
+  display: flex;
+  flex-direction: column;
+}
+
 .antique .sheet-body .tab.active {
   display: block;
-}
-
-/* ---- Editors: scroll on overflow ---- */
-.antique .editor {
-  overflow-y: auto;
-  max-height: 200px;
-}
-
-.antique .editor .editor-content,
-.antique .editor .ProseMirror {
-  overflow-y: auto;
-  max-height: inherit;
-}
-
-/* ---- Editors: expand when editing (toolbar visible) ---- */
-.antique .editor:has(.ProseMirror-menubar) {
-  min-height: 200px;
-  max-height: 400px;
-}
-
-.antique .editor:has(.ProseMirror-menubar) .ProseMirror-menubar {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-}
-
-.antique .editor:has(.ProseMirror-menubar) .ProseMirror {
-  min-height: 150px;
-  max-height: 350px;
 }
 
 /* ---- Identity Tab ---- */
@@ -396,6 +465,24 @@
   text-transform: uppercase;
   color: var(--antique-dark-gold);
   font-weight: bold;
+}
+
+.antique .input-with-suffix {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.antique .input-with-suffix input {
+  flex: 1;
+  min-width: 0;
+}
+
+.antique .field-suffix {
+  color: var(--antique-dark-gold);
+  font-weight: bold;
+  font-size: 0.85em;
+  flex-shrink: 0;
 }
 
 .antique .historique-section {
@@ -555,12 +642,12 @@
 }
 
 /* -- Ability Block Colors -- */
-.antique .ability-block.ability-for { border-color: var(--ability-for); background: rgba(196, 75, 44, 0.08); }
-.antique .ability-block.ability-dex { border-color: var(--ability-dex); background: rgba(46, 139, 87, 0.08); }
-.antique .ability-block.ability-con { border-color: var(--ability-con); background: rgba(179, 89, 0, 0.08); }
-.antique .ability-block.ability-int { border-color: var(--ability-int); background: rgba(65, 105, 225, 0.08); }
-.antique .ability-block.ability-ast { border-color: var(--ability-ast); background: rgba(147, 112, 219, 0.08); }
-.antique .ability-block.ability-cha { border-color: var(--ability-cha); background: rgba(212, 136, 30, 0.08); }
+.antique .ability-block.ability-for { border-color: var(--ability-for); background: rgba(139, 30, 30, 0.08); }
+.antique .ability-block.ability-dex { border-color: var(--ability-dex); background: rgba(44, 74, 124, 0.08); }
+.antique .ability-block.ability-con { border-color: var(--ability-con); background: rgba(139, 0, 139, 0.08); }
+.antique .ability-block.ability-int { border-color: var(--ability-int); background: rgba(201, 169, 0, 0.08); }
+.antique .ability-block.ability-ast { border-color: var(--ability-ast); background: rgba(30, 86, 49, 0.08); }
+.antique .ability-block.ability-cha { border-color: var(--ability-cha); background: rgba(0, 139, 139, 0.08); }
 
 .antique .ability-block.ability-for .ability-label { color: var(--ability-for); }
 .antique .ability-block.ability-dex .ability-label { color: var(--ability-dex); }
@@ -594,7 +681,7 @@
 }
 
 .antique .ability-score input {
-  font-size: 0.8em;
+  font-size: 0.875em;
   font-weight: bold;
   width: 36px;
   text-align: center;
@@ -604,12 +691,12 @@
   padding: 1px 2px;
 }
 
-/* -- Saves Row (horizontal below skills) -- */
+/* -- Saves Row (blocks, top of Abilities & Skills tab) -- */
 .antique .saves-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 8px 24px 0;
+  margin: 0 0 10px;
   padding: 8px 12px;
   background: var(--antique-parchment);
   border: 2px solid var(--antique-gold);
@@ -628,7 +715,8 @@
 .antique .saves-row-items {
   display: flex;
   flex: 1;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
   justify-content: space-evenly;
 }
 
@@ -636,6 +724,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: help;
 }
 
 .antique .save-card .save-label {
@@ -654,7 +747,7 @@
 .antique .save-inputs {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .antique .save-inputs input {
@@ -664,9 +757,11 @@
   padding: 2px;
 }
 
-.antique .save-plus {
-  font-size: 0.75em;
-  color: var(--antique-brown);
+.antique .save-temp-label {
+  font-size: 0.7em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark-gold);
 }
 
 .antique .save-total {
@@ -681,7 +776,8 @@
   flex: 1;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 320px));
+  justify-content: start;
   gap: 4px 16px;
   align-content: start;
 }
@@ -703,12 +799,12 @@
 }
 
 /* -- Skill Group Colors (light background + colored title/border) -- */
-.antique .skill-group-for { background: rgba(196, 75, 44, 0.05); }
-.antique .skill-group-dex { background: rgba(46, 139, 87, 0.05); }
-.antique .skill-group-con { background: rgba(179, 89, 0, 0.05); }
-.antique .skill-group-int { background: rgba(65, 105, 225, 0.05); }
-.antique .skill-group-ast { background: rgba(147, 112, 219, 0.05); }
-.antique .skill-group-cha { background: rgba(212, 136, 30, 0.05); }
+.antique .skill-group-for { background: rgba(139, 30, 30, 0.05); }
+.antique .skill-group-dex { background: rgba(44, 74, 124, 0.05); }
+.antique .skill-group-con { background: rgba(139, 0, 139, 0.05); }
+.antique .skill-group-int { background: rgba(201, 169, 0, 0.05); }
+.antique .skill-group-ast { background: rgba(30, 86, 49, 0.05); }
+.antique .skill-group-cha { background: rgba(0, 139, 139, 0.05); }
 
 .antique .skill-group-for .skill-group-title { color: var(--ability-for); border-bottom-color: var(--ability-for); }
 .antique .skill-group-dex .skill-group-title { color: var(--ability-dex); border-bottom-color: var(--ability-dex); }
@@ -731,23 +827,57 @@
 }
 
 .antique .skill-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 1px 2px;
   border-bottom: 1px solid rgba(139, 115, 85, 0.15);
-  font-size: 0.82em;
+  font-size: 0.875em;
+}
+
+/* Losange visuel : positionné en absolu sur la zone du checkbox, non-cliquable */
+.antique .skill-row::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  transform: translate(1px, -50%) rotate(45deg);
+  border: 1.5px solid var(--antique-border);
+  background: var(--antique-cream);
+  transition: background 0.15s, border-color 0.15s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Losange — état actif (maîtrisé) */
+.antique .skill-row.trained::before {
+  background: var(--antique-dark);
+  border-color: var(--antique-dark-gold);
+}
+
+.antique .skill-row:hover::before {
+  border-color: var(--antique-gold);
 }
 
 .antique .skill-row:hover {
   background: rgba(201, 162, 39, 0.08);
 }
 
-/* -- Trained skill highlight -- */
+/* -- Trained skill highlight (tinted with the ability's own color) -- */
 .antique .skill-row.trained {
   background: rgba(201, 162, 39, 0.12);
   border-radius: 3px;
 }
+
+.antique .skill-group-for .skill-row.trained { background: rgba(139, 30, 30, 0.18); }
+.antique .skill-group-dex .skill-row.trained { background: rgba(44, 74, 124, 0.18); }
+.antique .skill-group-con .skill-row.trained { background: rgba(139, 0, 139, 0.18); }
+.antique .skill-group-int .skill-row.trained { background: rgba(201, 169, 0, 0.18); }
+.antique .skill-group-ast .skill-row.trained { background: rgba(30, 86, 49, 0.18); }
+.antique .skill-group-cha .skill-row.trained { background: rgba(0, 139, 139, 0.18); }
 
 .antique .skill-row.trained .skill-name {
   font-weight: 700;
@@ -769,38 +899,31 @@
   font-size: 1.1em;
 }
 
+/* Bouton losange : dans le flux flex, transparent, capte les clics */
 .antique .skill-row .skill-trained {
   -webkit-appearance: none;
   appearance: none;
+  border: none;
+  background: none;
   flex-shrink: 0;
   width: 12px;
   height: 12px;
-  border-radius: 50%;
-  border: 2px solid var(--antique-border);
-  background: var(--antique-cream);
   cursor: pointer;
-  transition: all 0.2s;
-  margin: 0;
+  position: relative;
+  z-index: 2;
   padding: 0;
-}
-
-.antique .skill-row .skill-trained:checked {
-  background: var(--antique-gold);
-  border-color: var(--antique-dark-gold);
-  box-shadow: 0 0 4px rgba(201, 162, 39, 0.5);
-}
-
-.antique .skill-row .skill-trained:hover {
-  border-color: var(--antique-gold);
+  margin: 0;
 }
 
 .antique .skill-icon {
-  width: 14px;
+  width: 20px;
   text-align: center;
-  font-size: 0.9em;
+  font-size: 1.25em;
   color: var(--antique-brown);
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: 0.8;
+  margin-left: 5px;
+  margin-right: 4px;
 }
 
 .antique .skill-group-for .skill-icon { color: var(--ability-for); }
@@ -824,16 +947,28 @@
 }
 
 .antique .skill-bonus-input {
-  width: 32px;
-  font-size: 0.9em;
+  width: 26px;
+  font-size: 0.75em;
   text-align: center;
   flex-shrink: 0;
+  color: var(--antique-border);
+  border-color: transparent;
+  background: transparent;
+  opacity: 0.7;
+}
+
+.antique .skill-bonus-input:hover,
+.antique .skill-bonus-input:focus {
+  opacity: 1;
+  border-color: var(--antique-border);
+  background: var(--antique-cream);
 }
 
 .antique .skill-total {
-  min-width: 28px;
+  min-width: 34px;
   text-align: center;
   font-weight: bold;
+  font-size: 1.15em;
   flex-shrink: 0;
 }
 
@@ -851,12 +986,14 @@
 .antique .combat-stats {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 16px;
   margin-bottom: 16px;
 }
 
 .antique .ca-section,
-.antique .initiative-section {
+.antique .initiative-section,
+.antique .deplacement-section {
   background: var(--antique-parchment);
   border: 2px solid var(--antique-gold);
   border-radius: 6px;
@@ -871,6 +1008,7 @@
 
 .antique .ca-section h2,
 .antique .initiative-section h2,
+.antique .deplacement-section h2,
 .antique .attack-bonuses h2 {
   margin: 0 0 8px;
   font-size: 0.95em;
@@ -880,10 +1018,18 @@
 }
 
 .antique .ca-total,
-.antique .initiative-total {
+.antique .initiative-total,
+.antique .deplacement-total {
   font-size: 2em;
   font-weight: bold;
   color: var(--antique-dark-gold);
+}
+
+.antique .initiative-formula-hint {
+  font-size: 0.75em;
+  font-style: italic;
+  color: var(--antique-brown);
+  opacity: 0.6;
 }
 
 .antique .ca-details {
@@ -946,33 +1092,55 @@
 }
 
 .antique .attack-bonuses {
-  flex: 1;
-  min-width: 300px;
+  margin-bottom: 16px;
 }
 
 .antique .attack-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85em;
+  background: transparent;
 }
 
 .antique .attack-table th {
   text-align: left;
   font-size: 0.8em;
   text-transform: uppercase;
-  color: var(--antique-brown);
+  color: var(--antique-cream) !important;
+  background: var(--antique-brown) !important;
   border-bottom: 1px solid var(--antique-border);
   padding: 2px 4px;
 }
 
+.antique .attack-table tr {
+  background: transparent !important;
+}
+
 .antique .attack-table td {
   padding: 3px 4px;
+  color: var(--antique-dark) !important;
+  background: transparent !important;
+}
+
+.antique .attack-table .ability-mod-cell {
+  white-space: nowrap;
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+.antique .attack-table .ability-mod-cell.inactive {
+  color: var(--antique-border) !important;
+  opacity: 0.55;
+  text-decoration: line-through;
+  cursor: help;
 }
 
 /* ---- Weapons ---- */
 .antique .weapons-section h2,
 .antique .equipment-section h2,
-.antique .traits-section h2 {
+.antique .traits-section h2,
+.antique .apoth-section h2,
+.antique .silhouette-title {
   font-size: 0.95em;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -995,13 +1163,20 @@
   text-align: left;
   font-size: 0.8em;
   text-transform: uppercase;
-  color: var(--antique-brown);
+  color: var(--antique-cream) !important;
+  background: var(--antique-brown) !important;
   border-bottom: 1px solid var(--antique-border);
   padding: 6px 6px;
 }
 
+.antique .weapons-list tr {
+  background: transparent !important;
+}
+
 .antique .weapons-list td {
   padding: 8px 6px;
+  color: var(--antique-dark) !important;
+  background: transparent !important;
 }
 
 .antique .clickable {
@@ -1028,6 +1203,7 @@
   border: 1px solid var(--antique-border);
   vertical-align: middle;
   background: #2b2b2b;
+  object-fit: cover;
 }
 
 .antique .weapon-img.item-chat {
@@ -1152,27 +1328,124 @@
   border-collapse: collapse;
   font-size: 0.85em;
   margin-bottom: 8px;
+  background: transparent;
 }
 
 .antique .traits-table thead th {
   text-align: left;
   font-size: 0.8em;
   text-transform: uppercase;
-  color: var(--antique-brown);
+  color: var(--antique-cream) !important;
+  background: var(--antique-brown) !important;
   border-bottom: 1px solid var(--antique-border);
   padding: 2px 6px;
 }
 
 .antique .traits-table tbody tr {
   border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  background: transparent !important;
 }
 
 .antique .traits-table tbody tr:hover {
-  background: rgba(201, 162, 39, 0.08);
+  background: rgba(201, 162, 39, 0.08) !important;
 }
 
 .antique .traits-table td {
   padding: 4px 6px;
+  color: var(--antique-dark) !important;
+  background: transparent !important;
+}
+
+/* ---- Traits accordion (Advantages / Disadvantages / Blessings) ---- */
+.antique .trait-row {
+  cursor: pointer;
+}
+
+.antique .trait-toggle-icon {
+  color: var(--antique-border);
+  font-size: 0.8em;
+  margin-right: 3px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.antique .trait-row.expanded .trait-toggle-icon {
+  transform: rotate(90deg);
+}
+
+.antique .trait-detail-row {
+  display: none;
+  background: transparent !important;
+}
+
+.antique .trait-row.expanded + .trait-detail-row {
+  display: table-row;
+}
+
+.antique .trait-detail-row td {
+  padding: 2px 8px 10px 34px !important;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.antique .trait-detail-content {
+  font-size: 0.85em;
+  color: var(--antique-dark);
+  line-height: 1.45;
+}
+
+.antique .trait-detail-content p {
+  margin: 0 0 4px;
+}
+
+.antique .trait-effects-list {
+  margin-top: 4px;
+  font-size: 0.95em;
+  color: var(--antique-dark-gold);
+}
+
+.antique .trait-effects-list strong {
+  color: var(--antique-brown);
+}
+
+/* Blessings list uses <li> flex rows: detail wraps onto its own line */
+.antique .traits-list .item.trait-row {
+  flex-wrap: wrap;
+}
+
+.antique .traits-list .trait-detail-content {
+  display: none;
+  flex-basis: 100%;
+  width: 100%;
+  padding-left: 32px;
+  margin-top: 2px;
+}
+
+.antique .traits-list .item.trait-row.expanded .trait-detail-content {
+  display: block;
+}
+
+/* ---- Inventory / Equipment Table ---- */
+.antique .item-list {
+  background: transparent;
+}
+
+.antique .item-list th {
+  text-align: left;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: var(--antique-cream) !important;
+  background: var(--antique-brown) !important;
+  border-bottom: 1px solid var(--antique-border);
+  padding: 4px 6px;
+}
+
+.antique .item-list tr {
+  background: transparent !important;
+}
+
+.antique .item-list td {
+  color: var(--antique-dark) !important;
+  background: transparent !important;
 }
 
 .antique .trait-cout-col {
@@ -1292,29 +1565,10 @@
   opacity: 0.45;
 }
 
-.antique .avantage-temporaire-section {
-  margin-top: 16px;
-  padding: 8px;
-  background: var(--antique-parchment);
-  border: 1px solid var(--antique-border);
-  border-radius: 4px;
-}
-
-.antique .avantage-temporaire-info {
-  margin: 4px 0 0;
-  font-size: 0.8em;
-  font-style: italic;
-  color: var(--antique-brown);
-  opacity: 0.8;
-}
-
-.antique .avantage-temporaire-info i {
-  margin-right: 3px;
-}
-
 /* ---- Equipment List (Inventory) ---- */
 .antique .equip-img-col {
   width: 30px;
+  min-width: 30px;
 }
 
 .antique .equip-img {
@@ -1324,11 +1578,16 @@
 }
 
 .antique .equip-img img {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
   border-radius: 3px;
   border: 1px solid var(--antique-border);
   vertical-align: middle;
   transition: opacity 0.2s;
   background: #2b2b2b;
+  object-fit: cover;
 }
 
 .antique .equip-img:hover img {
@@ -1479,14 +1738,25 @@
   height: 48px;
   border: 1px solid var(--antique-gold);
   border-radius: 4px;
+  object-fit: cover;
+}
+
+.antique.sheet.item .item-name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1em;
 }
 
 .antique.sheet.item .item-name input {
+  width: 100%;
   font-size: 1.2em;
   font-weight: bold;
   background: transparent;
   border: none;
   border-bottom: 2px solid var(--antique-gold);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .antique.sheet.item .sheet-body {
@@ -1498,6 +1768,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  flex-shrink: 0;
 }
 
 .antique.sheet.item .form-group label {
@@ -1511,11 +1782,15 @@
 .antique.sheet.item .form-group.description {
   flex-direction: column;
   align-items: stretch;
+  /* Grows to fill the tab, taking twice the share of the optional GM notes
+     block below it (see .gm-notes-section) when both are present. */
+  flex: 2 1 auto;
+  min-height: 0;
 }
 
-.antique.sheet.item .form-group.description .editor {
-  min-height: 200px;
-  max-height: 400px;
+.antique.sheet.item .form-group.description prose-mirror {
+  flex: 1;
+  min-height: 150px;
 }
 
 /* ============================================= */
@@ -1574,6 +1849,15 @@
 
 .antique.npc .npc-description {
   margin-top: 8px;
+}
+
+.antique.npc .npc-ca-hidden {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.6em;
+  color: var(--antique-border);
+  opacity: 0.6;
 }
 
 .antique.npc .npc-description > label {
@@ -1651,6 +1935,7 @@
   border-radius: 3px;
   border: 1px solid var(--antique-border);
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .antique .effect-info {
@@ -1733,6 +2018,59 @@
   font-size: 0.9em;
 }
 
+.antique .apoth-section {
+  margin-bottom: 20px;
+}
+
+.antique .apoth-empty {
+  text-align: center;
+  color: var(--antique-brown);
+  font-style: italic;
+  padding: 10px;
+  font-size: 0.9em;
+}
+
+/* -- Ingredients List (Spell) -- */
+.antique .ingredients-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.antique .ingredient-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  border-radius: 3px;
+}
+
+.antique .ingredient-row:hover {
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.antique .ingredient-name-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.antique .ingredient-quantity-input {
+  width: 60px;
+  flex-shrink: 0;
+}
+
+.antique .ingredient-delete {
+  color: var(--antique-border);
+  cursor: pointer;
+  font-size: 0.9em;
+  flex-shrink: 0;
+}
+
+.antique .ingredient-delete:hover {
+  color: var(--antique-gold);
+}
+
 /* -- Trait Icons & Effects in Character Sheet -- */
 .antique .trait-img-col {
   width: 30px;
@@ -1747,6 +2085,7 @@
   border: 1px solid var(--antique-border);
   vertical-align: middle;
   background: #2b2b2b;
+  object-fit: cover;
 }
 
 .antique .trait-list-img {
@@ -1755,20 +2094,7 @@
   vertical-align: middle;
   margin-right: 6px;
   background: #2b2b2b;
-}
-
-.antique .trait-effects-col {
-  min-width: 100px;
-}
-
-.antique .trait-effects-summary {
-  font-size: 0.8em;
-}
-
-.antique .trait-effect-text {
-  font-style: italic;
-  font-size: 0.85em;
-  color: var(--antique-brown);
+  object-fit: cover;
 }
 
 .antique .effect-badge {
@@ -1837,7 +2163,8 @@
 }
 
 .antique.sheet.item .sheet-body .tab.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ============================================= */
@@ -1923,6 +2250,35 @@
   padding-bottom: 4px;
 }
 
+.antique .bg-text-edit {
+  cursor: pointer;
+  color: var(--antique-dark-gold);
+  font-size: 0.85em;
+  margin-left: auto;
+}
+
+.antique .bg-text-edit:hover {
+  color: var(--antique-gold);
+}
+
+.antique .bg-text-preview {
+  font-size: 0.9em;
+  color: var(--antique-dark);
+  min-height: 40px;
+}
+
+.antique .bg-text-preview:empty::before {
+  content: "—";
+  color: var(--antique-border);
+}
+
+/* Dialog popup used to edit Croyance/Aime/N'aime pas/Expressions — this dialog
+   is its own top-level application, not nested under .antique, so it needs an
+   unscoped rule. */
+.bg-edit-dialog-content prose-mirror {
+  --min-height: 300px;
+}
+
 .antique .bg-field h3 i {
   color: var(--antique-dark-gold);
   margin-right: 4px;
@@ -1940,21 +2296,19 @@
 
 .antique .bg-histoire {
   grid-column: 1 / -1;
-  min-height: 140px;
+  min-height: 190px;
 }
 
 .antique .bg-expressions {
   grid-column: 1 / -1;
 }
 
-.antique .bg-field .editor {
-  min-height: 60px;
-  max-height: 150px;
+.antique .bg-field prose-mirror {
+  --min-height: 60px;
 }
 
-.antique .bg-histoire .editor {
-  min-height: 100px;
-  max-height: 250px;
+.antique .bg-histoire prose-mirror {
+  --min-height: 160px;
 }
 
 /* -- Actor Reference Cards (Drag & Drop Allies/Enemies) -- */
@@ -2125,20 +2479,52 @@
   color: var(--antique-red);
 }
 
-.antique .group-create {
+.antique .group-create,
+.antique .actor-ref-create {
   cursor: pointer;
   color: var(--antique-green);
   font-size: 0.85em;
   margin-left: auto;
 }
 
-.antique .group-create:hover {
+.antique .group-create:hover,
+.antique .actor-ref-create:hover {
   color: var(--antique-gold);
 }
 
 .antique .actor-ref-list-grouped {
   border: none;
   min-height: 36px;
+}
+
+.antique .actor-ref-group-toggle {
+  cursor: pointer;
+  color: var(--antique-border);
+  flex-shrink: 0;
+}
+
+.antique .actor-ref-group-toggle:hover {
+  color: var(--antique-gold);
+}
+
+.antique .actor-ref-group-toggle-icon {
+  display: inline-block;
+  transition: transform 0.2s;
+  transform: rotate(90deg);
+}
+
+.antique .actor-ref-group.collapsed .actor-ref-group-toggle-icon {
+  transform: rotate(0deg);
+}
+
+.antique .actor-ref-group.collapsed .actor-ref-list-grouped {
+  display: none;
+}
+
+.antique .actor-ref-group-count {
+  font-size: 0.75em;
+  color: var(--antique-border);
+  flex-shrink: 0;
 }
 
 /* ============================================= */
@@ -2150,6 +2536,12 @@
   background: rgba(85, 107, 47, 0.06);
   border: 2px solid var(--antique-green);
   border-radius: 6px;
+  /* Only actually stretches inside a flex-column parent (the Notes tab); a
+     harmless no-op everywhere else this class might appear in block flow. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .antique .player-notes-section h3 {
@@ -2166,9 +2558,17 @@
   margin-right: 4px;
 }
 
-.antique .player-notes-section .npc-notes .editor {
-  min-height: 120px;
-  max-height: 300px;
+.antique .player-notes-section .npc-notes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.antique .player-notes-section .npc-notes prose-mirror {
+  flex: 1;
+  /* Same ~4-line floor as .gm-notes-editor, so both blocks match. */
+  min-height: 160px;
 }
 
 /* ============================================= */
@@ -2182,6 +2582,12 @@
   border: 2px solid var(--antique-red);
   border-radius: 6px;
   border-style: dashed;
+  /* Same reasoning as .player-notes-section: only stretches inside a flex-column
+     parent (item sheets' description tab, or the NPC Notes tab). */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .antique .gm-notes-section h3 {
@@ -2198,18 +2604,22 @@
   margin-right: 4px;
 }
 
-.antique .gm-notes-editor .editor {
-  min-height: 80px;
-  max-height: 200px;
+.antique .gm-notes-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.antique .gm-notes-editor prose-mirror {
+  flex: 1;
+  /* ~4 editable lines + toolbar as an absolute floor, even in a cramped window —
+     independent of the flex:1 grow-to-fill behavior above. */
+  min-height: 160px;
 }
 
 .antique.npc .gm-notes-section {
   margin-top: 16px;
-}
-
-.antique.npc .gm-notes-editor .editor {
-  min-height: 120px;
-  max-height: 300px;
 }
 
 /* ============================================= */
@@ -2226,6 +2636,12 @@
   align-items: center;
   padding: 20px 16px;
   gap: 12px;
+  /* Deity has no separate .sheet-body wrapper like the other actor sheets — this
+     div IS the whole window content, so it needs the same flex:1/min-height:0/
+     overflow treatment to actually fill the window and let .deity-description grow. */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* -- Portrait -- */
@@ -2298,17 +2714,15 @@
 /* -- Description -- */
 .antique.deity .deity-description {
   width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.antique.deity .deity-description .editor {
-  min-height: 200px;
-  max-height: none;
-  overflow-y: auto;
-}
-
-.antique.deity .deity-description .editor .editor-content,
-.antique.deity .deity-description .editor .ProseMirror {
-  max-height: none;
+.antique.deity .deity-description prose-mirror {
+  flex: 1;
+  min-height: 150px;
 }
 
 /* ============================================= */
@@ -2432,6 +2846,31 @@
   font-size: 1em;
 }
 
+/* Chat card action buttons (Peau d'écorce's "Appliquer l'effet", Brouillard's "Placer un gabarit") */
+.antique.spell-chat-card .apply-effect,
+.antique.spell-chat-card .place-template {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(180deg, #7b4fbf, #5b3a9e);
+  border: 1px solid #4a2e82;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique.spell-chat-card .apply-effect:hover,
+.antique.spell-chat-card .place-template:hover {
+  background: linear-gradient(180deg, #9462d9, #7b4fbf);
+  border-color: var(--antique-gold);
+  box-shadow: 0 0 8px rgba(91, 58, 158, 0.5);
+}
+
 /* Spell name clickable (post to chat) */
 .antique .spells-table .spell-chat {
   cursor: pointer;
@@ -2450,4 +2889,309 @@
 .antique .trait-img.item-chat img:hover {
   border-color: var(--antique-gold);
   box-shadow: 0 0 4px rgba(201, 162, 39, 0.4);
+}
+
+/* ============================================= */
+/*  EQUIPMENT SILHOUETTE (paperdoll)             */
+/* ============================================= */
+
+.antique .inventory-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.antique .inventory-layout .equipment-section {
+  flex: 1 1 480px;
+  min-width: 480px;
+}
+
+.antique .silhouette-column {
+  flex-shrink: 0;
+}
+
+.antique .equip-silhouette-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px 150px 92px;
+  grid-template-rows: 84px 84px 84px auto;
+  grid-template-areas:
+    "tete          figure         bouclier"
+    "torse         figure         armePrincipale"
+    "jambes        figure         armeSecondaire"
+    "mains         accessoire1    accessoire2";
+  gap: 8px;
+  justify-items: center;
+  align-items: center;
+  margin: 8px 0 16px;
+  padding: 12px;
+  background: rgba(44, 24, 16, 0.06);
+  border: 1px solid var(--antique-border);
+  border-radius: 6px;
+  max-width: 420px;
+}
+
+.antique .silhouette-figure {
+  grid-area: figure;
+  font-size: 150px;
+  color: var(--antique-dark-gold);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.antique .equip-slot {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--antique-border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.antique .equip-slot.slot-tete           { grid-area: tete; }
+.antique .equip-slot.slot-torse          { grid-area: torse; }
+.antique .equip-slot.slot-jambes         { grid-area: jambes; }
+.antique .equip-slot.slot-mains          { grid-area: mains; }
+.antique .equip-slot.slot-bouclier       { grid-area: bouclier; }
+.antique .equip-slot.slot-armePrincipale { grid-area: armePrincipale; }
+.antique .equip-slot.slot-armeSecondaire { grid-area: armeSecondaire; }
+.antique .equip-slot.slot-accessoire1    { grid-area: accessoire1; }
+.antique .equip-slot.slot-accessoire2    { grid-area: accessoire2; }
+
+.antique .equip-slot.empty {
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.antique .equip-slot.filled {
+  cursor: pointer;
+  border-color: var(--antique-gold);
+  background: rgba(201, 162, 39, 0.12);
+}
+
+.antique .equip-slot.filled:hover {
+  box-shadow: 0 0 6px rgba(201, 162, 39, 0.5);
+}
+
+.antique .equip-slot img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.antique .equip-slot-placeholder {
+  font-size: 22px;
+  color: var(--antique-border);
+}
+
+.antique .equip-slot-bonus {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--antique-green);
+}
+
+.antique .equip-slot-unequip {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 10px;
+  color: var(--antique-red);
+  display: none;
+}
+
+.antique .equip-slot.filled:hover .equip-slot-unequip {
+  display: block;
+}
+
+.antique .equip-slot-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--antique-border);
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* ---- Unified inventory list additions ---- */
+.antique .inventory-kind-icon {
+  font-size: 10px;
+  color: var(--antique-border);
+  margin-right: 4px;
+}
+
+.antique .price-cell {
+  white-space: nowrap;
+}
+
+.antique .item-equip-btn {
+  font-size: 14px;
+  color: var(--antique-border);
+}
+
+.antique .item-equip-btn.active {
+  color: var(--antique-green);
+}
+
+.antique .item-equip-picker {
+  font-size: 15px;
+  color: var(--antique-dark-gold);
+}
+
+.antique .item-equip-picker:hover {
+  color: var(--antique-gold);
+}
+
+.antique .equip-slot.drag-over {
+  box-shadow: 0 0 0 2px var(--antique-gold), 0 0 8px rgba(201, 162, 39, 0.6);
+}
+
+/* ============================================= */
+/*  RESPONSIVE — Container Queries               */
+/* ============================================= */
+
+/* Tables: scrollables horizontalement si contenu trop large */
+.antique .weapons-section,
+.antique .equipment-section,
+.antique .traits-section,
+.antique .apoth-section,
+.antique .combat-section {
+  overflow-x: auto;
+}
+
+/* ---- Moyen (≤ 650px) ---- */
+@container antique-sheet (max-width: 650px) {
+  .antique .inventory-layout {
+    flex-direction: column;
+  }
+
+  .antique .equip-silhouette-panel {
+    max-width: 100%;
+  }
+
+  .antique .abilities-skills-layout {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .antique .saves-row {
+    margin-left: 8px;
+    margin-right: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .antique .identity-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .antique .header-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .antique .background-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Petit (≤ 480px) ---- */
+@container antique-sheet (max-width: 480px) {
+  /* Header empilé */
+  .antique .sheet-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .antique .profile-img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .antique .header-row {
+    justify-content: center;
+  }
+
+  .antique .header-traits {
+    justify-content: center;
+  }
+
+  /* Identity grid: 2 colonnes */
+  .antique .identity-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Abilities + Skills: empilés verticalement */
+  .antique .abilities-skills-layout {
+    flex-direction: column;
+    margin-left: 4px;
+    margin-right: 4px;
+    gap: 8px;
+  }
+
+  /* Abilities: rangée horizontale */
+  .antique .abilities-sidebar {
+    flex-direction: row;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .antique .ability-block {
+    flex: 1;
+    min-width: 52px;
+    max-width: 68px;
+    padding: 3px 3px 8px;
+  }
+
+  .antique .ability-mod-value {
+    width: 36px;
+    line-height: 36px;
+    font-size: 1.1em;
+  }
+
+  /* Skills: pleine largeur */
+  .antique .skills-panel {
+    width: 100%;
+  }
+
+  /* Saves: retour à la ligne */
+  .antique .saves-row {
+    margin-left: 4px;
+    margin-right: 4px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .antique .saves-row-items {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+
+  /* Onglets: plus compact */
+  .antique .sheet-tabs .item {
+    padding: 5px 8px;
+    font-size: 0.76em;
+  }
+
+  /* Inputs numériques: plus petits */
+  .antique.sheet input[type="number"] {
+    width: 40px;
+  }
+
+  /* Background: 1 colonne */
+  .antique .background-grid {
+    grid-template-columns: 1fr;
+  }
 }

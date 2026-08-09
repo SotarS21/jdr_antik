@@ -1,3 +1,9 @@
+// NE PLUS EXECUTER SANS RELIRE : ce script avait ecrase (12/05/2026) le fix du
+// 26/04/2026 en pointant l'ActiveEffect vers "system.damage", un champ qui n'existe
+// nulle part sur l'Actor (donc sans aucun effet en jeu) -- voir _migrate-avantages-effects.js
+// pour la clef correcte. Corrige ici (08/08/2026) pour ecrire "system.attackBonuses.
+// armeBlanche.damageBonus" (nouveau champ, voir actor-character.mjs) si jamais ce
+// script est relance par erreur.
 const fs = require('fs');
 const path = require('path');
 
@@ -27,9 +33,9 @@ const updatedLines = lines.map(line => {
             disabled: false,
             changes: [
               {
-                key: "system.damage",
+                key: "system.attackBonuses.armeBlanche.damageBonus",
                 mode: 2,
-                value: "+3",
+                value: "3",
                 priority: 20
               }
             ],

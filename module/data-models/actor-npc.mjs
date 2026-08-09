@@ -73,6 +73,8 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
-    // NPC has no auto-derived data — all values are manual
+    for (const ab of Object.values(this.abilities)) {
+      ab.mod = Math.floor((ab.value - 10) / 2);
+    }
   }
 }

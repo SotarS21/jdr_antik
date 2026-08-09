@@ -14,7 +14,9 @@
  * Add new entries at the end when future schema changes are needed.
  */
 const MIGRATIONS = [
-  { version: "0.5.1", migrate: migrateBonusSexeToAvantageTemporaire }
+  { version: "0.5.1", migrate: migrateBonusSexeToAvantageTemporaire },
+  { version: "0.6.2", migrate: migrateWeaponHasPortee },
+  { version: "0.6.3", migrate: migrateColereZeusEffect }
 ];
 
 /* ------------------------------------------------------------------ */
@@ -117,4 +119,81 @@ async function _migrateActorBonusSexe(actor) {
   }
 
   await actor.update(updateData);
+}
+
+/* ------------------------------------------------------------------ */
+/*  0.6.2 — Fix hasPortee on already-embedded weapon copies            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A weapon copy already embedded on an actor before the compendium's `hasPortee`
+ * value was corrected never picks up that fix on its own (Foundry doesn't resync
+ * embedded items from a modified compendium) — this repairs any such stale copy
+ * still lying around (e.g. Glaive: portee:1.5 but hasPortee stuck at false).
+ */
+async function migrateWeaponHasPortee() {
+  for (const actor of game.actors) {
+    await _migrateActorWeaponHasPortee(actor);
+  }
+
+  for (const scene of game.scenes) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      await _migrateActorWeaponHasPortee(actor);
+    }
+  }
+
+  ui.notifications.info("Antique – migration « portée d'arme » terminée.");
+}
+
+async function _migrateActorWeaponHasPortee(actor) {
+  for (const item of actor.items) {
+    if (item.type !== "weapon") continue;
+    if (item.system.portee > 0 && item.system.hasPortee !== true) {
+      await item.update({ "system.hasPortee": true });
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  0.6.3 — Fix Colère de Zeus's ActiveEffect on already-embedded copies */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The compendium entry for "Colère de Zeus" pointed its ActiveEffect at
+ * "system.damage" (not a real Actor field — silently a no-op) between 12/05/2026
+ * and 08/08/2026. Copies of the advantage already embedded on a character before
+ * the 08/08/2026 fix keep the broken key forever unless corrected here.
+ */
+async function migrateColereZeusEffect() {
+  for (const actor of game.actors) {
+    await _migrateActorColereZeusEffect(actor);
+  }
+
+  for (const scene of game.scenes) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      await _migrateActorColereZeusEffect(actor);
+    }
+  }
+
+  ui.notifications.info("Antique – migration « Colère de Zeus » terminée.");
+}
+
+async function _migrateActorColereZeusEffect(actor) {
+  const item = actor.items.find(i => i.type === "advantage" && i.name === "(-1) Colère de Zeus");
+  if (!item) return;
+
+  for (const effect of item.effects) {
+    const change = effect.changes.find(c => c.key === "system.damage");
+    if (!change) continue;
+    const changes = effect.changes.map(c =>
+      c === change ? { ...c, key: "system.attackBonuses.armeBlanche.damageBonus", value: "3" } : c
+    );
+    await effect.update({ changes });
+  }
 }

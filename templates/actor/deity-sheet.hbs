@@ -1,10 +1,10 @@
-<form class="antique sheet actor deity" autocomplete="off">
+<div class="antique sheet actor deity">
 
   <div class="deity-content">
 
     {{!-- Portrait --}}
     <div class="deity-portrait-wrapper">
-      <img class="deity-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+      <img class="deity-portrait" src="{{actor.img}}" data-edit="img" data-action="editImage" title="{{actor.name}}" />
     </div>
 
     {{!-- Name --}}
@@ -21,9 +21,9 @@
 
     {{!-- Description --}}
     <div class="deity-description">
-      {{editor system.description target="system.description" button=true editable=isEditable}}
+      {{richEditor "system.description" system.description editable=isEditable}}
     </div>
 
   </div>
 
-</form>
+</div>

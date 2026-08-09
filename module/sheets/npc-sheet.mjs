@@ -1,4 +1,6 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
+import { captureFocusState, restoreFocusState, preventEnterSubmit } from "../helpers/sheet-utils.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -8,9 +10,12 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     classes: ["antique", "sheet", "actor", "npc"],
     position: { width: 600, height: 550 },
     window: { resizable: true },
-    tabs: [{ group: "main", navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "notes" }],
+    tabs: [],
     dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }],
-    form: { submitOnChange: true, closeOnSubmit: false }
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false,
+    }
   };
 
   static PARTS = {
@@ -19,10 +24,28 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     }
   };
 
+  async _onDropItem(event, item) {
+    const result = await super._onDropItem(event, item);
+    this.render({ force: true });
+    return result;
+  }
+
+  async _processSubmitData(event, form, formData) {
+    if (isOrphanedTokenActor(this.actor)) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Errors.OrphanedTokenSheet"));
+      return this.close();
+    }
+    const focusState = captureFocusState(this.element);
+    await super._processSubmitData(event, form, formData);
+    await this.render({ force: true });
+    restoreFocusState(this.element, focusState);
+  }
+
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     const system = this.actor.system;
 
+    context.actor = this.actor;
     context.system = system;
     context.config = CONFIG.ANTIQUE;
     context.isEditable = this.isEditable;
@@ -49,12 +72,42 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     });
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
     context.spells = this._prepareSpellItems();
+    context.instantSpells = context.spells.filter(s => !s.ritual);
+    context.ritualSpells = context.spells.filter(s => s.ritual);
 
     return context;
   }
 
+  _activateTab(tabName) {
+    this.element.querySelectorAll(".sheet-tabs .item[data-tab]").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.tab === tabName);
+    });
+    this.element.querySelectorAll(".sheet-body .tab[data-tab]").forEach(panel => {
+      panel.classList.toggle("active", panel.dataset.tab === tabName);
+    });
+  }
+
   _onRender(context, options) {
     super._onRender(context, options);
+
+    // Prevent the browser's default "mouse wheel over a focused number input
+    // changes its value" behavior.
+    this.element.querySelectorAll('input[type="number"]').forEach(el => {
+      el.addEventListener("wheel", ev => ev.preventDefault(), { passive: false });
+    });
+    preventEnterSubmit(this.element);
+
+    // Manual tab management
+    if (!this._activeTab) this._activeTab = "notes";
+    this._activateTab(this._activeTab);
+    this.element.querySelectorAll(".sheet-tabs .item[data-tab]").forEach(btn => {
+      btn.addEventListener("click", ev => {
+        ev.preventDefault();
+        this._activeTab = btn.dataset.tab;
+        this._activateTab(this._activeTab);
+      });
+    });
+
     if (!this.isEditable) return;
 
     this.element.querySelectorAll(".ability-roll").forEach(el => {
@@ -91,7 +144,7 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       el.addEventListener("click", ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.delete();
+        if (item) item.delete().then(() => this.render({ force: true }));
       });
     });
 
@@ -177,6 +230,9 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     const name = game.i18n.format("ANTIQUE.Item.New", {
       type: game.i18n.localize(`ANTIQUE.ItemType.${type.charAt(0).toUpperCase() + type.slice(1)}`)
     });
-    return this.actor.createEmbeddedDocuments("Item", [{ name, type, system: {} }]);
+    const system = event.currentTarget.dataset.ritual === "true" ? { ritual: true } : {};
+    const created = await this.actor.createEmbeddedDocuments("Item", [{ name, type, system }]);
+    this.render({ force: true });
+    return created;
   }
 }

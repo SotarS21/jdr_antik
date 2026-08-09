@@ -1,4 +1,4 @@
-<div class="antique sheet item effect">
+<div class="antique sheet item curse">
   <header class="sheet-header">
     <img class="item-img" src="{{item.img}}" data-edit="img" data-action="editImage" title="{{item.name}}" />
     <h1 class="item-name"><input name="name" type="text" value="{{item.name}}" /></h1>
@@ -14,12 +14,8 @@
     {{!-- Description Tab --}}
     <div class="tab" data-group="primary" data-tab="description">
       <div class="form-group">
-        <label>{{localize "ANTIQUE.Effect.Duration"}}</label>
-        <input type="text" name="system.duration" value="{{system.duration}}" />
-      </div>
-      <div class="form-group">
-        <label>{{#if system.active}}{{localize "ANTIQUE.Effect.Active"}}{{else}}{{localize "ANTIQUE.Effect.Inactive"}}{{/if}}</label>
-        <input type="checkbox" name="system.active" {{#if system.active}}checked{{/if}} />
+        <label>{{localize "ANTIQUE.Traits.Effect"}}</label>
+        <input type="text" name="system.effect" value="{{system.effect}}" />
       </div>
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
@@ -51,7 +47,7 @@
             <span class="effect-name">{{effect.name}}</span>
             <span class="effect-changes-list">
               {{#each effect.changes as |change|}}
-              <span class="effect-change-badge advantage">{{change.label}}</span>
+              <span class="effect-change-badge disadvantage">{{change.label}}</span>
               {{/each}}
               {{#unless effect.changesCount}}
               <span class="effect-change-badge empty">Aucune modification</span>

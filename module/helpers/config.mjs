@@ -36,6 +36,7 @@ ANTIQUE.skills = {
   athletisme:         { label: "ANTIQUE.Skill.Athletisme",         ability: "con", icon: "fas fa-walking" },
   equitation:         { label: "ANTIQUE.Skill.Equitation",         ability: "con", icon: "fas fa-horse-head" },
   natation:           { label: "ANTIQUE.Skill.Natation",           ability: "con", icon: "fas fa-water" },
+  escalade:           { label: "ANTIQUE.Skill.Escalade",           ability: "con", icon: "fas fa-mountain" },
   vigueur:            { label: "ANTIQUE.Skill.Vigueur",            ability: "con", icon: "fas fa-heartbeat" },
   survie:             { label: "ANTIQUE.Skill.Survie",             ability: "con", icon: "fas fa-campground" },
 
@@ -84,11 +85,41 @@ ANTIQUE.saves = {
 };
 
 ANTIQUE.weaponCategories = {
-  mainNue:      { label: "ANTIQUE.WeaponCat.MainNue",      ability: "for", icon: "fas fa-fist-raised" },
-  armeBlanche:  { label: "ANTIQUE.WeaponCat.ArmeBlanche",  ability: "for", icon: "fas fa-khanda" },
-  armeDeJet:    { label: "ANTIQUE.WeaponCat.ArmeDeJet",    ability: "for", icon: "fas fa-meteor" },
-  armeExotique: { label: "ANTIQUE.WeaponCat.ArmeExotique",  ability: "for", icon: "fas fa-gavel" },
-  armeADistance: { label: "ANTIQUE.WeaponCat.ArmeADistance", ability: "dex", icon: "fas fa-bullseye" }
+  mainNue:      { label: "ANTIQUE.WeaponCat.MainNue",      ability: "for", icon: "fas fa-fist-raised", skill: "combatMainNue" },
+  armeBlanche:  { label: "ANTIQUE.WeaponCat.ArmeBlanche",  ability: "for", icon: "fas fa-khanda", skill: "armeBlanche" },
+  armeDeJet:    { label: "ANTIQUE.WeaponCat.ArmeDeJet",    ability: "for", icon: "fas fa-meteor", skill: "armeDeJet" },
+  armeExotique: { label: "ANTIQUE.WeaponCat.ArmeExotique",  ability: "for", icon: "fas fa-gavel", skill: "armeExotique" },
+  combatDeuxMains: { label: "ANTIQUE.WeaponCat.CombatDeuxMains", ability: "for", icon: "fas fa-hands", skill: "combatDeuxMains" },
+  armeADistance: { label: "ANTIQUE.WeaponCat.ArmeADistance", ability: "dex", icon: "fas fa-bullseye", skill: "armeADistance" }
+};
+
+/**
+ * Body/equipment slots shown around the silhouette in the Inventory tab.
+ * `types` restricts which item types may be assigned to that slot (used to build
+ * the slot <select> on each item sheet).
+ */
+ANTIQUE.equipmentSlots = {
+  tete:            { label: "ANTIQUE.Slot.Tete",           icon: "fas fa-hat-wizard",     types: ["equipment"] },
+  torse:           { label: "ANTIQUE.Slot.Torse",          icon: "fas fa-vest",           types: ["equipment"] },
+  jambes:          { label: "ANTIQUE.Slot.Jambes",         icon: "fas fa-socks",          types: ["equipment"] },
+  mains:           { label: "ANTIQUE.Slot.Mains",          icon: "fas fa-mitten",         types: ["equipment"] },
+  bouclier:        { label: "ANTIQUE.Slot.Bouclier",       icon: "fas fa-shield-alt",     types: ["equipment"] },
+  armePrincipale:  { label: "ANTIQUE.Slot.ArmePrincipale", icon: "fas fa-khanda",         types: ["weapon"] },
+  armeSecondaire:  { label: "ANTIQUE.Slot.ArmeSecondaire", icon: "fas fa-meteor",         types: ["weapon"] },
+  accessoire1:     { label: "ANTIQUE.Slot.Accessoire1",    icon: "fas fa-ring",           types: ["equipment"] },
+  accessoire2:     { label: "ANTIQUE.Slot.Accessoire2",    icon: "fas fa-gem",            types: ["equipment"] }
+};
+
+/**
+ * Categories shown in the character sheet's Apothicaire tab (sac d'apothicaire).
+ * Any "equipment" item tagged with one of these keys (system.apothCategory)
+ * appears grouped there instead of only in the generic Inventory list.
+ */
+ANTIQUE.apothCategories = {
+  ingredientCommun:    { label: "ANTIQUE.Apoth.IngredientCommun" },
+  ingredientPeuCommun: { label: "ANTIQUE.Apoth.IngredientPeuCommun" },
+  ingredientRare:      { label: "ANTIQUE.Apoth.IngredientRare" },
+  potion:              { label: "ANTIQUE.Apoth.Potion" }
 };
 
 /**

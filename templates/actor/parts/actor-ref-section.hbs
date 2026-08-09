@@ -1,0 +1,56 @@
+<div class="bg-field bg-actor-ref-section" data-drop-target="{{listKey}}">
+  <h3>
+    <i class="{{icon}}"></i> {{localize titleKey}}
+    {{#if isEditable}}
+    <a class="actor-ref-create" data-list="{{listKey}}" title="{{localize 'ANTIQUE.Background.AddManual'}}"><i class="fas fa-plus"></i></a>
+    <a class="group-create" data-list="{{listKey}}" title="{{localize 'ANTIQUE.Background.CreateGroup'}}"><i class="fas fa-folder-plus"></i></a>
+    {{/if}}
+  </h3>
+
+  {{#each grouped.groups as |group|}}
+  <div class="actor-ref-group" data-group-id="{{group.id}}" style="--group-color: {{group.color}}">
+    <div class="actor-ref-group-header">
+      <a class="actor-ref-group-toggle"><i class="fas fa-caret-right actor-ref-group-toggle-icon"></i></a>
+      {{#if ../isEditable}}
+      <input type="color" class="group-color-input" value="{{group.color}}" title="{{localize 'ANTIQUE.Background.GroupColor'}}" />
+      <input type="text" class="group-name-input" value="{{group.name}}" placeholder="{{localize 'ANTIQUE.Background.NewGroup'}}" />
+      <a class="group-delete" title="{{localize 'ANTIQUE.Background.DeleteGroup'}}"><i class="fas fa-trash"></i></a>
+      {{else}}
+      <span class="group-name-label">{{group.name}}</span>
+      {{/if}}
+      <span class="actor-ref-group-count">({{group.members.length}})</span>
+    </div>
+    <div class="actor-ref-list actor-ref-list-grouped">
+      {{#each group.members as |member|}}
+      <div class="actor-ref-card {{#if member.comment}}has-comment{{/if}}" data-uuid="{{member.uuid}}" data-list="{{../../listKey}}" {{#if member.comment}}title="{{member.comment}}"{{/if}}>
+        <img class="actor-ref-img" src="{{member.img}}" width="32" height="32" />
+        <span class="actor-ref-name">{{member.name}}</span>
+        {{#if member.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
+        <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
+      </div>
+      {{/each}}
+      <div class="actor-ref-drop-hint">
+        <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
+      </div>
+    </div>
+  </div>
+  {{/each}}
+
+  <div class="actor-ref-list" data-group-id="">
+    {{#each grouped.ungrouped as |member|}}
+    <div class="actor-ref-card {{#if member.comment}}has-comment{{/if}}" data-uuid="{{member.uuid}}" data-list="{{../listKey}}" {{#if member.comment}}title="{{member.comment}}"{{/if}}>
+      <img class="actor-ref-img" src="{{member.img}}" width="32" height="32" />
+      <span class="actor-ref-name">{{member.name}}</span>
+      {{#if member.comment}}<i class="fas fa-comment actor-ref-comment-icon"></i>{{/if}}
+      <a class="actor-ref-remove" title="Retirer"><i class="fas fa-times"></i></a>
+    </div>
+    {{/each}}
+    <div class="actor-ref-drop-hint">
+      <i class="fas fa-user-plus"></i> {{localize "ANTIQUE.Background.DropHint"}}
+    </div>
+  </div>
+
+  {{#if showFreeText}}
+  {{richEditor freeTextPath freeTextValue editable=isEditable}}
+  {{/if}}
+</div>
