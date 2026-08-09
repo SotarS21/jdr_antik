@@ -136,7 +136,7 @@
       "type": "Item"
     }
   ],
-  "url": "",
-  "manifest": "",
-  "download": ""
+  "url": "https://github.com/SotarS21/jdr_antik",
+  "manifest": "https://github.com/SotarS21/jdr_antik/releases/latest/download/system.json",
+  "download": "https://github.com/SotarS21/jdr_antik/releases/latest/download/system.zip"
 }
