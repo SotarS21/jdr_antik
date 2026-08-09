@@ -492,6 +492,17 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
+    this.element.querySelectorAll(".ingredient-restock").forEach(el => {
+      el.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const li = ev.currentTarget.closest(".item");
+        const item = this.actor.items.get(li.dataset.itemId);
+        if (!item) return;
+        await item.update({ "system.quantity": (item.system.quantity ?? 0) + 1 });
+        this.render({ force: true });
+      });
+    });
+
     this.element.querySelectorAll(".actor-ref-remove").forEach(el => {
       el.addEventListener("click", ev => {
         const card = ev.currentTarget.closest(".actor-ref-card");

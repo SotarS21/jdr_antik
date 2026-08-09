@@ -2,6 +2,16 @@
 
 ---
 
+## Session du 9 août 2026 (suite) — Ingrédients à quantité 0 grisés + réapprovisionnement rapide (v0.6.15 → v0.6.16)
+
+Dans l'onglet Ingrédients de la fiche perso (`apothSections`, déjà exhaustif — tous les ingrédients y sont listés, quantité 0 comprise), une ligne à quantité 0 se distinguait à peine du reste (seul le chiffre passait en rouge via `.quantity-value.empty`, déjà existant). Ajout d'une classe `apoth-row-empty` sur le `<tr>` lui-même (calculée comme `.quantity-value.empty`, sur `lt ing.system.quantity 1`) qui grise toute la ligne (`opacity: 0.55`, remonte à `0.85` au survol) — scopée à `.apoth-row` pour ne pas toucher le style de l'Inventaire qui partage le même marquage `quantity-value.empty`.
+
+Nouveau bouton `.ingredient-restock` (icône `fa-plus-circle`) sur chaque ligne, y compris à quantité 0 : incrémente `system.quantity` de 1 via un handler direct dans `actor-sheet.mjs` (`item.update({"system.quantity": qty + 1})` + re-render), sans passer par `item.consume()` (qui décrémente et est gardé par `system.consumable`) — l'ajout n'a pas cette contrainte, tout ingrédient doit pouvoir être réapprovisionné.
+
+**Fichiers** : `templates/actor/character-sheet.hbs`, `module/sheets/actor-sheet.mjs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 9 août 2026 — Besace d'ingrédients (v0.6.14 → v0.6.15)
 
 Un objet d'équipement tagué `system.apothCategory` (un ingrédient) apparaissait à la fois dans l'onglet Inventaire et dans l'onglet dédié « Ingrédients » (ex-Apothicaire). Premier essai : masquer les ingrédients de l'Inventaire uniquement pour un Praticien de la magie, avec une case à cocher pour les réafficher (`system.showIngredientsInInventory`) — **abandonné en cours de session**, remplacé par l'approche ci-dessous.

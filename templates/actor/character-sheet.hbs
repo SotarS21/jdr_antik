@@ -708,7 +708,7 @@
           </thead>
           <tbody>
             {{#each section.items as |ing|}}
-            <tr class="item equip-row apoth-row" data-item-id="{{ing.id}}">
+            <tr class="item equip-row apoth-row {{#if (lt ing.system.quantity 1)}}apoth-row-empty{{/if}}" data-item-id="{{ing.id}}">
               <td class="equip-img"><img src="{{ing.img}}" width="24" height="24" /></td>
               <td class="equip-name-cell">
                 <a class="equip-toggle"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
@@ -718,6 +718,7 @@
               <td class="price-cell">{{#if ing.system.price}}{{ing.system.price}}{{else}}—{{/if}}</td>
               <td class="quantity-cell">
                 <span class="quantity-value {{#if (lt ing.system.quantity 1)}}empty{{/if}}">{{ing.system.quantity}}</span>
+                <a class="ingredient-restock" title="{{localize 'ANTIQUE.Apoth.Restock'}}"><i class="fas fa-plus-circle"></i></a>
                 {{#if ing.system.consumable}}
                 <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Use'}}"><i class="fas fa-flask"></i></a>
                 {{/if}}

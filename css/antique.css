@@ -2243,6 +2243,26 @@
   color: var(--antique-gold);
 }
 
+.antique .ingredient-restock {
+  cursor: pointer;
+  color: var(--antique-brown);
+  font-size: 0.85em;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+
+.antique .ingredient-restock:hover {
+  color: var(--antique-green);
+}
+
+.antique .apoth-row.apoth-row-empty {
+  opacity: 0.55;
+}
+
+.antique .apoth-row.apoth-row-empty:hover {
+  opacity: 0.85;
+}
+
 /* ---- Linked Ammo Badge ---- */
 .antique .linked-ammo-badge {
   display: inline-flex;

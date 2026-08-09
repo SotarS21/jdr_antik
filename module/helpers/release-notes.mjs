@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.16": {
+    title: "Version 0.6.16 — Ingrédients à quantité 0 grisés, réapprovisionnement rapide",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : dans l'onglet Ingrédients, une ligne à quantité 0 apparaît grisée (au lieu de se confondre avec le reste).</li>
+        <li><strong>Nouveau</strong> : un bouton « + » sur chaque ligne d'ingrédient permet d'ajouter un exemplaire directement, sans ouvrir la fiche de l'objet.</li>
+      </ul>`
+  },
   "0.6.15": {
     title: "Version 0.6.15 — Besace d'ingrédients",
     html: `
