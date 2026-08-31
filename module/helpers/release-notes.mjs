@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.46": {
+    title: "Version 0.6.46 — Glisser une compétence ou une arme vers les macros",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : glisser-déposer une compétence (fiche Personnage) ou une arme (n'importe quelle fiche) vers la barre de macros crée désormais un raccourci qui lance directement le jet correspondant, au lieu d'ouvrir la fiche de l'objet.</li>
+      </ul>`
+  },
   "0.6.45": {
     title: "Version 0.6.45 — Correctif urgent : erreur de validation à la sauvegarde d'un PNJ",
     html: `

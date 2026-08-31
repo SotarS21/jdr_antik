@@ -313,6 +313,10 @@
   "ANTIQUE.ItemType.Effect": "Effet",
   "ANTIQUE.ItemType.Curse": "Malédiction",
 
+  "ANTIQUE.Macro.DragToHotbarHint": "Glisser vers la barre de macros pour créer un raccourci de jet",
+  "ANTIQUE.Macro.RollAttack": "Attaque : {name}",
+  "ANTIQUE.Macro.RollSkill": "Jet : {name}",
+
   "ANTIQUE.Npc.Name": "Nom du PNJ",
   "ANTIQUE.Npc.Type": "Type",
   "ANTIQUE.Npc.Attaque": "Attaque",

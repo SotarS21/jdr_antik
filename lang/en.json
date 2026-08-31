@@ -313,6 +313,10 @@
   "ANTIQUE.ItemType.Effect": "Effect",
   "ANTIQUE.ItemType.Curse": "Curse",
 
+  "ANTIQUE.Macro.DragToHotbarHint": "Drag to the macro hotbar to create a roll shortcut",
+  "ANTIQUE.Macro.RollAttack": "Attack: {name}",
+  "ANTIQUE.Macro.RollSkill": "Roll: {name}",
+
   "ANTIQUE.Npc.Name": "NPC Name",
   "ANTIQUE.Npc.Type": "Type",
   "ANTIQUE.Npc.Attaque": "Attack",

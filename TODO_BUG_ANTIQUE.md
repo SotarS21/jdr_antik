@@ -79,11 +79,12 @@ blanche, arme de jet, arme exotique, combat à deux mains, arme à distance —,
 un PNJ n'a plus accès à cet onglet du tout (les autres onglets restent inchangés). Voir
 `JOURNAL.md`, session du 31 août 2026 (suite 6).
 
-## 9. Glisser les compétences et armes dans la liste des macros
+## 9. ~~Glisser les compétences et armes dans la liste des macros~~ — CORRIGÉ (31 août 2026, v0.6.46)
 
-Permettre de glisser-déposer une compétence ou une arme depuis la fiche vers la barre de macros de
-Foundry (retrouvé dans `todo_foundry.txt`), pour créer une macro de jet rapide — non implémenté à
-ce jour.
+Nouveau `module/helpers/hotbar-macros.mjs` : glisser une arme (déjà glissable) ou une compétence
+(nouveau payload de drag dédié) vers la barre de macros crée un raccourci qui lance directement le
+jet (`item.rollAttack()` / `actor.rollSkill()`), au lieu d'ouvrir la fiche de l'objet. Voir
+`JOURNAL.md`, session du 31 août 2026 (suite 8).
 
 ## 10. Réorganiser les favoris
 

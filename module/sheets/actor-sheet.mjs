@@ -397,6 +397,16 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
 
     this.element.querySelectorAll(".skill-roll").forEach(el => {
       el.addEventListener("click", ev => this.actor.rollSkill(ev.currentTarget.dataset.skill));
+      // Skills aren't Item documents, so they need their own drag payload (a made-up
+      // "AntiqueSkillRoll" type, not a real Foundry document type) — picked up by the
+      // hotbarDrop hook (module/helpers/hotbar-macros.mjs) to build a roll-skill macro.
+      el.addEventListener("dragstart", ev => {
+        ev.dataTransfer.setData("text/plain", JSON.stringify({
+          type: "AntiqueSkillRoll",
+          actorUuid: this.actor.uuid,
+          skillKey: ev.currentTarget.dataset.skill
+        }));
+      });
     });
 
     this.element.querySelectorAll(".skill-trained").forEach(el => {

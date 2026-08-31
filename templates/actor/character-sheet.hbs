@@ -171,7 +171,7 @@
               <li class="skill-row {{#if skill.trained}}trained{{/if}} {{#if skill.isFavorite}}favorite{{/if}}">
                 <button type="button" class="skill-trained" data-skill="{{skill.key}}" data-action="toggleSkillTrained"></button>
                 {{#if skill.icon}}<i class="skill-icon {{skill.icon}}"></i>{{/if}}
-                <span class="skill-name skill-roll" data-skill="{{skill.key}}">{{skill.labelLocalized}}</span>
+                <span class="skill-name skill-roll" data-skill="{{skill.key}}" draggable="true" title="{{localize 'ANTIQUE.Macro.DragToHotbarHint'}}">{{skill.labelLocalized}}</span>
                 {{#if skill.isFavorite}}<i class="fas fa-star skill-fav-star"></i>{{/if}}
                 <input type="number" class="skill-bonus-input" name="system.skills.{{skill.key}}.bonus" data-skill="{{skill.key}}" value="{{skill.bonus}}" title="Bonus" />
                 <span class="skill-total computed total">{{signedNum skill.total}}</span>

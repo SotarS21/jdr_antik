@@ -30,6 +30,7 @@ import { registerMigrationSettings, migrateWorld } from "./module/helpers/migrat
 import { registerVersionCheckSettings, checkSystemVersionUpdate } from "./module/helpers/version-check.mjs";
 import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-browser.mjs";
 import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
+import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -103,6 +104,7 @@ Hooks.once("init", function () {
   registerCompendiumContextMenu();
   registerAlchemyShopContextMenu();
   registerCompendiumBrowserFooterButton();
+  registerHotbarMacroDrop();
 
   // Preload Handlebars templates
   return preloadHandlebarsTemplates();

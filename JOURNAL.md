@@ -2,6 +2,37 @@
 
 ---
 
+## Session du 31 août 2026 (suite 8) — Glisser compétences/armes vers les macros (v0.6.45 → v0.6.46)
+
+Point 9 de `TODO_BUG_ANTIQUE.md`. Les armes étaient déjà glissables (`dragSelector: ".item-list
+.item"`, standard Foundry) mais un drop sur la barre de macros produisait le comportement par défaut
+de Foundry : une macro qui ouvre juste la fiche de l'objet. Les compétences, elles, ne sont pas des
+Item — rien n'existait pour les glisser du tout.
+
+**Correctif** : nouveau `module/helpers/hotbar-macros.mjs` (`registerHotbarMacroDrop()`, appelé
+depuis `Hooks.once("init")`), qui écoute `Hooks.on("hotbarDrop", ...)` — le hook exposé par
+`Hotbar#_onDropData` (vérifié dans le vrai code source Foundry v14,
+`client/applications/ui/hotbar.mjs`) : y retourner `false` **de façon synchrone** empêche Foundry de
+créer sa propre macro par défaut ; la création de la vraie macro se fait ensuite en arrière-plan
+(non attendue par le hook, qui a déjà retourné `false`).
+
+- **Armes** (`data.type === "Item"`) : si l'objet est une arme, macro `script` dont la commande
+  refait `fromUuid(uuid)` puis `item.rollAttack()`. Sinon (tout autre type d'objet), reproduit à
+  l'identique le comportement par défaut de Foundry (`Hotbar#_createDocumentSheetToggle`, même
+  commande `foundry.applications.ui.Hotbar.toggleDocumentSheet(uuid)`) — ce hook interceptant
+  désormais TOUT drop de type "Item", il fallait explicitement préserver le comportement existant
+  pour ce qui n'est pas une arme, sans quoi glisser un autre type d'objet ne ferait plus rien.
+- **Compétences** : nouveau payload de drag inventé (pas un vrai type de document Foundry),
+  `{type: "AntiqueSkillRoll", actorUuid, skillKey}`, posé par un `dragstart` ajouté sur `.skill-roll`
+  (`character-sheet.hbs`/`actor-sheet.mjs`) — la macro générée refait `fromUuid(actorUuid)` puis
+  `actor.rollSkill(skillKey)`.
+
+**Fichiers** : `module/helpers/hotbar-macros.mjs` (nouveau), `antique.mjs`,
+`module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `lang/{fr,en}.json`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 7) — Régression : validation cassée sur les PNJ (v0.6.44 → v0.6.45)
 
 Retour utilisateur (PNJ "Harpie" sur le plateau) : décocher "Praticien de la magie" fait échouer la
