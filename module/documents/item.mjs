@@ -1,5 +1,6 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
 import { refreshSheet } from "../helpers/sheet-utils.mjs";
+import { findIngredientItems } from "../helpers/actor-utils.mjs";
 
 export class AntiqueItem extends Item {
 
@@ -274,9 +275,41 @@ export class AntiqueItem extends Item {
       refreshSheet(this);
     }
 
-    // 4.5. Un-tick every ingredient if the player chose to spend them — they'll
-    // need to re-tick "possédé" (after resupplying) before casting again.
+    // 4.5. Spend the ingredients: decrement the matching real items in the
+    // character's "Ingrédients" tab (matched by name, see findIngredientItems),
+    // then un-tick every checklist entry — they'll need to re-tick "possédé"
+    // (after resupplying) before casting again. An ingredient with no real
+    // inventory match (declarative-only, never stocked) is simply un-ticked.
+    let realIngredientInfo = "";
     if (consumeIngredients) {
+      const consumed = [];
+      const shortages = [];
+      for (const ing of this.system.ingredients) {
+        const required = ing.quantity ?? 0;
+        if (required <= 0) continue;
+        const matches = findIngredientItems(actor, ing.name)
+          .sort((a, b) => (b.system.quantity ?? 0) - (a.system.quantity ?? 0));
+        if (!matches.length) continue;
+        let remaining = required;
+        for (const match of matches) {
+          if (remaining <= 0) break;
+          const take = Math.min(match.system.quantity ?? 0, remaining);
+          if (take <= 0) continue;
+          await match.update({ "system.quantity": match.system.quantity - take });
+          refreshSheet(match);
+          remaining -= take;
+        }
+        const taken = required - remaining;
+        if (taken > 0) consumed.push(`${ing.name} ×${taken}`);
+        if (remaining > 0) shortages.push(`${ing.name} (${remaining})`);
+      }
+      if (consumed.length) {
+        realIngredientInfo = `<i class="fas fa-mortar-pestle"></i> ${game.i18n.localize("ANTIQUE.Spell.RealIngredientsConsumed")} : ${consumed.join(", ")}`;
+      }
+      if (shortages.length) {
+        ui.notifications.warn(`${this.name} : ${game.i18n.format("ANTIQUE.Spell.RealIngredientsShortage", { names: shortages.join(", ") })}`);
+      }
+
       const ingredients = this.system.ingredients.map(i => ({ ...i, possede: false }));
       await this.update({ "system.ingredients": ingredients });
       refreshSheet(actor);
@@ -294,6 +327,10 @@ export class AntiqueItem extends Item {
 
     if (costInfo) {
       parts.push(costInfo);
+    }
+
+    if (realIngredientInfo) {
+      parts.push(realIngredientInfo);
     }
 
     if (actor.type === "character" && this.system.ingredients.length) {

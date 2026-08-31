@@ -2,6 +2,22 @@
 
 ---
 
+## Session du 16 août 2026 — Incanter décompte enfin les vrais ingrédients (v0.6.24 → v0.6.25)
+
+### Contexte
+Retour utilisateur : au clic sur « Incanter », les ingrédients doivent se décrémenter dans l'onglet « Ingrédients » de la fiche de personnage. Audit des trois zones citées (onglet Description du sort, onglet Ingrédients du sort, onglet Ingrédients de la fiche perso) : le champ déclaratif `system.ingredients` du sort ({id, name, quantity, possede}, v0.6.3) n'a jamais été relié à l'inventaire réel. `castSpell()` ne faisait que remettre `possede` à `false` sur toute la liste au moment de « Dépenser les ingrédients » — aucune quantité réelle d'aucun objet n'était jamais touchée. Seul le mécanisme séparé `system.costText` (rituels, onglet Description) décrémentait un vrai objet d'équipement, par correspondance de nom.
+
+### Correctif
+Nouveau helper partagé `findIngredientItems(actor, name)` / `getIngredientStock(actor, name)` dans `module/helpers/actor-utils.mjs` : cherche, parmi les objets `equipment` de l'acteur tagués `system.apothCategory` (le pool de l'onglet Ingrédients de la fiche perso), une correspondance de nom — exacte d'abord, puis sous-chaîne dans un sens ou l'autre (même convention que le mécanisme `costText` existant).
+
+`castSpell()` (étape 4.5) : quand le joueur choisit « Dépenser les ingrédients », chaque entrée de `system.ingredients` est maintenant réellement décomptée sur le(s) objet(s) réel(s) correspondant(s) (répartition sur plusieurs objets si nécessaire, du plus stocké au moins stocké), avec avertissement chat/notification si le stock réel est insuffisant. Un ingrédient déclaratif sans aucune correspondance réelle en inventaire (jamais stocké) est simplement ignoré pour le décompte — pas de blocage, comportement additif qui ne casse pas les sorts déjà remplis avec des ingrédients purement narratifs. Le reset `possede: false` de toute la liste reste inchangé (comportement pré-existant conservé).
+
+Onglet Ingrédients du sort (`spell-sheet.hbs`) : chaque ligne affiche désormais, quand le sort appartient à un acteur, le stock réel actuel de l'ingrédient correspondant (`{count} en stock`), en rouge si insuffisant face à la quantité requise — rend visible le lien entre les trois onglets sans changer le workflow manuel de la case « Possédé ».
+
+**Fichiers** : `module/helpers/actor-utils.mjs`, `module/documents/item.mjs`, `module/sheets/item-sheet.mjs`, `templates/item/spell-sheet.hbs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`.
+
+---
+
 ## Session du 9 août 2026 (suite 1.5) — Régression version-check.mjs corrigée
 
 En remplissant `manifest`/`download` dans `system.json` (pour le workflow de release GitHub), le garde-fou `if (!game.system.manifest) return;` de `checkSystemVersionUpdate()` (censé ne JAMAIS se déclencher pendant le déploiement de dev, voir commentaire du fichier) s'est retrouvé désactivé, déclenchant `overwriteSystemCompendiums()` à chaque rechargement. Ce dernier avait en plus un vrai bug latent : `fetch(\`systems/antique/${packDef.path}\`)` utilisait `packDef.path`, un champ que Foundry normalise en interne (strip du `.db`, et selon la version résout déjà en chemin absolu depuis Data) — d'où des 404 en cascade ("systems/antique/systems/antique/packs/...").

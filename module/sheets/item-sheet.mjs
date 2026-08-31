@@ -1,4 +1,5 @@
 import { captureFocusState, restoreFocusState, preventEnterSubmit, refreshSheet } from "../helpers/sheet-utils.mjs";
+import { getIngredientStock } from "../helpers/actor-utils.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -109,6 +110,21 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
     if (this.item.type === "weapon") {
       context.weaponCategoryOptions = Object.entries(CONFIG.ANTIQUE.weaponCategories)
         .map(([key, cfg]) => ({ key, label: game.i18n.localize(cfg.label) }));
+    }
+
+    // Real stock (character's "Ingrédients" tab) matching each checklist entry
+    // by name — surfaced read-only next to the row so the link between the
+    // spell's declarative ingredients and the actor's actual inventory is visible.
+    if (this.item.type === "spell" && this.item.actor) {
+      context.ingredientStock = {};
+      for (const ing of this.item.system.ingredients) {
+        const count = getIngredientStock(this.item.actor, ing.name);
+        context.ingredientStock[ing.id] = {
+          count,
+          label: game.i18n.format("ANTIQUE.Ingredients.Stock", { count }),
+          insufficient: count < (ing.quantity ?? 0)
+        };
+      }
     }
 
     return context;

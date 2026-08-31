@@ -115,6 +115,9 @@
                  placeholder="{{localize 'ANTIQUE.Ingredients.Name'}}" {{#unless ../isEditable}}disabled{{/unless}} />
           <input type="number" class="ingredient-quantity-input" value="{{ing.quantity}}" min="0"
                  {{#unless ../isEditable}}disabled{{/unless}} />
+          {{#with (lookup ../ingredientStock ing.id) as |stock|}}
+          <span class="ingredient-stock-hint {{#if stock.insufficient}}insufficient{{/if}}">{{stock.label}}</span>
+          {{/with}}
           {{#if ../isEditable}}
           <a class="ingredient-delete" title="{{localize 'ANTIQUE.Ingredients.Delete'}}"><i class="fas fa-trash"></i></a>
           {{/if}}
