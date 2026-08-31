@@ -63,6 +63,40 @@ d'attaque (actuellement absents ou pas tous affichés).
 Ajouter les compétences "Parade" et "Esquive" dans la partie Combat des fiches — à la fois fiche
 Personnage et fiche PNJ.
 
+**Point de blocage** : demander à FLo les règles d'esquive avant d'implémenter (retrouvé dans
+`todo_foundry.txt` sur le Bureau) — pas juste une question de code, les règles précises de ces deux
+compétences ne sont pas encore tranchées.
+
+## 8. PNJ — compétences de combat avec compendium associé
+
+Sur les PNJ, ajouter des compétences de combat, avec un compendium associé — s'inspirer des
+descriptions des créatures mythologiques (retrouvé dans `todo_foundry.txt`). Plus large que le
+point 6 (qui ne concerne que l'affichage CA/Initiative/Déplacement/bonus d'attaque) : il s'agit ici
+d'un vrai système de compétences de combat pour le Bestiaire, pas encore défini.
+
+## 9. Glisser les compétences et armes dans la liste des macros
+
+Permettre de glisser-déposer une compétence ou une arme depuis la fiche vers la barre de macros de
+Foundry (retrouvé dans `todo_foundry.txt`), pour créer une macro de jet rapide — non implémenté à
+ce jour.
+
+## 10. Réorganiser les favoris
+
+Actuellement les favoris de compétence ne peuvent qu'être ajoutés/retirés — permettre de les
+réordonner (glisser-déposer dans la barre de favoris, retrouvé dans `todo_foundry.txt`).
+
+## 11. Éditeur de texte riche — taille dynamique à la fenêtre
+
+Les zones de texte riche (`<prose-mirror>`) ont des hauteurs minimales fixes (ajoutées en juillet/
+août, cf. `JOURNAL.md`) mais ne s'agrandissent pas avec la taille de la fenêtre. Demande d'origine
+(`todo_foundry.txt`, "TODO robin") : agrandir l'éditeur avec la taille de la fenêtre, taille minimum
+300px — seulement partiellement traité (tailles fixes, pas de scaling dynamique).
+
+## 12. Combobox d'emplacement d'équipement mal affichée
+
+Dans l'inventaire, pour ajouter l'emplacement (slot) d'un objet, la liste déroulante s'affiche mal
+(retrouvé dans `todo_foundry.txt`) — aucune trace de correctif dans `JOURNAL.md`, à diagnostiquer.
+
 ---
 
 ## Notes techniques générales
