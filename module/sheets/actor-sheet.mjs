@@ -233,7 +233,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     context.spells = this._prepareSpellItems();
     context.instantSpells = context.spells.filter(s => !s.ritual);
     context.ritualSpells = context.spells.filter(s => s.ritual);
-    context.effects = this._prepareEffectItems();
+    context.effects = this._prepareActorEffects();
 
     const advTotal = context.advantages.reduce((sum, t) => sum + (t.cout ?? 0), 0);
     const disTotal = context.disadvantages.reduce((sum, t) => sum + (t.cout ?? 0), 0);
@@ -536,6 +536,49 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
         if (item) item.delete().then(() => this.render({ force: true }));
+      });
+    });
+
+    // Standalone effects (Traits tab "Effets" section) — real ActiveEffects embedded
+    // directly on the actor (this.actor.effects), not Items, so they need their own
+    // create/edit/delete/toggle distinct from .item-create/.item-edit/.item-delete
+    // above (which all resolve through this.actor.items and would silently no-op on
+    // an effect id). Editing opens Foundry's own default ActiveEffect config sheet —
+    // no custom sheet needed for these.
+    this.element.querySelectorAll(".actor-effect-create").forEach(el => {
+      el.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const created = await this.actor.createEmbeddedDocuments("ActiveEffect", [{
+          name: game.i18n.localize("ANTIQUE.Effects.New"),
+          icon: "icons/svg/aura.svg",
+          disabled: false
+        }]);
+        if (created.length) created[0].sheet.render({ force: true });
+        this.render({ force: true });
+      });
+    });
+
+    this.element.querySelectorAll(".actor-effect-edit").forEach(el => {
+      el.addEventListener("click", ev => {
+        const li = ev.currentTarget.closest("[data-effect-id]");
+        const effect = this.actor.effects.get(li.dataset.effectId);
+        if (effect) effect.sheet.render({ force: true });
+      });
+    });
+
+    this.element.querySelectorAll(".actor-effect-delete").forEach(el => {
+      el.addEventListener("click", ev => {
+        const li = ev.currentTarget.closest("[data-effect-id]");
+        const effect = this.actor.effects.get(li.dataset.effectId);
+        if (effect) effect.delete().then(() => this.render({ force: true }));
+      });
+    });
+
+    this.element.querySelectorAll(".actor-effect-toggle").forEach(el => {
+      el.addEventListener("click", ev => {
+        const li = ev.currentTarget.closest("[data-effect-id]");
+        const effect = this.actor.effects.get(li.dataset.effectId);
+        if (effect) effect.update({ disabled: !effect.disabled }).then(() => this.render({ force: true }));
       });
     });
 
@@ -862,32 +905,23 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     }));
   }
 
-  /** Owned "effect" items — standalone conditions/effects dropped directly on the actor
-   *  (e.g. from a monster ability, a GM ruling, or the general Effets compendium), as
-   *  opposed to an ActiveEffect embedded on an Avantage/Désavantage that's granted
-   *  automatically for as long as that trait is present. Same effectsSummary/hasEffects
-   *  computation as _prepareTraitItems(), for the same accordion display in the Traits
-   *  tab (character-sheet.hbs, "Effets" section). */
-  _prepareEffectItems() {
-    return this.actor.items.filter(i => i.type === "effect").map(item => {
-      const effectLabels = [];
-      for (const effect of item.effects) {
-        if (effect.disabled) continue;
-        for (const change of effect.changes) {
-          effectLabels.push(CONFIG.ANTIQUE.getEffectChangeLabel(change));
-        }
-      }
-      return {
-        id: item.id,
-        name: item.name,
-        img: item.img,
-        duration: item.system.duration,
-        active: item.system.active,
-        system: item.system,
-        effectsSummary: effectLabels.join(", "),
-        hasEffects: effectLabels.length > 0
-      };
-    });
+  /** Standalone ActiveEffects embedded directly on the actor (dropped from the Effets
+   *  compendium, or created via the Traits tab's "+" — a monster condition, a GM
+   *  ruling, anything not tied to a specific Avantage/Désavantage). Distinct from an
+   *  ActiveEffect that lives on an owned trait item (ex. Cuir de Héros, transferred,
+   *  shown in that trait's own accordion via _prepareTraitItems() instead) — Foundry
+   *  keeps actor-level and item-level effects in separate collections
+   *  (this.actor.effects vs. item.effects), no overlap between the two lists. */
+  _prepareActorEffects() {
+    return this.actor.effects.map(effect => ({
+      id: effect.id,
+      name: effect.name,
+      img: effect.img,
+      description: effect.description,
+      disabled: effect.disabled,
+      effectsSummary: effect.changes.map(c => CONFIG.ANTIQUE.getEffectChangeLabel(c)).join(", "),
+      hasEffects: effect.changes.length > 0
+    }));
   }
 
   async _onItemCreate(event) {

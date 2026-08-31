@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.52": {
+    title: "Version 0.6.52 — Simplification du compendium d'Effets",
+    html: `
+      <ul>
+        <li><strong>Changé</strong> : le compendium "Effets" contient maintenant directement de vrais ActiveEffect Foundry, au lieu d'objets qui en contenaient un — plus simple, et le bonus/malus (ex. Connaissance d'Héphaistos : -2 CA) fait maintenant partie du vrai effet actif, plus d'un champ à part. Glisser l'effet directement sur la cible.</li>
+        <li>Après cette mise à jour, relance le monde pour que Foundry recharge le compendium (nécessaire à chaque changement de ce type). Si un ancien objet "Effet" traîne sur un acteur de test, supprime-le à la main — ce type d'objet n'existe plus.</li>
+      </ul>`
+  },
   "0.6.51": {
     title: "Version 0.6.51 — Nouveau : compendium d'Effets (plomberie)",
     html: `

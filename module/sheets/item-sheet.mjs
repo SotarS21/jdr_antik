@@ -23,7 +23,6 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
     disadvantage: { template: "systems/antique/templates/item/disadvantage-sheet.hbs" },
     blessing:     { template: "systems/antique/templates/item/blessing-sheet.hbs" },
     spell:        { template: "systems/antique/templates/item/spell-sheet.hbs" },
-    effect:       { template: "systems/antique/templates/item/effect-sheet.hbs" },
     curse:        { template: "systems/antique/templates/item/curse-sheet.hbs" }
   };
 

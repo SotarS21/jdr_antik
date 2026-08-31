@@ -2,6 +2,54 @@
 
 ---
 
+## Session du 31 août 2026 (suite 14) — Simplification : compendium d'Effets = ActiveEffect pur (v0.6.51 → v0.6.52)
+
+Retour utilisateur après test de la session précédente (suite 13) : le champ "Actif" de l'objet
+Effet est redondant avec le vrai effet actif déjà listé dans son propre onglet Effets ; pareil pour
+"Durée" ; et le bonus de CA de Connaissance d'Héphaistos devrait faire partie du vrai effet actif
+plutôt que d'être un champ à part avec un bouton de chat séparé. Question posée en retour : pourquoi
+ne pas mettre directement des documents de type `ActiveEffect` dans le compendium plutôt que des
+objets "Effet" qui en contiennent un ?
+
+**Vérifié dans le vrai schéma Foundry** (`common/documents/active-effect.mjs`) : `ActiveEffect` a
+déjà nativement `name`, `img`, `description` (HTML), une vraie `duration` structurée
+(value/units/expiry, plus riche que le champ texte qu'on avait), `disabled`, `transfer` — tout ce
+qu'on avait dupliqué à la main sur `AntiqueEffect` existait déjà. Aucune raison de garder un objet
+Item comme simple emballage.
+
+**Correctif** : type d'objet `AntiqueEffect` retiré entièrement du système (`item-effect.mjs`,
+`effect-sheet.hbs` supprimés ; retiré de `antique.mjs` — dataModels, types de fiche d'objet,
+préchargement de template — et de `item-sheet.mjs`). Le compendium `packs/effets.db` /
+`packs/effets/` contient désormais directement des documents `ActiveEffect` de premier niveau
+(`type: "ActiveEffect"` dans `system.json`, préfixe de clé LevelDB `!effects!` — confirmé dans le
+schéma Foundry, `ActiveEffect.metadata.collection === "effects"`, même convention que `!items!`
+pour un pack Item).
+
+- **Connaissance d'Héphaistos** : n'a plus de champ `caBonus` à part ni de bouton de chat — c'est
+  maintenant un `ActiveEffect` `system.ca.temp` -2 comme les deux autres, à glisser directement sur
+  la cible (désactiver ou supprimer l'effet quand il doit cesser).
+- **Onglet Traits** : la section "Effets" lit maintenant `actor.effects` (collection Foundry native
+  des ActiveEffect embarqués directement sur l'acteur) au lieu de `actor.items` filtrés par type —
+  distincte des effets qui vivent sur un Avantage/Désavantage possédé (`item.effects`, déjà montrés
+  dans l'accordéon de ce trait). Nouveaux handlers dédiés dans `actor-sheet.mjs`
+  (`.actor-effect-create/-edit/-delete/-toggle`, plutôt que les `.item-*` génériques qui
+  résolvaient via `actor.items` et auraient échoué silencieusement). Éditer un effet ouvre la fiche
+  native Foundry de configuration d'ActiveEffect — aucune fiche personnalisée à maintenir.
+
+**Note pour l'utilisateur** : relancer le monde à nouveau après ce déploiement (le type du pack a
+changé, Foundry doit le relire). Un éventuel objet "Effet" déjà glissé sur un acteur de test lors de
+la session précédente restera un type d'objet orphelin (n'existe plus) — à supprimer à la main si
+présent.
+
+**Fichiers** : suppression de `module/data-models/items/item-effect.mjs`,
+`templates/item/effect-sheet.hbs` ; `antique.mjs`, `module/sheets/item-sheet.mjs`,
+`module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `css/antique.css`,
+`lang/{fr,en}.json`, `system.json`, `packs/effets.db`, `packs/effets/`,
+`packs/_build-effets.js`, `packs/_build-effets-leveldb.js`, `module/documents/item.mjs`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 31 août 2026 (suite 13) — Architecture des Effets + 3 exemples (v0.6.50 → v0.6.51)
 
 Suite à la nouvelle demande retrouvée dans `todo_foundry.txt` ("Feature antique" : système d'effets

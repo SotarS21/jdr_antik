@@ -1693,6 +1693,10 @@
   cursor: pointer;
 }
 
+.antique .trait-row.disabled {
+  opacity: 0.5;
+}
+
 .antique .trait-toggle-icon {
   color: var(--antique-border);
   font-size: 0.8em;

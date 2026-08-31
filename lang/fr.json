@@ -295,10 +295,6 @@
   "ANTIQUE.Spell.TemplateColor": "Couleur du gabarit",
   "ANTIQUE.Spell.PlaceTemplate": "Placer un gabarit",
   "ANTIQUE.Spell.NoActiveScene": "Aucune scène active sur laquelle placer le gabarit.",
-  "ANTIQUE.Effect.Duration": "Dur\u00e9e",
-  "ANTIQUE.Effect.Active": "Actif",
-  "ANTIQUE.Effect.Inactive": "Inactif",
-  "ANTIQUE.Effect.CaBonusHint": "Ajoute un bouton \u00ab Appliquer l'effet \u00bb quand cet effet est envoy\u00e9 au chat (0 = aucun bouton). Pour un malus cibl\u00e9 (ex. r\u00e9duire la CA d'un adversaire), pas pour un bonus passif \u2014 \u00e7a, c'est un vrai ActiveEffect dans l'onglet Effets.",
   "ANTIQUE.Description": "Description",
 
   "ANTIQUE.Item.New": "Nouveau {type}",
@@ -355,6 +351,7 @@
   "ANTIQUE.Ingredients.Delete": "Retirer",
   "ANTIQUE.Tab.Effects": "Effets",
   "ANTIQUE.Effects.Title": "Effets actifs",
+  "ANTIQUE.Effects.New": "Nouvel effet",
   "ANTIQUE.Effects.Add": "Ajouter un effet",
   "ANTIQUE.Effects.NoEffects": "Aucun effet configur\u00e9",
   "ANTIQUE.Effects.Disabled": "D\u00e9sactiv\u00e9",

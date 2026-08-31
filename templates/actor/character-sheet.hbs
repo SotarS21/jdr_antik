@@ -548,18 +548,19 @@
         </ul>
       </div>
 
-      {{!-- Effets (standalone conditions/effects dropped directly on the actor —
-           distinct from an ActiveEffect embedded on an Avantage/Désavantage, which
-           applies automatically for as long as that trait is present and isn't
-           listed here) --}}
+      {{!-- Effets : de vrais ActiveEffect Foundry embarqués directement sur l'acteur
+           (glissés depuis le compendium Effets, ou créés ici) — distincts d'un
+           ActiveEffect qui vit sur un Avantage/Désavantage possédé (transféré,
+           montré dans l'accordéon de ce trait, pas ici). Éditer ouvre la fiche
+           native Foundry de l'ActiveEffect — aucune fiche personnalisée requise. --}}
       <div class="traits-section">
         <h2>{{localize "ANTIQUE.Traits.Effects"}}
-          <a class="item-create" data-type="effect" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+          <a class="actor-effect-create" title="{{localize 'ANTIQUE.Effects.Add'}}"><i class="fas fa-plus"></i></a>
         </h2>
         <ul class="item-list traits-list">
           {{#each effects as |eff|}}
-          <li class="item trait-row" data-item-id="{{eff.id}}">
-            <img class="trait-list-img item-chat" src="{{eff.img}}" width="24" height="24" title="{{localize 'ANTIQUE.Item.PostToChat'}}" />
+          <li class="item trait-row {{#if eff.disabled}}disabled{{/if}}" data-effect-id="{{eff.id}}">
+            <img class="trait-list-img" src="{{eff.img}}" width="24" height="24" />
             <i class="fas fa-caret-right trait-toggle-icon"></i>
             <span class="trait-name">{{eff.name}}</span>
             {{#if eff.hasEffects}}
@@ -568,11 +569,14 @@
             </span>
             {{/if}}
             <span class="item-controls">
-              <a class="item-edit"><i class="fas fa-edit"></i></a>
-              <a class="item-delete"><i class="fas fa-trash"></i></a>
+              <a class="actor-effect-toggle" title="{{#if eff.disabled}}{{localize 'ANTIQUE.Effects.Disabled'}}{{else}}{{localize 'ANTIQUE.Effects.Active'}}{{/if}}">
+                <i class="fas {{#if eff.disabled}}fa-times-circle{{else}}fa-check-circle{{/if}}"></i>
+              </a>
+              <a class="actor-effect-edit"><i class="fas fa-edit"></i></a>
+              <a class="actor-effect-delete"><i class="fas fa-trash"></i></a>
             </span>
             <div class="trait-detail-content">
-              {{{eff.system.description}}}
+              {{{eff.description}}}
               {{#if eff.hasEffects}}
               <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{eff.effectsSummary}}</div>
               {{/if}}

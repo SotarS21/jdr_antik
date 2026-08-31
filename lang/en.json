@@ -295,10 +295,6 @@
   "ANTIQUE.Spell.TemplateColor": "Template color",
   "ANTIQUE.Spell.PlaceTemplate": "Place template",
   "ANTIQUE.Spell.NoActiveScene": "No active scene to place the template on.",
-  "ANTIQUE.Effect.Duration": "Duration",
-  "ANTIQUE.Effect.Active": "Active",
-  "ANTIQUE.Effect.Inactive": "Inactive",
-  "ANTIQUE.Effect.CaBonusHint": "Adds an \"Apply effect\" button when this effect is posted to chat (0 = no button). For a targeted malus (ex. reduce an opponent's CA), not a passive bonus — that's a real ActiveEffect in the Effects tab.",
   "ANTIQUE.Description": "Description",
 
   "ANTIQUE.Item.New": "New {type}",
@@ -355,6 +351,7 @@
   "ANTIQUE.Ingredients.Delete": "Remove",
   "ANTIQUE.Tab.Effects": "Effects",
   "ANTIQUE.Effects.Title": "Active Effects",
+  "ANTIQUE.Effects.New": "New effect",
   "ANTIQUE.Effects.Add": "Add an effect",
   "ANTIQUE.Effects.NoEffects": "No effects configured",
   "ANTIQUE.Effects.Disabled": "Disabled",

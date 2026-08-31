@@ -11,7 +11,6 @@ import { AntiqueAdvantage } from "./module/data-models/items/item-advantage.mjs"
 import { AntiqueDisadvantage } from "./module/data-models/items/item-disadvantage.mjs";
 import { AntiqueBlessing } from "./module/data-models/items/item-blessing.mjs";
 import { AntiqueSpell } from "./module/data-models/items/item-spell.mjs";
-import { AntiqueEffect } from "./module/data-models/items/item-effect.mjs";
 import { AntiqueCurse } from "./module/data-models/items/item-curse.mjs";
 
 // Import Document classes
@@ -57,7 +56,6 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.disadvantage = AntiqueDisadvantage;
   CONFIG.Item.dataModels.blessing = AntiqueBlessing;
   CONFIG.Item.dataModels.spell = AntiqueSpell;
-  CONFIG.Item.dataModels.effect = AntiqueEffect;
   CONFIG.Item.dataModels.curse = AntiqueCurse;
 
   // Register Actor sheets
@@ -87,7 +85,7 @@ Hooks.once("init", function () {
   // Register Item sheets
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
   foundry.documents.collections.Items.registerSheet("antique", AntiqueItemSheet, {
-    types: ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "effect", "curse"],
+    types: ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "curse"],
     makeDefault: true,
     label: "ANTIQUE.Sheet.Item"
   });
@@ -171,7 +169,6 @@ async function preloadHandlebarsTemplates() {
     "systems/antique/templates/item/disadvantage-sheet.hbs",
     "systems/antique/templates/item/blessing-sheet.hbs",
     "systems/antique/templates/item/spell-sheet.hbs",
-    "systems/antique/templates/item/effect-sheet.hbs",
     "systems/antique/templates/item/curse-sheet.hbs"
   ];
   return foundry.applications.handlebars.loadTemplates(templatePaths);
