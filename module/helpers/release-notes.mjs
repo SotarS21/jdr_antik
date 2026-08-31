@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.51": {
+    title: "Version 0.6.51 — Nouveau : compendium d'Effets (plomberie)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau compendium "Effets" — des objets glissables directement sur un PJ/PNJ (visibles sur le token et dans l'onglet Traits), indépendants de tout Avantage. 3 premiers exemples : Cuir de Héros (+2 Robustesse), Athlète (Déplacement ×2), Connaissance d'Héphaistos (réduit la CA d'une cible de 2, via un bouton dans le chat).</li>
+        <li><strong>Corrigé</strong> : l'avantage "Athléte" disait "Capacité de déplacement x2" mais n'avait aucun effet mécanique — corrigé (macro fournie pour le compendium déjà déployé).</li>
+      </ul>`
+  },
   "0.6.50": {
     title: "Version 0.6.50 — Esquive et Parade en réaction, dans l'onglet Combat",
     html: `

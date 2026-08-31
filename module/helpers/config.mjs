@@ -131,7 +131,11 @@ ANTIQUE.apothCategories = {
 ANTIQUE.getEffectChangeLabel = function(change) {
   const key = change.key;
   const value = Number(change.value);
-  const sign = value >= 0 ? "+" : "";
+  // MULTIPLY (mode 1, ex. Athlète: Déplacement ×2) reads as a factor, not an amount
+  // to add — every other mode used in this system's compendiums is ADD (mode 2),
+  // where the usual +N/-N notation applies.
+  const isMultiply = change.mode === CONST.ACTIVE_EFFECT_MODES.MULTIPLY;
+  const sign = isMultiply ? "×" : (value >= 0 ? "+" : "");
 
   // Abilities
   const abilityMatch = key.match(/^system\.abilities\.(\w+)\.(\w+)$/);
@@ -161,6 +165,11 @@ ANTIQUE.getEffectChangeLabel = function(change) {
   // PV
   if (key === "system.pv.max") return `${sign}${value} PV Max`;
   if (key === "system.pv.value") return `${sign}${value} PV`;
+
+  // Movement
+  if (key === "system.deplacement") {
+    return `${sign}${value} ${game.i18n.localize("ANTIQUE.Identity.Deplacement")}`;
+  }
 
   // CA
   const caMatch = key.match(/^system\.ca\.(\w+)$/);

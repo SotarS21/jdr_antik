@@ -862,15 +862,32 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     }));
   }
 
+  /** Owned "effect" items — standalone conditions/effects dropped directly on the actor
+   *  (e.g. from a monster ability, a GM ruling, or the general Effets compendium), as
+   *  opposed to an ActiveEffect embedded on an Avantage/Désavantage that's granted
+   *  automatically for as long as that trait is present. Same effectsSummary/hasEffects
+   *  computation as _prepareTraitItems(), for the same accordion display in the Traits
+   *  tab (character-sheet.hbs, "Effets" section). */
   _prepareEffectItems() {
-    return this.actor.items.filter(i => i.type === "effect").map(item => ({
-      id: item.id,
-      name: item.name,
-      img: item.img,
-      duration: item.system.duration,
-      active: item.system.active,
-      system: item.system
-    }));
+    return this.actor.items.filter(i => i.type === "effect").map(item => {
+      const effectLabels = [];
+      for (const effect of item.effects) {
+        if (effect.disabled) continue;
+        for (const change of effect.changes) {
+          effectLabels.push(CONFIG.ANTIQUE.getEffectChangeLabel(change));
+        }
+      }
+      return {
+        id: item.id,
+        name: item.name,
+        img: item.img,
+        duration: item.system.duration,
+        active: item.system.active,
+        system: item.system,
+        effectsSummary: effectLabels.join(", "),
+        hasEffects: effectLabels.length > 0
+      };
+    });
   }
 
   async _onItemCreate(event) {

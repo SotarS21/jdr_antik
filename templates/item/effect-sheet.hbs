@@ -21,6 +21,11 @@
         <label>{{#if system.active}}{{localize "ANTIQUE.Effect.Active"}}{{else}}{{localize "ANTIQUE.Effect.Inactive"}}{{/if}}</label>
         <input type="checkbox" name="system.active" {{#if system.active}}checked{{/if}} />
       </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Spell.CaBonus"}}</label>
+        <input type="number" name="system.caBonus" value="{{system.caBonus}}" />
+        <span class="cout-hint">{{localize "ANTIQUE.Effect.CaBonusHint"}}</span>
+      </div>
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
         {{richEditor "system.description" system.description editable=isEditable}}

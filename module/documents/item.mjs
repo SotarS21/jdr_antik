@@ -166,6 +166,19 @@ export class AntiqueItem extends Item {
       return;
     }
 
+    // Effect items with a caBonus set (ex. Connaissance d'Héphaistos: -2, a targeted
+    // malus) get the same "Appliquer l'effet" button as a buff spell — same button
+    // class/dataset, so the shared renderChatMessageHTML handler in antique.mjs
+    // (originally written for spells) needs no changes to also drive this.
+    let applyEffectButton = "";
+    if (this.type === "effect" && this.system.caBonus) {
+      const applyLabel = game.i18n.format("ANTIQUE.Effect.ApplyButton", { amount: this.system.caBonus });
+      applyEffectButton = `
+        <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}">
+          <i class="fas fa-shield-halved"></i> ${applyLabel}
+        </button>`;
+    }
+
     const description = this.system.description ?? "";
     const content = `
       <div class="antique item-chat-card">
@@ -174,6 +187,7 @@ export class AntiqueItem extends Item {
           <h3>${this.name}</h3>
         </header>
         ${description ? `<div class="card-content">${description}</div>` : ""}
+        ${applyEffectButton}
       </div>`;
     await ChatMessage.create({ speaker, content });
   }

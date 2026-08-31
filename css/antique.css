@@ -2540,6 +2540,11 @@
   color: var(--antique-dark-gold);
 }
 
+.antique .effect-badge.condition {
+  background: rgba(29, 87, 99, 0.15);
+  color: var(--antique-teal, #1d5763);
+}
+
 .antique .effect-badge i {
   font-size: 0.8em;
 }

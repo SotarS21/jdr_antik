@@ -240,6 +240,7 @@
   "ANTIQUE.Traits.Advantages": "Advantages",
   "ANTIQUE.Traits.Disadvantages": "Disadvantages",
   "ANTIQUE.Traits.Curses": "Curses",
+  "ANTIQUE.Traits.Effects": "Effects",
   "ANTIQUE.Traits.Blessings": "Blessings",
   "ANTIQUE.Traits.Spells": "Spells",
   "ANTIQUE.Traits.SpellsInstant": "Instant Spells",
@@ -297,6 +298,7 @@
   "ANTIQUE.Effect.Duration": "Duration",
   "ANTIQUE.Effect.Active": "Active",
   "ANTIQUE.Effect.Inactive": "Inactive",
+  "ANTIQUE.Effect.CaBonusHint": "Adds an \"Apply effect\" button when this effect is posted to chat (0 = no button). For a targeted malus (ex. reduce an opponent's CA), not a passive bonus — that's a real ActiveEffect in the Effects tab.",
   "ANTIQUE.Description": "Description",
 
   "ANTIQUE.Item.New": "New {type}",

@@ -2,6 +2,68 @@
 
 ---
 
+## Session du 31 août 2026 (suite 13) — Architecture des Effets + 3 exemples (v0.6.50 → v0.6.51)
+
+Suite à la nouvelle demande retrouvée dans `todo_foundry.txt` ("Feature antique" : système d'effets
+glissables depuis un compendium, un par Avantage, avec de la vraie mécanique quand c'est possible).
+Discussion d'architecture avec l'utilisateur avant d'implémenter — décision : construire d'abord la
+plomberie avec 2-3 exemples plutôt que les ~19 d'un coup.
+
+**Constat de départ** : le type d'objet `AntiqueEffect` ("Effet") existait déjà (`item-effect.mjs`,
+`effect-sheet.hbs`) mais était un simple stub narratif jamais utilisé dans aucun compendium — bon
+véhicule pour ce chantier, pas besoin d'un nouveau type de document ni d'un compendium
+`ActiveEffect` autonome (jamais utilisé dans ce système, aurait demandé de la plomberie neuve).
+`_prepareEffectItems()` existait aussi déjà côté `actor-sheet.mjs` (`context.effects`) mais n'était
+jamais consommé par aucun template — code mort, jamais fini.
+
+**Deux points d'attache pour un même objet "Effet"**, sans dupliquer de logique :
+1. Intégré directement à l'avantage correspondant (`effects` embarqué sur l'item Avantage — déjà le
+   mécanisme existant, ex. "Cuir de Hero" l'avait déjà correctement pour +2 Robustesse).
+2. Glissé directement sur un PJ/PNJ comme objet indépendant — fonctionne déjà nativement (item
+   `transfer:true`, icône de token gratuite côté Foundry) ; il manquait juste l'affichage dans
+   l'onglet Traits.
+
+**3 exemples couvrant les 3 familles mécaniques** (nouveau compendium `packs/effets.db` +
+`packs/effets/`, script `packs/_build-effets.js` / `_build-effets-leveldb.js`) :
+- **Cuir de Héros** — bonus passif ADD (`system.saves.robustesse.base` +2). Déjà présent et correct
+  sur l'avantage lui-même (`aAdv000000000014`), rien à changer côté avantage.
+- **Athlète** — bonus passif MULTIPLY (`system.deplacement` ×2, mode `CONST.ACTIVE_EFFECT_MODES.
+  MULTIPLY`). L'avantage "Athléte" (`aAdv000000000007`) décrivait déjà "Capacité de déplacement x2"
+  mais son tableau `effects` était vide — vrai bug de contenu, corrigé (source + macro
+  `packs/_fix-athlete-effect.js` pour le compendium déjà déployé et les copies sur acteur).
+- **Connaissance d'Héphaistos** — effet ponctuel ciblé, pas un bonus passif : nouveau champ
+  `system.caBonus` sur `AntiqueEffect` (même concept que le `caBonus` des sorts), `postToChat()`
+  ajoute le même bouton "Appliquer l'effet" qu'un sort à bonus de CA (`applyCaBonus`, déjà générique
+  sur la cible) quand `caBonus` est non nul — zéro nouveau hook de chat, réutilise le handler
+  existant (`renderChatMessageHTML` dans `antique.mjs`, déjà écrit pour les sorts).
+
+**Bug corrigé au passage** : `CONFIG.ANTIQUE.getEffectChangeLabel()` (résumé affiché dans l'accordéon
+Traits) supposait toujours un mode ADD (`+N`/`-N`) et n'avait aucun cas pour `system.deplacement` —
+aurait affiché "+2 system.deplacement" (faux et moche) pour l'effet Athlète. Corrigé : `×N` pour le
+mode MULTIPLY, libellé propre pour le déplacement.
+
+**Onglet Traits** : nouvelle section "Effets" (`character-sheet.hbs`), même gabarit que Malédictions
+(liste simple, pas de colonne coût) — icône cliquable pour envoyer au chat (déclenche le bouton
+d'application le cas échéant), badge résumant l'ActiveEffect embarqué s'il y en a un.
+
+**Limite connue, assumée pour cette première passe** : pas de section "Effets" dédiée sur la fiche
+PNJ (pas de bloc Traits sur cette fiche) — un effet déposé sur un PNJ s'applique quand même
+mécaniquement (transfert d'ActiveEffect natif Foundry), juste sans affichage dédié pour l'instant.
+
+**Suite prévue** (non faite ici, à la demande de l'utilisateur de valider la plomberie d'abord) :
+remplir le compendium avec le reste des ~19 avantages listés dans `todo_foundry.txt`, dont
+Cuisine de Déméter (objet consommable + macro de génération via un lien dans le chat) et Peau
+d'Hadès (PV actuels ×2, même mode MULTIPLY qu'Athlète — déjà prouvé).
+
+**Fichiers** : `module/data-models/items/item-effect.mjs`, `templates/item/effect-sheet.hbs`,
+`module/documents/item.mjs`, `module/sheets/actor-sheet.mjs`,
+`templates/actor/character-sheet.hbs`, `module/helpers/config.mjs`, `css/antique.css`,
+`lang/{fr,en}.json`, `system.json`, `packs/effets.db` (nouveau), `packs/effets/` (nouveau),
+`packs/_build-effets.js` (nouveau), `packs/_build-effets-leveldb.js` (nouveau),
+`packs/avantages.db`, `packs/_fix-athlete-effect.js` (nouveau), `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 31 août 2026 (suite 12) — Esquive/Parade en réaction (v0.6.49 → v0.6.50)
 
 Point 7 de `TODO_BUG_ANTIQUE.md`, débloqué après clarification des règles avec l'utilisateur :

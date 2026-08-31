@@ -240,6 +240,7 @@
   "ANTIQUE.Traits.Advantages": "Avantages",
   "ANTIQUE.Traits.Disadvantages": "D\u00e9savantages",
   "ANTIQUE.Traits.Curses": "Mal\u00e9dictions",
+  "ANTIQUE.Traits.Effects": "Effets",
   "ANTIQUE.Traits.Blessings": "B\u00e9n\u00e9dictions",
   "ANTIQUE.Traits.Spells": "Sorts",
   "ANTIQUE.Traits.SpellsInstant": "Sorts instantanés",
@@ -297,6 +298,7 @@
   "ANTIQUE.Effect.Duration": "Dur\u00e9e",
   "ANTIQUE.Effect.Active": "Actif",
   "ANTIQUE.Effect.Inactive": "Inactif",
+  "ANTIQUE.Effect.CaBonusHint": "Ajoute un bouton \u00ab Appliquer l'effet \u00bb quand cet effet est envoy\u00e9 au chat (0 = aucun bouton). Pour un malus cibl\u00e9 (ex. r\u00e9duire la CA d'un adversaire), pas pour un bonus passif \u2014 \u00e7a, c'est un vrai ActiveEffect dans l'onglet Effets.",
   "ANTIQUE.Description": "Description",
 
   "ANTIQUE.Item.New": "Nouveau {type}",
