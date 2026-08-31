@@ -2,6 +2,16 @@
 
 ---
 
+## Session du 9 août 2026 (suite 7) — Armures d'equipement.db ajoutées au Navigateur (v0.6.21 → v0.6.22)
+
+`equipement.db` s'est avéré être un mélange : 20 objets qui dupliquent verbatim des potions déjà présentes dans Alchimie (même nom, prix identique en description — probablement un reliquat d'avant que le compendium Alchimie ne soit séparé), 21 autres consommables/objets d'aventure sans prix nulle part, et 9 vraies armures/boucliers grecs nommés (Linothorax, Thorax de cuir, Cuirasse de bronze, Armure d'hoplite complète, Casque corinthien, Casque chalcidien, Cnémides de bronze, Aspis, Peltè) also sans prix nulle part (ni description, ni Excel source).
+
+Consigne utilisateur : laisser les armures à 0 en attendant les vrais prix. Nouveau script `packs/_fix-equipement-armor-price.js` (one-off, pas un vrai build script puisque `equipement.db` n'en a pas) : met `system.price = "0 po"` uniquement sur ces 9 armures nommées explicitement, sans toucher au reste du fichier — les 20 doublons et les 21 autres objets restent sans prix, donc invisibles dans le Navigateur (filtre "seulement ce qui a un prix"), ce qui évite à la fois la duplication avec Alchimie et l'invention de prix pour ce qui n'en a pas. `antique.equipement` ajouté à `BROWSED_PACKS` dans `compendium-browser.mjs`.
+
+**Fichiers** : `packs/_fix-equipement-armor-price.js` (nouveau), `packs/equipement.db`, `module/apps/compendium-browser.mjs`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 9 août 2026 (suite 6, ultracode) — Navigateur de Compendium multi-packs + drag&drop (v0.6.20 → v0.6.21)
 
 Retour utilisateur : "le bouton de navigation dans les compendiums n'a pas pour vocation de faire une boutique mais plus un navigateur... avec option d'acheter n'importe quel objet depuis les listes d'équipement, d'ingrédient et tout ce qui a un prix." Renommage + refonte complète : `module/apps/ingredient-shop.mjs` (+ `.hbs`) → `module/apps/compendium-browser.mjs` (+ `.hbs`), classe `AntiqueIngredientShop` → `AntiqueCompendiumBrowser`. `BROWSED_PACKS` (tableau `{id, label}`) remplace le `SHOP_PACK_ID` unique — actuellement `["antique.armes", "antique.alchimie"]`, chaque section du navigateur correspond à un pack plutôt qu'à une `apothCategory`. Ne montre que les documents avec un `system.price` non vide (filtre "tout ce qui a un prix"). `grantItemToActor()` généralisé pour matcher par `type + name + apothCategory` (ce dernier `undefined` des deux côtés pour les armes/équipement générique, donc toujours égal).
