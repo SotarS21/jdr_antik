@@ -101,10 +101,12 @@ vraie grille CSS à 2 colonnes, restructurer une seule ligne sans perturber les 
 trop risqué sans accès navigateur pour vérifier visuellement. Voir `JOURNAL.md`, session du 31 août
 2026 (suite 10).
 
-## 12. Combobox d'emplacement d'équipement mal affichée
+## 12. ~~Combobox d'emplacement d'équipement mal affichée~~ — CORRIGÉ (31 août 2026, v0.6.49)
 
-Dans l'inventaire, pour ajouter l'emplacement (slot) d'un objet, la liste déroulante s'affiche mal
-(retrouvé dans `todo_foundry.txt`) — aucune trace de correctif dans `JOURNAL.md`, à diagnostiquer.
+Cause : le `<select>` d'emplacement (fiche d'objet) n'avait pas de largeur/flex-basis dans sa ligne
+`.form-group`, contrairement aux champs texte — débordait du cadre sur une fiche étroite au lieu de
+partager l'espace avec son label. Corrigé pour tous les `<select>` des fiches d'objet (même défaut
+partagé). Voir `JOURNAL.md`, session du 31 août 2026 (suite 11).
 
 ---
 

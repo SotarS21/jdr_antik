@@ -2,6 +2,37 @@
 
 ---
 
+## Session du 31 août 2026 (suite 11) — Combolist d'emplacement mal affichée (v0.6.48 → v0.6.49)
+
+Point 12 de `TODO_BUG_ANTIQUE.md`. Deux mécanismes distincts existent pour l'emplacement d'un
+objet : (1) un menu contextuel "+" dans le tableau d'inventaire (`.item-equip-picker`, session du
+25 juillet), et (2) un vrai `<select name="system.slot">` sur la fiche de l'objet lui-même
+(`equipment-sheet.hbs`/`weapon-sheet.hbs`) — c'est ce deuxième, la vraie "combolist", que visait le
+signalement d'origine.
+
+**Cause** : `.antique.sheet.item .form-group` est une ligne flex (`label` + champ) sans
+`flex-wrap`, et aucune règle ne donnait de largeur/flex-basis au `<select>` — contrairement à
+`input[type="number"]` qui a sa propre règle. Un `<select>` prend nativement la largeur de sa plus
+longue `<option>` (ex. "Arme principale"), souvent plus large qu'un champ texte, donc plus
+susceptible de déborder du cadre sur une fiche d'objet étroite faute de pouvoir rétrécir.
+
+**Correctif** : `.antique.sheet.item .form-group select {flex:1; min-width:0}` — s'applique à tous
+les `<select>` des fiches d'objet (emplacement, catégorie d'arme, compétence liée, catégorie
+d'ingrédient, munition liée...), pas seulement celui de l'emplacement initialement signalé, puisque
+tous partagent exactement la même structure `.form-group` et le même défaut.
+
+Point du menu contextuel (`.item-equip-picker`, mécanisme 1) audité en passant : `fixed:true`
+déplace le menu dans `document.body` via l'API `popover` native — la règle `.antique #context-menu
+{z-index:9999}` ne le concerne donc plus (il sort du DOM scopé `.antique`), mais Foundry force de
+toute façon `z-index:unset` sur `#context-menu[popover]` (vérifié dans le CSS core Foundry) et
+s'appuie uniquement sur le top-layer natif du navigateur pour l'empilement — donc sans impact réel,
+rien à corriger de ce côté.
+
+**Fichiers** : `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 10) — Éditeurs de texte : taille dynamique + plancher 300px (v0.6.47 → v0.6.48)
 
 Point 11 de `TODO_BUG_ANTIQUE.md` (todo_foundry.txt, "TODO robin"). Audit de tous les `<prose-mirror>`

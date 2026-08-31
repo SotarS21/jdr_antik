@@ -2141,6 +2141,17 @@
   min-width: 100px;
 }
 
+/* A <select>'s natural content width (its longest <option>, e.g. "Arme principale")
+   is usually wider than a plain text input's default width — without a flex basis
+   of its own, it just overflows the row's remaining space on a narrower item sheet
+   instead of sharing it, since .form-group has no flex-wrap. Applies to every
+   dropdown on an item sheet (slot, catégorie, compétence liée...), not just the
+   equipment slot picker that was originally reported. */
+.antique.sheet.item .form-group select {
+  flex: 1;
+  min-width: 0;
+}
+
 .antique.sheet.item .form-group.description {
   flex-direction: column;
   align-items: stretch;

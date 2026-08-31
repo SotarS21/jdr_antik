@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.49": {
+    title: "Version 0.6.49 — Listes déroulantes des fiches d'objet mieux affichées",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : sur les fiches d'objet (emplacement, catégorie, compétence liée...), les listes déroulantes n'avaient pas de largeur définie et pouvaient déborder du cadre sur une fenêtre étroite au lieu de partager l'espace avec leur label.</li>
+      </ul>`
+  },
   "0.6.48": {
     title: "Version 0.6.48 — Éditeurs de texte plus grands, certains s'agrandissent avec la fenêtre",
     html: `
