@@ -19,7 +19,7 @@ export function resolveShopTargetActors() {
 
 /** Item types that track a stackable system.quantity — everything else (advantage,
  *  disadvantage, blessing, spell) is a trait, always added as a fresh copy, never stacked. */
-const STACKABLE_TYPES = new Set(["weapon", "equipment"]);
+export const STACKABLE_TYPES = new Set(["weapon", "equipment"]);
 
 /**
  * Add a copy of a compendium item to the target actor. For stackable types (weapon,
@@ -45,6 +45,28 @@ export async function grantItemToActor(targetActor, compendiumItem) {
     await targetActor.createEmbeddedDocuments("Item", [data]);
   }
   refreshSheet(targetActor);
+}
+
+/**
+ * Handle a stackable item (weapon/equipment) dropped onto `actor` from anywhere other than
+ * that same actor (compendium, another actor, the world Items directory) — reuses/increments
+ * a matching existing item (same match rule as grantItemToActor) by the dropped item's own
+ * quantity, instead of the sheet's default drop behavior always creating a fresh duplicate row.
+ * Returns the updated existing item, or null if there was no stackable match (caller should
+ * then fall through to the normal drop-creates-a-copy behavior).
+ */
+export async function stackOrCreateDroppedItem(actor, item) {
+  if (!STACKABLE_TYPES.has(item.type)) return null;
+  const existing = actor.items.find(i =>
+    i.type === item.type
+    && i.name === item.name
+    && (i.system.apothCategory ?? null) === (item.system.apothCategory ?? null)
+  );
+  if (!existing) return null;
+  const amount = item.system.quantity ?? 1;
+  await existing.update({ "system.quantity": (existing.system.quantity ?? 0) + amount });
+  refreshSheet(actor);
+  return existing;
 }
 
 /**

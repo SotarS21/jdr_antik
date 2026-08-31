@@ -2,6 +2,28 @@
 
 ---
 
+## Session du 31 août 2026 (suite 4) — Glisser-déposer d'objets empilables (v0.6.41 → v0.6.42)
+
+Point 4 de `TODO_BUG_ANTIQUE.md`. Le glisser-déposer natif Foundry (`ActorSheetV2#_onDropItem`) ne
+stackait déjà que via `grantItemToActor()` (boutons Prendre/Payer du Navigateur/Boutique
+d'Alchimie) — un drag & drop HTML5 direct (depuis le Navigateur, un autre acteur, ou les objets du
+monde) tombait dans le comportement par défaut de Foundry, qui crée toujours une copie neuve.
+
+**Correctif** : nouveau `stackOrCreateDroppedItem(actor, item)` dans `browser-shared.mjs`
+(`STACKABLE_TYPES` désormais exporté) — même règle de correspondance que `grantItemToActor`
+(type + nom + apothCategory), mais incrémente de la quantité **réelle de l'objet déposé** (pas
+toujours +1, pertinent quand la source a elle-même plusieurs exemplaires) plutôt que de forcer 1.
+Appelé dans `_onDropItem()` de `actor-sheet.mjs` et `npc-sheet.mjs`, uniquement quand l'objet vient
+d'ailleurs que l'acteur cible lui-même (un drop intra-fiche reste un simple réordonnancement, géré
+tel quel par `super._onDropItem()`) ; retombe sur le comportement par défaut (nouvelle copie) si
+aucune correspondance stackable n'est trouvée.
+
+**Fichiers** : `module/apps/browser-shared.mjs`, `module/sheets/actor-sheet.mjs`,
+`module/sheets/npc-sheet.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 3) — Retrait du champ "composant" des sorts (v0.6.40 → v0.6.41)
 
 Suite à l'audit du point 3 de `TODO_BUG_ANTIQUE.md` (voir session précédente) : `system.components`

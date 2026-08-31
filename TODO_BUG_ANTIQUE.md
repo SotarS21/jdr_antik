@@ -41,11 +41,12 @@ objets déjà possédés par un acteur), pour réparer l'objet déjà créé qui
   **À exécuter par l'utilisateur** : macro `packs/_fix-remove-spell-components.js` pour nettoyer le
   compendium déjà déployé + les copies déjà possédées par un acteur.
 
-## 4. Glisser-déposer d'objets — stack si possible
+## 4. ~~Glisser-déposer d'objets — stack si possible~~ — CORRIGÉ (31 août 2026, v0.6.42)
 
-Lors d'un drag & drop d'un objet vers un inventaire, si un objet identique empilable
-(`STACKABLE_TYPES`, cf. `browser-shared.mjs`) est déjà présent, l'objet déposé doit s'empiler
-dessus (incrémenter la quantité) plutôt que créer un nouveau doublon.
+Nouveau `stackOrCreateDroppedItem()` (`browser-shared.mjs`), appelé dans `_onDropItem()` des fiches
+Personnage et PNJ : un drag & drop d'un objet empilable (`STACKABLE_TYPES`) depuis le Navigateur, un
+autre acteur ou les objets du monde s'empile désormais sur une correspondance existante (type + nom
++ apothCategory) au lieu de créer un doublon. Voir `JOURNAL.md`, session du 31 août 2026 (suite 4).
 
 ## 5. ~~Navigateur de Compendium — impossible de modifier les objets~~ — NE S'APPLIQUE PLUS (31 août 2026)
 

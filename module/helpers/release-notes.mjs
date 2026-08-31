@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.42": {
+    title: "Version 0.6.42 — Le glisser-déposer d'objets s'empile enfin",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : glisser-déposer une arme ou un équipement (depuis le Navigateur, un autre acteur, ou les objets du monde) sur une fiche qui en possède déjà un identique l'empile désormais (incrémente la quantité) au lieu de créer un doublon.</li>
+      </ul>`
+  },
   "0.6.41": {
     title: "Version 0.6.41 — Retrait du champ \"composant\" (doublon)",
     html: `

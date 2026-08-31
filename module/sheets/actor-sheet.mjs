@@ -1,5 +1,6 @@
 import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
 import { captureFocusState, restoreFocusState, preventEnterSubmit } from "../helpers/sheet-utils.mjs";
+import { stackOrCreateDroppedItem } from "../apps/browser-shared.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -843,6 +844,19 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       this.render({ force: true });
       return item;
     }
+
+    // Dropped from elsewhere (compendium, another actor, the world Items directory) —
+    // stack onto a matching existing item instead of letting the default drop handler
+    // create a duplicate row. A drop from this same actor (reordering the list) is left
+    // untouched, handled by super._onDropItem()'s own sort logic.
+    if (item.parent?.uuid !== this.actor.uuid) {
+      const stacked = await stackOrCreateDroppedItem(this.actor, item);
+      if (stacked) {
+        this.render({ force: true });
+        return stacked;
+      }
+    }
+
     const result = await super._onDropItem(event, item);
     this.render({ force: true });
     return result;

@@ -1,6 +1,7 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
 import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
 import { captureFocusState, restoreFocusState, preventEnterSubmit } from "../helpers/sheet-utils.mjs";
+import { stackOrCreateDroppedItem } from "../apps/browser-shared.mjs";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -25,6 +26,17 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
   };
 
   async _onDropItem(event, item) {
+    // Dropped from elsewhere (compendium, another actor, the world Items directory) —
+    // stack onto a matching existing item instead of letting the default drop handler
+    // create a duplicate row. A drop from this same actor (reordering) is left untouched.
+    if (item.parent?.uuid !== this.actor.uuid) {
+      const stacked = await stackOrCreateDroppedItem(this.actor, item);
+      if (stacked) {
+        this.render({ force: true });
+        return stacked;
+      }
+    }
+
     const result = await super._onDropItem(event, item);
     this.render({ force: true });
     return result;
