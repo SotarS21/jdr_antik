@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.48": {
+    title: "Version 0.6.48 — Éditeurs de texte plus grands, certains s'agrandissent avec la fenêtre",
+    html: `
+      <ul>
+        <li><strong>Amélioré</strong> : la hauteur minimale des zones de texte riche (descriptions, notes, historique) est passée à 300px. Sur les fiches Objet, Personnage (onglet Notes) et PNJ (onglets Statistiques et Notes), ces zones s'agrandissent désormais pour remplir l'espace disponible quand la fenêtre est plus grande.</li>
+        <li>L'historique (onglet Background) garde son minimum à 300px mais ne s'agrandit pas davantage — c'est une grille à deux colonnes, pas une simple colonne comme les autres onglets, une restructuration plus risquée à faire sans accès navigateur direct.</li>
+      </ul>`
+  },
   "0.6.47": {
     title: "Version 0.6.47 — Réorganiser les favoris",
     html: `

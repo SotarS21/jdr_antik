@@ -91,12 +91,15 @@ jet (`item.rollAttack()` / `actor.rollSkill()`), au lieu d'ouvrir la fiche de l'
 Les puces de la barre de favoris se glissent-déposent maintenant les unes sur les autres pour
 réordonner `system.favoriteSkills`. Voir `JOURNAL.md`, session du 31 août 2026 (suite 9).
 
-## 11. Éditeur de texte riche — taille dynamique à la fenêtre
+## 11. ~~Éditeur de texte riche — taille dynamique à la fenêtre~~ — CORRIGÉ (31 août 2026, v0.6.48)
 
-Les zones de texte riche (`<prose-mirror>`) ont des hauteurs minimales fixes (ajoutées en juillet/
-août, cf. `JOURNAL.md`) mais ne s'agrandissent pas avec la taille de la fenêtre. Demande d'origine
-(`todo_foundry.txt`, "TODO robin") : agrandir l'éditeur avec la taille de la fenêtre, taille minimum
-300px — seulement partiellement traité (tailles fixes, pas de scaling dynamique).
+Plancher remonté à 300px partout (descriptions, notes, historique). S'agrandit désormais avec la
+fenêtre sur les fiches Objet, Deity, et l'onglet Notes (Personnage/PNJ) + Statistiques (PNJ) —
+c'étaient déjà des colonnes simples, sûres à passer en flex. **Laissé de côté volontairement** :
+l'historique (onglet Background) garde son plancher à 300px mais ne s'agrandit pas — c'est une
+vraie grille CSS à 2 colonnes, restructurer une seule ligne sans perturber les autres a été jugé
+trop risqué sans accès navigateur pour vérifier visuellement. Voir `JOURNAL.md`, session du 31 août
+2026 (suite 10).
 
 ## 12. Combobox d'emplacement d'équipement mal affichée
 

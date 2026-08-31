@@ -2,6 +2,39 @@
 
 ---
 
+## Session du 31 août 2026 (suite 10) — Éditeurs de texte : taille dynamique + plancher 300px (v0.6.47 → v0.6.48)
+
+Point 11 de `TODO_BUG_ANTIQUE.md` (todo_foundry.txt, "TODO robin"). Audit de tous les `<prose-mirror>`
+du système (`richEditor`, 21 emplacements) : les fiches d'Objet, le Deity, et l'onglet Notes
+(Personnage + PNJ) étaient déjà entièrement câblés en `flex-column` de bout en bout depuis les
+sessions de juillet — seul leur plancher (150-200px) était trop bas. L'onglet Statistiques du PNJ,
+lui, n'avait aucun câblage flex du tout (`display:block`, comme la plupart des onglets).
+
+**Correctif** :
+- Plancher remonté à 300px partout où c'est un éditeur de contenu principal (description d'objet,
+  notes joueur/MJ, description de divinité, historique du personnage) — inchangé sur les micro-champs
+  de commentaire par entrée (`.bg-field`, alliés/ennemis, 60px, différent usage).
+- `data-tab="stats"` ajouté à la liste des onglets `flex-column` (déjà scopée à `notes` seulement,
+  par choix délibéré des sessions précédentes pour ne pas risquer les tableaux/grilles des autres
+  onglets) — l'onglet Statistiques du PNJ n'a qu'une grille de caractéristiques + un bloc de stats
+  rapides + une description en fin d'onglet, même profil de risque que l'onglet Notes déjà traité.
+  `.npc-description` reçoit le même triplet `flex:1; min-height:0; display:flex; flex-direction:column`.
+- Nettoyage au passage : `.antique.npc .npc-notes {height:100%; min-height:200px}` supprimée — une
+  règle plus spécifique et plus tardive dans le fichier (`.antique .player-notes-section .npc-notes`)
+  écrasait déjà silencieusement son `min-height` depuis le passage de l'onglet Notes en flex-column ;
+  code mort, jamais nettoyé.
+- **Laissé de côté volontairement** : l'historique (`bg-histoire`, onglet Background) garde son
+  plancher remonté à 300px mais ne s'agrandit pas avec la fenêtre — cet onglet est une vraie grille
+  CSS à 2 colonnes (alliés/ennemis, croyance, historique...), pas un simple empilement comme les
+  onglets déjà traités ; y faire grandir spécifiquement la ligne de l'historique sans perturber les
+  autres cases demanderait de restructurer les lignes de la grille, jugé trop risqué à faire sans
+  vérification visuelle directe (pas d'accès navigateur dans cet environnement).
+
+**Fichiers** : `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 9) — Réorganiser les favoris (v0.6.46 → v0.6.47)
 
 Point 10 de `TODO_BUG_ANTIQUE.md`. `system.favoriteSkills` est un `ArrayField` de clés de

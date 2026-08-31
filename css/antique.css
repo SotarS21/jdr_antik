@@ -432,13 +432,16 @@
   display: none;
 }
 
-/* This tab is (almost) nothing but 1-2 long text editors with room to spare below
-   them — flex-column lets those editors grow to fill it instead of staying stuck
-   at a small fixed height with an internal scrollbar. Scoped to data-tab="notes"
-   specifically (not every tab) since other tabs' grids/tables aren't verified safe
-   under a flex parent (implicit min-width:auto could force unwanted horizontal
-   overflow on a wide table). */
-.antique .sheet-body .tab.active[data-tab="notes"] {
+/* These tabs are a handful of fixed-size blocks (grids, quick-stat boxes) followed
+   by one long text editor with room to spare below it — flex-column lets that
+   trailing editor grow to fill the tab instead of staying stuck at a small fixed
+   height with an internal scrollbar. Scoped to these two tabs specifically (not
+   every tab) since other tabs' grids/tables aren't verified safe under a flex
+   parent (implicit min-width:auto could force unwanted horizontal overflow on a
+   wide table). data-tab="stats" is the NPC sheet only (no other sheet uses that
+   tab name); data-tab="notes" exists on both the character and NPC sheets. */
+.antique .sheet-body .tab.active[data-tab="notes"],
+.antique .sheet-body .tab.active[data-tab="stats"] {
   display: flex;
   flex-direction: column;
 }
@@ -2149,7 +2152,7 @@
 
 .antique.sheet.item .form-group.description prose-mirror {
   flex: 1;
-  min-height: 150px;
+  min-height: 300px;
 }
 
 /* ============================================= */
@@ -2209,6 +2212,17 @@
 
 .antique.npc .npc-description {
   margin-top: 8px;
+  /* Only actually stretches inside a flex-column parent (the Stats tab, see
+     data-tab="stats" above) — a harmless no-op anywhere else. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.antique.npc .npc-description prose-mirror {
+  flex: 1;
+  min-height: 300px;
 }
 
 .antique.npc .npc-ca-hidden {
@@ -2227,11 +2241,6 @@
   text-transform: uppercase;
   color: var(--antique-dark-gold);
   margin-bottom: 4px;
-}
-
-.antique.npc .npc-notes {
-  height: 100%;
-  min-height: 200px;
 }
 
 /* ============================================= */
@@ -2695,7 +2704,7 @@
 
 .antique .bg-histoire {
   grid-column: 1 / -1;
-  min-height: 190px;
+  min-height: 300px;
 }
 
 .antique .bg-expressions {
@@ -2707,7 +2716,11 @@
 }
 
 .antique .bg-histoire prose-mirror {
-  --min-height: 160px;
+  /* Floor only — the Background tab is a 2-column CSS grid, not a flex column
+     like the Notes/Stats tabs, so this box doesn't grow further with the window
+     (restructuring the grid for that was judged too risky to do blind, without
+     live visual verification — see TODO_BUG_ANTIQUE.md point 11). */
+  --min-height: 300px;
 }
 
 /* -- Actor Reference Cards (Drag & Drop Allies/Enemies) -- */
@@ -2966,8 +2979,8 @@
 
 .antique .player-notes-section .npc-notes prose-mirror {
   flex: 1;
-  /* Same ~4-line floor as .gm-notes-editor, so both blocks match. */
-  min-height: 160px;
+  /* Same floor as .gm-notes-editor, so both blocks match. */
+  min-height: 300px;
 }
 
 /* ============================================= */
@@ -3012,9 +3025,9 @@
 
 .antique .gm-notes-editor prose-mirror {
   flex: 1;
-  /* ~4 editable lines + toolbar as an absolute floor, even in a cramped window —
-     independent of the flex:1 grow-to-fill behavior above. */
-  min-height: 160px;
+  /* Absolute floor, even in a cramped window — independent of the flex:1
+     grow-to-fill behavior above. */
+  min-height: 300px;
 }
 
 .antique.npc .gm-notes-section {
@@ -3121,7 +3134,7 @@
 
 .antique.deity .deity-description prose-mirror {
   flex: 1;
-  min-height: 150px;
+  min-height: 300px;
 }
 
 /* ============================================= */
