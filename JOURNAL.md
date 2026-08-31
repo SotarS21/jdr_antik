@@ -2,6 +2,63 @@
 
 ---
 
+## Session du 22 août 2026 (suite 2) — Rafraîchissement isolé de la barre de favoris (v0.6.28 → v0.6.29)
+
+Dernier point ouvert de `TODO_FICHE_PERSONNAGE.md` (point 2, priorité basse/confort). Ajouter ou
+retirer un favori de compétence déclenchait un `render({force:true})` complet de la fiche à chaque
+fois (3 points d'entrée : bouton "x" sur un chip, clic droit "Ajouter"/"Retirer favoris" sur une
+ligne de compétence).
+
+Bloc de la barre de favoris extrait tel quel de `character-sheet.hbs` vers un nouveau partial
+`templates/actor/parts/favorites-bar.hbs` (même idiome que `actor-ref-section.hbs` déjà existant),
+préchargé dans `preloadHandlebarsTemplates()` (`antique.mjs`) — nécessaire pour que
+`foundry.applications.handlebars.renderTemplate()` puisse le rendre isolément à la demande. Le
+`{{#if favoriteSkills.length}}` d'origine reste dans le partial (rend `""` à 0 favori) ; le template
+principal l'enveloppe désormais dans un `<div class="favorites-bar-container">` toujours présent,
+qui sert d'ancre stable pour `_refreshFavoritesBar()` même quand il n'y a rien à afficher dedans.
+
+`actor-sheet.mjs` : nouveau `_toggleFavorite(skillKey, add)`, appelé par les 3 handlers à la place de
+`actor.update(...).then(() => this.render({force:true}))`. Utilise `actor.update(data, {render:false})`
+— confirmé en lisant le vrai code client Foundry (`client/documents/abstract/client-document.mjs`,
+`_onUpdate` : `options.render !== false` conditionne le re-render automatique déclenché par la mise à
+jour du document) — pour empêcher Foundry de re-render la fiche tout seul, puis fait le travail à la
+main : `_refreshFavoritesBar()` régénère `.favorites-bar-container` via le partial + réattache les
+listeners des chips (sinon un chip fraîchement ajouté serait mort au clic), et
+`_setSkillRowFavoriteState()` bascule directement en DOM la classe `favorite` + l'icône étoile sur la
+`<li class="skill-row">` correspondante (repérée via `.skill-roll[data-skill]`), pour rester cohérent
+avec la barre sans dupliquer toute la logique de rendu des compétences.
+
+**Relecture adversariale** (agent fork) : aucun bug bloquant, un point plausible relevé — deux clics rapprochés sur des favoris différents pouvaient tous deux lire `favoriteSkills` avant que la première écriture ne soit résolue, le second `update()` écrasant alors silencieusement le premier (même famille que le verrou `withRowLock` déjà utilisé dans `browser-shared.mjs`). Corrigé : `_toggleFavorite()` chaîne désormais ses appels sur une promesse d'instance (`_favoriteToggleChain`) plutôt que de les laisser s'exécuter en parallèle, `#applyFavoriteToggle()` (privé) porte la logique réelle.
+
+**Fichiers** : `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `templates/actor/parts/favorites-bar.hbs` (nouveau), `antique.mjs`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`, `TODO_FICHE_PERSONNAGE.md`.
+
+**Confirmé par l'utilisateur** en test manuel dans Foundry. `TODO_FICHE_PERSONNAGE.md` n'a donc plus aucun point ouvert — chantier refonte CSS/UX de la fiche personnage clos.
+
+---
+
+## Session du 22 août 2026 (suite) — Sélecteur de munitions (v0.6.27 → v0.6.28)
+
+Reprise du chantier `TODO_FICHE_PERSONNAGE.md` (point 1, seul point encore réellement ouvert avec
+le point 2 après audit — voir plus bas). Une arme consommable (`system.consumable`) sans munition
+liée (`system.linkedAmmoId` vide) affichait juste un tiret dans `.munitions-cell`, sans action
+possible — il fallait passer par la fiche de l'arme elle-même pour lier une munition.
+
+`actor-sheet.mjs::_prepareContext()` : nouveau `context.ammoCandidates`, liste de tout l'équipement
+`consumable` de l'acteur (triée par nom) — même liste pour toutes les armes, pas de calcul par ligne
+puisque le pool de candidats ne dépend pas de l'arme. Template : `<select class="munitions-select">`
+ajouté dans la branche `{{else}}` (pas de munition liée) de `.munitions-cell`, aux côtés du badge
+existant (inchangé) pour le cas où une munition est déjà liée. `_onRender()` : listener `change` →
+`weapon.update({"system.linkedAmmoId": ...})` puis re-render forcé (convention du bug récurrent de
+re-render déjà documenté plusieurs fois dans ce journal).
+
+Scope volontairement limité à la fiche personnage (fiche PNJ non touchée), conforme au plan d'origine.
+
+**Fichiers** : `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`, `TODO_FICHE_PERSONNAGE.md`.
+
+**Confirmé par l'utilisateur** en test manuel dans Foundry.
+
+---
+
 ## Session du 22 août 2026 — Filtres pour Traits, Sorts, Bestiaire (v0.6.25 → v0.6.26)
 
 Reprise du TODO laissé en suspens après la v0.6.24 (voir capture PF2e Bestiaires/Sorts, filtres non transposables tels quels faute de Taille/Rareté/Traditions/Rangs dans nos données — décision déjà actée : adapter le PRINCIPE avec des catégories réelles).

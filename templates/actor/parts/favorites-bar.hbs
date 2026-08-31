@@ -1,0 +1,15 @@
+{{#if favoriteSkills.length}}
+<div class="favorites-bar">
+  <span class="favorites-title"><i class="fas fa-star"></i> {{localize "ANTIQUE.Favorites.Title"}}</span>
+  <div class="favorites-chips">
+    {{#each favoriteSkills as |fav|}}
+    <div class="favorite-chip" data-skill="{{fav.key}}" title="{{fav.label}} ({{signedNum fav.total}})">
+      {{#if fav.icon}}<i class="{{fav.icon}}"></i>{{/if}}
+      <span class="favorite-chip-name">{{fav.label}}</span>
+      <span class="favorite-chip-total">{{signedNum fav.total}}</span>
+      <a class="favorite-chip-remove" title="{{localize 'ANTIQUE.Favorites.Remove'}}"><i class="fas fa-times"></i></a>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
