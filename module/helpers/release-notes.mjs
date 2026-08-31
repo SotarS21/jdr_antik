@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.45": {
+    title: "Version 0.6.45 — Correctif urgent : erreur de validation à la sauvegarde d'un PNJ",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : modifier n'importe quel champ d'un PNJ (rapporté sur "Praticien de la magie") pouvait faire échouer la sauvegarde ("ca/initiative/attaque : must be a number"), à cause de la CA/Initiative/Bonus d'attaque dupliquées entre l'onglet Statistiques et le nouvel onglet Combat (v0.6.43). Régression introduite dans cette même session, corrigée avant de continuer.</li>
+      </ul>`
+  },
   "0.6.44": {
     title: "Version 0.6.44 — Onglet Combat des PNJ, réservé au MJ",
     html: `

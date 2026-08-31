@@ -2,6 +2,29 @@
 
 ---
 
+## Session du 31 août 2026 (suite 7) — Régression : validation cassée sur les PNJ (v0.6.44 → v0.6.45)
+
+Retour utilisateur (PNJ "Harpie" sur le plateau) : décocher "Praticien de la magie" fait échouer la
+sauvegarde avec `DataModelValidationError` sur `ca.value`/`initiative.value`/`attaque.value`
+("must be a number"). Régression introduite dans cette même session (point 8 ci-dessus) : le
+nouveau bloc `.npc-combat-quick` de l'onglet Combat réutilisait les mêmes `name="system.ca.value"`
+(etc.) que le bloc déjà existant sur l'onglet Statistiques — les deux vivant dans le **même**
+`<form>` (les deux onglets sont rendus simultanément dans le DOM, seul un `classList.toggle`
+change lequel est visible), Foundry lit alors une liste de deux éléments au lieu d'une valeur
+unique à la soumission, quel que soit le champ réellement modifié.
+
+**Correctif** : les 4 champs du bloc Combat (`ca.value`, `initiative.value`, `deplacement`,
+`attaque.value`) n'ont plus de `name` — ils portent un `data-field` et sont sauvegardés par un
+listener `change` dédié (`actor.update({[field]: value})` + re-render), plutôt que par la
+soumission du formulaire partagé. Le bloc Statistiques (seule copie avec `name=`) est inchangé.
+Le tableau de bonus d'attaque (`system.attackBonuses.*`, unique à l'onglet Combat) n'était pas
+concerné.
+
+**Fichiers** : `templates/actor/npc-sheet.hbs`, `module/sheets/npc-sheet.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 31 août 2026 (suite 6) — Onglet Combat PNJ complet + réservé au MJ (v0.6.43 → v0.6.44)
 
 Point 8 de `TODO_BUG_ANTIQUE.md`, reformulé après clarification utilisateur (la demande initiale

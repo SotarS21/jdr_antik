@@ -154,6 +154,17 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       el.addEventListener("click", ev => this.actor.rollAttackCategory(ev.currentTarget.dataset.cat));
     });
 
+    // Combat tab's quick-stat inputs have no `name` (see npc-sheet.hbs — a duplicate
+    // `name` with the Stats tab's own inputs would break the shared form's submission
+    // entirely), so they're saved here directly instead of via form submit.
+    this.element.querySelectorAll(".npc-combat-quick input[data-field]").forEach(el => {
+      el.addEventListener("change", ev => {
+        const field = ev.currentTarget.dataset.field;
+        const value = Number(ev.currentTarget.value) || 0;
+        this.actor.update({ [field]: value }).then(() => this.render({ force: true }));
+      });
+    });
+
     this.element.querySelectorAll(".item-create").forEach(el => {
       el.addEventListener("click", this._onItemCreate.bind(this));
     });

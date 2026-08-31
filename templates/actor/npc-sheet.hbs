@@ -107,26 +107,29 @@
          token), unlike the Stats tab which stays open to any owner. --}}
     {{#if isGM}}
     <div class="tab" data-group="primary" data-tab="combat">
-      {{!-- Quick combat stats (same fields as the Stats tab's quick block — kept in
-           sync automatically since both bind to the same system paths). CA is always
-           the plain editable input here — no need for the Stats tab's isGM/hidden
-           branch since this whole tab is already GM-only. --}}
+      {{!-- Quick combat stats — same underlying fields as the Stats tab's quick block,
+           but WITHOUT a `name` attribute: this tab renders alongside the Stats tab in
+           the same <form>, so a duplicate `name` would make Foundry's form submission
+           read a NodeList instead of a single value (validation error on submit from
+           EITHER tab). Edited here via a dedicated `data-field` + change listener
+           (npc-sheet.mjs) that calls actor.update() directly instead of relying on
+           the shared form submit. --}}
       <div class="npc-combat-quick">
         <div class="npc-stat-box">
           <label>{{localize "ANTIQUE.Combat.CA"}}</label>
-          <input type="number" name="system.ca.value" value="{{system.ca.value}}" class="npc-big-input" />
+          <input type="number" data-field="system.ca.value" value="{{system.ca.value}}" class="npc-big-input" />
         </div>
         <div class="npc-stat-box npc-rollable initiative-roll" title="Lancer l'initiative (1d20 + {{system.initiative.value}})">
           <label><i class="fas fa-dice-d20"></i> {{localize "ANTIQUE.Combat.Initiative"}}</label>
-          <input type="number" name="system.initiative.value" value="{{system.initiative.value}}" class="npc-big-input" />
+          <input type="number" data-field="system.initiative.value" value="{{system.initiative.value}}" class="npc-big-input" />
         </div>
         <div class="npc-stat-box">
           <label><i class="fas fa-shoe-prints"></i> {{localize "ANTIQUE.Identity.Deplacement"}}</label>
-          <input type="number" name="system.deplacement" value="{{system.deplacement}}" class="npc-big-input" />
+          <input type="number" data-field="system.deplacement" value="{{system.deplacement}}" class="npc-big-input" />
         </div>
         <div class="npc-stat-box npc-rollable attaque-roll" title="Jet d'attaque (1d20 + {{system.attaque.value}})">
           <label><i class="fas fa-fist-raised"></i> {{localize "ANTIQUE.Npc.Attaque"}}</label>
-          <input type="number" name="system.attaque.value" value="{{system.attaque.value}}" class="npc-big-input" />
+          <input type="number" data-field="system.attaque.value" value="{{system.attaque.value}}" class="npc-big-input" />
         </div>
       </div>
 
