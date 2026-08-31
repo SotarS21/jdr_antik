@@ -2,6 +2,25 @@
 
 ---
 
+## Session du 31 août 2026 (suite 9) — Réorganiser les favoris (v0.6.46 → v0.6.47)
+
+Point 10 de `TODO_BUG_ANTIQUE.md`. `system.favoriteSkills` est un `ArrayField` de clés de
+compétence dont l'ordre pilote déjà l'affichage de la barre de favoris — il ne restait qu'à
+permettre de le réordonner par glisser-déposer, aucune structure de donnée à changer.
+
+**Correctif** : `.favorite-chip` devient `draggable="true"` (`favorites-bar.hbs`). Payload de drag
+dédié (`{type: "AntiqueFavoriteReorder", skillKey}`, pas un vrai document Foundry) posé au
+`dragstart`, lu au `drop` sur la puce cible — `#applyFavoriteReorder()` déplace la clé glissée à la
+position de la cible dans le tableau (`splice`/`splice`) puis persiste + rafraîchit la barre isolée
+(même mécanisme que l'ajout/retrait). Le verrou de séquencement déjà en place pour éviter une
+course entre deux ajouts/retraits rapprochés (`_favoriteToggleChain`, renommé `_favoritesChain`
+puisqu'il sert maintenant aussi le réordonnancement) protège aussi cette nouvelle opération.
+
+**Fichiers** : `templates/actor/parts/favorites-bar.hbs`, `module/sheets/actor-sheet.mjs`,
+`css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 8) — Glisser compétences/armes vers les macros (v0.6.45 → v0.6.46)
 
 Point 9 de `TODO_BUG_ANTIQUE.md`. Les armes étaient déjà glissables (`dragSelector: ".item-list

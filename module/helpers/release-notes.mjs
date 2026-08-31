@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.47": {
+    title: "Version 0.6.47 — Réorganiser les favoris",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : les compétences favorites peuvent désormais être réordonnées en glissant une puce sur une autre dans la barre de favoris.</li>
+      </ul>`
+  },
   "0.6.46": {
     title: "Version 0.6.46 — Glisser une compétence ou une arme vers les macros",
     html: `

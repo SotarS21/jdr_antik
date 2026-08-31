@@ -86,10 +86,10 @@ Nouveau `module/helpers/hotbar-macros.mjs` : glisser une arme (déjà glissable)
 jet (`item.rollAttack()` / `actor.rollSkill()`), au lieu d'ouvrir la fiche de l'objet. Voir
 `JOURNAL.md`, session du 31 août 2026 (suite 8).
 
-## 10. Réorganiser les favoris
+## 10. ~~Réorganiser les favoris~~ — CORRIGÉ (31 août 2026, v0.6.47)
 
-Actuellement les favoris de compétence ne peuvent qu'être ajoutés/retirés — permettre de les
-réordonner (glisser-déposer dans la barre de favoris, retrouvé dans `todo_foundry.txt`).
+Les puces de la barre de favoris se glissent-déposent maintenant les unes sur les autres pour
+réordonner `system.favoriteSkills`. Voir `JOURNAL.md`, session du 31 août 2026 (suite 9).
 
 ## 11. Éditeur de texte riche — taille dynamique à la fenêtre
 

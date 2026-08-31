@@ -589,6 +589,11 @@
   color: var(--antique-red);
 }
 
+.antique .favorite-chip-drop-target {
+  border-color: var(--antique-dark-gold);
+  box-shadow: 0 0 0 2px var(--antique-dark-gold) inset;
+}
+
 /* ---- Skill Favorite Indicator ---- */
 .antique .skill-fav-star {
   font-size: 0.7em;

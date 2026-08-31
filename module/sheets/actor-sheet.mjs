@@ -301,6 +301,30 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
   _attachFavoritesBarListeners() {
     this.element.querySelectorAll(".favorite-chip").forEach(el => {
       el.addEventListener("click", ev => this.actor.rollSkill(ev.currentTarget.dataset.skill));
+
+      // Reorder by dragging one chip onto another — a made-up drag payload (not a
+      // real Foundry document), scoped to this bar via its "type" so an unrelated
+      // drag (e.g. an Item) landing here is safely ignored.
+      el.addEventListener("dragstart", ev => {
+        ev.dataTransfer.effectAllowed = "move";
+        ev.dataTransfer.setData("text/plain", JSON.stringify({
+          type: "AntiqueFavoriteReorder",
+          skillKey: el.dataset.skill
+        }));
+      });
+      el.addEventListener("dragover", ev => {
+        ev.preventDefault();
+        el.classList.add("favorite-chip-drop-target");
+      });
+      el.addEventListener("dragleave", () => el.classList.remove("favorite-chip-drop-target"));
+      el.addEventListener("drop", ev => {
+        ev.preventDefault();
+        el.classList.remove("favorite-chip-drop-target");
+        let payload;
+        try { payload = JSON.parse(ev.dataTransfer.getData("text/plain")); } catch { return; }
+        if (payload?.type !== "AntiqueFavoriteReorder") return;
+        this._reorderFavorite(payload.skillKey, el.dataset.skill);
+      });
     });
     this.element.querySelectorAll(".favorite-chip-remove").forEach(el => {
       el.addEventListener("click", ev => {
@@ -328,14 +352,18 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     }
   }
 
-  /** Chained rather than fired independently: two rapid toggles (e.g. add then remove a
-   *  different skill before the first update() resolves) would otherwise both read
-   *  favoriteSkills before either write lands, and the second update() would silently
-   *  discard the first — same class of race as withRowLock in browser-shared.mjs. */
+  /** Chained rather than fired independently: two rapid ops on favoriteSkills (add/remove/
+   *  reorder, e.g. toggling one skill then dragging another before the first update()
+   *  resolves) would otherwise both read favoriteSkills before either write lands, and the
+   *  second update() would silently discard the first — same class of race as withRowLock
+   *  in browser-shared.mjs. Shared by every op that touches favoriteSkills. */
+  _chainFavoritesOp(fn) {
+    this._favoritesChain = (this._favoritesChain ?? Promise.resolve()).then(fn);
+    return this._favoritesChain;
+  }
+
   async _toggleFavorite(skillKey, add) {
-    this._favoriteToggleChain = (this._favoriteToggleChain ?? Promise.resolve())
-      .then(() => this.#applyFavoriteToggle(skillKey, add));
-    return this._favoriteToggleChain;
+    return this._chainFavoritesOp(() => this.#applyFavoriteToggle(skillKey, add));
   }
 
   async #applyFavoriteToggle(skillKey, add) {
@@ -343,6 +371,23 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     const next = add ? [...new Set([...current, skillKey])] : current.filter(k => k !== skillKey);
     await this.actor.update({ "system.favoriteSkills": next }, { render: false });
     this._setSkillRowFavoriteState(skillKey, add);
+    await this._refreshFavoritesBar();
+  }
+
+  /** Drop `draggedKey`'s chip onto `targetKey`'s position — moves it there, doesn't swap. */
+  async _reorderFavorite(draggedKey, targetKey) {
+    return this._chainFavoritesOp(() => this.#applyFavoriteReorder(draggedKey, targetKey));
+  }
+
+  async #applyFavoriteReorder(draggedKey, targetKey) {
+    if (draggedKey === targetKey) return;
+    const current = [...(this.actor.system.favoriteSkills ?? [])];
+    const fromIndex = current.indexOf(draggedKey);
+    const toIndex = current.indexOf(targetKey);
+    if (fromIndex === -1 || toIndex === -1) return;
+    current.splice(fromIndex, 1);
+    current.splice(toIndex, 0, draggedKey);
+    await this.actor.update({ "system.favoriteSkills": current }, { render: false });
     await this._refreshFavoritesBar();
   }
 
