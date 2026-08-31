@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.41": {
+    title: "Version 0.6.41 — Retrait du champ \"composant\" (doublon)",
+    html: `
+      <ul>
+        <li><strong>Nettoyé</strong> : le champ "Composantes" des sorts était une pure duplication du texte de coût des rituels, jamais utilisée par aucune règle du jeu — retiré du formulaire, du schéma et des documents existants.</li>
+      </ul>`
+  },
   "0.6.40": {
     title: "Version 0.6.40 — Rituels : l'onglet Ingrédients fait foi",
     html: `

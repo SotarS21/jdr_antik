@@ -152,9 +152,6 @@ export class AntiqueItem extends Item {
       if (this.system.limitation > 0) {
         lines.push(`<div class="spell-chat-detail"><strong>${game.i18n.localize("ANTIQUE.Spell.Limitation")} :</strong> ${this.system.limitationValue} / ${this.system.limitation}</div>`);
       }
-      if (this.system.components) {
-        lines.push(`<div class="spell-chat-detail"><strong>${game.i18n.localize("ANTIQUE.Spell.Components")} :</strong> ${this.system.components}</div>`);
-      }
       const description = this.system.description ?? "";
       const content = `
         <div class="antique item-chat-card spell-chat-card">

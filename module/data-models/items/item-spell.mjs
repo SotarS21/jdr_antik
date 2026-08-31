@@ -18,7 +18,6 @@ export class AntiqueSpell extends foundry.abstract.TypeDataModel {
       limitationValue: new fields.NumberField({ initial: 0, integer: true, min: 0 }),
       range: new fields.StringField({ initial: "" }),
       duration: new fields.StringField({ initial: "" }),
-      components: new fields.StringField({ initial: "" }),
       // Bonus de CA temporaire proposé au lanceur via un bouton "Appliquer l'effet" dans
       // le message de chat du sort (0 = aucun bouton) — même principe que le bouton
       // "Appliquer les dégâts" déjà existant pour rollDamage(). Ex. Peau d'écorce : +2.
@@ -31,9 +30,11 @@ export class AntiqueSpell extends foundry.abstract.TypeDataModel {
       templateRadius: new fields.NumberField({ initial: 25, integer: true, min: 1 }),
       templateTexture: new fields.StringField({ initial: "icons/magic/air/fog-gas-smoke-green.webp", blank: true }),
       templateColor: new fields.StringField({ initial: "#808080", blank: true }),
-      // Liste déclarative des ingrédients requis pour lancer le sort (checklist libre,
-      // pas reliée à costText/castSpell() qui consomme déjà un ingrédient texte-libre par nom
-      // depuis l'inventaire — les deux mécanismes coexistent sans se remplacer).
+      // Liste déclarative des ingrédients requis pour lancer le sort (checklist +
+      // décompte réel via findIngredientItems). Pour un personnage-joueur, dès que
+      // ce tableau est rempli, il devient la seule source de vérité sur ce qui est
+      // possédé — castSpell() saute alors le mécanisme costText (texte libre, ancien
+      // mécanisme de rituel, toujours utilisé tel quel côté PNJ).
       ingredients: new fields.ArrayField(ingredientSchema(), { initial: [] }),
       description: new fields.HTMLField({ initial: "" }),
       gmNotes: new fields.HTMLField({ initial: "" })

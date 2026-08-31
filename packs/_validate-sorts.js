@@ -41,9 +41,6 @@ lines.forEach((l, i) => {
     // duration: StringField
     if (typeof s.duration !== 'string') issues.push('duration: expected string, got ' + typeof s.duration + ' = ' + JSON.stringify(s.duration));
 
-    // components: StringField
-    if (typeof s.components !== 'string') issues.push('components: expected string, got ' + typeof s.components + ' = ' + JSON.stringify(s.components));
-
     // description: HTMLField
     if (typeof s.description !== 'string') issues.push('description: expected string, got ' + typeof s.description + ' = ' + JSON.stringify(s.description));
 

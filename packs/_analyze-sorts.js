@@ -13,7 +13,7 @@ lines.forEach((l, i) => {
       console.log('SPELL  line ' + (i+1) + ': id=' + obj._id + ' name="' + obj.name + '" type=' + obj.type + ' folder=' + (obj.folder || 'null'));
       console.log('  system fields: ' + fields.join(', '));
       // Check for unexpected fields or missing required ones
-      const expected = ['effect','cost','ritual','costText','limitation','limitationValue','range','duration','components','description','gmNotes'];
+      const expected = ['effect','cost','ritual','costText','limitation','limitationValue','range','duration','description','gmNotes'];
       const extra = fields.filter(f => !expected.includes(f));
       const missing = expected.filter(f => !fields.includes(f));
       if (extra.length) console.log('  EXTRA fields: ' + extra.join(', '));

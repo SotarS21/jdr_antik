@@ -284,7 +284,6 @@
   "ANTIQUE.Spell.RealIngredientsShortage": "Stock réel insuffisant pour : {names}",
   "ANTIQUE.Ingredients.Stock": "{count} en stock",
   "ANTIQUE.Spell.RitualIngredients": "Ingrédients requis",
-  "ANTIQUE.Spell.Components": "Composantes",
   "ANTIQUE.Spell.CaBonus": "Bonus de CA",
   "ANTIQUE.Spell.CaBonusHint": "Ajoute un bouton « Appliquer l'effet » dans le message de chat du sort (0 = aucun bouton).",
   "ANTIQUE.Spell.HasTemplate": "Sort à zone (gabarit circulaire)",

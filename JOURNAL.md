@@ -2,6 +2,28 @@
 
 ---
 
+## Session du 31 août 2026 (suite 3) — Retrait du champ "composant" des sorts (v0.6.40 → v0.6.41)
+
+Suite à l'audit du point 3 de `TODO_BUG_ANTIQUE.md` (voir session précédente) : `system.components`
+confirmé comme pure duplication de `system.costText` pour les rituels (recopié une seule fois au
+build par `_build-sorts.js`, jamais lu par aucune logique de jeu, seulement réaffiché dans
+`postToChat()`). Décision utilisateur : le retirer.
+
+Retiré du schéma (`item-spell.mjs`), du template (`spell-sheet.hbs`), de l'affichage chat
+(`item.mjs::postToChat()`), de `packs/_build-sorts.js`, des clés de langue
+(`ANTIQUE.Spell.Components`, `lang/{fr,en}.json`), et des scripts d'analyse/validation
+(`_analyze-sorts.js`, `_validate-sorts.js`). Champ retiré des 32 documents sort de `packs/sorts.db`
+(clé supprimée, pas juste vidée). Nouvelle macro `packs/_fix-remove-spell-components.js` (syntaxe de
+suppression de clé `"system.-=components"`) pour nettoyer le compendium déjà déployé et les copies
+déjà possédées par un acteur — **à exécuter par l'utilisateur**.
+
+**Fichiers** : `module/data-models/items/item-spell.mjs`, `templates/item/spell-sheet.hbs`,
+`module/documents/item.mjs`, `packs/_build-sorts.js`, `packs/sorts.db`, `packs/_analyze-sorts.js`,
+`packs/_validate-sorts.js`, `packs/_fix-remove-spell-components.js` (nouveau),
+`lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 2) — Rituels : l'onglet Ingrédients fait foi (v0.6.39 → v0.6.40)
 
 Point 3 de `TODO_BUG_ANTIQUE.md`. Pour un rituel, deux mécanismes coexistaient sans se remplacer

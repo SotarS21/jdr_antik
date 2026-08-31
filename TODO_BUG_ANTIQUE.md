@@ -27,20 +27,19 @@ avant que la liste ne devienne exhaustive. Voir `JOURNAL.md`, session du 31 aoû
 l'utilisateur** : macro `packs/_fix-potion-svg-icon.js` (corrige compendium + objets du monde +
 objets déjà possédés par un acteur), pour réparer l'objet déjà créé qui a déclenché ce signalement.
 
-## 3. Sorts / Rituels — ingrédients et composants — CORRIGÉ (31 août 2026, v0.6.40), 1 point en attente
+## 3. ~~Sorts / Rituels — ingrédients et composants~~ — CORRIGÉ (31 août 2026, v0.6.40 → v0.6.41)
 
-- ~~Pour un rituel..., c'est la partie "Ingrédients" qui doit faire foi~~ — FAIT. `castSpell()` saute
-  désormais le mécanisme `costText` pour un personnage-joueur dès que `system.ingredients` est
-  rempli. Les 8 rituels existants (qui n'avaient que `costText`) ont été migrés automatiquement.
-  **À exécuter par l'utilisateur** : macro `packs/_fix-sorts-ritual-ingredients-live.js` pour
-  appliquer la migration au compendium déjà déployé + aux copies déjà possédées par un acteur.
-- ~~Re-cocher automatiquement les ingrédients après un lancer~~ — FAIT. Après consommation, chaque
-  ingrédient se resynchronise avec le stock réel restant au lieu d'être systématiquement décoché.
-- **En attente de ta décision** : champ "composant" (`system.components`) audité — c'est une pure
-  duplication de `costText` pour les rituels (recopiée une seule fois au moment du build, jamais
-  lue par aucune logique de jeu, seulement réaffichée dans le message de chat). Dis-moi si tu veux
-  que je le retire (schéma + template + suppression sur les documents existants), ou si tu préfères
-  le garder tel quel.
+- FAIT. `castSpell()` saute désormais le mécanisme `costText` pour un personnage-joueur dès que
+  `system.ingredients` est rempli. Les 8 rituels existants (qui n'avaient que `costText`) ont été
+  migrés automatiquement. **À exécuter par l'utilisateur** : macro
+  `packs/_fix-sorts-ritual-ingredients-live.js` pour appliquer la migration au compendium déjà
+  déployé + aux copies déjà possédées par un acteur.
+- FAIT. Après consommation, chaque ingrédient se resynchronise avec le stock réel restant au lieu
+  d'être systématiquement décoché.
+- FAIT. Champ "composant" confirmé comme pure duplication de `costText`, jamais lu par la logique
+  de jeu — retiré (schéma, template, affichage chat, `_build-sorts.js`, langues, `sorts.db`).
+  **À exécuter par l'utilisateur** : macro `packs/_fix-remove-spell-components.js` pour nettoyer le
+  compendium déjà déployé + les copies déjà possédées par un acteur.
 
 ## 4. Glisser-déposer d'objets — stack si possible
 

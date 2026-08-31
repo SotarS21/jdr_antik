@@ -255,7 +255,6 @@ for (const cat of categories) {
         limitationValue: lim,
         range:           "",
         duration:        spell.duration,
-        components:      spell.ritual ? spell.costText : "",
         ingredients:     spell.ritual ? parseIngredients(spell.costText) : [],
         description:     descParts.join("\n"),
         gmNotes:         ""

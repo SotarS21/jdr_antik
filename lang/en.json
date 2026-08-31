@@ -284,7 +284,6 @@
   "ANTIQUE.Spell.RealIngredientsShortage": "Not enough real stock for: {names}",
   "ANTIQUE.Ingredients.Stock": "{count} in stock",
   "ANTIQUE.Spell.RitualIngredients": "Required Ingredients",
-  "ANTIQUE.Spell.Components": "Components",
   "ANTIQUE.Spell.CaBonus": "CA Bonus",
   "ANTIQUE.Spell.CaBonusHint": "Adds an \"Apply effect\" button to the spell's chat message (0 = no button).",
   "ANTIQUE.Spell.HasTemplate": "Area spell (circular template)",
