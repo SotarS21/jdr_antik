@@ -13,16 +13,19 @@ chaque update tant qu'un buff de CA restait actif. Voir `JOURNAL.md`, session du
 le détail. **À confirmer par l'utilisateur en jeu** (poser un buff de CA sur Ephise, modifier un
 autre champ de la fiche, vérifier que la CA reste stable).
 
-## 2. Erreur à l'édition d'un ingrédient (fenêtre + 404)
+## 2. ~~Erreur à l'édition d'un ingrédient (fenêtre + 404)~~ — CORRIGÉ (31 août 2026, v0.6.39)
 
-À l'ouverture de la fenêtre d'édition d'un ingrédient, erreurs en console :
-```
-Failed to load resource: the server responded with a status of 404 (Not Found)
-potion.svg:1  Failed to load resource: the server responded with a status of 404 (Not Found)
-```
-`potion.svg` référencé quelque part (probablement icône par défaut d'un champ de la fiche
-ingrédient) n'existe pas au chemin attendu — à localiser (fiche/template concerné) et corriger le
-chemin ou fournir le fichier manquant.
+Cause : `packs/_build-alchimie.js` utilisait `icons/svg/potion.svg` comme icône par défaut des
+potions "Bénéfique" sans entrée explicite dans `POTION_ICONS` — ce fichier **n'existe pas** dans la
+bibliothèque d'icônes de Foundry (vérifié dans l'installation locale), d'où le 404. Le `.db` source
+et le compendium déployé n'ont plus aucune occurrence (toutes les potions ont désormais une icône
+explicite) ; l'objet fautif est donc une copie déjà existante (sur un acteur, ou dans le monde) créée
+avant que la liste ne devienne exhaustive. Voir `JOURNAL.md`, session du 31 août 2026 (suite).
+
+**Correctif** : icône de fallback changée vers une vraie icône
+(`icons/consumables/potions/potion-bottle-corked-labeled-green.webp`). **À exécuter par
+l'utilisateur** : macro `packs/_fix-potion-svg-icon.js` (corrige compendium + objets du monde +
+objets déjà possédés par un acteur), pour réparer l'objet déjà créé qui a déclenché ce signalement.
 
 ## 3. Sorts / Rituels — ingrédients et composants
 

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.39": {
+    title: "Version 0.6.39 — Correctif : icône de potion cassée (404 potion.svg)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : certaines potions bénéfiques utilisaient une icône par défaut inexistante (<code>potion.svg</code>), provoquant un 404 en console à l'ouverture de leur fiche. Une vraie icône a été assignée ; une macro est fournie pour corriger les objets déjà créés avec l'ancienne icône (compendium, objets du monde, objets possédés par un acteur).</li>
+      </ul>`
+  },
   "0.6.38": {
     title: "Version 0.6.38 — Correctif : la CA (et les jets de Sauvegarde) n'augmentent plus toutes seules",
     html: `

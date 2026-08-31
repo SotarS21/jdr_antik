@@ -2,6 +2,39 @@
 
 ---
 
+## Session du 31 août 2026 (suite) — Icône de potion cassée, 404 sur potion.svg (v0.6.38 → v0.6.39)
+
+Retour utilisateur (point 2 de `TODO_BUG_ANTIQUE.md`) : erreur en console à l'édition d'un
+ingrédient, `Failed to load resource: 404` sur `potion.svg`.
+
+**Cause** : `packs/_build-alchimie.js` (source de `packs/alchimie.db`) utilise `POTION_ICONS[nom]`
+si une icône explicite existe pour la potion, sinon un défaut par type — `icons/svg/skull.svg`
+pour les potions "Négative" (existe bien dans les assets Foundry), mais `icons/svg/potion.svg`
+pour les "Bénéfique" — **ce fichier n'existe pas** dans la bibliothèque d'icônes bundlée par
+Foundry (vérifié directement dans `resources/app/public/icons/svg/` de l'installation locale).
+Toute potion bénéfique sans entrée explicite dans `POTION_ICONS` héritait donc d'un chemin cassé.
+Le `.db` source actuel et le compendium Alchimie actuellement déployé n'en contiennent plus aucune
+occurrence (toutes les potions bénéfiques ont désormais une entrée explicite) — le bug ne peut donc
+venir que d'un objet créé avant que `POTION_ICONS` ne devienne exhaustif : une copie déjà présente
+sur un acteur (ne se resynchronise jamais automatiquement depuis le compendium, piège déjà
+documenté) ou un ancien import resté dans le monde. Pas de correspondance trouvée en cherchant
+"potion.svg"/"Ephise" dans les données brutes des mondes Foundry locaux (LevelDB probablement
+compressé côté valeurs, recherche texte brute peu fiable) — pas d'accès direct au monde réel de
+l'utilisateur depuis cet environnement.
+
+**Correctif** : fallback changé vers une vraie icône existante
+(`icons/consumables/potions/potion-bottle-corked-labeled-green.webp`) dans
+`packs/_build-alchimie.js`. Nouvelle macro `packs/_fix-potion-svg-icon.js` (API Document Foundry
+uniquement, jamais d'édition LevelDB directe) qui recherche et corrige tout objet portant encore
+`icons/svg/potion.svg` à trois endroits : le compendium Alchimie, les objets du monde, et les
+objets possédés par chaque acteur — **à exécuter par l'utilisateur** pour corriger l'objet déjà
+existant qui a déclenché ce signalement.
+
+**Fichiers** : `packs/_build-alchimie.js`, `packs/_fix-potion-svg-icon.js` (nouveau),
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 — CA (et Sauvegardes) qui augmentait à chaque update de fiche (v0.6.37 → v0.6.38)
 
 Retour utilisateur (fiche PNJ/Personnage "Ephise") : la CA augmente à chaque mise à jour d'un champ

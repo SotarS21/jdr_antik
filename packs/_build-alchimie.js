@@ -446,7 +446,7 @@ for (const [type, items] of Object.entries(potions)) {
 
   for (const pot of items) {
     const icon = POTION_ICONS[pot.name] || (type === "Bénéfique"
-      ? "icons/svg/potion.svg"
+      ? "icons/consumables/potions/potion-bottle-corked-labeled-green.webp"
       : "icons/svg/skull.svg");
     const description = buildPotionHtml(pot, type);
 
