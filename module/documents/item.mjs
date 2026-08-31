@@ -1,6 +1,6 @@
 import { buildAttackFlavor } from "../helpers/rolls.mjs";
 import { refreshSheet } from "../helpers/sheet-utils.mjs";
-import { findIngredientItems } from "../helpers/actor-utils.mjs";
+import { findIngredientItems, getIngredientStock } from "../helpers/actor-utils.mjs";
 
 export class AntiqueItem extends Item {
 
@@ -247,8 +247,15 @@ export class AntiqueItem extends Item {
         refreshSheet(actor);
         costInfo = `<i class="fas fa-fire"></i> ${this.system.cost} ${game.i18n.localize("ANTIQUE.PM")} (${game.i18n.localize("ANTIQUE.Spell.PMConsumed")})`;
       }
-    } else {
-      // 3. Ritual spell: consume ingredient from inventory
+    } else if (!(actor.type === "character" && this.system.ingredients.length)) {
+      // 3. Ritual spell: consume a free-text ingredient from inventory by name match.
+      // Skipped whenever the "Ingrédients" tab (system.ingredients) is populated for
+      // a player character — that structured list (real stock via findIngredientItems,
+      // gated by "possede" at step 1.5, consumed at step 4.5) is then the single
+      // source of truth for what the ritual actually costs, instead of this free-text
+      // fallback double-gating/double-consuming the same ritual. Left unconditional
+      // for a PNJ (never subject to the Ingrédients-tab gating in the first place) so
+      // its rituals keep consuming exactly as before.
       if (this.system.costText) {
         const searchName = this.system.costText.toLowerCase();
         const ingredient = actor.items.find(i =>
@@ -310,7 +317,17 @@ export class AntiqueItem extends Item {
         ui.notifications.warn(`${this.name} : ${game.i18n.format("ANTIQUE.Spell.RealIngredientsShortage", { names: shortages.join(", ") })}`);
       }
 
-      const ingredients = this.system.ingredients.map(i => ({ ...i, possede: false }));
+      // Re-sync "possede" with the real stock left after this decrement, rather than
+      // blanket-unticking every entry: an ingredient still in ample supply (quantity
+      // required > 1, or several were carried) should stay ticked instead of forcing
+      // a manual re-tick before the very next cast. Only an ingredient never matched
+      // to a real inventory item (declarative-only, narrative) keeps the old
+      // unconditional un-tick — there is no real stock to check it against, so the
+      // player re-affirms it by hand each time, same as before this change.
+      const ingredients = this.system.ingredients.map(i => {
+        const hasRealMatch = findIngredientItems(actor, i.name).length > 0;
+        return { ...i, possede: hasRealMatch ? getIngredientStock(actor, i.name) >= (i.quantity ?? 0) : false };
+      });
       await this.update({ "system.ingredients": ingredients });
       refreshSheet(actor);
       refreshSheet(this);

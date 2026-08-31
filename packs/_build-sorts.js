@@ -25,6 +25,25 @@ function genId(prefix) {
   return prefix + String(idCounter).padStart(16 - prefix.length, "0");
 }
 
+/**
+ * Parse a ritual's free-text costText (e.g. "Anis/ Bougie") into structured
+ * `system.ingredients` entries — one per "/"-separated component, quantity 1.
+ * Empty/blank components are dropped. Returns [] for a non-ritual or empty costText.
+ * Uses its own id counter, independent from `genId()` — these ids are only ever
+ * used as a client-side list key (see `.munitions-cell`/`.ingredient-row`), never
+ * as a real embedded document `_id`, so they must NOT perturb genId()'s sequence
+ * (which determines the actual `_id` of every folder/item generated after this
+ * point — already-deployed ids must stay stable across a rebuild).
+ */
+let ingredientIdCounter = 0;
+function parseIngredients(costText) {
+  if (!costText) return [];
+  return costText.split("/")
+    .map(name => name.trim())
+    .filter(Boolean)
+    .map(name => ({ id: `ing${++ingredientIdCounter}`, name, quantity: 1, possede: false }));
+}
+
 function val(v) {
   return (v !== undefined && v !== null && String(v).trim() !== "") ? String(v).trim() : null;
 }
@@ -237,6 +256,7 @@ for (const cat of categories) {
         range:           "",
         duration:        spell.duration,
         components:      spell.ritual ? spell.costText : "",
+        ingredients:     spell.ritual ? parseIngredients(spell.costText) : [],
         description:     descParts.join("\n"),
         gmNotes:         ""
       },

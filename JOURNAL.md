@@ -2,6 +2,47 @@
 
 ---
 
+## Session du 31 août 2026 (suite 2) — Rituels : l'onglet Ingrédients fait foi (v0.6.39 → v0.6.40)
+
+Point 3 de `TODO_BUG_ANTIQUE.md`. Pour un rituel, deux mécanismes coexistaient sans se remplacer
+depuis la session du 16 août : `system.costText` (texte libre, ex. "Anis/ Bougie") recherche et
+décrémente un objet consommable par correspondance de nom (étape 3 de `castSpell()`), tandis que
+`system.ingredients` (onglet "Ingrédients" dédié) gère sa propre checklist "Possédé" + son propre
+décompte réel (étape 1.5/4.5, ajoutées le 16 août). Les deux pouvaient bloquer/décompter
+indépendamment pour le même rituel dès que ses deux champs étaient renseignés.
+
+**Correctif** : `castSpell()` — l'étape 3 (costText) est désormais sautée pour un **personnage
+joueur** dès que `system.ingredients` est rempli ; l'onglet Ingrédients devient alors la seule
+source de vérité (gating + décompte réel déjà en place depuis le 16 août). Un PNJ n'est pas
+concerné (l'onglet Ingrédients ne s'applique déjà qu'aux personnages-joueurs) : ses rituels
+continuent de décrémenter via `costText` sans changement.
+
+**Migration des données** : les 8 rituels existants n'avaient encore jamais aucun `system.ingredients`
+rempli, seulement `costText`. Nouveau script `packs/_fix-sorts-ritual-ingredients.js` (source,
+one-off) qui parse `costText` ("X/ Y" → 2 entrées, quantité 1 chacune) et remplit `sorts.db` sans
+toucher aux autres champs ni aux `_id` (jamais relancé le build complet depuis l'Excel, absent en
+local). Nouvelle macro `packs/_fix-sorts-ritual-ingredients-live.js` (API Document Foundry
+uniquement) pour appliquer le même correctif au compendium Sorts déjà déployé et à toute copie déjà
+possédée par un acteur — **à exécuter par l'utilisateur**.
+
+**Troisième point du bug** : après un cast avec "Consommer les ingrédients", la checklist ne remet
+plus systématiquement tout à `possede: false` — chaque entrée est resynchronisée avec le stock réel
+restant (`getIngredientStock`), donc un ingrédient encore en quantité suffisante reste coché au lieu
+d'exiger un nouveau cochage manuel avant le prochain lancer. Un ingrédient purement narratif (jamais
+stocké en vrai) garde l'ancien comportement (décoché, à reconfirmer à la main).
+
+**Champ "composant" (`system.components`)** : audité, pas touché — s'est avéré être une pure
+duplication de `costText` pour les rituels (recopié une seule fois au build par `_build-sorts.js`,
+jamais lu par aucune logique de jeu, juste réaffiché dans `postToChat()`). Signalé à l'utilisateur
+pour décision (garder/retirer) plutôt que supprimé unilatéralement — c'est un changement de schéma
+qui toucherait des documents déjà existants.
+
+**Fichiers** : `module/documents/item.mjs`, `packs/_build-sorts.js`, `packs/sorts.db`,
+`packs/_fix-sorts-ritual-ingredients.js` (nouveau), `packs/_fix-sorts-ritual-ingredients-live.js`
+(nouveau), `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite) — Icône de potion cassée, 404 sur potion.svg (v0.6.38 → v0.6.39)
 
 Retour utilisateur (point 2 de `TODO_BUG_ANTIQUE.md`) : erreur en console à l'édition d'un

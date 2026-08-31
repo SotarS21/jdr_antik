@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.40": {
+    title: "Version 0.6.40 — Rituels : l'onglet Ingrédients fait foi",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : pour un rituel, le coût en ingrédients (texte libre) et l'onglet "Ingrédients" pouvaient se marcher dessus pour déterminer ce que le lanceur possède réellement. L'onglet Ingrédients (relié au vrai stock) fait maintenant seul foi dès qu'il est rempli — les 8 rituels existants ont été migrés automatiquement à partir de leur ancien texte de coût.</li>
+        <li><strong>Amélioré</strong> : après avoir lancé un sort et choisi de consommer les ingrédients, les cases "Possédé" se resynchronisent maintenant avec le stock réel restant, au lieu d'être toutes décochées à chaque fois.</li>
+      </ul>`
+  },
   "0.6.39": {
     title: "Version 0.6.39 — Correctif : icône de potion cassée (404 potion.svg)",
     html: `
