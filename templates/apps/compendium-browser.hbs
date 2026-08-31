@@ -1,0 +1,244 @@
+<div class="antique sheet compendium-browser compendium-browser-tabbed">
+
+  <div class="shop-header">
+    <div class="shop-target">
+      {{#if targetCount}}
+        {{#ifEquals targetCount 1}}
+        {{localize "ANTIQUE.Shop.Target"}} : <strong>{{targetNames}}</strong>
+        — <i class="fas fa-coins"></i> <span class="shop-gold-value">{{singleTargetGold}}</span> {{localize "ANTIQUE.Currency.Or"}}
+        {{else}}
+        {{localize "ANTIQUE.Shop.Targets"}} ({{targetCount}}) : <strong>{{targetNames}}</strong>
+        {{/ifEquals}}
+      {{else}}
+      <span class="shop-no-target">{{localize "ANTIQUE.Shop.NoTarget"}}</span>
+      {{/if}}
+      <a class="shop-refresh-target" title="{{localize 'ANTIQUE.Shop.RefreshTarget'}}"><i class="fas fa-sync"></i></a>
+    </div>
+    <div class="shop-toolbar">
+      <div class="ingredient-search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" class="ingredient-search" placeholder="{{localize 'ANTIQUE.Apoth.SearchPlaceholder'}}" />
+      </div>
+      <div class="shop-sort-bar">
+        <label>{{localize "ANTIQUE.Shop.OrderBy"}}</label>
+        <select class="shop-sort">
+          <option value="name">{{localize "ANTIQUE.Shop.OrderByName"}}</option>
+          <option value="priceAsc">{{localize "ANTIQUE.Shop.OrderByPriceAsc"}}</option>
+          <option value="priceDesc">{{localize "ANTIQUE.Shop.OrderByPriceDesc"}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <nav class="compendium-browser-tabs">
+    {{#each tabs as |tab|}}
+    <a class="item {{#if tab.active}}active{{/if}}" data-tab="{{tab.key}}">{{tab.label}}</a>
+    {{/each}}
+  </nav>
+
+  <section class="compendium-browser-body">
+    {{#each tabs as |tab|}}
+    <div class="tab {{#if tab.active}}active{{/if}}" data-tab="{{tab.key}}">
+
+      {{#if tab.filters.length}}
+      <div class="browser-layout">
+        <aside class="browser-filters">
+          <h3>{{localize "ANTIQUE.Browser.FilterHeading"}}</h3>
+          {{#each tab.filters as |filter|}}
+          <label class="browser-filter-option">
+            <input type="checkbox" class="browser-filter-checkbox" value="{{filter.key}}" />
+            {{filter.label}}
+          </label>
+          {{/each}}
+          <button type="button" class="browser-clear-filters">{{localize "ANTIQUE.Browser.ClearFilters"}}</button>
+        </aside>
+        <div class="browser-results">
+          {{#each tab.sections as |section|}}
+          <div class="apoth-section">
+            <h2 class="apoth-section-sticky">{{section.label}}</h2>
+            {{#if section.items.length}}
+
+            {{#ifEquals section.kind "item"}}
+            <table class="item-list apoth-table browser-table">
+              <colgroup>
+                <col class="col-img">
+                <col>
+                {{#ifEquals tab.key "equipement"}}<col class="col-extra">{{/ifEquals}}
+                {{#if tab.showTypeColumn}}<col class="col-extra">{{/if}}
+                <col class="col-controls">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="equip-img-col"></th>
+                  <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+                  {{#ifEquals tab.key "equipement"}}<th>{{localize "ANTIQUE.Equipment.Price"}}</th>{{/ifEquals}}
+                  {{#if tab.showTypeColumn}}<th>{{localize "ANTIQUE.Browser.TypeColumn"}}</th>{{/if}}
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each section.items as |item|}}
+                <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="Item" data-filter-kind="{{item.filterKind}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+                  <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" title="{{localize 'ANTIQUE.Browser.ClickImageHint'}}" /></td>
+                  <td class="equip-name-cell">
+                    <a class="equip-toggle" draggable="false"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
+                    <span class="equip-name">{{item.name}}</span>
+                  </td>
+                  {{#ifEquals tab.key "equipement"}}
+                  <td class="price-cell">{{#if item.price}}{{item.price}}{{else}}—{{/if}}</td>
+                  {{/ifEquals}}
+                  {{#if tab.showTypeColumn}}
+                  <td class="type-cell">{{lookup tab.filterLabels item.filterKind}}</td>
+                  {{/if}}
+                  <td class="item-controls">
+                    <a class="shop-take" draggable="false" title="{{localize 'ANTIQUE.Shop.Take'}}"><i class="fas fa-hand-holding"></i></a>
+                    {{#if item.hasPrice}}
+                    <a class="shop-pay" draggable="false" title="{{localize 'ANTIQUE.Shop.Pay'}}"><i class="fas fa-coins"></i></a>
+                    {{/if}}
+                  </td>
+                </tr>
+                <tr class="equip-desc-row" style="display:none;">
+                  <td colspan="{{tab.itemColumns}}">
+                    <div class="equip-desc-content">{{{item.description}}}</div>
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+
+            {{else}}
+            <table class="item-list apoth-table browser-table">
+              <colgroup>
+                <col class="col-img">
+                <col>
+                {{#if tab.showTypeColumn}}<col class="col-extra">{{/if}}
+                <col class="col-controls">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="equip-img-col"></th>
+                  <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+                  {{#if tab.showTypeColumn}}<th>{{localize "ANTIQUE.Browser.TypeColumn"}}</th>{{/if}}
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each section.items as |item|}}
+                <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="{{section.dragType}}" data-filter-kind="{{item.filterKind}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+                  <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" /></td>
+                  <td class="equip-name-cell">
+                    <span class="equip-name">{{item.name}}</span>
+                  </td>
+                  {{#if tab.showTypeColumn}}
+                  <td class="type-cell">{{lookup tab.filterLabels item.filterKind}}</td>
+                  {{/if}}
+                  <td class="item-controls">
+                    {{#ifEquals section.kind "actor"}}
+                    <a class="shop-import" draggable="false" title="{{localize 'ANTIQUE.Browser.Import'}}"><i class="fas fa-user-plus"></i></a>
+                    {{else}}
+                    <a class="shop-draw" draggable="false" title="{{localize 'ANTIQUE.Browser.Draw'}}"><i class="fas fa-dice"></i></a>
+                    {{/ifEquals}}
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+            {{/ifEquals}}
+
+            {{else}}
+            <p class="apoth-empty">{{localize "ANTIQUE.Apoth.Empty"}}</p>
+            {{/if}}
+          </div>
+          {{/each}}
+        </div>
+      </div>
+
+      {{else}}
+      <div class="browser-results browser-results-full">
+        {{#each tab.sections as |section|}}
+        <div class="apoth-section">
+          <h2 class="apoth-section-sticky">{{section.label}}</h2>
+          {{#if section.items.length}}
+
+          {{#ifEquals section.kind "item"}}
+          <table class="item-list apoth-table browser-table">
+            <colgroup>
+              <col class="col-img">
+              <col>
+              <col class="col-controls">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="equip-img-col"></th>
+                <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each section.items as |item|}}
+              <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="Item" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+                <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" title="{{localize 'ANTIQUE.Browser.ClickImageHint'}}" /></td>
+                <td class="equip-name-cell">
+                  <a class="equip-toggle" draggable="false"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
+                  <span class="equip-name">{{item.name}}</span>
+                </td>
+                <td class="item-controls">
+                  <a class="shop-take" draggable="false" title="{{localize 'ANTIQUE.Shop.Take'}}"><i class="fas fa-hand-holding"></i></a>
+                </td>
+              </tr>
+              <tr class="equip-desc-row" style="display:none;">
+                <td colspan="3">
+                  <div class="equip-desc-content">{{{item.description}}}</div>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+
+          {{else}}
+          <table class="item-list apoth-table browser-table">
+            <colgroup>
+              <col class="col-img">
+              <col>
+              <col class="col-controls">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="equip-img-col"></th>
+                <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each section.items as |item|}}
+              <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="{{section.dragType}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+                <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" /></td>
+                <td class="equip-name-cell">
+                  <span class="equip-name">{{item.name}}</span>
+                </td>
+                <td class="item-controls">
+                  {{#ifEquals section.kind "actor"}}
+                  <a class="shop-import" draggable="false" title="{{localize 'ANTIQUE.Browser.Import'}}"><i class="fas fa-user-plus"></i></a>
+                  {{else}}
+                  <a class="shop-draw" draggable="false" title="{{localize 'ANTIQUE.Browser.Draw'}}"><i class="fas fa-dice"></i></a>
+                  {{/ifEquals}}
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          {{/ifEquals}}
+
+          {{else}}
+          <p class="apoth-empty">{{localize "ANTIQUE.Apoth.Empty"}}</p>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+    </div>
+    {{/each}}
+  </section>
+
+</div>

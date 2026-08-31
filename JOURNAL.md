@@ -2,6 +2,70 @@
 
 ---
 
+## Session du 9 août 2026 (suite 6, ultracode) — Navigateur de Compendium multi-packs + drag&drop (v0.6.20 → v0.6.21)
+
+Retour utilisateur : "le bouton de navigation dans les compendiums n'a pas pour vocation de faire une boutique mais plus un navigateur... avec option d'acheter n'importe quel objet depuis les listes d'équipement, d'ingrédient et tout ce qui a un prix." Renommage + refonte complète : `module/apps/ingredient-shop.mjs` (+ `.hbs`) → `module/apps/compendium-browser.mjs` (+ `.hbs`), classe `AntiqueIngredientShop` → `AntiqueCompendiumBrowser`. `BROWSED_PACKS` (tableau `{id, label}`) remplace le `SHOP_PACK_ID` unique — actuellement `["antique.armes", "antique.alchimie"]`, chaque section du navigateur correspond à un pack plutôt qu'à une `apothCategory`. Ne montre que les documents avec un `system.price` non vide (filtre "tout ce qui a un prix"). `grantItemToActor()` généralisé pour matcher par `type + name + apothCategory` (ce dernier `undefined` des deux côtés pour les armes/équipement générique, donc toujours égal).
+
+**Bug de données découvert en creusant "pourquoi armes.db n'a pas de prix"** : `_build-armes.js` calcule bien un prix par palier de qualité (`tier.prix`, `armor.prix`, `shield.prix`, directement recopiés depuis la feuille Excel "arme armure") et l'écrit dans la description HTML ("Prix : X po"), mais ne l'a jamais copié dans `system.price` (`AntiqueWeapon`/`AntiqueEquipment` ont pourtant bien ce champ dans leur schéma). Exactement le même bug déjà corrigé pour l'alchimie plus tôt dans la session. Corrigé aux 3 endroits (armes, armures, boucliers), régénéré `armes.db` (109/109 items avec prix désormais).
+
+**equipement.db laissé de côté** : contient un mélange (a) de potions dupliquées de celles déjà dans Alchimie (avec prix en description, probablement un reliquat d'avant la scission du compendium Alchimie) et (b) de vraies armures grecques nommées (Linothorax, Cuirasse de bronze...) sans aucun prix nulle part, ni dans la description ni dans l'Excel source. Décision reportée à l'utilisateur plutôt que d'inventer des prix.
+
+**Nouvelles fonctionnalités demandées dans la foulée** :
+- Glisser-déposer : chaque `.shop-row` devient `draggable="true"`, `dragstart` pose le payload standard Foundry `{type:"Item", uuid}` en JSON dans `text/plain` (vérifié contre `TextEditor.getDragEventData()` dans le vrai code source Foundry — c'est exactement ce format que tout `ActorSheetV2` lit nativement pour accepter un drop, donc déposer sur une fiche perso fonctionne sans code supplémentaire de notre côté). `img` de la ligne mis à `draggable="false"` pour éviter que le navigateur ne fasse de l'image elle-même une source de drag concurrente.
+- Clic sur l'image → `item.postToChat()` (méthode déjà existante sur `AntiqueItem`, réutilisée telle quelle — même convention que `.equip-img.item-chat` dans l'Inventaire de la fiche perso). Vérifié : Foundry n'a pas de cible de drop native sur l'onglet Chat de la sidebar (`chat.mjs` n'a pas de `_onDrop`) — le clic sur l'image est donc la voie retenue pour "avoir les infos dans le chat", pas un drop direct sur le chat.
+- En-têtes de section collantes (`position: sticky; top:0`) via une classe dédiée `apoth-section-sticky` posée uniquement dans le template du navigateur, sans toucher au style partagé `.apoth-section h2` de l'onglet Ingrédients de la fiche perso.
+
+**Fichiers** : `module/apps/compendium-browser.mjs` (nouveau, remplace `ingredient-shop.mjs`), `templates/apps/compendium-browser.hbs` (nouveau, remplace `ingredient-shop.hbs`), `packs/_build-armes.js`, `packs/armes.db`, `antique.mjs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 9 août 2026 (suite 5) — Vrai bug de timing des hooks (v0.6.19 → v0.6.20)
+
+Après la "correction" précédente (bon nom de hook `getCompendiumContextOptions` + bouton de contrôle de scène), toujours rien : ni le bouton ni le clic droit ne fonctionnaient. Cause réelle, plus profonde que le nom du hook : `registerCompendiumContextMenu()`, `registerIngredientShopCompendiumEntry()` et `registerIngredientShopSceneControl()` étaient appelés dans le hook **`"ready"`** de `antique.mjs`. Or `getSceneControlButtons` (voir `#prepareControls()` dans `scene-controls.mjs` : "This is only done once when the application is first rendered") et la construction du menu contextuel du compendium (`_onFirstRender` de `CompendiumDirectory`, également "first render" donc unique) se déclenchent **une seule fois, tôt dans le boot de Foundry, avant `"ready"`**. Les écouteurs enregistrés en `"ready"` arrivaient systématiquement après coup.
+
+Déplacés dans le hook **`"init"`** (le tout premier hook Foundry, avant construction de toute UI) — un `Hooks.on(...)` ne fait qu'ajouter un callback au registre, ça ne touche `game`/`canvas` qu'au moment où le hook se déclenche réellement plus tard, donc aucun risque à le faire aussi tôt.
+
+**Fichiers** : `antique.mjs` (déplacement des 3 appels de `Hooks.once("ready")` vers `Hooks.once("init")`), `css/antique.css` (onglets encore réduits), `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
+## Session du 9 août 2026 (suite 4) — Bug de hook trouvé + bouton visible + onglets compacts (v0.6.18 → v0.6.19)
+
+Le clic droit sur "Alchimie" n'ouvrait jamais la Boutique. En inspectant le vrai code source de Foundry v14 (`resources/app/client/applications/sidebar/tabs/compendium-directory.mjs`), trouvé la cause : `_createContextMenu(this._getEntryContextOptions, ..., { hookName: "getCompendiumContextOptions", parentClassHooks: false })` — le nom de hook réellement utilisé par cette version de Foundry est **`getCompendiumContextOptions`**, pas `getCompendiumDirectoryEntryContext` que `ingredient-shop.mjs` (et `random-tables.mjs`, déjà présent avant cette session — même bug, jamais remarqué faute de test) écoutaient. Les deux corrigés.
+
+En creusant aussi pourquoi pf2e ouvre son "Compendium Browser" : ce n'est pas un clic droit mais un raccourci clavier (`Keybinding.OpenCompendiumBrowser` dans son lang.json) — sans bouton évident correspondant trouvé dans les fichiers statiques. Plutôt que de deviner plus loin, ajout d'un vrai bouton visible et permanent : `registerIngredientShopSceneControl()` ajoute un outil "Boutique d'ingrédients" dans le groupe de contrôles "tokens" de la barre d'outils de scène (`Hooks.on("getSceneControlButtons", ...)`, format v13+ à base d'objet `Record<string, SceneControl>`, vérifié dans `scene-controls.mjs`), en plus de l'entrée du menu contextuel désormais fonctionnelle.
+
+Séparément : les onglets principaux de la fiche perso (jusqu'à 8 avec Magie) passaient sur deux lignes même à la largeur par défaut de 800px, à cause du padding/font-size trop généreux (6px 14px / 0.85em). Réduits à 4px 9px / 0.72em (et la variante compacte `@container antique-sheet (max-width: 650px)` à 3px 6px / 0.64em).
+
+**Fichiers** : `module/apps/ingredient-shop.mjs`, `module/helpers/random-tables.mjs`, `antique.mjs`, `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 9 août 2026 (suite 3) — Boutique inspirée du vrai Compendium Browser PF2e (v0.6.17 → v0.6.18, ultracode)
+
+Sur demande explicite : exploration directe de `D:\AppDataFoundry$\FoundryVTT_Data\Data\systems\pf2e` (le vrai système Pathfinder 2e installé), pas une simple inspiration de mémoire. Constat : le JS de pf2e (`pf2e.mjs`, 5.8 Mo) est entièrement bundlé/minifié et son listing du Compendium Browser est un composant Svelte interne — aucun template `.hbs` copiable (`templates/compendium-browser/` ne contient que des dialogues de settings). En revanche `lang/en.json` (jamais minifié) a livré les vraies chaînes officielles : `TakeLabel`/`BuyLabel` (confirme le concept Prendre/Payer déjà choisi), et surtout `AddedItem: "...to the selected actor(s)"` / `BoughtItemWithAllCharacters` / `FailedToBuyItemWithSomeCharacters` — PF2e applique Prendre/Payer à **tous les jetons sélectionnés à la fois**, pas à une seule cible. Le CSS compilé (`--color-result-list-odd`) a aussi confirmé un listing à lignes alternées.
+
+Répercuté sur `ingredient-shop.mjs`/`.hbs` :
+- `resolveShopTargetActors()` (pluriel) remplace l'ancienne fonction à cible unique — Take/Pay boucle sur tous les tokens possédés sélectionnés, repli sur `game.user.character` si rien n'est sélectionné. Notifications distinctes succès unique / succès multiple / échec partiel / échec total (`ANTIQUE.Shop.TakenAll`, `BoughtAll`, `FailedBuySome`, `FailedBuyAll`).
+- Contrôle de tri (`.shop-sort`, Nom/Prix croissant/Prix décroissant), état gardé dans `this._sortMode` entre les rendus.
+- Lignes alternées en CSS via le sélecteur `tr.shop-row:nth-of-type(4n+1)` — chaque `.shop-row` est toujours immédiatement suivi d'un `.equip-desc-row` caché, donc les lignes visibles tombent systématiquement sur une position impaire ; alterner par paquets de 4 cible une ligne d'ingrédient sur deux.
+
+**Relecture adversariale** (agent fork, puisque je ne peux pas tester en direct dans Foundry) : deux bugs réels trouvés et corrigés — (1) un double-clic rapide sur Prendre/Payer pouvait lire quantité/or avant que la première écriture ne soit résolue (écrasement silencieux) → verrou visuel `.shop-busy` par ligne pendant l'action ; (2) rouvrir le menu contextuel du compendium pendant que la Boutique était déjà ouverte créait une deuxième instance `ApplicationV2` partageant le même `id` statique → singleton `AntiqueIngredientShop.open()` + libération dans `_onClose`.
+
+**Fichiers** : `module/apps/ingredient-shop.mjs`, `templates/apps/ingredient-shop.hbs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 9 août 2026 (suite 2) — Boutique déplacée sur le compendium Alchimie (v0.6.16 → v0.6.17)
+
+Suite à retour utilisateur ("je n'aime pas que les utilisateurs aient accès en permanence à la boutique") : retrait du bouton "Boutique d'ingrédients" de l'onglet Ingrédients de la fiche perso (`character-sheet.hbs`, `actor-sheet.mjs`). À la place, un clic droit sur le compendium **Alchimie** dans la barre latérale ajoute une entrée "Boutique d'ingrédients" à son menu contextuel — réutilise le hook `getCompendiumDirectoryEntryContext` déjà éprouvé par `random-tables.mjs` (mêmes créneaux "Créer une table"/"Tirer au hasard"), filtré via `visible: li => li.dataset.pack === "antique.alchimie"` pour n'apparaître que sur ce pack précis (Foundry v14 : `visible` remplace `condition`, désormais déprécié).
+
+Sur inspiration du "Compendium Browser" de Pathfinder 2e (une fenêtre dédiée, pas le navigateur de compendium natif de Foundry) : chaque ligne de la Boutique perd sa colonne Type (non demandée) et gagne deux actions séparées au lieu d'un simple "Acheter" — `.shop-take` (« Prendre l'objet », gratuit, icône main) et `.shop-pay` (« Payer l'objet », déduit l'or, icône pièces). La logique commune d'ajout/incrémentation d'objet sur l'acteur cible est factorisée dans `grantItemToActor()` (`module/apps/ingredient-shop.mjs`), partagée par les deux actions.
+
+**Fichiers** : `module/apps/ingredient-shop.mjs`, `antique.mjs`, `templates/actor/character-sheet.hbs`, `templates/apps/ingredient-shop.hbs`, `module/sheets/actor-sheet.mjs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 9 août 2026 (suite) — Ingrédients à quantité 0 grisés + réapprovisionnement rapide (v0.6.15 → v0.6.16)
 
 Dans l'onglet Ingrédients de la fiche perso (`apothSections`, déjà exhaustif — tous les ingrédients y sont listés, quantité 0 comprise), une ligne à quantité 0 se distinguait à peine du reste (seul le chiffre passait en rouge via `.quantity-value.empty`, déjà existant). Ajout d'une classe `apoth-row-empty` sur le `<tr>` lui-même (calculée comme `.quantity-value.empty`, sur `lt ing.system.quantity 1`) qui grise toute la ligne (`opacity: 0.55`, remonte à `0.85` au survol) — scopée à `.apoth-row` pour ne pas toucher le style de l'Inventaire qui partage le même marquage `quantity-value.empty`.

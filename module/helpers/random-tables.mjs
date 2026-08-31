@@ -104,9 +104,14 @@ async function drawRandomFromCompendium(pack) {
 
 /**
  * Register the two context menu options on every compendium in the sidebar.
+ *
+ * Foundry v14's CompendiumDirectory fires "getCompendiumContextOptions" for its per-entry
+ * context menu (client/applications/sidebar/tabs/compendium-directory.mjs sets this via an
+ * explicit `hookName: "getCompendiumContextOptions"` override on _createContextMenu) — not
+ * "getCompendiumDirectoryEntryContext", the older name this used to listen on.
  */
 export function registerCompendiumContextMenu() {
-  Hooks.on("getCompendiumDirectoryEntryContext", (html, options) => {
+  Hooks.on("getCompendiumContextOptions", (html, options) => {
     options.push(
       {
         label: game.i18n.localize("ANTIQUE.Compendium.CreateTable"),

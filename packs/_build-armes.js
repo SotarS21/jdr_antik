@@ -317,6 +317,7 @@ for (const weapon of WEAPONS) {
         portee:      p.value,
         hasPortee:   hasRange,
         consumable:  consumable,
+        price:       `${tier.prix} po`,
         linkedAmmoId: "",
         description: descParts.join("\n"),
         gmNotes:     ""
@@ -340,6 +341,7 @@ for (const armor of ARMORS) {
     system: {
       quantity:    1,
       consumable:  false,
+      price:       `${armor.prix} po`,
       description: [
         `<p><strong>Bonus Armure :</strong> +${armor.bonus}</p>`,
         `<p><strong>Prix :</strong> ${armor.prix} po</p>`
@@ -364,6 +366,7 @@ for (const shield of SHIELDS) {
     system: {
       quantity:    1,
       consumable:  false,
+      price:       `${shield.prix} po`,
       description: [
         `<p><strong>Bonus Bouclier :</strong> +${shield.bonus}</p>`,
         `<p><strong>Prix :</strong> ${shield.prix} po</p>`
