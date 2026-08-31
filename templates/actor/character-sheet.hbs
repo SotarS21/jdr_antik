@@ -454,7 +454,7 @@
           <tbody>
             {{#each advantages as |adv|}}
             <tr class="item trait-row" data-item-id="{{adv.id}}">
-              <td class="trait-img"><img src="{{adv.img}}" width="24" height="24" /></td>
+              <td class="trait-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{adv.img}}" width="24" height="24" /></td>
               <td class="trait-name"><i class="fas fa-caret-right trait-toggle-icon"></i> {{adv.name}}</td>
               <td class="trait-cout negative">{{adv.cout}}</td>
               <td class="item-controls">
@@ -494,7 +494,7 @@
           <tbody>
             {{#each disadvantages as |dis|}}
             <tr class="item trait-row" data-item-id="{{dis.id}}">
-              <td class="trait-img"><img src="{{dis.img}}" width="24" height="24" /></td>
+              <td class="trait-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{dis.img}}" width="24" height="24" /></td>
               <td class="trait-name"><i class="fas fa-caret-right trait-toggle-icon"></i> {{dis.name}}</td>
               <td class="trait-cout positive">{{signedNum dis.cout}}</td>
               <td class="item-controls">
@@ -525,7 +525,7 @@
         <ul class="item-list traits-list">
           {{#each curses as |curse|}}
           <li class="item trait-row" data-item-id="{{curse.id}}">
-            <img class="trait-list-img" src="{{curse.img}}" width="24" height="24" />
+            <img class="trait-list-img item-chat" src="{{curse.img}}" width="24" height="24" title="{{localize 'ANTIQUE.Item.PostToChat'}}" />
             <i class="fas fa-caret-right trait-toggle-icon"></i>
             <span class="trait-name">{{curse.name}}</span>
             {{#if curse.hasEffects}}
@@ -594,7 +594,7 @@
         <ul class="item-list traits-list">
           {{#each blessings as |bless|}}
           <li class="item trait-row" data-item-id="{{bless.id}}">
-            <img class="trait-list-img" src="{{bless.img}}" width="24" height="24" />
+            <img class="trait-list-img item-chat" src="{{bless.img}}" width="24" height="24" title="{{localize 'ANTIQUE.Item.PostToChat'}}" />
             <i class="fas fa-caret-right trait-toggle-icon"></i>
             <span class="trait-name">{{bless.name}}</span>
             {{#if bless.hasEffects}}
@@ -617,28 +617,6 @@
         </ul>
       </div>
 
-      {{!-- Effects --}}
-      <div class="traits-section">
-        <h2>{{localize "ANTIQUE.Traits.Effects"}}
-          <a class="item-create" data-type="effect" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
-        </h2>
-        <ul class="item-list traits-list effects-list-actor">
-          {{#each effects as |eff|}}
-          <li class="item {{#unless eff.active}}effect-inactive{{/unless}}" data-item-id="{{eff.id}}">
-            <img class="trait-list-img" src="{{eff.img}}" width="24" height="24" />
-            <span class="trait-name">{{eff.name}}</span>
-            <span class="trait-effect">{{eff.duration}}</span>
-            <a class="effect-active-toggle" title="{{#if eff.active}}{{localize 'ANTIQUE.Effect.Active'}}{{else}}{{localize 'ANTIQUE.Effect.Inactive'}}{{/if}}">
-              <i class="fas {{#if eff.active}}fa-toggle-on effect-toggle-on{{else}}fa-toggle-off effect-toggle-off{{/if}}"></i>
-            </a>
-            <span class="item-controls">
-              <a class="item-edit"><i class="fas fa-edit"></i></a>
-              <a class="item-delete"><i class="fas fa-trash"></i></a>
-            </span>
-          </li>
-          {{/each}}
-        </ul>
-      </div>
     </div>
 
     {{!-- ===================== MAGIC TAB ===================== --}}

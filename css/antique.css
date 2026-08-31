@@ -1927,30 +1927,6 @@
   color: var(--antique-brown);
 }
 
-/* ---- Effects List (Actor Sheet) ---- */
-.antique .effects-list-actor .effect-active-toggle {
-  cursor: pointer;
-  font-size: 1.1em;
-  margin: 0 4px;
-}
-
-.antique .effects-list-actor .effect-toggle-on {
-  color: var(--antique-green);
-}
-
-.antique .effects-list-actor .effect-toggle-off {
-  color: var(--antique-border);
-}
-
-.antique .effects-list-actor .effect-active-toggle:hover .effect-toggle-on,
-.antique .effects-list-actor .effect-active-toggle:hover .effect-toggle-off {
-  color: var(--antique-gold);
-}
-
-.antique .effect-inactive {
-  opacity: 0.45;
-}
-
 /* ---- Equipment List (Inventory) ---- */
 .antique .equip-img-col {
   width: 30px;

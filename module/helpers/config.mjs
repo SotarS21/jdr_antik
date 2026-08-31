@@ -131,10 +131,15 @@ ANTIQUE.apothCategories = {
 ANTIQUE.getEffectChangeLabel = function(change) {
   const key = change.key;
   const value = Number(change.value);
-  // MULTIPLY (mode 1, ex. Athlète: Déplacement ×2) reads as a factor, not an amount
-  // to add — every other mode used in this system's compendiums is ADD (mode 2),
-  // where the usual +N/-N notation applies.
-  const isMultiply = change.mode === CONST.ACTIVE_EFFECT_MODES.MULTIPLY;
+  // MULTIPLY (change.type === "multiply", ex. Athlète: Déplacement ×2) reads as a
+  // factor, not an amount to add — every other type used in this system's
+  // compendiums is ADD, where the usual +N/-N notation applies. Reading the old
+  // numeric `change.mode` here (instead of the string `change.type`) is deprecated
+  // since Foundry v14 and logs a console warning on every single change — `.type`
+  // is always populated correctly regardless of whether the underlying stored data
+  // still uses the legacy numeric `mode` field (auto-migrated on load) or the
+  // current string `type` field, so reading it is also the fix for that warning.
+  const isMultiply = change.type === "multiply";
   const sign = isMultiply ? "×" : (value >= 0 ? "+" : "");
 
   // Abilities

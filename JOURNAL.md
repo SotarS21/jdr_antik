@@ -2,6 +2,54 @@
 
 ---
 
+## Session du 31 août 2026 (suite 15) — Correctifs Effets + traits cliquables vers le chat (v0.6.52 → v0.6.53)
+
+Retours utilisateur après test de la session précédente : "Connaissance d'Héphaistos fonctionne"
+mais pas "Cuir de Héros" ; les effets doivent être glissables directement depuis un lien dans la
+description de l'avantage ; il faut aussi que cliquer l'image d'un Avantage/Désavantage/Bénédiction/
+Malédiction l'envoie au chat, comme les sorts et l'équipement le font déjà.
+
+**Vraie cause du bug Cuir de Héros** : son effet ciblait `system.saves.robustesse.base` — ce champ
+n'existe plus dans le schéma des sauvegardes depuis la refonte du 25 juillet (`base` retiré,
+remplacé par la constante `SAVE_BASE = 1` codée en dur dans `prepareDerivedData()`, qui écrase
+sans condition toute valeur de `save.base` à chaque calcul). L'ActiveEffect était donc un no-op
+silencieux depuis toujours — jamais un problème de format de donnée. Le bon champ, déjà utilisé
+avec succès par le désavantage "Dépressif", est `system.saves.<clé>.bonus`. Corrigé sur l'objet
+"Effet" standalone ET sur l'avantage "Cuir de Hero" lui-même (source + macro
+`packs/_fix-advantages-effect-links.js` pour le compendium déjà déployé et les copies sur acteur).
+
+**Au passage, migration vers le schéma moderne d'ActiveEffect** : `packs/_build-effets.js` écrit
+désormais `changes` sous `system.changes` (plus au premier niveau) avec un `type` de chaîne
+(`"add"`/`"multiply"`) plutôt qu'un `mode` numérique — les deux sont dépréciés depuis Foundry v14
+(vérifié dans `common/documents/active-effect.mjs` : `migrateData()`/`shimData()` gèrent la
+rétrocompatibilité via des accesseurs qui logguent un avertissement à chaque lecture, pas une
+solution à garder pour du contenu qu'on écrit nous-mêmes aujourd'hui). `CONFIG.ANTIQUE.
+getEffectChangeLabel()` (`config.mjs`) lit maintenant `change.type` au lieu de `change.mode`,
+supprimant les avertissements de la console sur TOUT effet du système, pas seulement les nouveaux.
+
+**Liens glissables** : les 3 avantages (Cuir de Hero, Athléte, Connaissance d'Héphaistos) reçoivent
+un `@UUID[Compendium.antique.effets.<id>]{...}` à la fin de leur description — un lien de contenu
+Foundry enrichi est nativement glissable, donc le glisser directement depuis le texte applique
+l'Effet exactement comme le glisser depuis le compendium, sans code supplémentaire.
+
+**Nettoyage** : découverte en cherchant où ajouter les liens `.item-chat` d'un **second bloc
+"Effets" mort**, plus ancien que celui de la session précédente (13/14) — un reliquat jamais
+retiré référençant l'ancien type d'objet `AntiqueEffect` (`data-type="effect"`, `system.active`,
+`actor.items.get(...)` sur un id qui vit en réalité dans `actor.effects`) : template, handler JS
+(`.effect-active-toggle`) et CSS (`.effects-list-actor`, `.effect-inactive`) tous retirés.
+
+**Cliquer pour envoyer au chat** : `.item-chat` ajouté sur l'image des Avantages, Désavantages,
+Bénédictions et Malédictions dans l'onglet Traits (déjà présent sur Sorts et Équipement,
+manquant partout ailleurs) — clic envoie image + titre + description au chat, via
+`AntiqueItem#postToChat()` déjà générique.
+
+**Fichiers** : `packs/_build-effets.js`, `packs/effets.db`, `packs/effets/`, `packs/avantages.db`,
+`packs/_fix-advantages-effect-links.js` (nouveau), `module/helpers/config.mjs`,
+`module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`, `css/antique.css`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 31 août 2026 (suite 14) — Simplification : compendium d'Effets = ActiveEffect pur (v0.6.51 → v0.6.52)
 
 Retour utilisateur après test de la session précédente (suite 13) : le champ "Actif" de l'objet

@@ -511,14 +511,6 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
-    this.element.querySelectorAll(".effect-active-toggle").forEach(el => {
-      el.addEventListener("click", ev => {
-        const li = ev.currentTarget.closest(".item");
-        const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.update({ "system.active": !item.system.active }).then(() => this.render({ force: true }));
-      });
-    });
-
     this.element.querySelectorAll(".item-create").forEach(el => {
       el.addEventListener("click", this._onItemCreate.bind(this));
     });

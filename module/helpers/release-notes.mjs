@@ -5,6 +5,16 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.53": {
+    title: "Version 0.6.53 — Correctifs Effets + traits cliquables vers le chat",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : Cuir de Héros ne fonctionnait pas (ciblait system.saves.robustesse.base, un champ écrasé automatiquement — jamais réellement lu). Corrigé vers le vrai champ.</li>
+        <li><strong>Ajouté</strong> : Cuir de Héros, Athlète et Connaissance d'Héphaistos ont maintenant un lien vers leur Effet directement dans leur description — glisser ce lien applique l'effet sans avoir à aller le chercher dans le compendium.</li>
+        <li><strong>Ajouté</strong> : cliquer l'icône d'un Avantage, Désavantage, Bénédiction ou Malédiction envoie maintenant son image/titre/description au chat (comme c'était déjà le cas pour les sorts et l'équipement).</li>
+        <li><strong>Corrigé</strong> : avertissements de dépréciation Foundry (mode numérique d'ActiveEffect) supprimés, plus un vieux bloc "Effets" mort et redondant retiré de l'onglet Traits.</li>
+      </ul>`
+  },
   "0.6.52": {
     title: "Version 0.6.52 — Simplification du compendium d'Effets",
     html: `
