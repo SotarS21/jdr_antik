@@ -2,6 +2,32 @@
 
 ---
 
+## Session du 9 août 2026 (suite 1.5) — Régression version-check.mjs corrigée
+
+En remplissant `manifest`/`download` dans `system.json` (pour le workflow de release GitHub), le garde-fou `if (!game.system.manifest) return;` de `checkSystemVersionUpdate()` (censé ne JAMAIS se déclencher pendant le déploiement de dev, voir commentaire du fichier) s'est retrouvé désactivé, déclenchant `overwriteSystemCompendiums()` à chaque rechargement. Ce dernier avait en plus un vrai bug latent : `fetch(\`systems/antique/${packDef.path}\`)` utilisait `packDef.path`, un champ que Foundry normalise en interne (strip du `.db`, et selon la version résout déjà en chemin absolu depuis Data) — d'où des 404 en cascade ("systems/antique/systems/antique/packs/...").
+
+Corrigé des deux côtés : `system.json` repasse `manifest`/`download` à `""` dans le dépôt (seul le zip construit par la CI les renseigne désormais, cf. `.github/workflows/release.yml`) ; `version-check.mjs` reconstruit le chemin du fichier depuis `packDef.name` + `.db` (notre convention fixe) plutôt que depuis `packDef.path`.
+
+**Fichiers** : `system.json`, `.github/workflows/release.yml`, `module/helpers/version-check.mjs`.
+
+---
+
+## Session du 9 août 2026 (suite 9, ultracode) — Navigateur à onglets par catégorie + filtres (v0.6.23 → v0.6.24)
+
+Utilisateur a fourni une vraie capture d'écran du Compendium Browser de Pathfinder 2e. Lecture précise : les onglets du haut ("Capacités", "Bestiaires", "Équipement", "Sorts"...) regroupent PLUSIEURS compendiums source par catégorie de contenu — pas un onglet par compendium — et le filtrage par sous-type (Arme/Armure/Bouclier/Consommable/...) se fait via des cases à cocher dans un panneau latéral gauche, à côté de la recherche/du tri.
+
+Confirmé avec l'utilisateur (question à choix) : 5 onglets — **Équipement** (armes+équipement+alchimie, filtrable), **Traits** (avantages+désavantages+bénédictions+avantages divins), **Sorts**, **Bestiaire** (pnj+dieux+creatures), **Historique**.
+
+`compendium-browser.mjs` restructuré : `TABS` (regroupement pack→onglet) remplace `BROWSED_PACKS` (pack→section plate). `classifyEquipmentItem()` calcule le type de filtre (arme/armure/bouclier/munition/consommable) uniquement pour l'onglet Équipement, à partir du pack d'origine + (pour `armes`) du nom du dossier Foundry de l'objet (`pack.folders`, une vraie `Collection` Foundry — vérifié qu'elle s'itère par valeurs via `Symbol.iterator` dans `common/utils/collection.mjs`, pas par paires clé/valeur). "Munition" n'a aucun objet correspondant actuellement (pas de flèches/carreaux dans les données) — le filtre existe quand même, prêt pour plus tard, sans rien inventer.
+
+Changement de rendu de fond : les 5 onglets sont TOUS rendus dans le DOM en une fois (`_prepareContext` construit toutes leurs données à chaque fois), et changer d'onglet ne fait qu'un `classList.toggle` côté client (`_activateTab`, même idiome que les fiches acteur/objet du système) — pas de rechargement des compendiums à chaque clic d'onglet.
+
+CSS : nouvelle classe `.compendium-browser-tabbed` (uniquement sur le Navigateur général, pas la Boutique d'Alchimie qui garde son scroll racine simple) transforme la fenêtre en colonne flex non-scrollable ; le scroll (et donc les en-têtes collants) se fait maintenant dans `.browser-results`/`.browser-results-full`, propre à l'onglet actif.
+
+**Fichiers** : `module/apps/compendium-browser.mjs`, `templates/apps/compendium-browser.hbs` (réécrits), `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 9 août 2026 (suite 8, ultracode) — Scission Boutique d'Alchimie / vrai Navigateur multi-compendiums (v0.6.22 → v0.6.23)
 
 Retour utilisateur : la fusion armes+équipement+alchimie dans une seule fenêtre "Navigateur" n'était pas ce qui était demandé. Scission en deux applis distinctes, partageant leur logique commune via un nouveau module `module/apps/browser-shared.mjs` (`resolveShopTargetActors`, `grantItemToActor`, `attachBrowserRowInteractions`, `withRowLock`) :

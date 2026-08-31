@@ -108,17 +108,21 @@ async function overwriteSystemCompendiums() {
   let updated = 0, created = 0, failed = 0;
 
   for (const packDef of game.system.packs) {
-    if (!packDef.path) continue;
     const pack = game.packs.get(`antique.${packDef.name}`);
     if (!pack) continue;
 
+    // Not packDef.path: Foundry normalizes that field (strips ".db", and on some versions
+    // resolves it to a full "systems/antique/..." path already) — building the fetch URL
+    // straight from the pack's own name/our fixed on-disk convention avoids both quirks.
+    const packFile = `packs/${packDef.name}.db`;
     let entries;
     try {
-      const response = await fetch(`systems/antique/${packDef.path}`);
+      const response = await fetch(`systems/antique/${packFile}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       entries = text.split("\n").map(line => line.trim()).filter(Boolean).map(line => JSON.parse(line));
     } catch (err) {
-      console.error(`Antique | Impossible de lire ${packDef.path} :`, err);
+      console.error(`Antique | Impossible de lire ${packFile} :`, err);
       failed++;
       continue;
     }
