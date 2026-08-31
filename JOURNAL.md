@@ -2,6 +2,32 @@
 
 ---
 
+## Session du 22 août 2026 — Filtres pour Traits, Sorts, Bestiaire (v0.6.25 → v0.6.26)
+
+Reprise du TODO laissé en suspens après la v0.6.24 (voir capture PF2e Bestiaires/Sorts, filtres non transposables tels quels faute de Taille/Rareté/Traditions/Rangs dans nos données — décision déjà actée : adapter le PRINCIPE avec des catégories réelles).
+
+`compendium-browser.mjs` : `TABS` généralisé — chaque entrée déclare maintenant soit `filters` (liste statique) + `classify(doc, packId, ctx)`, soit `filterByPack: true` (liste dérivée à l'affichage des packs de l'onglet, `key = packId`, `label = pack.metadata.label`). Le cas spécial `EQUIPMENT_FILTERS`/`classifyEquipmentItem()` d'avant devient juste la première entrée de ce schéma générique (`classifyEquipmentItem()` elle-même inchangée). `_prepareContext` calcule `tab.filters` pour chaque onglet et passe `filterKind` sur les items ET les acteurs (avant, seul `kind: "item"` de l'onglet Équipement portait un `filterKind`).
+
+Filtres obtenus :
+- **Traits** (avantages+désavantages+bénédictions+avantages-divins) : par pack d'origine.
+- **Bestiaire** (pnj+dieux+creatures) : par pack d'origine, même logique.
+- **Sorts** : par `system.ritual` (Sort Instantané / Rituel).
+- **Historique** : toujours pas de filtre (un seul pack, pas de sous-catégorie).
+
+Template : le `{{#ifEquals tab.key "equipement"}}` codé en dur devient `{{#if tab.filters.length}}` — Traits/Sorts/Bestiaire retombent maintenant dans la disposition à deux colonnes (aside filtres + résultats) déjà utilisée par Équipement, avec la colonne Prix/bouton Payer toujours conditionnée à `tab.key == "equipement"` (seul onglet dont les items ont un prix). La branche `browser-results-full` (sans filtres) reste en place, désormais seulement empruntée par Historique. `_onRender` : la logique de filtrage (écouteurs sur les cases à cocher) est repassée d'un scope unique "onglet Équipement" à un scope par panneau d'onglet (`querySelectorAll(".tab[data-tab]")`), pour que chaque onglet filtré fonctionne indépendamment.
+
+**Fichiers** : `module/apps/compendium-browser.mjs`, `templates/apps/compendium-browser.hbs`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`.
+
+**Confirmé par l'utilisateur** en test manuel dans Foundry (pas d'accès navigateur depuis cet environnement pour cette session, ni extension Chrome installable côté utilisateur) : filtres Traits/Sorts/Bestiaire fonctionnels, Équipement non régressé.
+
+**Deux 404 d'image remontées pendant ce test** (préexistantes, sans rapport avec les filtres — juste rendues visibles par le fait de parcourir l'onglet Bestiaire/Divinités pour la première fois avec ce navigateur) :
+- `centaure` (creatures.db) : simple faute de frappe de nom de fichier sur le disque — `centaur_epée.jpg` (sans accent sur le premier "e") au lieu de `centaur_épée.jpg` référencé par la donnée. Corrigé en renommant le fichier (source + déployé), rien à toucher côté données.
+- `Circé` (dieux.db, `_id: aDty000000000017`) : aucune image n'a jamais existé pour ce document (rien dans `packs/token/divinity/`, pas une faute de frappe). Sur choix de l'utilisateur (icône par défaut en attendant une vraie image) : `img` mis à `icons/svg/mystery-man.svg` dans la source `packs/dieux.db`, + macro `packs/_fix-circe-img.js` fournie pour appliquer le même changement sur le document déjà vécu dans le compendium LevelDB déployé (jamais d'édition directe d'un fichier LevelDB, cf. incident de corruption déjà documenté).
+
+**Confirmé par l'utilisateur** après exécution de la macro : le Centaure à l'épée et Circé s'affichent tous les deux correctement. Session close.
+
+---
+
 ## Session du 16 août 2026 — Incanter décompte enfin les vrais ingrédients (v0.6.24 → v0.6.25)
 
 ### Contexte
