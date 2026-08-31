@@ -2,6 +2,26 @@
 
 ---
 
+## Session du 31 août 2026 (suite 5) — Onglet Combat des PNJ complété (v0.6.42 → v0.6.43)
+
+Point 6 de `TODO_BUG_ANTIQUE.md`. La CA, l'Initiative et le Bonus d'attaque existaient déjà dans le
+modèle de données PNJ, mais leur seul affichage (`.npc-combat-quick`) vivait sur l'onglet
+**Statistiques**, jamais sur l'onglet **Combat** (qui ne contenait que le tableau d'armes) — d'où le
+signalement "absents" en le cherchant au bon endroit. Le Déplacement, lui, n'existait carrément pas
+dans le modèle PNJ (seulement sur la fiche Personnage).
+
+**Correctif** : nouveau champ `system.deplacement` (9m par défaut, même défaut que le personnage)
+sur `AntiqueNpc`. Le bloc `.npc-combat-quick` (CA/Initiative/Attaque, + désormais Déplacement)
+dupliqué en haut de l'onglet Combat — mêmes champs `name="system...."`, donc automatiquement
+synchronisé avec l'onglet Statistiques sans code JS supplémentaire (les listeners de
+`_onRender()` sont déjà posés par sélecteur de classe, pas par ID). `.npc-combat-quick` passé en
+`flex-wrap: wrap` pour absorber la 4ᵉ case sans dépasser la largeur de la fiche.
+
+**Fichiers** : `module/data-models/actor-npc.mjs`, `templates/actor/npc-sheet.hbs`,
+`css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 4) — Glisser-déposer d'objets empilables (v0.6.41 → v0.6.42)
 
 Point 4 de `TODO_BUG_ANTIQUE.md`. Le glisser-déposer natif Foundry (`ActorSheetV2#_onDropItem`) ne

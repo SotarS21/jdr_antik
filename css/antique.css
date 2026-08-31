@@ -2160,6 +2160,7 @@
 
 .antique.npc .npc-combat-quick {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
   margin-bottom: 16px;

@@ -102,6 +102,31 @@
 
     {{!-- ===================== COMBAT TAB ===================== --}}
     <div class="tab" data-group="primary" data-tab="combat">
+      {{!-- Quick combat stats (same fields as the Stats tab's quick block — kept in
+           sync automatically since both bind to the same system paths) --}}
+      <div class="npc-combat-quick">
+        <div class="npc-stat-box">
+          <label>{{localize "ANTIQUE.Combat.CA"}}</label>
+          {{#if isGM}}
+          <input type="number" name="system.ca.value" value="{{system.ca.value}}" class="npc-big-input" />
+          {{else}}
+          <div class="npc-big-input npc-ca-hidden" title="{{localize 'ANTIQUE.Combat.CAHiddenFromPlayers'}}"><i class="fas fa-eye-slash"></i></div>
+          {{/if}}
+        </div>
+        <div class="npc-stat-box npc-rollable initiative-roll" title="Lancer l'initiative (1d20 + {{system.initiative.value}})">
+          <label><i class="fas fa-dice-d20"></i> {{localize "ANTIQUE.Combat.Initiative"}}</label>
+          <input type="number" name="system.initiative.value" value="{{system.initiative.value}}" class="npc-big-input" />
+        </div>
+        <div class="npc-stat-box">
+          <label><i class="fas fa-shoe-prints"></i> {{localize "ANTIQUE.Identity.Deplacement"}}</label>
+          <input type="number" name="system.deplacement" value="{{system.deplacement}}" class="npc-big-input" />
+        </div>
+        <div class="npc-stat-box npc-rollable attaque-roll" title="Jet d'attaque (1d20 + {{system.attaque.value}})">
+          <label><i class="fas fa-fist-raised"></i> {{localize "ANTIQUE.Npc.Attaque"}}</label>
+          <input type="number" name="system.attaque.value" value="{{system.attaque.value}}" class="npc-big-input" />
+        </div>
+      </div>
+
       {{!-- Weapons --}}
       <div class="weapons-section">
         <h2>{{localize "ANTIQUE.Combat.Weapons"}}

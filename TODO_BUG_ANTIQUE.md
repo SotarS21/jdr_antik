@@ -54,10 +54,12 @@ Régression ou bug bloquant signalé : depuis le Navigateur de Compendium, il n'
 d'éditer un objet (ouverture de sa fiche en modification). **Correction jugée non nécessaire par
 l'utilisateur** — point retiré, plus rien à traiter ici.
 
-## 6. Fiche PNJ — onglet Combat incomplet
+## 6. ~~Fiche PNJ — onglet Combat incomplet~~ — CORRIGÉ (31 août 2026, v0.6.43)
 
-Ajouter dans l'onglet Combat de la fiche PNJ : la CA, l'Initiative, le Déplacement et les bonus
-d'attaque (actuellement absents ou pas tous affichés).
+CA/Initiative/Attaque existaient déjà mais uniquement sur l'onglet Statistiques — dupliqués sur
+l'onglet Combat (mêmes champs, synchronisés automatiquement). Nouveau champ Déplacement (n'existait
+pas du tout pour les PNJ), ajouté aux deux endroits. Voir `JOURNAL.md`, session du 31 août 2026
+(suite 5).
 
 ## 7. Compétences Parade et Esquive en combat
 

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.43": {
+    title: "Version 0.6.43 — Onglet Combat des PNJ complété",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : la CA, l'Initiative, le Déplacement et le Bonus d'attaque sont désormais visibles (et modifiables) directement dans l'onglet Combat de la fiche PNJ, en plus de l'onglet Statistiques. Nouveau champ Déplacement pour les PNJ (9m par défaut).</li>
+      </ul>`
+  },
   "0.6.42": {
     title: "Version 0.6.42 — Le glisser-déposer d'objets s'empile enfin",
     html: `

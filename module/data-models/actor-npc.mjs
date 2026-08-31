@@ -55,6 +55,7 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
       attaque: new fields.SchemaField({
         value: new fields.NumberField({ initial: 0, integer: true })
       }),
+      deplacement: new fields.NumberField({ initial: 9, integer: true }),
 
       // --- Currency ---
       or: new fields.NumberField({ initial: 0 }),
