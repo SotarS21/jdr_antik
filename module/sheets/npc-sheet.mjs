@@ -69,6 +69,16 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       context.abilityLabels[key] = game.i18n.localize(locKey);
     }
 
+    context.weaponCatsData = {};
+    for (const [key, cfg] of Object.entries(CONFIG.ANTIQUE.weaponCategories)) {
+      context.weaponCatsData[key] = {
+        key,
+        label: game.i18n.localize(cfg.label),
+        icon: cfg.icon ?? "",
+        total: system.attackBonuses[key]?.total ?? 0
+      };
+    }
+
     context.weapons = this.actor.items.filter(i => i.type === "weapon").map(w => {
       const linkedAmmo = w.system.linkedAmmoId
         ? this.actor.items.get(w.system.linkedAmmoId)
@@ -138,6 +148,10 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         if (ev.target.tagName === "INPUT") return;
         this._rollNpcAttack();
       });
+    });
+
+    this.element.querySelectorAll(".attack-cat-roll").forEach(el => {
+      el.addEventListener("click", ev => this.actor.rollAttackCategory(ev.currentTarget.dataset.cat));
     });
 
     this.element.querySelectorAll(".item-create").forEach(el => {

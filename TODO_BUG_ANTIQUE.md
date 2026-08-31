@@ -70,12 +70,14 @@ Personnage et fiche PNJ.
 `todo_foundry.txt` sur le Bureau) — pas juste une question de code, les règles précises de ces deux
 compétences ne sont pas encore tranchées.
 
-## 8. PNJ — compétences de combat avec compendium associé
+## 8. ~~PNJ — onglet Combat complet et réservé au MJ~~ — CORRIGÉ (31 août 2026, v0.6.44)
 
-Sur les PNJ, ajouter des compétences de combat, avec un compendium associé — s'inspirer des
-descriptions des créatures mythologiques (retrouvé dans `todo_foundry.txt`). Plus large que le
-point 6 (qui ne concerne que l'affichage CA/Initiative/Déplacement/bonus d'attaque) : il s'agit ici
-d'un vrai système de compétences de combat pour le Bestiaire, pas encore défini.
+Reformulé après clarification utilisateur : le même onglet Combat que la fiche Personnage
+(CA/Initiative/Déplacement en rappel + tableau de bonus d'attaque par catégorie — main nue, arme
+blanche, arme de jet, arme exotique, combat à deux mains, arme à distance —, modifiable par le MJ,
++ le tableau d'armes déjà existant), et surtout **réservé au MJ** : un joueur qui possède/contrôle
+un PNJ n'a plus accès à cet onglet du tout (les autres onglets restent inchangés). Voir
+`JOURNAL.md`, session du 31 août 2026 (suite 6).
 
 ## 9. Glisser les compétences et armes dans la liste des macros
 

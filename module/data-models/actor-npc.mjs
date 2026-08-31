@@ -56,6 +56,19 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
         value: new fields.NumberField({ initial: 0, integer: true })
       }),
       deplacement: new fields.NumberField({ initial: 9, integer: true }),
+      // Per-category attack bonus table (mirrors AntiqueActor#rollAttackCategory(), shared
+      // with the character sheet — reads system.attackBonuses[cat].total, so the same
+      // {total} shape is used here). No ability-mod/skill breakdown like the character
+      // sheet (NPCs have no skill system) — each category is just a flat number the GM
+      // sets directly, GM-only tab (see npc-sheet.hbs, isGM-gated Combat tab).
+      attackBonuses: new fields.SchemaField({
+        mainNue: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
+        armeBlanche: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
+        armeDeJet: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
+        armeExotique: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
+        combatDeuxMains: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
+        armeADistance: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) })
+      }),
 
       // --- Currency ---
       or: new fields.NumberField({ initial: 0 }),

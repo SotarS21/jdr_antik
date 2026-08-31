@@ -2,6 +2,34 @@
 
 ---
 
+## Session du 31 août 2026 (suite 6) — Onglet Combat PNJ complet + réservé au MJ (v0.6.43 → v0.6.44)
+
+Point 8 de `TODO_BUG_ANTIQUE.md`, reformulé après clarification utilisateur (la demande initiale
+"compétences de combat avec compendium associé" était trop vague — la vraie demande : le même
+onglet Combat que la fiche Personnage, avec CA/Initiative/Déplacement/bonus d'attaque par
+catégorie, éditable par le MJ, et **réservé au MJ** — un joueur qui possède/contrôle un PNJ ne doit
+plus voir cet onglet du tout).
+
+**Bonus d'attaque par catégorie** : nouveau `system.attackBonuses.{mainNue,armeBlanche,armeDeJet,
+armeExotique,combatDeuxMains,armeADistance}.total` sur `AntiqueNpc` — même forme `{total}` que la
+fiche Personnage (pas de détail carac/compétence, les PNJ n'ont pas de système de compétences),
+pour que `AntiqueActor#rollAttackCategory()` (déjà partagé par les deux types d'acteur) fonctionne
+sans modification. Tableau `.attack-table` à 2 colonnes (Catégorie / Bonus, éditable), même styles
+CSS que la fiche Personnage, ligne cliquable pour lancer le jet (`.attack-cat-roll`).
+
+**Réservé au MJ** : le lien d'onglet et le contenu de l'onglet Combat sont désormais conditionnés
+sur `isGM` (au lieu de `hasFullAccess = isGM || isOwner`) — un joueur propriétaire d'un PNJ garde
+Statistiques/Inventaire/Magie, mais plus Combat. La case CA masquée aux joueurs (ajoutée plus tôt
+sur l'onglet Statistiques) devient inutile dans ce nouvel onglet Combat puisqu'il est déjà 100%
+MJ — simplifiée en input toujours visible à cet endroit précis (le Statistiques garde son
+traitement d'origine, inchangé).
+
+**Fichiers** : `module/data-models/actor-npc.mjs`, `module/sheets/npc-sheet.mjs`,
+`templates/actor/npc-sheet.hbs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 5) — Onglet Combat des PNJ complété (v0.6.42 → v0.6.43)
 
 Point 6 de `TODO_BUG_ANTIQUE.md`. La CA, l'Initiative et le Bonus d'attaque existaient déjà dans le

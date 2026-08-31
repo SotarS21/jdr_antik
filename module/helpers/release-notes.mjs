@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.44": {
+    title: "Version 0.6.44 — Onglet Combat des PNJ, réservé au MJ",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : l'onglet Combat de la fiche PNJ affiche désormais un tableau de bonus d'attaque par catégorie (Main nue, Arme blanche, Arme de jet, Arme exotique, Combat à deux mains, Arme à distance), modifiable par le MJ, en plus du rappel CA/Initiative/Déplacement et du tableau d'armes.</li>
+        <li><strong>Changé</strong> : l'onglet Combat de la fiche PNJ n'est désormais visible que par le MJ — les joueurs qui possèdent/contrôlent un PNJ n'y ont plus accès (les autres onglets restent inchangés).</li>
+      </ul>`
+  },
   "0.6.43": {
     title: "Version 0.6.43 — Onglet Combat des PNJ complété",
     html: `
