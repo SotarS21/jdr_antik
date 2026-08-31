@@ -2,6 +2,27 @@
 
 ---
 
+## Session du 9 août 2026 (suite 8, ultracode) — Scission Boutique d'Alchimie / vrai Navigateur multi-compendiums (v0.6.22 → v0.6.23)
+
+Retour utilisateur : la fusion armes+équipement+alchimie dans une seule fenêtre "Navigateur" n'était pas ce qui était demandé. Scission en deux applis distinctes, partageant leur logique commune via un nouveau module `module/apps/browser-shared.mjs` (`resolveShopTargetActors`, `grantItemToActor`, `attachBrowserRowInteractions`, `withRowLock`) :
+
+1. **`module/apps/alchemy-shop.mjs`** (+ `templates/apps/alchemy-shop.hbs`) — "Boutique d'Alchimie", clic droit sur le compendium Alchimie uniquement (`getCompendiumContextOptions`), sections par catégorie d'ingrédient comme avant.
+2. **`module/apps/compendium-browser.mjs`** (+ `.hbs`, réécrit) — "Navigateur de Compendium", ouvert via un **bouton ajouté sous la liste des compendiums** dans la barre latérale (pas un clic droit, pas un contrôle de scène — retirés). Couvre `BROWSED_PACKS` = les 12 compendiums du système, "absolument tout, comme Pathfinder" (choix explicite de l'utilisateur face à 3 options de portée proposées).
+
+**Bouton du navigateur** : `Hooks.on("renderCompendiumDirectory", (app, html) => {...})` ajoute un `<button>` dans le `<footer class="directory-footer">` — un vrai PART nommé de `CompendiumDirectory` (`templates/sidebar/directory/footer.hbs`, vérifié dans le code source Foundry), pas une supposition. Garde anti-doublon (`footer.querySelector(".antique-compendium-browser-btn")`) puisque ce hook se redéclenche à chaque rendu, contrairement aux hooks "une seule fois" des sessions précédentes.
+
+**Trois types de documents, trois actions** (`pack.documentName`, propriété native vérifiée dans `compendium-collection.mjs`) :
+- **Item** avec `system.price` : Prendre (gratuit) + Payer (déduit l'or) — comme avant.
+- **Item** sans prix (avantages, désavantages, bénédictions, avantages divins, sorts — aucun de ces modèles de données n'a de champ `price`, confirmé) : Prendre seul, jamais empilé sur un exemplaire existant (`STACKABLE_TYPES` dans `browser-shared.mjs` limité à `weapon`/`equipment` — une malédiction ou un sort n'a pas de quantité).
+- **Actor** (pnj, dieux, creatures) : bouton Importer → `game.actors.importFromCompendium(pack, id)`, l'API native Foundry pour copier un acteur de compendium dans le monde (vérifiée dans `world-collection.mjs`).
+- **RollTable** (historique, 5 tables) : bouton Tirer → `table.draw()` directement sur le document de compendium — vérifié dans `roll-table.mjs` que `draw()` saute volontairement l'écriture "résultat déjà tiré" quand `this.pack` est défini, donc pas besoin d'importer la table dans le monde avant de tirer dessus.
+
+Glisser-déposer généralisé : chaque ligne porte maintenant `data-drag-type` (Item/Actor/RollTable selon la section) au lieu d'être toujours "Item".
+
+**Fichiers** : `module/apps/browser-shared.mjs` (nouveau), `module/apps/alchemy-shop.mjs` (nouveau), `templates/apps/alchemy-shop.hbs` (nouveau), `module/apps/compendium-browser.mjs` (réécrit), `templates/apps/compendium-browser.hbs` (réécrit), `antique.mjs`, `css/antique.css`, `lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 9 août 2026 (suite 7) — Armures d'equipement.db ajoutées au Navigateur (v0.6.21 → v0.6.22)
 
 `equipement.db` s'est avéré être un mélange : 20 objets qui dupliquent verbatim des potions déjà présentes dans Alchimie (même nom, prix identique en description — probablement un reliquat d'avant que le compendium Alchimie ne soit séparé), 21 autres consommables/objets d'aventure sans prix nulle part, et 9 vraies armures/boucliers grecs nommés (Linothorax, Thorax de cuir, Cuirasse de bronze, Armure d'hoplite complète, Casque corinthien, Casque chalcidien, Cnémides de bronze, Aspis, Peltè) also sans prix nulle part (ni description, ni Excel source).
