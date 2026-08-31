@@ -51,7 +51,13 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
     // --- Skills ---
     const skillSchema = () => new fields.SchemaField({
       trained: new fields.BooleanField({ initial: false }),
-      bonus: new fields.NumberField({ initial: 0, integer: true })
+      bonus: new fields.NumberField({ initial: 0, integer: true }),
+      // Reaction cost for Esquive/Parade (see AntiqueActor#rollDodgeSkill): each use
+      // stacks a further -1 here regardless of success, reset to 0 by the combat
+      // turn tracker at the start of this actor's next turn (registerDodgeResetHook,
+      // module/helpers/dodge-reset.mjs). Present on every skill for schema
+      // consistency, but only ever written to for these two.
+      tempPenalty: new fields.NumberField({ initial: 0, integer: true })
     });
 
     const skillsObj = {};
@@ -221,7 +227,7 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       const equipmentBonus = equipmentSkillBonuses[key] ?? 0;
       skill.mod = abilityMod;
       skill.equipmentBonus = equipmentBonus;
-      skill.total = abilityMod + skill.bonus + trainedPenalty + equipmentBonus;
+      skill.total = abilityMod + skill.bonus + trainedPenalty + equipmentBonus + (skill.tempPenalty ?? 0);
     }
 
     // --- Save totals ---

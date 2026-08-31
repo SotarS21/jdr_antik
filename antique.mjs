@@ -31,6 +31,7 @@ import { registerVersionCheckSettings, checkSystemVersionUpdate } from "./module
 import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-browser.mjs";
 import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
 import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
+import { registerDodgeResetHook } from "./module/helpers/dodge-reset.mjs";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -105,6 +106,7 @@ Hooks.once("init", function () {
   registerAlchemyShopContextMenu();
   registerCompendiumBrowserFooterButton();
   registerHotbarMacroDrop();
+  registerDodgeResetHook();
 
   // Preload Handlebars templates
   return preloadHandlebarsTemplates();

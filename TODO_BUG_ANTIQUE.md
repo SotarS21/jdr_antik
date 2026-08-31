@@ -61,14 +61,13 @@ l'onglet Combat (mêmes champs, synchronisés automatiquement). Nouveau champ D�
 pas du tout pour les PNJ), ajouté aux deux endroits. Voir `JOURNAL.md`, session du 31 août 2026
 (suite 5).
 
-## 7. Compétences Parade et Esquive en combat
+## 7. ~~Compétences Parade et Esquive en combat~~ — CORRIGÉ (31 août 2026, v0.6.50)
 
-Ajouter les compétences "Parade" et "Esquive" dans la partie Combat des fiches — à la fois fiche
-Personnage et fiche PNJ.
-
-**Point de blocage** : demander à FLo les règles d'esquive avant d'implémenter (retrouvé dans
-`todo_foundry.txt` sur le Bureau) — pas juste une question de code, les règles précises de ces deux
-compétences ne sont pas encore tranchées.
+Règle confirmée par l'utilisateur : n'importe qui (PJ/PNJ) peut tenter une Esquive/Parade en
+réaction quand un ennemi va toucher, plusieurs fois par tour ; que le jet réussisse ou non, -1
+temporaire cumulatif à cette même compétence, remis à zéro au début du tour suivant de l'acteur
+(automatique, via le tracker de combat). Boutons ajoutés dans l'onglet Combat des deux fiches, à
+côté du Déplacement. Voir `JOURNAL.md`, session du 31 août 2026 (suite 12).
 
 ## 8. ~~PNJ — onglet Combat complet et réservé au MJ~~ — CORRIGÉ (31 août 2026, v0.6.44)
 

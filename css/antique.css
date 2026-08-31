@@ -1001,7 +1001,8 @@
 
 .antique .ca-section,
 .antique .initiative-section,
-.antique .deplacement-section {
+.antique .deplacement-section,
+.antique .dodge-section {
   background: var(--antique-parchment);
   border: 2px solid var(--antique-gold);
   border-radius: 6px;
@@ -1017,6 +1018,7 @@
 .antique .ca-section h2,
 .antique .initiative-section h2,
 .antique .deplacement-section h2,
+.antique .dodge-section h2,
 .antique .attack-bonuses h2 {
   margin: 0 0 8px;
   font-size: 0.95em;
@@ -1027,7 +1029,8 @@
 
 .antique .ca-total,
 .antique .initiative-total,
-.antique .deplacement-total {
+.antique .deplacement-total,
+.antique .dodge-total {
   font-size: 2em;
   font-weight: bold;
   color: var(--antique-dark-gold);
@@ -1082,6 +1085,25 @@
 .antique .initiative-section h2 .fa-dice-d20 {
   margin-right: 4px;
   font-size: 0.9em;
+}
+
+.antique .dodge-section.dodge-roll {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique .dodge-section.dodge-roll:hover {
+  border-color: var(--antique-dark-gold);
+  background: var(--antique-cream);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.4);
+}
+
+.antique .dodge-section.dodge-roll:hover h2 {
+  color: var(--antique-dark-gold);
+}
+
+.antique .dodge-section.dodge-roll:hover .dodge-total {
+  color: var(--antique-gold);
 }
 
 .antique.npc .npc-stat-box.npc-rollable {

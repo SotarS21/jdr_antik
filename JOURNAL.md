@@ -2,6 +2,47 @@
 
 ---
 
+## Session du 31 août 2026 (suite 12) — Esquive/Parade en réaction (v0.6.49 → v0.6.50)
+
+Point 7 de `TODO_BUG_ANTIQUE.md`, débloqué après clarification des règles avec l'utilisateur :
+n'importe qui (PJ ou PNJ) peut tenter une Esquive/Parade en réaction quand un ennemi va toucher,
+plusieurs fois par tour ; que le jet réussisse ou non, ça coûte -1 temporaire à cette même
+compétence (cumulatif sur le tour), remis à sa valeur normale au début du tour suivant de l'acteur.
+
+**Nouveau champ `tempPenalty`** : ajouté au schéma générique `skillSchema()` de
+`actor-character.mjs` (présent sur les 48 compétences pour la cohérence du schéma, mais seul
+Esquive/Parade y écrivent) ; `skill.total` inclut désormais `+ skill.tempPenalty`. Les PNJ n'ont pas
+de système de compétences : nouveaux champs plats dédiés `system.esquive`/`system.parade`
+(`{value, tempPenalty}` + `total` dérivé) sur `AntiqueNpc`, même principe simplifié que
+`attackBonuses`.
+
+**`AntiqueActor#rollDodgeSkill(skillKey)`** (nouveau, partagé PJ/PNJ) : lit `system.skills.<key>`
+ou `system.<key>` selon le type d'acteur, lance `1d20 + total`, puis décrémente `tempPenalty` de 1
+— fonctionne quel que soit le résultat du jet, conformément à la règle.
+
+**Remise à zéro automatique** : nouveau `module/helpers/dodge-reset.mjs`
+(`registerDodgeResetHook()`) qui écoute `Hooks.on("combatTurnChange", ...)` — hook interne de
+`Combat#_manageTurnEvents()` (vérifié dans le vrai code source Foundry v14,
+`client/documents/combat.mjs`), qui expose directement `current.combatantId` (l'acteur dont le tour
+commence). Gardé au MJ actif uniquement (`game.user.isActiveGM`) puisque ce hook se déclenche sur
+tous les clients à la fois — évite que chacun tente la même écriture (idempotente mais redondante)
+en parallèle.
+
+**UI** : boutons Esquive/Parade ajoutés dans l'onglet Combat, juste à côté du Déplacement (demande
+explicite) — sur la fiche Personnage (`combat-stats`, nouvelle classe `.dodge-section.dodge-roll`)
+et sur la fiche PNJ (`npc-combat-quick`, `.npc-stat-box.npc-rollable.dodge-roll`, éditable comme les
+autres cases rapides via `data-field` + listener dédié déjà en place depuis le point 8). Toujours
+présents aussi dans la liste générale des compétences (Esquive/Parade existaient déjà comme
+compétences standard) — ce nouvel emplacement est un raccourci, pas un remplacement.
+
+**Fichiers** : `module/data-models/actor-character.mjs`, `module/data-models/actor-npc.mjs`,
+`module/documents/actor.mjs`, `module/helpers/dodge-reset.mjs` (nouveau), `antique.mjs`,
+`module/sheets/actor-sheet.mjs`, `module/sheets/npc-sheet.mjs`,
+`templates/actor/character-sheet.hbs`, `templates/actor/npc-sheet.hbs`, `css/antique.css`,
+`lang/{fr,en}.json`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 31 août 2026 (suite 11) — Combolist d'emplacement mal affichée (v0.6.48 → v0.6.49)
 
 Point 12 de `TODO_BUG_ANTIQUE.md`. Deux mécanismes distincts existent pour l'emplacement d'un

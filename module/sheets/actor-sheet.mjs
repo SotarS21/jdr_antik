@@ -474,6 +474,10 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       el.addEventListener("click", () => this.actor.rollInitiativeAntique());
     });
 
+    this.element.querySelectorAll(".dodge-roll").forEach(el => {
+      el.addEventListener("click", ev => this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill));
+    });
+
     this.element.querySelectorAll(".long-rest").forEach(el => {
       el.addEventListener("click", () => this.actor.longRest().then(() => this.render({ force: true })));
     });

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.50": {
+    title: "Version 0.6.50 — Esquive et Parade en réaction, dans l'onglet Combat",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : boutons Esquive et Parade dans l'onglet Combat (fiche Personnage et PNJ, à côté du Déplacement) — tout le monde peut tenter la réaction, plusieurs fois par tour. Que le jet réussisse ou non, il coûte -1 temporaire à la compétence utilisée (cumulatif ce tour-ci), remis à zéro automatiquement au début du tour suivant de l'acteur (grâce au tracker de combat).</li>
+      </ul>`
+  },
   "0.6.49": {
     title: "Version 0.6.49 — Listes déroulantes des fiches d'objet mieux affichées",
     html: `

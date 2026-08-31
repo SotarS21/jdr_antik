@@ -313,6 +313,9 @@
   "ANTIQUE.ItemType.Effect": "Effect",
   "ANTIQUE.ItemType.Curse": "Curse",
 
+  "ANTIQUE.Dodge.Hint": "Reaction: costs -1 temporarily to this skill (stacks this turn), reset to 0 at the start of this actor's next turn",
+  "ANTIQUE.Dodge.ReactionFlavor": "Reaction (-1 temporary this turn)",
+
   "ANTIQUE.Macro.DragToHotbarHint": "Drag to the macro hotbar to create a roll shortcut",
   "ANTIQUE.Macro.RollAttack": "Attack: {name}",
   "ANTIQUE.Macro.RollSkill": "Roll: {name}",

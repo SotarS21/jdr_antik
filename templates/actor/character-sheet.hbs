@@ -229,6 +229,17 @@
           <h2><i class="fas fa-shoe-prints"></i> {{localize "ANTIQUE.Identity.Deplacement"}}</h2>
           <div class="deplacement-total">{{system.deplacement}} m</div>
         </div>
+
+        {{!-- Esquive/Parade: reactive rolls, -1 temp penalty per use (stacks this
+             turn), reset at the start of this actor's next turn (dodge-reset.mjs) --}}
+        <div class="dodge-section dodge-roll" data-skill="esquive" title="{{localize 'ANTIQUE.Dodge.Hint'}}">
+          <h2><i class="fas fa-running"></i> {{localize "ANTIQUE.Skill.Esquive"}}</h2>
+          <div class="dodge-total">{{signedNum system.skills.esquive.total}}</div>
+        </div>
+        <div class="dodge-section dodge-roll" data-skill="parade" title="{{localize 'ANTIQUE.Dodge.Hint'}}">
+          <h2><i class="fas fa-shield-alt"></i> {{localize "ANTIQUE.Skill.Parade"}}</h2>
+          <div class="dodge-total">{{signedNum system.skills.parade.total}}</div>
+        </div>
       </div>
 
       {{!-- Attack Bonuses --}}

@@ -127,6 +127,18 @@
           <label><i class="fas fa-shoe-prints"></i> {{localize "ANTIQUE.Identity.Deplacement"}}</label>
           <input type="number" data-field="system.deplacement" value="{{system.deplacement}}" class="npc-big-input" />
         </div>
+        {{!-- Esquive/Parade: reactive rolls, -1 temp penalty per use (stacks this
+             turn), reset at the start of this actor's next turn (dodge-reset.mjs).
+             Input edits the base value; the roll (click anywhere but the input)
+             uses the derived total, which reflects any currently stacked penalty. --}}
+        <div class="npc-stat-box npc-rollable dodge-roll" data-skill="esquive" title="{{localize 'ANTIQUE.Dodge.Hint'}} (1d20 + {{system.esquive.total}})">
+          <label><i class="fas fa-running"></i> {{localize "ANTIQUE.Skill.Esquive"}}</label>
+          <input type="number" data-field="system.esquive.value" value="{{system.esquive.value}}" class="npc-big-input" />
+        </div>
+        <div class="npc-stat-box npc-rollable dodge-roll" data-skill="parade" title="{{localize 'ANTIQUE.Dodge.Hint'}} (1d20 + {{system.parade.total}})">
+          <label><i class="fas fa-shield-alt"></i> {{localize "ANTIQUE.Skill.Parade"}}</label>
+          <input type="number" data-field="system.parade.value" value="{{system.parade.value}}" class="npc-big-input" />
+        </div>
         <div class="npc-stat-box npc-rollable attaque-roll" title="Jet d'attaque (1d20 + {{system.attaque.value}})">
           <label><i class="fas fa-fist-raised"></i> {{localize "ANTIQUE.Npc.Attaque"}}</label>
           <input type="number" data-field="system.attaque.value" value="{{system.attaque.value}}" class="npc-big-input" />

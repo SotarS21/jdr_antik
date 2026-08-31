@@ -150,6 +150,13 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       });
     });
 
+    this.element.querySelectorAll(".dodge-roll").forEach(el => {
+      el.addEventListener("click", ev => {
+        if (ev.target.tagName === "INPUT") return;
+        this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill);
+      });
+    });
+
     this.element.querySelectorAll(".attack-cat-roll").forEach(el => {
       el.addEventListener("click", ev => this.actor.rollAttackCategory(ev.currentTarget.dataset.cat));
     });

@@ -313,6 +313,9 @@
   "ANTIQUE.ItemType.Effect": "Effet",
   "ANTIQUE.ItemType.Curse": "Malédiction",
 
+  "ANTIQUE.Dodge.Hint": "Réaction : coûte -1 temporaire à cette compétence (cumulatif ce tour-ci), remis à zéro au début du prochain tour de cet acteur",
+  "ANTIQUE.Dodge.ReactionFlavor": "Réaction (-1 temporaire ce tour-ci)",
+
   "ANTIQUE.Macro.DragToHotbarHint": "Glisser vers la barre de macros pour créer un raccourci de jet",
   "ANTIQUE.Macro.RollAttack": "Attaque : {name}",
   "ANTIQUE.Macro.RollSkill": "Jet : {name}",

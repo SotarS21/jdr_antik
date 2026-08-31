@@ -131,6 +131,32 @@ export class AntiqueActor extends Actor {
   }
 
   /**
+   * Roll an Esquive/Parade reaction (see rules: anyone, PJ or PNJ, may attempt one when
+   * targeted by an attack that would hit; whether it succeeds or not, it costs -1 to that
+   * same skill for the rest of this actor's turn, stacking each use — reset to 0 at the
+   * start of this actor's next turn by registerDodgeResetHook()). Works for both actor
+   * types: a character reads/writes system.skills.<key>, a PNJ (no skill system) reads/
+   * writes the flat system.<key> added specifically for this (AntiqueNpc).
+   * @param {"esquive"|"parade"} skillKey
+   */
+  async rollDodgeSkill(skillKey) {
+    const isCharacter = this.type === "character";
+    const data = isCharacter ? this.system.skills[skillKey] : this.system[skillKey];
+    if (!data) return;
+    const path = isCharacter ? `system.skills.${skillKey}` : `system.${skillKey}`;
+    const label = game.i18n.localize(CONFIG.ANTIQUE.skills[skillKey]?.label ?? skillKey);
+    const roll = new Roll("1d20 + @total", { total: data.total });
+    await roll.evaluate();
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      flavor: `${label} - ${game.i18n.localize("ANTIQUE.Dodge.ReactionFlavor")}`
+    });
+    await this.update({ [`${path}.tempPenalty`]: (data.tempPenalty ?? 0) - 1 });
+    refreshSheet(this);
+    return roll;
+  }
+
+  /**
    * Roll a save.
    * @param {string} saveKey - The save key (reflexes, robustesse, volonte)
    */

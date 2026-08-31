@@ -69,6 +69,19 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
         combatDeuxMains: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) }),
         armeADistance: new fields.SchemaField({ total: new fields.NumberField({ initial: 0, integer: true }) })
       }),
+      // Esquive/Parade reactions (see AntiqueActor#rollDodgeSkill): `value` is the flat
+      // bonus the GM sets directly (no skill system for NPCs), `tempPenalty` stacks -1
+      // per use regardless of success and is reset to 0 by the combat turn tracker at
+      // the start of this actor's next turn (registerDodgeResetHook,
+      // module/helpers/dodge-reset.mjs). `total` (derived) is what actually gets rolled.
+      esquive: new fields.SchemaField({
+        value: new fields.NumberField({ initial: 0, integer: true }),
+        tempPenalty: new fields.NumberField({ initial: 0, integer: true })
+      }),
+      parade: new fields.SchemaField({
+        value: new fields.NumberField({ initial: 0, integer: true }),
+        tempPenalty: new fields.NumberField({ initial: 0, integer: true })
+      }),
 
       // --- Currency ---
       or: new fields.NumberField({ initial: 0 }),
@@ -90,5 +103,7 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
     for (const ab of Object.values(this.abilities)) {
       ab.mod = Math.floor((ab.value - 10) / 2);
     }
+    this.esquive.total = this.esquive.value + this.esquive.tempPenalty;
+    this.parade.total = this.parade.value + this.parade.tempPenalty;
   }
 }
