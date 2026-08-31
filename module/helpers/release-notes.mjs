@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.38": {
+    title: "Version 0.6.38 — Correctif : la CA (et les jets de Sauvegarde) n'augmentent plus toutes seules",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : sur la fiche Personnage, modifier n'importe quel champ pouvait faire grimper la CA (et les bonus temporaires de Sauvegarde) à chaque enregistrement, quand un effet temporaire (buff) était actif. Les champs "Temp" affichent maintenant la bonne valeur et ne s'accumulent plus.</li>
+      </ul>`
+  },
   "0.6.37": {
     title: "Version 0.6.37 — Marge à droite des boutons d'action du Navigateur",
     html: `

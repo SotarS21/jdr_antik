@@ -2,6 +2,35 @@
 
 ---
 
+## Session du 31 août 2026 — CA (et Sauvegardes) qui augmentait à chaque update de fiche (v0.6.37 → v0.6.38)
+
+Retour utilisateur (fiche PNJ/Personnage "Ephise") : la CA augmente à chaque mise à jour d'un champ
+quelconque de la fiche. Consigné dans `TODO_BUG_ANTIQUE.md` (point 1) avant investigation.
+
+**Cause** : `system.ca.temp` (et `system.saves.<save>.temp`) sont deux champs persistés qui servent
+de cible à la fois à un input manuel sur la fiche (`<input name="system.ca.temp">`) et à des
+ActiveEffect en mode ADD (buffs comme "Peau d'écorce", `AntiqueActor#applyCaBonus()`, avantages de
+Sauvegarde). Foundry applique les ActiveEffect **avant** `prepareDerivedData()` — donc au moment où
+la fiche se rend, `system.ca.temp` vaut déjà `valeur_stockée + bonus_actif`. Le template liait la
+`value` de l'input à cette valeur dérivée. Comme la fiche se soumet à chaque changement de champ
+(`submitOnChange: true`), modifier n'importe quoi ailleurs sur la fiche réécrivait cette valeur
+déjà gonflée comme nouvelle valeur brute persistée — qui se faisait ensuite regonfler par le même
+ActiveEffect au rendu suivant, d'où une croissance à chaque update tant qu'un buff restait actif.
+
+**Correctif** : les inputs "Temp" (CA + les 3 Sauvegardes, même schéma) lisent maintenant la valeur
+brute persistée (`actor._source.system.ca.temp` / `actor._source.system.saves.<key>.temp`, jamais
+touchée par les ActiveEffect) plutôt que la valeur dérivée — `context.caTempSource` et
+`save.tempSource` dans `actor-sheet.mjs::_prepareContext()`. Les totaux et l'infobulle continuent
+d'utiliser la valeur dérivée (`system.ca.temp`/`save.temp`) puisqu'ils doivent refléter le bonus
+actif en cours. Pas de suite automatisée dans ce dépôt (pas de `package.json`/tests) — vérifié par
+relecture statique du flux dérivation → rendu → soumission ; confirmation en jeu à faire par
+l'utilisateur (poser un buff de CA, modifier un autre champ, vérifier que la CA ne bouge plus).
+
+**Fichiers** : `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Navigateur de Compendium — deux retouches demandées le 22 août 2026 — CLOS (23 août 2026)
 
 Les deux points ci-dessous sont désormais faits et confirmés par l'utilisateur (voir détail de

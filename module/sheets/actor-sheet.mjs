@@ -55,6 +55,18 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
 
     const sign = n => (n >= 0 ? `+${n}` : `${n}`);
 
+    // The "Temp" inputs below are bound to fields that ActiveEffects (buff spells,
+    // advantages) also target with mode ADD. `system.ca.temp`/`system.saves.*.temp`
+    // therefore already include any active-effect bonus once derived data has run —
+    // showing that derived value in an editable input and resubmitting the form
+    // (submitOnChange fires on ANY field change) would persist the effect's bonus
+    // back into the raw stored value, and it would then stack again on the next
+    // active-effect application. The inputs must show the raw persisted value
+    // instead (`_source`, untouched by ActiveEffects) so re-submitting the form
+    // as-is is a no-op.
+    const rawSystem = this.actor._source.system;
+    context.caTempSource = rawSystem.ca.temp;
+
     context.caTooltip = `${game.i18n.localize("ANTIQUE.Combat.CABase")} ${system.ca.base} `
       + `${sign(system.ca.armure)} ${game.i18n.localize("ANTIQUE.Combat.Armure")} `
       + `${sign(system.ca.bouclier)} ${game.i18n.localize("ANTIQUE.Combat.Bouclier")} `
@@ -79,6 +91,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         base,
         bonus,
         temp,
+        tempSource: rawSystem.saves?.[key]?.temp ?? 0,
         modSum: s?.modSum ?? 0,
         total,
         tooltip: `${game.i18n.localize("ANTIQUE.Saves.Base")} ${base} ${sign(mod1)} ${context.abilityLabels[ab1]} `

@@ -193,7 +193,7 @@
             <span class="save-label save-roll" data-save="{{save.key}}">{{save.label}}</span>
             <div class="save-inputs">
               <label class="save-temp-label">{{localize 'ANTIQUE.Saves.Temp'}}</label>
-              <input type="number" name="system.saves.{{save.key}}.temp" value="{{save.temp}}" />
+              <input type="number" name="system.saves.{{save.key}}.temp" value="{{save.tempSource}}" />
             </div>
             <span class="save-total computed total">{{signedNum save.total}}</span>
           </div>
@@ -212,7 +212,7 @@
           <div class="ca-details">
             <div class="field">
               <label>{{localize "ANTIQUE.Combat.Temp"}}</label>
-              <input type="number" name="system.ca.temp" value="{{system.ca.temp}}" />
+              <input type="number" name="system.ca.temp" value="{{caTempSource}}" />
             </div>
           </div>
         </div>
