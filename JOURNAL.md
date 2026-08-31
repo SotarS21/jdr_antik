@@ -2,6 +2,131 @@
 
 ---
 
+## Navigateur de Compendium — deux retouches demandées le 22 août 2026 — CLOS (23 août 2026)
+
+Les deux points ci-dessous sont désormais faits et confirmés par l'utilisateur (voir détail de
+chaque correctif, et les sessions du 23 août plus bas pour le vrai bug de mise en page découvert
+en cours de route). Plus aucun point ouvert sur ce TODO.
+
+1. **FAIT (v0.6.30 → v0.6.31)** — ~~Colonne "Type" dans l'onglet Sorts~~, étendue à Traits/Bestiaire/Historique.
+   Confirmé fonctionnel sur Sorts, puis généralisé sur demande à Traits et Bestiaire (retour
+   utilisateur "ça marche bien, mais ça doit être pareil sur les trait et le bestiaire"), puis à
+   Historique ("et historique"). `tab.showTypeColumn` (`tab.filters.length > 0 && !isEquipmentTab`)
+   et `tab.itemColumns` (`tab.filters.length ? 4 : 3`) calculés génériquement dans
+   `compendium-browser.mjs` — remplace les 2 cas particuliers `{{#ifEquals tab.key "sorts"}}` de
+   la v0.6.30 par une règle unique qui s'applique à tout onglet filtré. Historique n'avait encore
+   aucun filtre : ajout d'un nouveau mode `filterByFolder: true` (à côté de `filterByPack`
+   existant) — son unique pack (`antique.historique`) est en réalité déjà scindé par l'auteur des
+   données en 2 vrais dossiers Foundry ("Origine", "Bonus/Malus aléatoire", vérifié dans
+   `packs/historique.db` : 2 documents `Folder` avec `type: "RollTable"`, les 5 RollTables
+   pointant vers l'un des deux via leur champ `folder`) — même principe que le dossier
+   Armure/Bouclier déjà exploité pour `classifyEquipmentItem()`. `classify = doc => doc.folder`
+   pour ce mode ; filtres dérivés de `pack.folders` (`{key: folder.id, label: folder.name}`).
+
+**Retour utilisateur : ne fonctionne pas sur Historique.** Cause trouvée en inspectant directement
+le LevelDB déployé (via `classic-level`, en lecture — l'ouverture a échoué tant que Foundry a le
+pack ouvert, ce qui a confirmé sans risque qu'aucune lecture concurrente n'était possible ; le vrai
+diagnostic est donc venu d'une lecture des octets bruts du fichier `.ldb` pendant que Foundry
+tournait, en cherchant les préfixes de clé `!folders!` vs `!tables!` — cf. `packs/_build-leveldb.js`
+pour la convention de préfixe) : le compendium **vécu** en jeu a été construit avant que la source
+`packs/historique.db` ne soit restructurée en 2 vrais dossiers Foundry. "Origine" et "Bonus/Malus
+aléatoire" existent donc dans le jeu comme deux **RollTable orphelines vides** (préfixe `!tables!`,
+pas `!folders!`) au lieu de vrais dossiers — encore un exemple du piège déjà documenté plusieurs fois
+dans ce journal (source `.db` ≠ compendium LevelDB déjà déployé). `pack.folders` est donc vide en
+jeu, d'où aucun filtre/Type pour cet onglet malgré un code correct.
+
+**Correctif** : nouvelle macro `packs/_fix-historique-folders.js` (jamais d'édition directe du
+LevelDB, cf. incident de corruption déjà documenté) — supprime les 2 RollTable orphelines (avec
+garde-fou : ne supprime que si elles sont vides, avertit sinon), crée 2 vrais documents `Folder`
+(`type: "RollTable"`) via `Folder.create([...], {pack: pack.collection})`, puis relie chacune des 5
+vraies tables à son dossier par correspondance de nom. **Confirmé par l'utilisateur** après exécution
+de la macro : filtres + colonne Type fonctionnels sur Historique.
+
+**Deuxième retour utilisateur : décalage du tracé des lignes de colonnes.** Chaque section
+(Équipement/Traits/Bestiaire/Historique) est son propre `<table>` HTML indépendant (un par pack ou
+regroupement de pack) ; sans layout fixe, chaque table calcule la largeur de ses colonnes à partir
+de son PROPRE contenu — les bordures verticales ne s'alignaient donc pas d'une section à l'autre
+(zigzag), d'autant plus visible maintenant que la colonne Type ajoute une largeur de texte variable
+(labels courts comme "PNJ" à côté de longs comme "Bonus/Malus aléatoire"). Corrigé avec un
+`<colgroup>` à largeurs fixes (`.col-img` 30px / `.col-extra` 130px / `.col-controls` 56px, colonne
+nom sans largeur déclarée = absorbe le reste) + `table-layout: fixed` sur une nouvelle classe
+`.browser-table`, ajoutée aux 4 variantes de tableau du template (scoping volontaire : `.apoth-table`
+est une classe partagée avec l'onglet Ingrédients de la fiche perso et la Boutique d'Alchimie, donc
+tout changement structurel passe par `.browser-table` pour ne toucher qu'ici). `white-space: normal`
+réintroduit spécifiquement sur `.browser-table .price-cell`/`.type-cell` (le `nowrap` partagé
+ailleurs aurait fait déborder un long libellé hors de sa colonne désormais fixe).
+
+**Fichiers** : `templates/apps/compendium-browser.hbs`, `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`.
+
+**Retour utilisateur : toujours pas aligné, et pareil sur Traits/Sorts/Bestiaire/Historique ET sur
+l'onglet Ingrédients de la fiche perso** (jamais touché cette session) — signe que le vrai bug n'a
+rien à voir avec les colonnes ajoutées aujourd'hui, il est déjà présent partout où `.apoth-table`/
+`.item-controls` est utilisé. Diagnostic par capture d'écran demandée puis analysée (recadrée et
+zoomée 3× via PowerShell/`System.Drawing`, faute d'accès navigateur direct) : la bande de fond teal
+de l'en-tête de tableau s'arrête net après la colonne "QUANTITÉ" — la dernière colonne (icônes
+crayon/poubelle) n'a aucun fond d'en-tête au-dessus d'elle et semble "détachée" du reste du tableau,
+ses icônes débordant visuellement à droite du tableau réel.
+
+**Cause** : `.item-controls` (`display:flex; gap:4px`) posé directement sur un `<td>` sans texte —
+dans l'algorithme de mise en page automatique des tableaux, ce genre de cellule peut se voir
+calculer une largeur de colonne quasi nulle (le contenu flex n'est pas pris en compte comme
+attendu), et comme les cellules de tableau ne découpent pas leur contenu qui déborde par défaut, les
+icônes débordent visuellement hors du tableau réel au lieu d'agrandir leur colonne — d'où l'en-tête
+(dimensionné sur cette même largeur quasi nulle) qui semble "s'arrêter avant" la colonne réelle.
+Bug global, présent sur TOUTE table utilisant `.item-controls` (Inventaire, Ingrédients, Traits,
+fiche PNJ, Boutique d'Alchimie, Navigateur), pas une régression du travail du jour — juste jamais
+remarqué avant que l'attention ne se porte sur l'alignement des tableaux du Navigateur.
+
+**Premier correctif (v0.6.34, `min-width: 50px` sur `td.item-controls`) : sans effet**, confirmé par
+une nouvelle capture identique au pixel près. Diagnostic poussé plus loin avec des contours de debug
+temporaires très visibles (`outline` rouge sur `tr.item`, vert sur `.item-controls`, bleu sur
+`.quantity-cell`, magenta sur les `<th>`) — la capture suivante a montré sans ambiguïté que le
+contour rouge de la ligne s'arrêtait AVANT le contour vert : `.item-controls` n'est structurellement
+plus considéré comme faisant partie de la grille du tableau.
+
+**Vraie cause** : `display: flex` posé directement sur un vrai `<td>` lui fait perdre son type de
+boîte `table-cell` — Chromium l'exclut alors du calcul des colonnes du tableau, et il se retrouve à
+flotter tout seul au lieu d'occuper sa colonne sous l'en-tête. Ce n'était donc pas un problème de
+largeur (d'où l'échec du premier correctif) mais de *display*. Restauré `display: table-cell` sur
+`.antique td.item-controls` + espacement des icônes via `margin-left` plutôt que le `gap` de flexbox.
+
+**Deuxième bug, découvert après déploiement** : le premier essai de ce correctif (sans le préfixe
+`.antique`) n'a eu STRICTEMENT AUCUN EFFET visible non plus (capture identique une fois de plus) —
+cause : `td.item-controls` (specificité 0,1,1) est moins spécifique que `.antique .item-controls`
+(0,2,0) qui pose le `display:flex` d'origine, donc perdait systématiquement, quel que soit l'ordre
+des règles dans le fichier. Corrigé en préfixant `.antique` sur les 3 nouvelles règles, ce qui les
+rend strictement plus spécifiques (0,2,1) que la règle flex d'origine. **Confirmé par capture
+utilisateur** (zoomée) : lignes de séparation continues, icônes crayon/poubelle et prendre/payer bien
+à l'intérieur du tableau sur les deux fenêtres testées (Ingrédients de la fiche perso + Navigateur).
+
+**Retour utilisateur : toujours un décalage visible.** Nouveaux contours de debug (un par type de
+cellule cette fois : nom/prix/quantité/actions/type, + la ligne elle-même) → capture zoomée : la
+ligne de séparation de ligne (`tr`) et les bordures de Prix/Quantité/Actions fusionnent bien en une
+seule ligne continue (comportement correct), mais la colonne **Nom** (`.equip-name-cell`) en a une
+**deuxième**, légèrement décalée en hauteur — exactement le même bug que celui déjà corrigé sur
+`.item-controls`, appliqué cette fois à `.equip-name-cell` (elle aussi `display:flex` sur un vrai
+`<td>`, jamais repérée la première fois puisque le symptôme se manifeste différemment selon la
+position de la colonne dans la ligne). Corrigé de la même manière : `display:flex` retiré, icône de
+bascule (`.equip-toggle`) et nom passés en `inline-block`/`vertical-align:middle`, `.equip-name {
+flex:1 }` supprimé (mort une fois le parent non-flex). **Confirmé par l'utilisateur.**
+
+**Fichiers** : `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`.
+
+2. **FAIT (v0.6.34 → v0.6.37)** — ~~Alignement info/boutons sur une seule ligne, en colonnes distinctes~~.
+   Le rendu réel signalé par l'utilisateur (capture d'écran) s'est avéré être un vrai bug de mise en
+   page plutôt qu'un manque de colonnes : `display:flex` posé directement sur `.item-controls` puis
+   `.equip-name-cell` (deux vrais `<td>`) leur faisait perdre leur type de boîte `table-cell`,
+   d'où des cellules qui flottaient hors de la grille du tableau ou une deuxième ligne de séparation
+   décalée. Diagnostiqué à coups de captures recadrées/zoomées (PowerShell + `System.Drawing`) puis
+   de contours de debug colorés par classe de cellule — voir la session du 23 août plus haut/plus bas
+   pour le détail complet. Suite à ce correctif, ajout d'une marge à droite des icônes d'action
+   (`padding-right` sur `.item-controls`, colonne `.col-controls` élargie de 56 à 68px) sur retour
+   utilisateur explicite.
+
+**Fichiers de cette dernière retouche** : `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`, `CHANGELOG.md`.
+
+---
+
 ## Session du 22 août 2026 (suite 2) — Rafraîchissement isolé de la barre de favoris (v0.6.28 → v0.6.29)
 
 Dernier point ouvert de `TODO_FICHE_PERSONNAGE.md` (point 2, priorité basse/confort). Ajouter ou
