@@ -5,6 +5,170 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.37": {
+    title: "Version 0.6.37 — Marge à droite des boutons d'action du Navigateur",
+    html: `
+      <ul>
+        <li><strong>Amélioré</strong> : les icônes Prendre/Payer (et Importer/Tirer sur les autres onglets) du Navigateur de Compendium ont désormais un peu de marge à droite, au lieu d'être collées au bord du tableau.</li>
+      </ul>`
+  },
+  "0.6.36": {
+    title: "Version 0.6.36 — Dernier correctif d'alignement (colonne Nom)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : la colonne Nom des listes à tableau avait elle aussi une ligne de séparation légèrement décalée par rapport aux autres colonnes, même cause que le correctif précédent sur la colonne des boutons d'action.</li>
+      </ul>`
+  },
+  "0.6.35": {
+    title: "Version 0.6.35 — Vrai correctif de l'alignement des colonnes",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : la colonne des boutons d'action (crayon/poubelle, prendre/payer...) est maintenant correctement intégrée à la grille du tableau sur toutes les listes du système, au lieu de flotter hors de l'en-tête.</li>
+      </ul>`
+  },
+  "0.6.34": {
+    title: "Version 0.6.34 — Correctif d'alignement des colonnes (toutes les listes)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : dans toutes les listes à tableau du système (Inventaire, Ingrédients, Traits, PNJ, Boutique d'Alchimie, Navigateur de Compendium), la colonne des boutons d'action (crayon/poubelle, prendre/payer...) pouvait déborder du tableau, donnant l'impression que l'en-tête et les lignes n'étaient pas alignés.</li>
+      </ul>`
+  },
+  "0.6.33": {
+    title: "Version 0.6.33 — Colonnes alignées dans le Navigateur",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : dans le Navigateur de Compendium, les colonnes (image/nom/type-prix/actions) ne s'alignaient plus verticalement d'une section à l'autre. Largeurs de colonnes désormais fixes et identiques partout.</li>
+      </ul>`
+  },
+  "0.6.32": {
+    title: "Version 0.6.32 — Correctif dossiers Historique",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le compendium Historique n'avait pas de vrais dossiers en jeu (structure restée ancienne malgré la mise à jour de la source), empêchant le filtre/colonne Type d'y fonctionner. Une macro (<code>packs/_fix-historique-folders.js</code>) est fournie pour corriger le compendium déjà déployé.</li>
+      </ul>`
+  },
+  "0.6.31": {
+    title: "Version 0.6.31 — Colonne Type sur Traits, Bestiaire et Historique",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : la colonne « Type » du Navigateur de Compendium (déjà présente sur Sorts) s'affiche désormais aussi sur les onglets Traits, Bestiaire et Historique — chacun montre sa propre catégorie (compendium d'origine pour Traits/Bestiaire, dossier Origine/Bonus-Malus pour Historique).</li>
+        <li><strong>Nouveau</strong> : l'onglet Historique a maintenant lui aussi un panneau de filtres (par dossier).</li>
+      </ul>`
+  },
+  "0.6.30": {
+    title: "Version 0.6.30 — Colonne Type dans l'onglet Sorts du Navigateur",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : dans le Navigateur de Compendium, l'onglet Sorts affiche désormais une colonne « Type » (Sort Instantané / Rituel) sur chaque ligne, en plus du filtre déjà existant.</li>
+      </ul>`
+  },
+  "0.6.29": {
+    title: "Version 0.6.29 — Rafraîchissement isolé des favoris",
+    html: `
+      <ul>
+        <li><strong>Amélioré</strong> : ajouter/retirer un favori de compétence ne recharge plus toute la fiche — seule la barre de favoris (et l'étoile sur la ligne de compétence concernée) se met à jour, plus rapide et sans perdre la position de défilement.</li>
+      </ul>`
+  },
+  "0.6.28": {
+    title: "Version 0.6.28 — Sélecteur de munitions",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : dans l'onglet Combat, une arme consommable sans munition liée affiche désormais un menu déroulant pour en choisir une directement dans l'équipement, au lieu d'un simple tiret.</li>
+      </ul>`
+  },
+  "0.6.27": {
+    title: "Version 0.6.27 — Deux images manquantes corrigées",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le token du Centaure à l'épée ne s'affichait plus (fichier image mal nommé sur le disque) — corrigé.</li>
+        <li><strong>Corrigé</strong> : Circé (compendium Divinités) n'avait jamais eu d'image — pointe désormais vers l'icône par défaut en attendant une vraie image. Une macro (<code>packs/_fix-circe-img.js</code>) est fournie pour appliquer ce correctif au compendium déjà en jeu.</li>
+      </ul>`
+  },
+  "0.6.26": {
+    title: "Version 0.6.26 — Filtres pour Traits, Sorts et Bestiaire",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : dans le Navigateur de Compendium, les onglets Traits, Sorts et Bestiaire ont désormais eux aussi un panneau de filtres (comme Équipement).</li>
+        <li>Traits : filtre par origine (Avantages/Désavantages/Bénédictions/Avantages Divins). Bestiaire : filtre par origine (PNJ/Divinités/Créatures). Sorts : filtre Sort Instantané/Rituel.</li>
+      </ul>`
+  },
+  "0.6.25": {
+    title: "Version 0.6.25 — Incanter décompte les vrais ingrédients",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : à l'incantation, si vous choisissez « Dépenser les ingrédients », le système décompte réellement les ingrédients correspondants (par nom) dans l'onglet « Ingrédients » de la fiche — plus seulement une case décochée dans l'onglet du sort.</li>
+        <li><strong>Nouveau</strong> : dans l'onglet Ingrédients d'un sort, chaque ligne affiche désormais le stock réel possédé, en rouge si insuffisant.</li>
+      </ul>`
+  },
+  "0.6.24": {
+    title: "Version 0.6.24 — Navigateur à onglets, comme Pathfinder",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : le Navigateur de Compendium a maintenant des onglets par catégorie (Équipement, Traits, Sorts, Bestiaire, Historique) au lieu d'une longue liste empilée.</li>
+        <li><strong>Nouveau</strong> : dans l'onglet Équipement, filtres par type (Arme/Armure/Bouclier/Munition/Consommable), inspirés du Compendium Browser de Pathfinder 2e.</li>
+      </ul>`
+  },
+  "0.6.23": {
+    title: "Version 0.6.23 — Boutique d'Alchimie + vrai Navigateur de Compendium",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : « Boutique d'Alchimie » — clic droit sur le compendium Alchimie, dédiée aux ingrédients (regroupés par catégorie comme avant).</li>
+        <li><strong>Nouveau</strong> : « Navigateur de Compendium » — bouton sous la liste des compendiums dans la barre latérale, montre tous les compendiums du système (armes, équipement, alchimie, avantages, désavantages, avantages divins, bénédictions, sorts, PNJ, divinités, créatures, historique).</li>
+        <li><strong>Nouveau</strong> : dans le Navigateur, Prendre/Payer pour les objets, Prendre seul pour les traits sans prix, Importer pour les personnages (PNJ/divinités/créatures), Tirer pour les tables aléatoires.</li>
+      </ul>`
+  },
+  "0.6.22": {
+    title: "Version 0.6.22 — Armures grecques dans le Navigateur",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : les 9 armures/boucliers grecs nommés (Linothorax, Cuirasse de bronze, Casque corinthien...) apparaissent dans le Navigateur de Compendium, prix temporairement à 0 en attendant les vrais tarifs.</li>
+      </ul>`
+  },
+  "0.6.21": {
+    title: "Version 0.6.21 — Navigateur de Compendium",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : la Boutique d'ingrédients devient le Navigateur de Compendium — regroupe désormais Armes/Armures/Boucliers et Alchimie (tout objet ayant un prix), pas seulement les ingrédients.</li>
+        <li><strong>Nouveau</strong> : glisser-déposer un objet du navigateur vers une fiche de personnage pour l'ajouter directement.</li>
+        <li><strong>Nouveau</strong> : cliquer sur l'image d'un objet du navigateur le poste dans le chat.</li>
+        <li><strong>Nouveau</strong> : le titre de chaque catégorie reste visible en haut pendant le défilement.</li>
+        <li><strong>Corrigé</strong> : les armes, armures et boucliers avaient un prix affiché en description mais jamais dans le champ structuré — corrigé, ils sont maintenant achetables.</li>
+      </ul>`
+  },
+  "0.6.20": {
+    title: "Version 0.6.20 — Bouton Boutique et menu contextuel enfin actifs",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le bouton de la Boutique (contrôles de jetons) et le clic droit sur Alchimie ne faisaient toujours rien — les hooks étaient enregistrés trop tard (au chargement du monde au lieu de l'initialisation du système). Déplacés au bon endroit.</li>
+        <li><strong>Modifié</strong> : onglets principaux de la fiche personnage encore réduits.</li>
+      </ul>`
+  },
+  "0.6.19": {
+    title: "Version 0.6.19 — Boutique enfin accessible + onglets compacts",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le clic droit sur le compendium Alchimie n'ouvrait jamais la Boutique (mauvais nom de hook pour Foundry v14) — corrigé.</li>
+        <li><strong>Nouveau</strong> : un bouton "Boutique d'ingrédients" dans les contrôles de jetons (barre d'outils de la scène), toujours visible.</li>
+        <li><strong>Corrigé</strong> : les onglets principaux de la fiche personnage sont plus compacts pour éviter le retour à la ligne.</li>
+      </ul>`
+  },
+  "0.6.18": {
+    title: "Version 0.6.18 — Boutique inspirée du Compendium Browser de PF2e",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : Prendre/Payer s'applique désormais à tous les jetons sélectionnés à la fois (comme le Compendium Browser de Pathfinder 2e), pas seulement à un seul personnage.</li>
+        <li><strong>Nouveau</strong> : tri des ingrédients par nom ou par prix, lignes alternées pour la lisibilité.</li>
+        <li><strong>Corrigé</strong> : un double-clic rapide sur Prendre/Payer ne peut plus dupliquer ou perdre une action ; rouvrir la Boutique déjà ouverte la ramène au premier plan au lieu d'en ouvrir une deuxième copie.</li>
+      </ul>`
+  },
+  "0.6.17": {
+    title: "Version 0.6.17 — Boutique accessible depuis le compendium Alchimie",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : la Boutique d'ingrédients n'est plus accessible depuis la fiche de personnage — elle s'ouvre désormais via un clic droit sur le compendium « Alchimie » dans la barre latérale (« Boutique d'ingrédients »).</li>
+        <li><strong>Modifié</strong> : chaque ligne propose deux actions séparées — « Prendre l'objet » (gratuit) et « Payer l'objet » (déduit l'or).</li>
+      </ul>`
+  },
   "0.6.16": {
     title: "Version 0.6.16 — Ingrédients à quantité 0 grisés, réapprovisionnement rapide",
     html: `

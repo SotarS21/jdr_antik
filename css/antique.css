@@ -398,11 +398,11 @@
 }
 
 .antique .sheet-tabs .item {
-  padding: 6px 14px;
+  padding: 3px 6px;
   font-weight: bold;
-  font-size: 0.85em;
+  font-size: 0.7em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   color: var(--antique-dark);
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -1135,6 +1135,240 @@
   cursor: help;
 }
 
+.antique .ingredient-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: var(--antique-brown);
+}
+
+.antique .ingredient-search-bar .ingredient-search {
+  flex: 1;
+  padding: 4px 8px;
+}
+
+/* ---- Boutique d'Alchimie / Navigateur de Compendium (shared window chrome) ---- */
+.antique.compendium-browser {
+  padding: 8px 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* The general Navigateur (tabs + per-tab results) scrolls inside .browser-results /
+   .browser-results-full instead of the whole window — the root becomes a non-scrolling
+   flex column so the tab nav stays put and each tab's own pane fills the remaining height. */
+.antique.compendium-browser.compendium-browser-tabbed {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.antique .compendium-browser-tabs {
+  display: flex;
+  flex: none;
+  border-bottom: 2px solid var(--antique-gold);
+  background: linear-gradient(180deg, #d4a828, #b8922a);
+  margin: 0 -10px 8px;
+}
+
+.antique .compendium-browser-tabs .item {
+  padding: 4px 10px;
+  font-weight: bold;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--antique-dark);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique .compendium-browser-tabs .item:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.antique .compendium-browser-tabs .item.active {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom-color: #fff;
+}
+
+.antique .compendium-browser-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.antique .compendium-browser-body .tab {
+  display: none;
+  height: 100%;
+}
+
+.antique .compendium-browser-body .tab.active {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.antique .browser-layout {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.antique .browser-filters {
+  flex: 0 0 150px;
+  overflow-y: auto;
+  padding-right: 8px;
+  border-right: 1px solid var(--antique-border);
+}
+
+.antique .browser-filters h3 {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-brown);
+  margin: 0 0 6px;
+}
+
+.antique .browser-filter-option {
+  display: block;
+  font-size: 0.85em;
+  margin-bottom: 4px;
+  cursor: pointer;
+  color: var(--antique-dark);
+}
+
+.antique .browser-clear-filters {
+  margin-top: 8px;
+  font-size: 0.78em;
+  padding: 3px 6px;
+  cursor: pointer;
+}
+
+.antique .browser-results,
+.antique .browser-results-full {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.antique .shop-header {
+  margin-bottom: 8px;
+}
+
+.antique .shop-target {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--antique-brown);
+}
+
+.antique .shop-gold-value {
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+}
+
+.antique .shop-no-target {
+  font-style: italic;
+  color: var(--antique-red);
+}
+
+.antique .shop-refresh-target {
+  cursor: pointer;
+  color: var(--antique-brown);
+  margin-left: auto;
+}
+
+.antique .shop-refresh-target:hover {
+  color: var(--antique-gold);
+}
+
+.antique .shop-take,
+.antique .shop-pay,
+.antique .shop-import,
+.antique .shop-draw {
+  cursor: pointer;
+  color: var(--antique-brown);
+  font-size: 0.9em;
+  margin-left: 6px;
+  transition: color 0.2s;
+}
+
+.antique .shop-take:hover,
+.antique .shop-import:hover,
+.antique .shop-draw:hover {
+  color: var(--antique-green);
+}
+
+.antique .shop-pay:hover {
+  color: var(--antique-dark-gold);
+}
+
+.antique .shop-take.shop-busy,
+.antique .shop-pay.shop-busy,
+.antique .shop-import.shop-busy,
+.antique .shop-draw.shop-busy {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Category/pack section titles stay visible while scrolling the results list — the
+   browser's root .compendium-browser is itself the scrolling container (overflow-y: auto). */
+.antique .apoth-section-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--antique-parchment);
+}
+
+.antique .compendium-browser .shop-row {
+  cursor: grab;
+}
+
+.antique .compendium-browser .shop-row:active {
+  cursor: grabbing;
+}
+
+.antique .compendium-browser .equip-img img {
+  cursor: pointer;
+}
+
+.antique .shop-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.antique .shop-toolbar .ingredient-search-bar {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.antique .shop-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--antique-brown);
+  font-size: 0.85em;
+}
+
+.antique .shop-sort-bar select {
+  padding: 2px 4px;
+}
+
+/* Zebra striping on the Boutique's result rows, PF2e Compendium Browser-style.
+   Each visible .shop-row is always immediately followed by one hidden .equip-desc-row,
+   so among all <tr> children every .shop-row lands on an odd position (1st, 3rd, 5th...);
+   alternating between rows 4 apart (1,5,9... vs 3,7,11...) picks every other ITEM row. */
+.antique .apoth-table tr.shop-row:nth-of-type(4n+1) {
+  background: rgba(139, 115, 85, 0.08) !important;
+}
+
 /* ---- Weapons ---- */
 .antique .weapons-section h2,
 .antique .equipment-section h2,
@@ -1313,6 +1547,30 @@
 .antique .item-controls {
   display: flex;
   gap: 4px;
+}
+
+/* Real root cause of the column-alignment bug (confirmed via debug outlines on a
+   screenshot: the outlined <tr> box stopped short of item-controls, which floated
+   separately at the panel's far right instead of sitting in its column): display:flex
+   directly on an actual <td> takes it out of the table's column layout entirely —
+   Chromium no longer treats it as display:table-cell once its display is overridden to
+   flex, so it's excluded from the row/column grid and just flows on its own instead of
+   occupying its column under the header. Not a width issue — min-width had no effect
+   because the cell wasn't part of the table's column tracking at all. Restore table-cell
+   layout for every real <td> usage and space the icons with margin instead of flex gap;
+   the few non-table <span class="item-controls"> usages elsewhere keep the flex version
+   above untouched. */
+.antique td.item-controls {
+  display: table-cell;
+  white-space: nowrap;
+}
+
+.antique td.item-controls a {
+  margin-left: 4px;
+}
+
+.antique td.item-controls a:first-child {
+  margin-left: 0;
 }
 
 .antique .item-controls a {
@@ -1497,6 +1755,56 @@
   text-align: center;
 }
 
+/* ---- Ingrédients Table: row separators for readability ---- */
+.antique .apoth-table {
+  /* Without this, td borders sit on separate per-cell boxes (default table
+     border-spacing keeps a gap between cells), so each row's line looks
+     broken/offset instead of one continuous rule under the row. */
+  border-collapse: collapse;
+}
+
+.antique .apoth-table td {
+  border-bottom: 1px solid var(--antique-border);
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+/* ---- Compendium Browser tables: each section is its own <table>, so without a shared
+   fixed layout their columns auto-size independently per section's content — the header/
+   row borders visibly zigzag from one section's table to the next. A <colgroup> with fixed
+   widths (see compendium-browser.hbs) forces identical column boundaries across every table
+   in the browser, whatever a given section's content happens to be. ---- */
+.antique .browser-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.antique .browser-table .col-img {
+  width: 30px;
+}
+
+.antique .browser-table .col-extra {
+  width: 130px;
+}
+
+.antique .browser-table .col-controls {
+  width: 68px;
+}
+
+/* Room so the action icons (Prendre/Payer in Équipement, Prendre/Importer/Tirer elsewhere)
+   don't sit flush against the table's right edge. */
+.antique .browser-table td.item-controls {
+  padding-right: 10px;
+}
+
+/* Fixed-width columns need to wrap rather than overflow — the shared .price-cell/.type-cell
+   rule elsewhere (character sheet, Alchemy Shop) relies on nowrap since those tables aren't
+   column-locked, so this override is scoped to the browser's own fixed-layout tables only. */
+.antique .browser-table .price-cell,
+.antique .browser-table .type-cell {
+  white-space: normal;
+}
+
 .antique .trait-cout {
   font-weight: bold;
   text-align: center;
@@ -1658,25 +1966,27 @@
   opacity: 1;
 }
 
+/* Deliberately NOT display:flex — see the td.item-controls comment above: that display
+   value on an actual <td> takes it out of the table's row/column layout entirely, so its
+   own border-bottom no longer merges with the row's other (still table-cell) siblings under
+   border-collapse, rendering at a slightly different height and reading as a second,
+   offset line right under the name column. .equip-toggle/.equip-name below are laid out
+   inline instead, keeping this <td> a normal table-cell. */
 .antique .equip-name-cell {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.antique .equip-name {
-  flex: 1;
+  vertical-align: middle;
 }
 
 /* ---- Equipment Toggle Description ---- */
 .antique .equip-toggle {
+  display: inline-block;
+  vertical-align: middle;
+  width: 14px;
+  margin-right: 4px;
   cursor: pointer;
   color: var(--antique-border);
   font-size: 0.85em;
-  transition: color 0.2s;
-  flex-shrink: 0;
-  width: 14px;
   text-align: center;
+  transition: color 0.2s;
 }
 
 .antique .equip-toggle:hover {
@@ -2104,6 +2414,18 @@
   flex-shrink: 0;
 }
 
+.antique .ingredient-stock-hint {
+  font-size: 0.8em;
+  color: var(--antique-text-muted, #8b7355);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.antique .ingredient-stock-hint.insufficient {
+  color: #a83232;
+  font-weight: bold;
+}
+
 .antique .ingredient-delete {
   color: var(--antique-border);
   cursor: pointer;
@@ -2261,6 +2583,13 @@
 
 .antique .apoth-row.apoth-row-empty:hover {
   opacity: 0.85;
+}
+
+.antique .munitions-select {
+  font-size: 0.8em;
+  max-width: 110px;
+  margin-right: 4px;
+  vertical-align: middle;
 }
 
 /* ---- Linked Ammo Badge ---- */
@@ -3092,7 +3421,8 @@
   margin-right: 4px;
 }
 
-.antique .price-cell {
+.antique .price-cell,
+.antique .type-cell {
   white-space: nowrap;
 }
 
@@ -3245,8 +3575,8 @@
 
   /* Onglets: plus compact */
   .antique .sheet-tabs .item {
-    padding: 5px 8px;
-    font-size: 0.76em;
+    padding: 2px 4px;
+    font-size: 0.6em;
   }
 
   /* Inputs numériques: plus petits */

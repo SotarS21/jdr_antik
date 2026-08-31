@@ -28,6 +28,8 @@ import { AntiqueItemSheet } from "./module/sheets/item-sheet.mjs";
 import { registerCompendiumContextMenu } from "./module/helpers/random-tables.mjs";
 import { registerMigrationSettings, migrateWorld } from "./module/helpers/migration.mjs";
 import { registerVersionCheckSettings, checkSystemVersionUpdate } from "./module/helpers/version-check.mjs";
+import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-browser.mjs";
+import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -92,6 +94,16 @@ Hooks.once("init", function () {
   registerMigrationSettings();
   registerVersionCheckSettings();
 
+  // Hook LISTENERS only — must be attached in "init", not "ready": the compendium sidebar's
+  // context-menu construction is a one-time event that fires while the UI is first built,
+  // before "ready" (renderCompendiumDirectory itself fires on every render, but registering
+  // early costs nothing and keeps every one of these hook registrations in one consistent
+  // place). Registering here only adds a callback to Foundry's hook registry (touches no
+  // game/canvas state yet), so init-time is always safe regardless.
+  registerCompendiumContextMenu();
+  registerAlchemyShopContextMenu();
+  registerCompendiumBrowserFooterButton();
+
   // Preload Handlebars templates
   return preloadHandlebarsTemplates();
 });
@@ -146,6 +158,7 @@ async function preloadHandlebarsTemplates() {
   const templatePaths = [
     "systems/antique/templates/actor/character-sheet.hbs",
     "systems/antique/templates/actor/parts/actor-ref-section.hbs",
+    "systems/antique/templates/actor/parts/favorites-bar.hbs",
     "systems/antique/templates/actor/npc-sheet.hbs",
     "systems/antique/templates/actor/deity-sheet.hbs",
     "systems/antique/templates/item/weapon-sheet.hbs",
@@ -173,8 +186,6 @@ Hooks.once("ready", async function () {
   // Detect a system version change since this world's last load and, if so,
   // let the GM choose whether to refresh the bundled compendiums (GM only).
   await checkSystemVersionUpdate();
-
-  registerCompendiumContextMenu();
 });
 
 /* -------------------------------------------- */

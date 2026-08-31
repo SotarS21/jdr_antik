@@ -135,22 +135,12 @@
     {{!-- ===================== ABILITIES + SKILLS TAB (D&D 5e style) ===================== --}}
     <div class="tab" data-group="primary" data-tab="abilities">
 
-      {{!-- Favorites Bar --}}
-      {{#if favoriteSkills.length}}
-      <div class="favorites-bar">
-        <span class="favorites-title"><i class="fas fa-star"></i> {{localize "ANTIQUE.Favorites.Title"}}</span>
-        <div class="favorites-chips">
-          {{#each favoriteSkills as |fav|}}
-          <div class="favorite-chip" data-skill="{{fav.key}}" title="{{fav.label}} ({{signedNum fav.total}})">
-            {{#if fav.icon}}<i class="{{fav.icon}}"></i>{{/if}}
-            <span class="favorite-chip-name">{{fav.label}}</span>
-            <span class="favorite-chip-total">{{signedNum fav.total}}</span>
-            <a class="favorite-chip-remove" title="{{localize 'ANTIQUE.Favorites.Remove'}}"><i class="fas fa-times"></i></a>
-          </div>
-          {{/each}}
-        </div>
+      {{!-- Favorites Bar: stable wrapper so _refreshFavoritesBar() (actor-sheet.mjs) always
+           has an element to target, even when there are 0 favorites and the partial renders
+           nothing inside it. --}}
+      <div class="favorites-bar-container">
+        {{> "systems/antique/templates/actor/parts/favorites-bar.hbs"}}
       </div>
-      {{/if}}
 
       <div class="abilities-skills-layout">
 
@@ -305,6 +295,13 @@
                     <span class="munitions-value {{#if (lt weapon.linkedAmmoQty 1)}}empty{{/if}}">{{weapon.linkedAmmoQty}}</span>
                     <span class="linked-ammo-name">{{weapon.linkedAmmoName}}</span>
                   </span>
+                  {{else}}
+                  <select class="munitions-select">
+                    <option value="">{{localize "ANTIQUE.Munitions.Choose"}}</option>
+                    {{#each ../ammoCandidates as |ammo|}}
+                    <option value="{{ammo.id}}">{{ammo.name}}</option>
+                    {{/each}}
+                  </select>
                   {{/if}}
                   <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Munition'}}"><i class="fas fa-arrow-down"></i></a>
                 {{else}}
@@ -688,6 +685,11 @@
 
     {{!-- ===================== APOTHICAIRE TAB ===================== --}}
     <div class="tab" data-group="primary" data-tab="apothicaire">
+
+      <div class="ingredient-search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" class="ingredient-search" placeholder="{{localize 'ANTIQUE.Apoth.SearchPlaceholder'}}" />
+      </div>
 
       {{#each apothSections as |section|}}
       <div class="apoth-section">

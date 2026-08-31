@@ -249,6 +249,135 @@ const INGREDIENT_ICONS = {
   "Poison":          "icons/svg/skull.svg"
 };
 
+// Per-item icon overrides, keyed by exact ingredient/potion name, picked from Foundry's
+// bundled commodities/consumables/magic/tools/sundries art (verified to exist on disk under
+// resources/app/public/icons/ in the local Foundry install — never guessed). Falls back to
+// INGREDIENT_ICONS by "type" (or the potion defaults below) when a name has no entry here.
+const SPECIFIC_ICONS = {
+  // Communs
+  "Absinthe":            "icons/consumables/drinks/wine-bottle-glass-white.webp",
+  "Eau croupi":          "icons/consumables/drinks/water-jug-clay-brown.webp",
+  "Orange":              "icons/consumables/fruit/orange-citrus-ripe.webp",
+  "Anis":                "icons/consumables/plants/dill-herb-bundle-green.webp",
+  "Eau de Rose":         "icons/commodities/flowers/rosaecia-red.webp",
+  "Orties":              "icons/consumables/plants/leaf-serrated-pink.webp",
+  "Argile Grise":        "icons/commodities/stone/clay-grey.webp",
+  "Eau Stagnante":       "icons/consumables/drinks/water-jug-clay-brown.webp",
+  "Os":                  "icons/commodities/bones/bone-simple-white.webp",
+  "Armoise":             "icons/consumables/plants/dried-herb-bundle-brown.webp",
+  "Estragon":            "icons/consumables/plants/herb-tied-bundle-green.webp",
+  "Pissenlit":           "icons/commodities/flowers/dandelion-pod-white.webp",
+  "Baie":                "icons/consumables/fruit/berries-hanging-red.webp",
+  "Feuille de chêne":    "icons/consumables/plants/leaf-stem-bush-branch-green-brown.webp",
+  "Plume d'oiseau":      "icons/commodities/materials/feather-white.webp",
+  "Bardane":             "icons/consumables/plants/thorned-stem-vine-green.webp",
+  "Fougère Flétrie":     "icons/consumables/plants/fern-broad-leaf-damaged-green.webp",
+  "Poussière de roche":  "icons/commodities/stone/rock-pile-grey.webp",
+  "Bougie":              "icons/sundries/lights/candle-unlit-tan.webp",
+  "Grenade":             "icons/consumables/fruit/pomegranate-ripe-red.webp",
+  "Raisin":              "icons/consumables/fruit/grapes-bunch-purple.webp",
+  "Calendula":           "icons/commodities/flowers/flower-grey-orange.webp",
+  "Gui":                 "icons/consumables/plants/holly-pointy-leaf-green.webp",
+  "Rose":                "icons/commodities/flowers/rosaecia-red.webp",
+  "Lavande":             "icons/commodities/flowers/blooms-purple.webp",
+  "Rosée du Matin":      "icons/magic/water/orb-water-bubbles-teal.webp",
+  "Champignon Comestible": "icons/consumables/mushrooms/crimini-button-brown.webp",
+  "Lierre Vénéneux":     "icons/magic/nature/root-vine-thorns-poison-green.webp",
+  "Sable":               "icons/commodities/stone/stone-chunk-tan.webp",
+  "Menthe":              "icons/consumables/plants/mint-dried-green.webp",
+  "Sauge":               "icons/consumables/plants/herb-marjoram-basil-oregano-leaf-bunch-green.webp",
+  "Citron":              "icons/consumables/fruit/lemon-citrus-yellow.webp",
+  "Miel":                "icons/consumables/food/honey-beehive-brown.webp",
+  "Sel":                 "icons/consumables/food/salt-seasoning-spice-pink.webp",
+  "Coton":               "icons/commodities/flowers/daisy-white.webp",
+  "Mousse de Chêne":     "icons/commodities/stone/stone-chunk-moss-grey.webp",
+  "Thym":                "icons/consumables/plants/herb-tied-bundle-yellow-green.webp",
+  "Eau":                 "icons/magic/water/water-drop-swirl-blue.webp",
+  "Mue":                 "icons/commodities/leather/scales-white.webp",
+  "Vin":                 "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "Eau claire":          "icons/magic/water/water-drop-swirl-blue.webp",
+  "Olive":               "icons/consumables/fruit/olive-pitted-green.webp",
+  // Peu communs
+  "Acerola":             "icons/consumables/fruit/cherry-stemmed-red.webp",
+  "Champignon Blanc":    "icons/consumables/mushrooms/convex-tan.webp",
+  "Sureau":              "icons/consumables/fruit/berry-bunch-red-green.webp",
+  "Bave d'escargot":     "icons/creatures/invertebrates/snail-movement-green.webp",
+  "Lait de Pavot":       "icons/consumables/potions/vial-cork-empty.webp",
+  "Valériane":           "icons/consumables/vegetable/root-brown-orange.webp",
+  "Champignons Vénéneux": "icons/consumables/potions/conical-mushroom-poison-red.webp",
+  "Larve d'insecte":     "icons/environment/creatures/bug-larva-orange.webp",
+  "Vin Sucré":           "icons/consumables/drinks/wine-amphora-clay-pink.webp",
+  "Clou de Girofle":     "icons/consumables/plants/dried-bay-leaf-yellow.webp",
+  "Miel Frelaté":        "icons/consumables/food/honey-beehive-brown.webp",
+  "Herbe à puce":        "icons/consumables/plants/leaf-eaten-holes-green.webp",
+  "Echinacée":           "icons/commodities/flowers/daisies-pink.webp",
+  "Parchemin":           "icons/sundries/documents/parchment-plain-tan.webp",
+  "Eclat de corne":      "icons/commodities/bones/horn-jagged-grey.webp",
+  "Poudre de Quartz":    "icons/commodities/gems/powder-raw-white.webp",
+  "Écorce de Bouleau":   "icons/commodities/wood/bark-beige.webp",
+  "Poussière d'os":      "icons/commodities/bones/bone-fragments-white.webp",
+  "Epine de Ronce":      "icons/consumables/plants/thorned-stem-brown.webp",
+  "Propolis":            "icons/consumables/food/honey-beehive-brown.webp",
+  "Fleur Fanée":         "icons/commodities/flowers/buds-black.webp",
+  "Racine de Pavot":     "icons/consumables/vegetable/root-alien-green.webp",
+  "Ginseng":             "icons/consumables/vegetable/root-ginger-brown.webp",
+  "Sel de Mer":          "icons/consumables/food/salt-seasoning-spice-pink.webp",
+  // Rares
+  "Amarantine":          "icons/commodities/flowers/blooms-pink.webp",
+  "Plume de Paon":       "icons/commodities/materials/feather-colored-blue.webp",
+  "Venin d'Insecte":     "icons/creatures/abilities/fang-tooth-poison-green.webp",
+  "Belladone":           "icons/consumables/fruit/eggplant-ripe-purple.webp",
+  "Poisson Pourri":      "icons/commodities/bones/bones-fish-brown.webp",
+  "Venin de Serpent":    "icons/creatures/reptiles/snake-fangs-bite-green.webp",
+  "Bezoar":              "icons/commodities/biological/organ-stomach.webp",
+  "Poudre de Cristal":   "icons/commodities/treasure/glass-crystal-green.webp",
+  "Buis":                "icons/consumables/plants/leaf-broad-blue.webp",
+  "Poudre de verre":     "icons/commodities/materials/glass-cube.webp",
+  "Champignon Narco":    "icons/consumables/mushrooms/helm-purple-shiny.webp",
+  "Racine de Mandragore": "icons/consumables/vegetable/root-alien-purple.webp",
+  "Champignon Noir":     "icons/consumables/mushrooms/umbontae-blue.webp",
+  "Ricin":               "icons/consumables/nuts/nut-spiked-shell.webp",
+  "Écaille de poisson":  "icons/commodities/leather/scales-blue.webp",
+  "Sang de Taureau":     "icons/commodities/biological/organ-heart-red.webp",
+  "Sève de Frêne":       "icons/commodities/wood/log-cut-ash-brown.webp",
+  "Sève de Pin":         "icons/consumables/nuts/pine-cone-brown.webp",
+  "Graine de Pavot":     "icons/commodities/materials/plant-seed-pod.webp",
+  "Trêfle à 4 Feuille":  "icons/commodities/flowers/clover.webp",
+  "Extrait du Poison":   "icons/creatures/abilities/fang-tooth-venomous.webp"
+};
+
+const POTION_ICONS = {
+  "Breuvage du Colosse":       "icons/consumables/potions/vial-cork-red.webp",
+  "Essence d'Acrobate":        "icons/consumables/potions/potion-vial-tube-yellow.webp",
+  "Philtre de l'Ours":         "icons/consumables/potions/vial-cork-green.webp",
+  "Liqueur du Vent":           "icons/consumables/potions/potion-flash-open-blue.webp",
+  "Elixir de l'Orateur":       "icons/consumables/potions/potion-vial-corked-purple.webp",
+  "Breuvage de l'Astre":       "icons/consumables/potions/vial-ornet-silver-black.webp",
+  "Antidote Commun":           "icons/consumables/potions/vial-cork-empty.webp",
+  "Potion Simple":             "icons/consumables/potions/bottle-round-empty-glass.webp",
+  "Onguent de cicatrisation":  "icons/tools/laboratory/mortar-liquid-pink.webp",
+  "Antidouleur":               "icons/consumables/potions/bottle-bulb-empty-glass.webp",
+  "Onguent anti infection":    "icons/tools/laboratory/mortar-powder-green.webp",
+  "Tisane de langueur":        "icons/tools/cooking/mortar-herbs-yellow.webp",
+  "Thé d'Asclépsios":          "icons/tools/cooking/mortar-yellow.webp",
+  "Essence du Brisé":          "icons/consumables/potions/potion-vial-corked-labeled-purple.webp",
+  "Elixir du Frêle":           "icons/tools/laboratory/canister-glass-eyes-steel-green.webp",
+  "Breuvage de la Tortue":     "icons/consumables/potions/vial-cork-green.webp",
+  "Sève du Boiteux":           "icons/consumables/drinks/clay-jar-glowing-orange-blue.webp",
+  "Sirop de Frêne":            "icons/commodities/wood/log-cut-ash-brown.webp",
+  "Morsure du Serpent":        "icons/consumables/potions/round-decorated-snake-green.webp",
+  "Plaie Ouverte":             "icons/tools/laboratory/mortar-liquid-pink.webp"
+};
+
+// Maps this script's rarity labels to system.apothCategory keys (CONFIG.ANTIQUE.apothCategories
+// in config.mjs) so items land correctly in the Ingrédients tab and are purchasable from the
+// Navigateur de Compendium (module/apps/compendium-browser.mjs) as soon as they're imported.
+const RARITY_TO_APOTH_CATEGORY = {
+  "Commun":     "ingredientCommun",
+  "Peu commun": "ingredientPeuCommun",
+  "Rare":       "ingredientRare"
+};
+
 let itemCount = 0;
 
 for (const [rarity, items] of Object.entries(ingredients)) {
@@ -267,7 +396,7 @@ for (const [rarity, items] of Object.entries(ingredients)) {
   });
 
   for (const ing of items) {
-    const icon = INGREDIENT_ICONS[ing.type] || "icons/svg/item-bag.svg";
+    const icon = SPECIFIC_ICONS[ing.name] || INGREDIENT_ICONS[ing.type] || "icons/svg/item-bag.svg";
     const description = buildIngredientHtml(ing, rarity);
 
     docs.push({
@@ -276,10 +405,13 @@ for (const [rarity, items] of Object.entries(ingredients)) {
       type:      "equipment",
       img:       icon,
       system: {
-        quantity:    1,
-        consumable:  true,
-        description: description,
-        gmNotes:     ""
+        quantity:      1,
+        consumable:    true,
+        price:         ing.unitPrice !== null ? fmtPrice(ing.unitPrice) : "",
+        apothCategory: RARITY_TO_APOTH_CATEGORY[rarity] || "",
+        apothType:     ing.type || "",
+        description:   description,
+        gmNotes:       ""
       },
       effects:   [],
       folder:    folderId,
@@ -313,9 +445,9 @@ for (const [type, items] of Object.entries(potions)) {
   });
 
   for (const pot of items) {
-    const icon = type === "Bénéfique"
+    const icon = POTION_ICONS[pot.name] || (type === "Bénéfique"
       ? "icons/svg/potion.svg"
-      : "icons/svg/skull.svg";
+      : "icons/svg/skull.svg");
     const description = buildPotionHtml(pot, type);
 
     docs.push({
@@ -324,10 +456,13 @@ for (const [type, items] of Object.entries(potions)) {
       type:      "equipment",
       img:       icon,
       system: {
-        quantity:    pot.quantity || 1,
-        consumable:  true,
-        description: description,
-        gmNotes:     ""
+        quantity:      pot.quantity || 1,
+        consumable:    true,
+        price:         pot.price !== null ? `${pot.price} po` : "",
+        apothCategory: "potion",
+        apothType:     "",
+        description:   description,
+        gmNotes:       ""
       },
       effects:   [],
       folder:    folderId,

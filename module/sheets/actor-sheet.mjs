@@ -121,17 +121,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       }
     }
 
-    context.favoriteSkills = (system.favoriteSkills ?? []).map(key => {
-      const cfg = CONFIG.ANTIQUE.skills[key];
-      const sk = system.skills[key];
-      if (!cfg || !sk) return null;
-      return {
-        key,
-        label: game.i18n.localize(cfg.label),
-        icon: cfg.icon ?? "",
-        total: sk.total ?? 0
-      };
-    }).filter(Boolean);
+    context.favoriteSkills = this._computeFavoriteSkills();
 
     context.weapons = this.actor.items.filter(i => i.type === "weapon").map(w => {
       const linkedAmmo = w.system.linkedAmmoId
@@ -149,6 +139,14 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       };
     });
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
+
+    // --- Ammunition candidates for the "no munition linked yet" dropdown in the
+    // Combat tab's weapon table (.munitions-cell) — any consumable equipment item
+    // can be linked, same convention as the existing costText/ingredient matching. ---
+    context.ammoCandidates = this.actor.items
+      .filter(i => i.type === "equipment" && i.system.consumable)
+      .map(i => ({ id: i.id, name: i.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     // --- Ingredients (equipment tagged with an apothCategory), shared by the
     // "Ingrédients" tab and the Ingrédients tab of a Besace d'ingrédients item ---
@@ -258,6 +256,82 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
   }
 
+  _computeFavoriteSkills() {
+    const system = this.actor.system;
+    return (system.favoriteSkills ?? []).map(key => {
+      const cfg = CONFIG.ANTIQUE.skills[key];
+      const sk = system.skills[key];
+      if (!cfg || !sk) return null;
+      return {
+        key,
+        label: game.i18n.localize(cfg.label),
+        icon: cfg.icon ?? "",
+        total: sk.total ?? 0
+      };
+    }).filter(Boolean);
+  }
+
+  /** Re-renders only the favorites bar fragment (via the shared favorites-bar.hbs partial,
+   *  see antique.mjs's preloadHandlebarsTemplates) into its stable wrapper, instead of a full
+   *  sheet re-render — avoids losing scroll position/focus for such a small, frequent change. */
+  async _refreshFavoritesBar() {
+    const container = this.element.querySelector(".favorites-bar-container");
+    if (!container) return;
+    container.innerHTML = await foundry.applications.handlebars.renderTemplate(
+      "systems/antique/templates/actor/parts/favorites-bar.hbs",
+      { favoriteSkills: this._computeFavoriteSkills() }
+    );
+    this._attachFavoritesBarListeners();
+  }
+
+  _attachFavoritesBarListeners() {
+    this.element.querySelectorAll(".favorite-chip").forEach(el => {
+      el.addEventListener("click", ev => this.actor.rollSkill(ev.currentTarget.dataset.skill));
+    });
+    this.element.querySelectorAll(".favorite-chip-remove").forEach(el => {
+      el.addEventListener("click", ev => {
+        ev.stopPropagation();
+        this._toggleFavorite(ev.currentTarget.closest(".favorite-chip").dataset.skill, false);
+      });
+    });
+  }
+
+  /** Reflects a favorite add/remove on the corresponding .skill-row (star icon + highlight)
+   *  without a full re-render — kept in sync with _refreshFavoritesBar(), called from the
+   *  same three call sites (chip remove button, skill row context menu add/remove). */
+  _setSkillRowFavoriteState(skillKey, isFavorite) {
+    const nameEl = this.element.querySelector(`.skill-roll[data-skill="${skillKey}"]`);
+    const row = nameEl?.closest(".skill-row");
+    if (!row) return;
+    row.classList.toggle("favorite", isFavorite);
+    const existingStar = row.querySelector(".skill-fav-star");
+    if (isFavorite && !existingStar) {
+      const star = document.createElement("i");
+      star.className = "fas fa-star skill-fav-star";
+      nameEl.insertAdjacentElement("afterend", star);
+    } else if (!isFavorite && existingStar) {
+      existingStar.remove();
+    }
+  }
+
+  /** Chained rather than fired independently: two rapid toggles (e.g. add then remove a
+   *  different skill before the first update() resolves) would otherwise both read
+   *  favoriteSkills before either write lands, and the second update() would silently
+   *  discard the first — same class of race as withRowLock in browser-shared.mjs. */
+  async _toggleFavorite(skillKey, add) {
+    this._favoriteToggleChain = (this._favoriteToggleChain ?? Promise.resolve())
+      .then(() => this.#applyFavoriteToggle(skillKey, add));
+    return this._favoriteToggleChain;
+  }
+
+  async #applyFavoriteToggle(skillKey, add) {
+    const current = this.actor.system.favoriteSkills ?? [];
+    const next = add ? [...new Set([...current, skillKey])] : current.filter(k => k !== skillKey);
+    await this.actor.update({ "system.favoriteSkills": next }, { render: false });
+    this._setSkillRowFavoriteState(skillKey, add);
+    await this._refreshFavoritesBar();
+  }
+
   _onRender(context, options) {
     super._onRender(context, options);
 
@@ -280,6 +354,26 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         this._activateTab(this._activeTab);
       });
     });
+
+    // Live filter for the Ingrédients tab — works read-only too, it's just a display filter.
+    const ingredientSearch = this.element.querySelector(".ingredient-search");
+    if (ingredientSearch) {
+      ingredientSearch.addEventListener("input", ev => {
+        const query = ev.currentTarget.value.trim().toLowerCase();
+        this.element.querySelectorAll(".apoth-section").forEach(section => {
+          let visibleCount = 0;
+          section.querySelectorAll(".apoth-row").forEach(row => {
+            const name = row.querySelector(".equip-name")?.textContent.toLowerCase() ?? "";
+            const isMatch = !query || name.includes(query);
+            row.style.display = isMatch ? "" : "none";
+            const descRow = row.nextElementSibling;
+            if (descRow?.classList.contains("equip-desc-row") && !isMatch) descRow.style.display = "none";
+            if (isMatch) visibleCount++;
+          });
+          section.style.display = (!query || visibleCount > 0) ? "" : "none";
+        });
+      });
+    }
 
     if (!this.isEditable) return;
 
@@ -492,6 +586,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
+    this.element.querySelectorAll(".munitions-select").forEach(el => {
+      el.addEventListener("change", ev => {
+        const li = ev.currentTarget.closest(".item");
+        const weapon = this.actor.items.get(li.dataset.itemId);
+        if (!weapon || !ev.currentTarget.value) return;
+        weapon.update({ "system.linkedAmmoId": ev.currentTarget.value }).then(() => this.render({ force: true }));
+      });
+    });
+
     this.element.querySelectorAll(".ingredient-restock").forEach(el => {
       el.addEventListener("click", async ev => {
         ev.preventDefault();
@@ -588,18 +691,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
-    this.element.querySelectorAll(".favorite-chip").forEach(el => {
-      el.addEventListener("click", ev => this.actor.rollSkill(ev.currentTarget.dataset.skill));
-    });
-
-    this.element.querySelectorAll(".favorite-chip-remove").forEach(el => {
-      el.addEventListener("click", ev => {
-        ev.stopPropagation();
-        const skillKey = ev.currentTarget.closest(".favorite-chip").dataset.skill;
-        this.actor.update({ "system.favoriteSkills": (this.actor.system.favoriteSkills ?? []).filter(k => k !== skillKey) })
-          .then(() => this.render({ force: true }));
-      });
-    });
+    this._attachFavoritesBarListeners();
   }
 
   _onFirstRender(context, options) {
@@ -626,13 +718,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         },
         onClick: (event, li) => {
           const key = li.querySelector(".skill-roll")?.dataset.skill;
-          if (!key) return;
-          const current = [...(this.actor.system.favoriteSkills ?? [])];
-          if (!current.includes(key)) {
-            current.push(key);
-            this.actor.update({ "system.favoriteSkills": current })
-              .then(() => this.render({ force: true }));
-          }
+          if (key && !(this.actor.system.favoriteSkills ?? []).includes(key)) this._toggleFavorite(key, true);
         }
       },
       {
@@ -644,9 +730,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         },
         onClick: (event, li) => {
           const key = li.querySelector(".skill-roll")?.dataset.skill;
-          if (!key) return;
-          this.actor.update({ "system.favoriteSkills": (this.actor.system.favoriteSkills ?? []).filter(k => k !== key) })
-            .then(() => this.render({ force: true }));
+          if (key) this._toggleFavorite(key, false);
         }
       }
     ], { jQuery: false });
