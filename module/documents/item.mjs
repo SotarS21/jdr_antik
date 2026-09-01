@@ -403,9 +403,21 @@ export class AntiqueItem extends Item {
       await this.update({ "system.quantity": newQty });
       refreshSheet(this.actor);
       refreshSheet(this);
+
+      // A heal amount set (ex. "Rations régénératrices de Déméter") offers a button
+      // to apply it — same pattern as the spell "apply-effect" CA bonus button.
+      let applyHealButton = "";
+      if (this.system.healAmount) {
+        const applyLabel = game.i18n.format("ANTIQUE.Effect.ApplyHealButton", { amount: this.system.healAmount });
+        applyHealButton = `
+          <button type="button" class="apply-heal" data-heal="${this.system.healAmount}">
+            <i class="fas fa-heart"></i> ${applyLabel}
+          </button>`;
+      }
+
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-        content: `<p><strong>${this.name}</strong> consommé. Reste : <strong>${newQty}</strong> unité(s).</p>`
+        content: `<p><strong>${this.name}</strong> consommé. Reste : <strong>${newQty}</strong> unité(s).</p>${applyHealButton}`
       });
     } else if (this.type === "weapon") {
       const linkedAmmo = this.system.linkedAmmoId && this.actor

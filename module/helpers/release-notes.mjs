@@ -5,6 +5,18 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.54": {
+    title: "Version 0.6.54 — 27 nouveaux Effets + 2 sauvegardes cassées corrigées",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : "Sang froid" (Volonté) et "Vif" (Réflexes) ne faisaient rien — même bug que Cuir de Héros (ciblaient un champ .base écrasé automatiquement). Corrigés vers le vrai champ.</li>
+        <li><strong>Corrigé</strong> : 15 avantages avec un effet déjà fonctionnel (Sens aiguisé, Sens artistique, Pisteur, Peau dense, Protection d'Athéna, Colère de Zeus, Athlète, Cuir de Hero, Sang froid, Vif, Voix enchanteresse, Force de Poséidon, Corps d'Arès, Visée d'Apollon, Taille imposante) migrés vers le format Foundry moderne — supprime les avertissements de dépréciation en console, aucun changement de comportement en jeu.</li>
+        <li><strong>Ajouté</strong> : 24 nouveaux Effets narratifs dans le compendium Effets, un par avantage restant (Beauté d'Aphrodite, Bon sens, Branchies de Poséidon, Chaleur d'Hestia, Chasse d'Artèmis, Commerçant, Don d'Hadès, Equilibre félin, Faveur, Fêtard, Guerrier Aguerri, Ivresse de Dionysos, Mains d'Hermès, Rage d'Arès, Respect d'Héra, Soin d'Apollon, Sommeil léger, Visage passe-partout, Vue d'Hécate, Ambidextrie, Ami des animaux, Casque d'Hadès, Charme d'Aphrodite, Chrono sens) — chacun lié depuis la description de son avantage, glissable directement.</li>
+        <li><strong>Ajouté</strong> : Peau d'Hadès a maintenant un vrai effet mécanique (PV actuels ×2), en plus de sa description.</li>
+        <li><strong>Ajouté</strong> : nouvel objet "Rations régénératrices de Déméter" (compendium Équipement, +10 PV à la consommation, bouton "Appliquer le soin" dans le chat) ; l'avantage Cuisine de Déméter a maintenant un lien "Générer une ration" dans sa description — cliquer poste un message de chat avec un lien vers la ration, que n'importe quel joueur peut glisser sur sa propre fiche pour en récupérer une copie.</li>
+        <li>Après cette mise à jour, exécute (dans cet ordre) les macros GM : <code>_fix-migrate-advantage-effects-live.js</code>, <code>_fix-effets-simple-links-live.js</code>, <code>_fix-effet-peau-hades-live.js</code>, <code>_fix-cuisine-demeter-live.js</code> pour appliquer ces correctifs au compendium déjà déployé et aux copies déjà possédées par un acteur.</li>
+      </ul>`
+  },
   "0.6.53": {
     title: "Version 0.6.53 — Correctifs Effets + traits cliquables vers le chat",
     html: `

@@ -694,6 +694,24 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
+    // Generic "generate an item into chat" link — used in trait descriptions (ex.
+    // Cuisine de Déméter) so anyone reading the chat message can drag the resulting
+    // compendium item link onto their own sheet (native Foundry item-link behavior,
+    // no bespoke "grant a copy" plumbing needed).
+    this.element.querySelectorAll(".generate-item-link").forEach(el => {
+      el.addEventListener("click", async ev => {
+        ev.preventDefault();
+        const uuid = ev.currentTarget.dataset.itemUuid;
+        const chatText = ev.currentTarget.dataset.chatText ?? "";
+        const item = await fromUuid(uuid);
+        if (!item) return;
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+          content: `<p>${chatText} @UUID[${uuid}]{${item.name}}</p>`
+        });
+      });
+    });
+
     this.element.querySelectorAll(".munitions-select").forEach(el => {
       el.addEventListener("change", ev => {
         const li = ev.currentTarget.closest(".item");

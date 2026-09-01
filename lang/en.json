@@ -153,6 +153,8 @@
   "ANTIQUE.Equipment.Quantity": "Quantity",
   "ANTIQUE.Equipment.CaBonus": "AC Bonus/Malus",
   "ANTIQUE.Equipment.CaBonusHint": "Automatically added to the character's Armor Class",
+  "ANTIQUE.Equipment.HealAmount": "Heal (HP)",
+  "ANTIQUE.Equipment.HealAmountHint": "Adds an \"Apply heal\" button to the item's chat message (0 = no button).",
   "ANTIQUE.Equipment.LinkedSkill": "Linked Skill",
   "ANTIQUE.Equipment.NoSkillBonus": "None",
   "ANTIQUE.Equipment.SkillBonus": "Skill Bonus",
@@ -406,6 +408,8 @@
 
   "ANTIQUE.Damage.Title": "Damage",
   "ANTIQUE.Effect.ApplyButton": "Apply effect (+{amount} CA)",
+  "ANTIQUE.Effect.ApplyHealButton": "Apply heal (+{amount} HP)",
+  "ANTIQUE.Effect.HealApplied": "Heal applied",
   "ANTIQUE.Effect.Applied": "Effect applied",
   "ANTIQUE.Damage.ApplyButton": "Apply damage ({amount})",
   "ANTIQUE.Damage.Applied": "Damage applied",

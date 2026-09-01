@@ -2,6 +2,78 @@
 
 ---
 
+## Session du 1er septembre 2026 — Chantier Effets : audit + 27 nouveaux effets + 2 bugs (v0.6.53 → v0.6.54)
+
+Reprise du chantier "Effets" (voir suite 13-15). Avant de continuer à en créer, audit de l'existant :
+en plus des 3 effets construits via le nouveau compendium `effets.db`, **15 avantages avaient déjà un
+effet embarqué fonctionnel**, hérité d'un ancien script `packs/_add-effects-final.js` (antérieur au
+chantier compendium, jamais documenté dans ce journal) — écrit dans le format Foundry déprécié
+(`changes` au premier niveau + `mode` numérique) plutôt que le format moderne
+(`system.changes` + `type` string) adopté depuis la suite 14.
+
+**2 bugs trouvés, même cause que Cuir de Héros (suite 15)** : "Sang froid" ciblait
+`system.saves.volonte.base` et "Vif" `system.saves.reflexes.base` — champ retiré du schéma des
+sauvegardes en juillet (`prepareDerivedData()` écrase `save.base` avec la constante codée en dur
+`SAVE_BASE`), donc no-op silencieux depuis toujours. Corrigés vers `.bonus`, comme Cuir de Héros.
+Vérifié dans le même passage que `system.ca.base` n'a pas ce problème (jamais écrasé dans
+`prepareDerivedData()`) — les 4 avantages qui l'utilisent (Peau dense, Protection d'Athéna, Force de
+Poséidon, Corps d'Arès) fonctionnent réellement, contrairement aux sauvegardes.
+
+**Migration de format** (`packs/_migrate-advantage-effects-format.js`, source ; macro
+`packs/_fix-migrate-advantage-effects-live.js` pour le compendium déjà déployé + copies sur acteur) :
+les 15 effets embarqués existants (dont Sang froid et Vif une fois leur clé corrigée) réécrits au
+format moderne — élimine l'avertissement de dépréciation loggué à chaque lecture (confirmé sans
+risque : `ANTIQUE.getEffectChangeLabel()` lit déjà `change.type`, qui est toujours correct même sur
+l'ancien format grâce à la migration à la volée de Foundry — seul le stockage change, pas le
+comportement).
+
+**24 nouveaux Effets narratifs** (`packs/_build-effets-simple.js`) : un par avantage restant listé
+dans `todo_foundry.txt` sans mécanique demandée (Beauté d'Aphrodite, Bon sens, Branchies de Poséidon,
+Chaleur d'Hestia, Chasse d'Artèmis, Commerçant, Don d'Hadès, Equilibre félin, Faveur, Fêtard,
+Guerrier Aguerri, Ivresse de Dionysos, Mains d'Hermès, Rage d'Arès, Respect d'Héra, Soin d'Apollon,
+Sommeil léger, Visage passe-partout, Vue d'Hécate, Ambidextrie, Ami des animaux, Casque d'Hadès,
+Charme d'Aphrodite, Chrono sens) — document `ActiveEffect` sans `changes`, description reprise de
+l'avantage, lié depuis la description de l'avantage (`@UUID[...]`, même patron que les 3 premiers).
+Macro de propagation : `packs/_fix-effets-simple-links-live.js`.
+
+**Peau d'Hadès** (`packs/_build-effet-peau-hades.js`) : MULTIPLY `system.pv.value` ×2, même famille
+qu'Athlète — effet embarqué sur l'avantage (auto-appliqué tant qu'il est possédé) **et** document
+standalone lié depuis la description, les deux écrits directement au format moderne (contenu neuf,
+pas de dette à migrer). Macro de propagation : `packs/_fix-effet-peau-hades-live.js`.
+
+**Cuisine de Déméter** : nouvel objet "Rations régénératrices de Déméter" (`packs/equipement.db`,
+`aEqp000000000051`, `system.healAmount: 10`). Nouveau champ générique `system.healAmount` sur le
+schéma Équipement (`item-equipment.mjs`, même famille que `caBonus`) — quand non nul, `consume()`
+(`item.mjs`, l'action "Consommer" existante, distincte du simple clic sur l'image qui ne fait que
+poster au chat) ajoute un bouton "Appliquer le soin" au message de chat qu'elle poste déjà. Nouveau
+`AntiqueActor#applyHeal()` (miroir d'`applyDamage()`, plafonné au PV max) + hook chat `.apply-heal`
+dans `antique.mjs` (miroir de `.apply-damage`/`.apply-effect`). Pour le lien "générer une ration"
+demandé dans la description de l'avantage : plutôt qu'un vrai document Macro Foundry (aurait demandé
+un nouveau compendium de type Macro rien que pour ça), un lien `<a class="generate-item-link"
+data-item-uuid="...">` ordinaire dans la description, câblé par un handler délégué dans
+`actor-sheet.mjs` (même famille que `.item-chat`/`.item-consume`) qui poste un message de chat
+contenant un lien `@UUID[...]` — l'enrichissement natif des messages de chat le rend glissable par
+n'importe quel joueur, donc aucune plomberie de "don de copie" à écrire : le mécanisme de stack déjà
+en place (session du 31 août, suite 4) s'occupe du reste au drop.
+
+**Décisions utilisateur sur les 2 autres cas laissés de côté** :
+- **Mule** — remis à plus tard (dépend d'une fonctionnalité de capacité de port en kg qui n'existe
+  pas encore dans le système, plus gros qu'un simple ActiveEffect).
+- **"Bénédiction d'Hécate"** — abandonné, ne correspondait à rien de concret dans `todo_foundry.txt`
+  malgré la formulation ; confirmé par l'utilisateur, plus la peine d'y revenir.
+
+**Fichiers** : `packs/avantages.db`, `packs/effets.db`, `packs/equipement.db`,
+`packs/_migrate-advantage-effects-format.js` (nouveau),
+`packs/_fix-migrate-advantage-effects-live.js` (nouveau), `packs/_build-effets-simple.js` (nouveau),
+`packs/_fix-effets-simple-links-live.js` (nouveau), `packs/_build-effet-peau-hades.js` (nouveau),
+`packs/_fix-effet-peau-hades-live.js` (nouveau), `packs/_fix-cuisine-demeter-live.js` (nouveau),
+`module/data-models/items/item-equipment.mjs`, `templates/item/equipment-sheet.hbs`,
+`module/documents/item.mjs`, `module/documents/actor.mjs`, `antique.mjs`,
+`module/sheets/actor-sheet.mjs`, `css/antique.css`, `lang/{fr,en}.json`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 31 août 2026 (suite 15) — Correctifs Effets + traits cliquables vers le chat (v0.6.52 → v0.6.53)
 
 Retours utilisateur après test de la session précédente : "Connaissance d'Héphaistos fonctionne"

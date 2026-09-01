@@ -217,6 +217,25 @@ export class AntiqueActor extends Actor {
   }
 
   /**
+   * Apply healing to this actor, raising PV (capped at max) — mirror of applyDamage().
+   * @param {number} amount - The amount of HP to restore
+   * @returns {Promise<{before: number, after: number, amount: number}>}
+   */
+  async applyHeal(amount) {
+    const current = this.system.pv.value;
+    const max = this.system.pv.max;
+    const newPv = Math.min(max, current + amount);
+    await this.update({ "system.pv.value": newPv });
+
+    const isDead = this.statuses.has("dead");
+    if (newPv > 0 && isDead) await this.toggleStatusEffect("dead", { active: false });
+
+    refreshSheet(this);
+
+    return { before: current, after: newPv, amount };
+  }
+
+  /**
    * Apply a temporary CA bonus ActiveEffect to this actor (e.g. a buff spell like
    * "Peau d'écorce"), via `system.ca.temp` — the same field the CA block's manual
    * "Temp" input already writes to, so the two stack rather than conflict.

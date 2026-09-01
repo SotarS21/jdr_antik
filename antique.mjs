@@ -229,6 +229,45 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   });
 });
 
+// Consumable equipment with a heal amount set (ex. "Rations régénératrices de Déméter")
+// — same button pattern as apply-damage, but falls back to the speaker's own actor
+// when nothing is targeted/selected (the common case: healing yourself).
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const element = html;
+  if (!element) return;
+  const btn = element.querySelector(".apply-heal");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const heal = Number(btn.dataset.heal);
+    if (!heal || heal <= 0) return;
+
+    let tokens = [...game.user.targets];
+    if (!tokens.length) tokens = canvas.tokens?.controlled ?? [];
+    let actors = tokens.map(t => t.actor).filter(Boolean);
+    if (!actors.length && message.speakerActor) actors = [message.speakerActor];
+    if (!actors.length) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Damage.NoTarget"));
+      return;
+    }
+
+    const results = [];
+    for (const actor of actors) {
+      if (actor.system.pv === undefined) continue;
+      const result = await actor.applyHeal(heal);
+      results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} (+${heal})`);
+    }
+
+    if (results.length) {
+      await ChatMessage.create({
+        speaker: { alias: game.i18n.localize("ANTIQUE.Effect.HealApplied") },
+        content: `<div class="antique damage-applied-message">${results.join("<br>")}</div>`
+      });
+    }
+  });
+});
+
 // Buff spells with a CA bonus (ex. Peau d'écorce) — same button pattern as apply-damage,
 // but falls back to the caster themself when nothing is targeted/selected (the common
 // case for a self-buff).

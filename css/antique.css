@@ -2598,6 +2598,17 @@
   color: var(--antique-gold);
 }
 
+.antique .generate-item-link {
+  cursor: pointer;
+  color: var(--antique-brown);
+  text-decoration: underline dotted;
+  transition: color 0.2s;
+}
+
+.antique .generate-item-link:hover {
+  color: var(--antique-gold);
+}
+
 .antique .ingredient-restock {
   cursor: pointer;
   color: var(--antique-brown);
