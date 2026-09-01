@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.55": {
+    title: "Version 0.6.55 — Les 24 nouveaux Effets sont maintenant attachés à leur avantage",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les 24 Effets narratifs ajoutés en 0.6.54 n'avaient qu'un lien dans la description de leur avantage — l'effet n'apparaissait pas dans l'onglet "Effets" de l'avantage lui-même. Chaque avantage a maintenant son effet correspondant réellement attaché, comme Cuir de Héros/Athlète/Peau d'Hadès.</li>
+        <li>Après cette mise à jour, exécute la macro GM <code>_fix-embed-effets-simple-live.js</code> pour appliquer ce correctif au compendium déjà déployé et aux copies déjà possédées par un acteur.</li>
+      </ul>`
+  },
   "0.6.54": {
     title: "Version 0.6.54 — 27 nouveaux Effets + 2 sauvegardes cassées corrigées",
     html: `

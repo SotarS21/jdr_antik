@@ -2,6 +2,32 @@
 
 ---
 
+## Session du 2 septembre 2026 — Correctif : les Effets simples n'étaient pas attachés aux avantages (v0.6.54 → v0.6.55)
+
+Après déploiement de la session précédente, retour utilisateur : "les effets actifs existe bien, mais
+il ne sont pas dans les aventages". Cause : `_build-effets-simple.js` n'avait ajouté qu'un lien
+`@UUID` dans la description de chaque avantage, sans l'attacher réellement — l'onglet "Effets" de
+l'avantage (`advantage-sheet.hbs`) restait vide pour les 24 "effets simples", contrairement à Cuir de
+Héros/Athlète/Peau d'Hadès qui ont depuis le début un effet embarqué en plus du lien. Relecture de la
+formulation d'origine dans `todo_foundry.txt` : "ajouter cet effet sur l'aventage" — demandait bien
+les deux, pas seulement le lien.
+
+**Correctif** (`packs/_embed-effets-simple-on-advantages.js`) : ajoute un effet embarqué narratif
+(mêmes nom/description, aucun `changes` — cohérent avec la version standalone du compendium) sur
+chacun des 24 avantages concernés dans `packs/avantages.db`. Connaissance d'Héphaistos n'est
+délibérément pas concernée (effet à cibler sur un ennemi, pas à s'auto-attacher). Macro de
+propagation `packs/_fix-embed-effets-simple-live.js` (idempotente, ne crée rien si un effet est déjà
+présent) pour le compendium déjà déployé et les copies déjà possédées par un acteur — cas d'édition
+d'un document déjà existant (`createEmbeddedDocuments` sur l'item), pas de création de document de
+premier niveau, donc pas besoin de la macro `_fix-create-missing-pack-docs-live.js` ni de fermer
+Foundry (voir la mémoire du système sur les 3 cas de déploiement des compendiums).
+
+**Fichiers** : `packs/avantages.db`, `packs/_embed-effets-simple-on-advantages.js` (nouveau),
+`packs/_fix-embed-effets-simple-live.js` (nouveau), `module/helpers/release-notes.mjs`,
+`system.json`.
+
+---
+
 ## Session du 1er septembre 2026 — Chantier Effets : audit + 27 nouveaux effets + 2 bugs (v0.6.53 → v0.6.54)
 
 Reprise du chantier "Effets" (voir suite 13-15). Avant de continuer à en créer, audit de l'existant :
