@@ -102,6 +102,30 @@ export const PACK_UPDATES = [
       "éventuels (garde une seule copie correcte : Déplacement ×2), sur le compendium et " +
       "les copies déjà possédées.",
     apply: applyFixAthleteEffect
+  },
+  {
+    id: "0.6.63-cleanup-effect-field-avantages",
+    pack: "avantages",
+    version: "0.6.63",
+    label: "Nettoyage : champ \"Effet\" retiré, dédoublonnage",
+    description:
+      "Le champ texte \"Effet\" (redondant avec la description) est retiré du schéma — son " +
+      "contenu est repris dans la description de l'effet actif existant à la place. " +
+      "Corrige au passage tout avantage qui se serait retrouvé avec plusieurs effets " +
+      "embarqués (probablement causé par le bug .effects.length de la 0.6.62), sur le " +
+      "compendium et toutes les copies déjà possédées.",
+    apply: applyCleanupEffectFieldAvantages
+  },
+  {
+    id: "0.6.63-cleanup-effect-field-desavantages",
+    pack: "desavantages",
+    version: "0.6.63",
+    label: "Nettoyage : champ \"Effet\" retiré, dédoublonnage",
+    description:
+      "Même correctif que pour les Avantages, côté Désavantages : retire le champ " +
+      "\"Effet\", reprend son contenu dans la description de l'effet actif existant (5 " +
+      "désavantages seulement en ont un), et dédoublonne si besoin.",
+    apply: applyCleanupEffectFieldDesavantages
   }
 ];
 
@@ -498,7 +522,7 @@ async function fixAthleteEffect(doc) {
   let changed = false;
 
   if (doc.effects.size > 1) {
-    const [, ...extraIds] = doc.effects.map(e => e.id);
+    const [, ...extraIds] = Array.from(doc.effects.keys());
     await doc.deleteEmbeddedDocuments("ActiveEffect", extraIds);
     changed = true;
   }
@@ -537,6 +561,69 @@ async function applyFixAthleteEffect() {
   }
 
   return fixed;
+}
+
+/**
+ * Voir packs/_remove-effect-field.js, dont cette fonction reprend la logique pour le
+ * monde déjà déployé : dédoublonne (garde le premier, supprime le reste) et reprend le
+ * texte encore présent dans system.effect (champ orphelin depuis le retrait du schéma,
+ * mais pas encore purgé des documents déjà stockés) dans la description de l'effet
+ * conservé, s'il n'en a pas déjà une. N'ajoute jamais d'effet à un document qui n'en a
+ * aucun (Mule, Cuisine de Déméter, Connaissance d'Héphaistos, la plupart des
+ * désavantages) — la tooltip retombe sur la description complète dans ce cas
+ * (actor-sheet.mjs, _prepareTraitItems).
+ */
+async function cleanupEffectField(doc) {
+  if (doc.effects.size === 0) return false;
+
+  let changed = false;
+
+  if (doc.effects.size > 1) {
+    const [, ...extraIds] = Array.from(doc.effects.keys());
+    await doc.deleteEmbeddedDocuments("ActiveEffect", extraIds);
+    changed = true;
+  }
+
+  const kept = doc.effects.contents[0];
+  if (!kept.description && doc.system.effect) {
+    await kept.update({ description: doc.system.effect });
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyCleanupEffectFieldForPack(packName, itemType) {
+  let fixed = 0;
+
+  const pack = game.packs.get(`antique.${packName}`);
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await cleanupEffectField(doc)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== itemType) continue;
+      if (await cleanupEffectField(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+async function applyCleanupEffectFieldAvantages() {
+  return applyCleanupEffectFieldForPack("avantages", "advantage");
+}
+
+async function applyCleanupEffectFieldDesavantages() {
+  return applyCleanupEffectFieldForPack("desavantages", "disadvantage");
 }
 
 const SETTING_KEY = "appliedPackFixes";

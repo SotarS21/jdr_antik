@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.63": {
+    title: "Version 0.6.63 — Nettoyage du champ \"Effet\" (étape 4)",
+    html: `
+      <ul>
+        <li><strong>Retiré</strong> : le champ texte "Effet" de l'onglet Description des Avantages/Désavantages, redondant avec la description complète. Son contenu est repris dans la description de l'effet actif de l'avantage/désavantage quand il en a un.</li>
+        <li><strong>Corrigé</strong> : la tooltip des icônes d'avantages/désavantages en haut de la fiche de personnage lit maintenant la description de l'effet actif (ou un extrait de la description complète s'il n'y a pas d'effet) plutôt que ce champ supprimé.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour des compendiums (Avantages et Désavantages) — dédoublonnent aussi tout avantage/désavantage qui se serait retrouvé avec plusieurs effets à cause du bug de la 0.6.62.</li>
+      </ul>`
+  },
   "0.6.62": {
     title: "Version 0.6.62 — Correctif urgent : contrôles d'idempotence cassés dans l'écran de mise à jour",
     html: `

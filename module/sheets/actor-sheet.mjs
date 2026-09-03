@@ -9,6 +9,14 @@ const BACKGROUND_GROUPS_KEY = {
   ennemisList: "ennemisGroups"
 };
 
+/** Plain-text, single-line excerpt of an HTML field — used for the trait tooltip text
+ *  (see _prepareTraitItems), which is set via JS into a plain `data-*` attribute, not
+ *  rendered as HTML. */
+function htmlExcerpt(html, maxLen = 140) {
+  const text = (html ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return text.length > maxLen ? `${text.slice(0, maxLen - 1).trimEnd()}…` : text;
+}
+
 export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applications.sheets.ActorSheetV2) {
 
   static DEFAULT_OPTIONS = {
@@ -895,18 +903,26 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
   _prepareTraitItems(type) {
     return this.actor.items.filter(i => i.type === type).map(item => {
       const effectLabels = [];
+      let effectDescription = "";
       for (const effect of item.effects) {
         if (effect.disabled) continue;
+        if (!effectDescription && effect.description) effectDescription = effect.description;
         for (const change of effect.changes) {
           effectLabels.push(CONFIG.ANTIQUE.getEffectChangeLabel(change));
         }
       }
+      // Trait tooltip text (see the ".header-trait-icon" hover handler): the active
+      // effect's own description if it has one, else a plain-text excerpt of the
+      // trait's full description — covers items with no embedded effect at all
+      // (Mule, Cuisine de Déméter, Connaissance d'Héphaistos, and most Désavantages,
+      // which never went through the Effets chantier).
+      const effect = htmlExcerpt(effectDescription || item.system.description);
       return {
         id: item.id,
         name: item.name,
         img: item.img,
         cout: item.system.cout,
-        effect: item.system.effect,
+        effect,
         system: item.system,
         effectsSummary: effectLabels.join(", "),
         hasEffects: effectLabels.length > 0

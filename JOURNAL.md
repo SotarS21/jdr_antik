@@ -2,6 +2,49 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 7) — Étape 4 : retrait du champ "Effet", dédoublonnage (v0.6.62 → v0.6.63)
+
+Dernières notes de `todo_foundry.txt` (lignes 453-455) traitées : le champ texte "Effet"
+(`system.effect`) faisait doublon avec la description complète — retiré du schéma
+(`item-advantage.mjs`, `item-disadvantage.mjs`) et de la fiche d'objet des deux types.
+
+**Découverte en creusant l'usage réel du champ** : `system.effect` alimentait aussi la
+tooltip au survol des icônes d'avantages/désavantages en haut de la fiche de personnage
+(`data-tooltip-effect`, `actor-sheet.mjs`). Décision utilisateur : la tooltip lit maintenant
+la description de l'effet actif existant (ajout d'un champ `description` sur chaque effet
+embarqué, repris depuis l'ancien `system.effect`) ; à défaut d'effet, repli sur un extrait
+en texte brut de la description complète (`htmlExcerpt()`, nouvelle fonction dans
+`actor-sheet.mjs`).
+
+**Découverte en creusant la couverture réelle** : sur 95 désavantages, seulement 5 ont un
+effet actif embarqué (contre 90/94 avantages, grâce au chantier Effets qui n'a jamais visé
+les désavantages). Décision utilisateur : ne pas construire d'effets manquants pour les 90
+désavantages restants dans cette étape — repli sur l'extrait de description pour eux, comme
+pour Mule/Cuisine de Déméter/Connaissance d'Héphaistos côté avantages.
+
+**Correctif source** (`packs/_remove-effect-field.js`) : sur `avantages.db` et
+`desavantages.db`, reprend `system.effect` dans la description de l'effet existant (s'il y
+en a un et qu'il n'a pas déjà de description), retire le champ. Confirmé 0 doublon présent
+dans les deux fichiers sources avant traitement.
+
+**Propagation** : `0.6.63-cleanup-effect-field-avantages` et
+`0.6.63-cleanup-effect-field-desavantages` dans `PACK_UPDATES` — dédoublonnent (garde le
+premier effet, supprime le reste) ET reprennent le texte encore présent dans
+`system.effect` sur le monde déjà déployé (champ orphelin après le retrait du schéma, mais
+pas encore purgé des documents déjà stockés) dans la description de l'effet conservé.
+Corrige au passage les doublons probablement causés par le bug de la 0.6.62.
+
+**Ceci clôt l'étape 4** et, avec elle, le complément au chantier Effets initié par les
+nouveaux avantages -2/-3/-5 ajoutés à `todo_foundry.txt` le 3 septembre.
+
+**Fichiers** : `module/data-models/items/item-advantage.mjs`,
+`module/data-models/items/item-disadvantage.mjs`, `templates/item/advantage-sheet.hbs`,
+`templates/item/disadvantage-sheet.hbs`, `module/sheets/actor-sheet.mjs`,
+`packs/avantages.db`, `packs/desavantages.db`, `packs/_remove-effect-field.js` (nouveau),
+`module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 6) — Correctif urgent : `.effects.length` cassé dans tout l'écran de mise à jour (v0.6.61 → v0.6.62)
 
 En testant le correctif Athlète (0.6.61), erreur en jeu : `TypeError: Cannot read properties
