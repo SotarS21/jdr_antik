@@ -2,6 +2,34 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 3) — Les 15 Auras s'appliquent aussi au porteur (v0.6.58 → v0.6.59)
+
+Retour utilisateur sur l'étape 2 : "si je reviens sur ce que j'ai dit, les effets actifs
+doivent être présents dans la description et être dans la partie effet de l'avantage pour
+être appliqués aussi sur le pj qui a l'avantage." Les 15 "Aura d'X" ne sont donc plus
+seulement des effets à glisser sur un allié (interprétation initiale, cohérente avec la
+description "de l'équipe" et le nom "Allié de l'aura d'X") — ils doivent aussi s'appliquer
+automatiquement au porteur, en plus de rester glissables. Même situation que le suivi du
+2 septembre pour les 24 premiers effets simples : le lien de description existait déjà, il
+ne manquait que l'effet embarqué.
+
+**Correctif** (`packs/_embed-auras-on-advantages.js`) : embarque l'effet manquant sur les 15
+avantages Aura (idempotent, ne touche pas un avantage déjà pourvu d'un effet), et ajuste le
+texte de description des 15 documents Effet correspondants dans `effets.db` (l'ancien texte
+"Glisser directement sur un allié" ne décrivait plus que la moitié du comportement réel).
+
+**Propagation** : nouvelle entrée `0.6.59-embed-auras` dans `PACK_UPDATES` — les entrées de
+l'étape 2 (`0.6.58-*`) ne sont pas modifiées dans leur comportement (un GM qui les aurait
+déjà appliquées ne les revoit pas), donc un correctif de suivi séparé était nécessaire plutôt
+que de changer leur fonction en place. Les données partagées (`EFFETS_BATCH3`, drapeau
+`selfEmbed`) sont mises à jour pour que toute future application "à froid" des entrées
+`0.6.58-*` embarque aussi directement les Auras.
+
+**Fichiers** : `packs/effets.db`, `packs/avantages.db`, `packs/_embed-auras-on-advantages.js`
+(nouveau), `module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 2) — 18 nouveaux Effets mécaniques, étape 2/3 des avantages -2/-3/-5 (v0.6.57 → v0.6.58)
 
 Suite de l'étape 1 (effets narratifs) : les avantages restants avaient tous une vraie

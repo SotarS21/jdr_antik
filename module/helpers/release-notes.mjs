@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.59": {
+    title: "Version 0.6.59 — Les 15 Auras s'appliquent aussi au porteur",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les 15 avantages "Aura d'X" (v0.6.58) sont maintenant aussi embarqués dans l'onglet "Effets" de l'avantage lui-même — décision revue : ils s'appliquent automatiquement au PJ qui possède l'avantage, en plus de rester glissables sur un allié depuis le lien de la description.</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour des compendiums.</li>
+      </ul>`
+  },
   "0.6.58": {
     title: "Version 0.6.58 — 18 nouveaux Effets mécaniques (étape 2/3 des avantages -2/-3/-5)",
     html: `

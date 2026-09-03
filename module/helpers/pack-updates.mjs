@@ -51,8 +51,8 @@ export const PACK_UPDATES = [
     version: "0.6.58",
     label: "18 nouveaux effets mécaniques (étape 2/3)",
     description:
-      "Crée les 18 documents Effet manquants : les 15 Auras (bonus de caractéristique à " +
-      "glisser sur un allié) + Mire d'Artèmis, Talent d'Héphaistos, Pieds d'Hermes.",
+      "Crée les 18 documents Effet manquants : les 15 Auras (bonus de caractéristique) + " +
+      "Mire d'Artèmis, Talent d'Héphaistos, Pieds d'Hermes.",
     apply: applyCreateEffetsBatch3
   },
   {
@@ -61,11 +61,22 @@ export const PACK_UPDATES = [
     version: "0.6.58",
     label: "18 effets mécaniques liés (+ 3 embarqués) sur les avantages",
     description:
-      "Ajoute le lien vers l'effet sur les 18 avantages concernés ; embarque en plus " +
-      "l'effet directement pour Mire d'Artèmis, Talent d'Héphaistos et Pieds d'Hermes " +
-      "(bonus sur le porteur lui-même) — les 15 Auras restent volontairement sans effet " +
-      "embarqué, ce sont des bonus à appliquer à un allié, pas au porteur.",
+      "Ajoute le lien vers l'effet sur les 18 avantages concernés, et embarque l'effet " +
+      "directement pour Mire d'Artèmis, Talent d'Héphaistos et Pieds d'Hermes (bonus sur " +
+      "le porteur lui-même) — pour les 15 Auras, voir le correctif de suivi ci-dessous.",
     apply: applyLinkEmbedEffetsBatch3
+  },
+  {
+    id: "0.6.59-embed-auras",
+    pack: "avantages",
+    version: "0.6.59",
+    label: "Les 15 Auras s'appliquent maintenant aussi au porteur",
+    description:
+      "Décision revue : les 15 avantages \"Aura d'X\" ne sont plus seulement à glisser sur " +
+      "un allié, ils doivent aussi s'appliquer automatiquement au PJ qui possède l'avantage " +
+      "— ajoute l'effet embarqué manquant dans leur onglet \"Effets\" (le lien de " +
+      "description reste inchangé).",
+    apply: applyEmbedAuras
   }
 ];
 
@@ -254,21 +265,21 @@ const EFFETS_BATCH3 = [
   { id: "eEft000000000061", advName: "Mire d'Artèmis", effetName: "Mire d'Artèmis", selfEmbed: true, changes: [{ key: "system.attackBonuses.armeADistance.damageBonus", type: "add", value: "3" }], description: "<p>+3 aux dégâts de toutes les armes à distance, tant que cet effet est actif.</p>" },
   { id: "eEft000000000062", advName: "Talent d'Héphaistos", effetName: "Talent d'Héphaistos", selfEmbed: true, changes: [{ key: "system.attackBonuses.armeBlanche.damageBonus", type: "add", value: "3" }], description: "<p>+3 aux dégâts de toutes les armes au corps à corps, tant que cet effet est actif.</p>" },
   { id: "eEft000000000063", advName: "Pieds d'Hermes", effetName: "Pieds d'Hermes", selfEmbed: true, changes: [{ key: "system.deplacement", type: "add", value: "6" }], description: "<p>+6m de déplacement, tant que cet effet est actif.</p>" },
-  { id: "eEft000000000064", advName: "Aura de Zeus", effetName: "Allié de l'aura de Zeus", selfEmbed: false, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000065", advName: "Aura d'Héra", effetName: "Allié de l'aura d'Héra", selfEmbed: false, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000066", advName: "Aura de Poséidon", effetName: "Allié de l'aura de Poséidon", selfEmbed: false, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000067", advName: "Aura d'Athéna", effetName: "Allié de l'aura d'Athéna", selfEmbed: false, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000068", advName: "Aura d'Arès", effetName: "Allié de l'aura d'Arès", selfEmbed: false, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000069", advName: "Aura de Demeter", effetName: "Allié de l'aura de Demeter", selfEmbed: false, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000070", advName: "Aura d'Apollon", effetName: "Allié de l'aura d'Apollon", selfEmbed: false, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000071", advName: "Aura d'Artèmis", effetName: "Allié de l'aura d'Artèmis", selfEmbed: false, changes: [{ key: "system.abilities.dex.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Dextérité tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000072", advName: "Aura d'Héphaïstos", effetName: "Allié de l'aura d'Héphaïstos", selfEmbed: false, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000073", advName: "Aura d'Aphrodite", effetName: "Allié de l'aura d'Aphrodite", selfEmbed: false, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000074", advName: "Aura d'Hermes", effetName: "Allié de l'aura d'Hermes", selfEmbed: false, changes: [{ key: "system.abilities.dex.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Dextérité tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000075", advName: "Aura de Dionysos", effetName: "Allié de l'aura de Dionysos", selfEmbed: false, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000076", advName: "Aura d'Hestia", effetName: "Allié de l'aura d'Hestia", selfEmbed: false, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000077", advName: "Aura d'Hécate", effetName: "Allié de l'aura d'Hécate", selfEmbed: false, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" },
-  { id: "eEft000000000078", advName: "Aura d'Hadès", effetName: "Allié de l'aura d'Hadès", selfEmbed: false, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p><strong>Glisser directement sur un allié</strong> ; désactiver ou supprimer l'effet quand il doit cesser.</p>" }
+  { id: "eEft000000000064", advName: "Aura de Zeus", effetName: "Allié de l'aura de Zeus", selfEmbed: true, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000065", advName: "Aura d'Héra", effetName: "Allié de l'aura d'Héra", selfEmbed: true, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000066", advName: "Aura de Poséidon", effetName: "Allié de l'aura de Poséidon", selfEmbed: true, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000067", advName: "Aura d'Athéna", effetName: "Allié de l'aura d'Athéna", selfEmbed: true, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000068", advName: "Aura d'Arès", effetName: "Allié de l'aura d'Arès", selfEmbed: true, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000069", advName: "Aura de Demeter", effetName: "Allié de l'aura de Demeter", selfEmbed: true, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000070", advName: "Aura d'Apollon", effetName: "Allié de l'aura d'Apollon", selfEmbed: true, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000071", advName: "Aura d'Artèmis", effetName: "Allié de l'aura d'Artèmis", selfEmbed: true, changes: [{ key: "system.abilities.dex.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Dextérité tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000072", advName: "Aura d'Héphaïstos", effetName: "Allié de l'aura d'Héphaïstos", selfEmbed: true, changes: [{ key: "system.abilities.for.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Force tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000073", advName: "Aura d'Aphrodite", effetName: "Allié de l'aura d'Aphrodite", selfEmbed: true, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000074", advName: "Aura d'Hermes", effetName: "Allié de l'aura d'Hermes", selfEmbed: true, changes: [{ key: "system.abilities.dex.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Dextérité tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000075", advName: "Aura de Dionysos", effetName: "Allié de l'aura de Dionysos", selfEmbed: true, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000076", advName: "Aura d'Hestia", effetName: "Allié de l'aura d'Hestia", selfEmbed: true, changes: [{ key: "system.abilities.cha.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Charisme tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000077", advName: "Aura d'Hécate", effetName: "Allié de l'aura d'Hécate", selfEmbed: true, changes: [{ key: "system.abilities.ast.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Astuce tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" },
+  { id: "eEft000000000078", advName: "Aura d'Hadès", effetName: "Allié de l'aura d'Hadès", selfEmbed: true, changes: [{ key: "system.abilities.con.value", type: "add", value: "2" }], description: "<p>Bonus divin de +2 sur la caractéristique Constitution tant que cet effet est actif.</p><p>Actif automatiquement tant que l'avantage est possédé ; peut aussi être glissé directement sur un autre personnage.</p>" }
 ];
 
 function effetDocDataBatch3(entry) {
@@ -354,6 +365,51 @@ async function applyLinkEmbedEffetsBatch3() {
       const entry = byName.get(cleanName(item.name));
       if (!entry) continue;
       if (await linkAndMaybeEmbedBatch3(item, entry)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Voir packs/_embed-auras-on-advantages.js, dont cette fonction reprend la logique. */
+async function embedAuraEffect(doc, entry) {
+  if (doc.effects.length) return false;
+
+  await doc.createEmbeddedDocuments("ActiveEffect", [{
+    name: entry.effetName,
+    img: doc.img,
+    "system.changes": entry.changes,
+    disabled: false,
+    transfer: true
+  }]);
+  return true;
+}
+
+async function applyEmbedAuras() {
+  const auras = EFFETS_BATCH3.filter(e => !e.selfEmbed);
+  const byName = new Map(auras.map(e => [e.advName, e]));
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.avantages");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const entry = byName.get(cleanName(indexEntry.name));
+      if (!entry) continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedAuraEffect(doc, entry)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "advantage") continue;
+      const entry = byName.get(cleanName(item.name));
+      if (!entry) continue;
+      if (await embedAuraEffect(item, entry)) fixed++;
     }
   }
 
