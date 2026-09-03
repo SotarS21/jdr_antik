@@ -2,6 +2,40 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 5) — Correctif : Athlète sans effet actif (v0.6.60 → v0.6.61)
+
+Retour utilisateur en test : "Athléte n'a pas d'effet actif, il faut le corriger." Audit de
+`packs/avantages.db` : rien de cassé côté source — Athlète a toujours son effet MULTIPLY
+`system.deplacement` ×2, identique à Cuir de Héros/Peau d'Hadès qui fonctionnent, et aucun
+avantage du compendium n'a de doublon d'effet actuellement.
+
+**Diagnostic** : Athlète fait partie des 3 tout premiers exemples du chantier Effets
+(session du 31 août, suite 14), construit avant TOUS les mécanismes de propagation ajoutés
+depuis (macros `_fix-*-live.js` puis `PACK_UPDATES`). Contrairement à Cuir de Héros — qui a
+eu son propre correctif de propagation dédié le lendemain suite à son propre bug — aucun
+correctif n'a jamais spécifiquement ciblé Athlète, ni sur le compendium déjà déployé, ni sur
+d'éventuelles copies déjà possédées par un personnage. Un joueur ayant récupéré Athlète
+avant l'ajout de son effet (l'avantage existe dans le compendium de base depuis bien avant
+le chantier Effets) n'a donc jamais pu recevoir la correction.
+
+**Correctif** (`0.6.61-fix-athlete-effect` dans `PACK_UPDATES`) : défensif et idempotent,
+gère les deux symptômes possibles — aucun effet (l'ajoute) et effet en double (garde une
+seule copie correcte, `MULTIPLY déplacement ×2`) — sur le compendium et toute copie déjà
+possédée par un acteur.
+
+**Découverte en relisant `todo_foundry.txt`** (demande explicite de l'utilisateur après ce
+retour) : trois nouvelles notes en bas du fichier, pas vues lors de l'audit initial —
+certains avantages auraient 2 effets, le champ texte "Effet" de l'onglet description
+devrait être supprimé (fait doublon avec la description), et chaque effet actif devrait
+reprendre le descriptif simple de l'avantage. Portée plus large qu'Athlète seul — traité
+comme une étape 4 distincte, à confirmer avec l'utilisateur avant de s'y lancer (pas
+implémenté dans cette session).
+
+**Fichiers** : `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 4) — Faveur de la Dame : compteur d'utilisations, étape 3/3 (v0.6.59 → v0.6.60)
 
 Dernière étape du complément au chantier Effets : Faveur de la Dame ("cherche un moyen de

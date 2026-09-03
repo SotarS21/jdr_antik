@@ -88,6 +88,20 @@ export const PACK_UPDATES = [
       "bouton \"Réinitialiser\" sur la fiche du personnage) sur l'avantage Faveur de la " +
       "Dame — pas un ActiveEffect, une simple correction de champ.",
     apply: applySetFaveurDeLaDameLimitation
+  },
+  {
+    id: "0.6.61-fix-athlete-effect",
+    pack: "avantages",
+    version: "0.6.61",
+    label: "Athlète — effet manquant ou en double",
+    description:
+      "Athlète (l'un des 3 tout premiers exemples, construit avant tous les mécanismes de " +
+      "propagation ultérieurs) n'a jamais eu de correctif dédié pour les copies déjà " +
+      "possédées par un personnage — si un joueur a récupéré Athlète avant l'ajout de son " +
+      "effet, sa copie n'en a jamais reçu. Corrige l'absence d'effet ET les doublons " +
+      "éventuels (garde une seule copie correcte : Déplacement ×2), sur le compendium et " +
+      "les copies déjà possédées.",
+    apply: applyFixAthleteEffect
   }
 ];
 
@@ -456,6 +470,69 @@ async function applySetFaveurDeLaDameLimitation() {
     for (const item of actor.items) {
       if (item.type !== "advantage" || cleanName(item.name) !== "Faveur de la Dame") continue;
       if (await setFaveurDeLaDameLimitation(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+const ATHLETE_CHANGES = [{ key: "system.deplacement", type: "multiply", value: "2" }];
+
+/**
+ * Ensures exactly one correctly-shaped embedded effect on an Athlète doc (compendium or
+ * owned copy) — adds it if missing, trims duplicates down to one if there are several,
+ * fixes the changes if the surviving one is wrong. Idempotent, safe to rerun.
+ */
+async function fixAthleteEffect(doc) {
+  if (doc.effects.length === 0) {
+    await doc.createEmbeddedDocuments("ActiveEffect", [{
+      name: "Athléte",
+      img: doc.img,
+      "system.changes": ATHLETE_CHANGES,
+      disabled: false,
+      transfer: true
+    }]);
+    return true;
+  }
+
+  let changed = false;
+
+  if (doc.effects.length > 1) {
+    const [, ...extraIds] = doc.effects.map(e => e.id);
+    await doc.deleteEmbeddedDocuments("ActiveEffect", extraIds);
+    changed = true;
+  }
+
+  const kept = doc.effects.contents[0];
+  const keptChanges = (kept.system.changes ?? []).map(c => ({ key: c.key, type: c.type, value: c.value }));
+  if (JSON.stringify(keptChanges) !== JSON.stringify(ATHLETE_CHANGES)) {
+    await kept.update({ "system.changes": ATHLETE_CHANGES });
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyFixAthleteEffect() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.avantages");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Athléte") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixAthleteEffect(doc)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "advantage" || cleanName(item.name) !== "Athléte") continue;
+      if (await fixAthleteEffect(item)) fixed++;
     }
   }
 

@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.61": {
+    title: "Version 0.6.61 — Correctif : Athlète sans effet actif",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : retour utilisateur "Athlète n'a pas d'effet actif" — Athlète est l'un des 3 tout premiers exemples du chantier Effets, construit avant tous les mécanismes de propagation ajoutés depuis. Un joueur ayant récupéré Athlète avant l'ajout de son effet (ou une copie corrompue avec plusieurs effets) n'en avait jamais reçu de correctif dédié.</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour des compendiums — corrige l'absence d'effet et les doublons éventuels, sur le compendium et les copies déjà possédées.</li>
+      </ul>`
+  },
   "0.6.60": {
     title: "Version 0.6.60 — Faveur de la Dame : compteur d'utilisations (étape 3/3)",
     html: `
