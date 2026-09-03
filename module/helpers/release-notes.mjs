@@ -5,6 +5,17 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.65": {
+    title: "Version 0.6.65 — Capacité de port (kg) + Mule",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau champ "Capacité de port" (kg) dans l'onglet Identité de la fiche de personnage, modifiable directement (comme le Déplacement).</li>
+        <li><strong>Ajouté</strong> : chaque arme et objet d'équipement a maintenant un poids (kg) — visible dans l'onglet Inventaire, avec une estimation déjà en place pour tous les objets existants (approximative, à corriger au cas par cas). Une bannière en haut de l'onglet Inventaire affiche le poids porté total et passe en alerte visuelle si la capacité est dépassée — jamais bloquant.</li>
+        <li><strong>Ajouté</strong> : l'avantage Mule multiplie maintenant réellement la capacité de port par deux, tant qu'il est possédé.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour des compendiums (Effets, Avantages, Armes, Équipement).</li>
+        <li>Ceci clôt le dernier point du chantier Effets — plus rien d'ouvert dans <code>todo_foundry.txt</code>.</li>
+      </ul>`
+  },
   "0.6.64": {
     title: "Version 0.6.64 — Correctif : les descriptions des effets actifs n'étaient pas reprises",
     html: `

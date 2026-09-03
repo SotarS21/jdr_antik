@@ -33,6 +33,7 @@
   "ANTIQUE.Identity.Poid": "Poids",
   "ANTIQUE.Identity.Sexe": "Sexe",
   "ANTIQUE.Identity.Deplacement": "Déplacement",
+  "ANTIQUE.Identity.CapacitePort": "Capacité de port",
   "ANTIQUE.Identity.Historique": "Historique",
 
   "ANTIQUE.PV": "PV",
@@ -159,6 +160,7 @@
   "ANTIQUE.Equipment.NoSkillBonus": "Aucun",
   "ANTIQUE.Equipment.SkillBonus": "Bonus de comp\u00e9tence",
   "ANTIQUE.Equipment.Price": "Prix",
+  "ANTIQUE.Equipment.Poids": "Poids",
   "ANTIQUE.Equipment.Slot": "Emplacement",
   "ANTIQUE.Equipment.NoSlot": "Aucun",
   "ANTIQUE.Equipment.Equipped": "\u00c9quip\u00e9",
@@ -224,6 +226,8 @@
   "ANTIQUE.Shop.OrderByPriceDesc": "Prix décroissant",
 
   "ANTIQUE.Inventory.EquippedGear": "Équipement porté",
+  "ANTIQUE.Inventory.CarryWeight": "Poids porté",
+  "ANTIQUE.Inventory.OverCapacity": "Capacité de port dépassée",
 
   "ANTIQUE.Slot.Tete": "T\u00eate",
   "ANTIQUE.Slot.Torse": "Torse",

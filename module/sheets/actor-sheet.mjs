@@ -248,6 +248,11 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     context.traitBalance = advTotal + disTotal;
     context.traitBalanced = context.traitBalance === 0;
 
+    // --- Carry weight banner (Inventory tab) ---
+    context.poidsPorteTotal = system.poidsPorteTotal ?? 0;
+    context.capacitePortTotal = system.capacitePort ?? 0;
+    context.overCapacity = context.poidsPorteTotal > context.capacitePortTotal;
+
     context.hasTraits = context.advantages.length > 0 || context.disadvantages.length > 0;
     context.hasBothTraits = context.advantages.length > 0 && context.disadvantages.length > 0;
 

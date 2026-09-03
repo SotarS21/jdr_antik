@@ -2,6 +2,54 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 9) — Capacité de port (kg) + Mule (v0.6.64 → v0.6.65)
+
+Dernier point ouvert du chantier Effets (`todo_foundry.txt` lignes 353-354, mis de côté en
+septembre car la fonctionnalité n'existait pas encore) : une capacité de port en kg pour
+les PJ, plafonnée au poids du personnage sauf avec l'avantage Mule (qui la double).
+
+**Champ "Poids" existant conservé tel quel** (texte libre, Identité) — nouveau champ
+numérique séparé `capacitePort` (kg), directement modifiable comme `Déplacement`, jamais
+recalculé dans `prepareDerivedData()` pour qu'un ActiveEffect MULTIPLY (Mule) s'applique
+dessus normalement, même patron qu'Athlète/`deplacement`.
+
+**Poids par objet** : nouveau champ `poids` (kg) sur `item-weapon.mjs`/`item-equipment.mjs`
+(défaut 0). Une estimation plausible a été appliquée aux ~160 objets déjà présents dans
+`armes.db`/`equipement.db` (`packs/_add-item-weights.js`) — équivalents historiques/RPG
+usuels (ex. dague ~0.5kg, armure en plaque ~20kg, potion ~0.3kg), approximatif par
+construction et à corriger par l'utilisateur au cas par cas. Les armes d'`armes.db`
+partagent un nom de base ("Glaive (Bonne facture)") suivi d'un palier de qualité qui
+n'affecte pas le poids — la table est indexée sur le nom avant la parenthèse.
+
+**Poids total porté** : nouvelle boucle dans `prepareDerivedData()` (même famille que la
+boucle CA/compétences existante), somme `quantité × poids` sur tout l'inventaire (pas
+seulement l'équipé — on porte tout ce qu'on a sur soi). Bannière dans l'onglet Inventaire
+reprenant exactement le patron visuel de "Balance des traits" (mêmes classes CSS,
+`.trait-balance`/`.unbalanced`) — informatif uniquement, ne bloque jamais l'ajout d'un
+objet (décision utilisateur).
+
+**Effet de Mule** (`packs/_build-effet-mule.js`) : `MULTIPLY system.capacitePort ×2`,
+embarqué directement sur l'avantage (bonus sur le porteur, comme Colère de Zeus/Talent
+d'Héphaistos) + lien dans sa description — même patron que toutes les autres corrections
+d'effet cette session.
+
+**Propagation** : 4 nouvelles entrées `PACK_UPDATES` (créer l'effet Mule, l'embarquer sur
+l'avantage, appliquer les poids sur `armes`/`equipement` — compendiums et copies déjà
+possédées). Correspondance vérifiée programmatiquement entre les tables de poids dupliquées
+dans `pack-updates.mjs` et les fichiers source avant déploiement (0 écart).
+
+**Ceci clôt le chantier Effets** — plus aucun point ouvert connu dans `todo_foundry.txt`.
+
+**Fichiers** : `module/data-models/actor-character.mjs`,
+`module/data-models/items/item-weapon.mjs`, `item-equipment.mjs`,
+`templates/actor/character-sheet.hbs`, `templates/item/weapon-sheet.hbs`,
+`equipment-sheet.hbs`, `module/sheets/actor-sheet.mjs`, `lang/{fr,en}.json`,
+`packs/armes.db`, `packs/equipement.db`, `packs/avantages.db`, `packs/effets.db`,
+`packs/_add-item-weights.js` (nouveau), `packs/_build-effet-mule.js` (nouveau),
+`module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 8) — Correctif : descriptions des effets actifs pas reprises (v0.6.63 → v0.6.64)
 
 Retour utilisateur après test de la 0.6.63 : "ça marche, presque tout est bon" puis "les

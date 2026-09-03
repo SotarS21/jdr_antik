@@ -20,7 +20,11 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       sexe: new fields.StringField({ initial: "" }),
       historique: new fields.StringField({ initial: "" }),
       avantageTemporaire: new fields.BooleanField({ initial: false }),
-      deplacement: new fields.NumberField({ initial: 9, integer: true })
+      deplacement: new fields.NumberField({ initial: 9, integer: true }),
+      // Directly editable, like deplacement — never overwritten in prepareDerivedData(),
+      // so Mule's MULTIPLY ActiveEffect can double it the same way Athlète doubles
+      // deplacement. Default 70 (plausible human weight) rather than 0.
+      capacitePort: new fields.NumberField({ initial: 70, integer: true })
     };
 
     // --- PV ---
@@ -201,8 +205,13 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
     let bouclierBonus = 0;
     const equipmentSkillBonuses = {};
     const equippedSlots = {};
+    // Poids porté : la totalité de l'inventaire (pas seulement l'équipé), unité × quantité
+    // (les armes n'ont pas de quantity — toujours comptées comme 1 exemplaire).
+    let poidsPorteTotal = 0;
     for (const item of this.parent?.items ?? []) {
       if (item.type !== "equipment" && item.type !== "weapon") continue;
+      const qty = item.type === "equipment" ? (item.system.quantity ?? 1) : 1;
+      poidsPorteTotal += (item.system.poids ?? 0) * qty;
       if (item.system.slot && item.system.equipped) {
         equippedSlots[item.system.slot] = item;
       }
@@ -217,6 +226,7 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       }
     }
     this.equippedSlots = equippedSlots;
+    this.poidsPorteTotal = poidsPorteTotal;
 
     // --- Skill totals ---
     for (const [key, skillCfg] of Object.entries(ANTIQUE.skills)) {

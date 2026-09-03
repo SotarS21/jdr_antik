@@ -16,6 +16,7 @@ export class AntiqueWeapon extends foundry.abstract.TypeDataModel {
       slot: new fields.StringField({ initial: "", blank: true }),
       equipped: new fields.BooleanField({ initial: false }),
       price: new fields.StringField({ initial: "", blank: true }),
+      poids: new fields.NumberField({ initial: 0, min: 0 }),
       description: new fields.HTMLField({ initial: "" }),
       gmNotes: new fields.HTMLField({ initial: "" })
     };

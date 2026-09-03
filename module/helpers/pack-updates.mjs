@@ -148,6 +148,42 @@ export const PACK_UPDATES = [
       "Même correctif que pour les Avantages, côté Désavantages (5 désavantages ont un " +
       "effet actif).",
     apply: applyCleanupEffectFieldDesavantages
+  },
+  {
+    id: "0.6.65-create-effet-mule",
+    pack: "effets",
+    version: "0.6.65",
+    label: "Effet de Mule",
+    description: "Crée le document Effet manquant (×2 sur la capacité de port).",
+    apply: applyCreateEffetMule
+  },
+  {
+    id: "0.6.65-embed-effet-mule",
+    pack: "avantages",
+    version: "0.6.65",
+    label: "Effet de Mule lié + embarqué",
+    description:
+      "Ajoute le lien et l'effet embarqué (×2 sur la capacité de port) sur l'avantage Mule.",
+    apply: applyEmbedEffetMule
+  },
+  {
+    id: "0.6.65-item-weights-armes",
+    pack: "armes",
+    version: "0.6.65",
+    label: "Poids des armes/armures (estimation)",
+    description:
+      "Ajoute une estimation de poids (kg) aux armes et armures déjà déployées, pour la " +
+      "nouvelle capacité de port — approximatif, à corriger au cas par cas.",
+    apply: applyItemWeightsArmes
+  },
+  {
+    id: "0.6.65-item-weights-equipement",
+    pack: "equipement",
+    version: "0.6.65",
+    label: "Poids de l'équipement (estimation)",
+    description:
+      "Même correctif que pour les Armes, côté compendium Équipement.",
+    apply: applyItemWeightsEquipement
   }
 ];
 
@@ -754,6 +790,189 @@ async function applyCleanupEffectFieldAvantages() {
 
 async function applyCleanupEffectFieldDesavantages() {
   return applyCleanupEffectFieldForPack("desavantages", "disadvantage", EFFECT_DESCRIPTIONS_DESAVANTAGES);
+}
+
+/** Voir packs/_build-effet-mule.js, dont ces données/fonctions reprennent la logique. */
+const MULE_EFFET_ID = "eEft000000000079";
+const MULE_CHANGES = [{ key: "system.capacitePort", type: "multiply", value: "2" }];
+const MULE_EFFET_DESCRIPTION = "<p>Multiplie la capacité de port par deux, tant que cet effet est actif.</p>";
+
+async function applyCreateEffetMule() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  if (index.some(e => e._id === MULE_EFFET_ID)) return 0;
+
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments([{
+    _id: MULE_EFFET_ID,
+    name: "Mule",
+    img: "icons/svg/upgrade.svg",
+    type: "base",
+    system: { changes: MULE_CHANGES },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: MULE_EFFET_DESCRIPTION,
+    transfer: true
+  }], { pack: pack.collection, keepId: true });
+  if (wasLocked) await pack.configure({ locked: true });
+  return 1;
+}
+
+async function embedMuleEffect(doc) {
+  let changed = false;
+
+  const uuidLink = `@UUID[Compendium.antique.effets.${MULE_EFFET_ID}]{Mule}`;
+  if (!doc.system.description?.includes(uuidLink)) {
+    await doc.update({ "system.description": doc.system.description + `<p>${uuidLink}</p>` });
+    changed = true;
+  }
+
+  if (!doc.effects.size) {
+    await doc.createEmbeddedDocuments("ActiveEffect", [{
+      name: "Mule",
+      img: doc.img,
+      "system.changes": MULE_CHANGES,
+      disabled: false,
+      transfer: true
+    }]);
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyEmbedEffetMule() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.avantages");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Mule") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedMuleEffect(doc)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "advantage" || cleanName(item.name) !== "Mule") continue;
+      if (await embedMuleEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Voir packs/_add-item-weights.js, dont ces données/fonctions reprennent la logique. */
+const WEAPON_WEIGHTS = {
+  "Couteau": 0.3, "Dague": 0.5, "Glaive": 1.2, "Épée courte": 1.3, "Lance": 2.5,
+  "Hache": 1.8, "Javeline": 1.0, "Hache de lancer": 0.9, "Bolas": 0.7,
+  "Bouclier de lancer": 1.5, "Filet": 1.5, "Couteau de lancer": 0.3, "Chakram": 0.6,
+  "Serpe": 1.0, "Bâton": 1.5, "Gourdin": 1.2, "Marteau": 2.0, "Trident": 2.5,
+  "Cimeterre": 1.4, "Double hache": 3.0, "Marteau de guerre": 3.5, "Sarisse": 4.5,
+  "Arc court": 1.0, "Arc long": 1.5, "Fronde": 0.2, "Fouet": 0.5
+};
+
+const ARMOR_WEIGHTS = {
+  "Vêtement en Lin": 0.5, "Armure de cuir": 6, "Armure de cuir cloutée": 8,
+  "Armure en peau": 5, "Armure de cuivre": 12, "Armure en plaque": 20, "Maille": 11,
+  "Cuirasse": 9, "Bouclier de bois": 3, "Bouclier en cuir": 3.5, "Bouclier cuivre": 6,
+  "Bouclier renforcé": 7
+};
+
+const EQUIPEMENT_WEIGHTS = {
+  "Linothorax": 4, "Thorax de cuir": 6, "Cuirasse de bronze": 9,
+  "Armure d'hoplite complète": 22, "Casque corinthien": 1.2, "Casque chalcidien": 1,
+  "Cnémides de bronze": 1.5, "Aspis (bouclier rond)": 7, "Peltè (bouclier léger)": 3,
+  "Potion de soin": 0.3, "Potion de soin majeure": 0.4, "Nectar des dieux": 0.3,
+  "Ambroisie": 0.2, "Élixir de Force d'Héraclès": 0.3, "Huile de sagesse d'Athéna": 0.3,
+  "Philtre d'amour d'Aphrodite": 0.2, "Vin de Dionysos": 1.0, "Onguent d'Asclépios": 0.2,
+  "Eau du Styx": 0.3, "Larmes de Niobé": 0.1, "Sang de Méduse": 0.2,
+  "Poudre de sommeil d'Hypnos": 0.1, "Antidote universel": 0.3,
+  "Corde de chanvre (30m)": 3, "Torche": 0.5, "Rations de voyage": 1.0,
+  "Sacoche de guérisseur": 2.0, "Outils d'artisan": 3.0, "Outre à eau (2L)": 2.0,
+  "Tente de campagne": 8.0, "Breuvage du Colosse": 0.3, "Essence d'Acrobate": 0.2,
+  "Philtre de l'Ours": 0.3, "Liqueur du Vent": 0.3, "Elixir de l'Orateur": 0.3,
+  "Breuvage de l'Astre": 0.3, "Antidote Commun": 0.3, "Potion Simple": 0.3,
+  "Onguent de cicatrisation": 0.2, "Antidouleur": 0.2, "Onguent anti infection": 0.2,
+  "Tisane de langueur": 0.3, "Thé d'Asclépsios": 0.3, "Essence du Brisé": 0.2,
+  "Elixir du Frêle": 0.2, "Breuvage de la Tortue": 0.3, "Sève du Boiteux": 0.2,
+  "Sirop de Frêne": 0.2, "Morsure du Serpent": 0.2, "Plaie Ouverte": 0.2,
+  "Rations régénératrices de Déméter": 0.5
+};
+
+function baseWeaponName(name) {
+  const idx = name.indexOf(" (");
+  return idx === -1 ? name : name.slice(0, idx);
+}
+
+async function setItemWeight(doc, weightTable, lookupKey) {
+  const weight = weightTable[lookupKey];
+  if (weight === undefined || doc.system.poids === weight) return false;
+  await doc.update({ "system.poids": weight });
+  return true;
+}
+
+async function applyItemWeightsArmes() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.armes");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (indexEntry.type === "Item") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      const table = doc.type === "weapon" ? WEAPON_WEIGHTS : ARMOR_WEIGHTS;
+      const key = doc.type === "weapon" ? baseWeaponName(doc.name) : doc.name;
+      if (await setItemWeight(doc, table, key)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "weapon" && item.type !== "equipment") continue;
+      const table = item.type === "weapon" ? WEAPON_WEIGHTS : ARMOR_WEIGHTS;
+      const key = item.type === "weapon" ? baseWeaponName(item.name) : item.name;
+      if (key in table && (await setItemWeight(item, table, key))) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+async function applyItemWeightsEquipement() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.equipement");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setItemWeight(doc, EQUIPEMENT_WEIGHTS, doc.name)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "equipment" || !(item.name in EQUIPEMENT_WEIGHTS)) continue;
+      if (await setItemWeight(item, EQUIPEMENT_WEIGHTS, item.name)) fixed++;
+    }
+  }
+
+  return fixed;
 }
 
 const SETTING_KEY = "appliedPackFixes";

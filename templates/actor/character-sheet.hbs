@@ -125,6 +125,13 @@
             <span class="field-suffix">m</span>
           </div>
         </div>
+        <div class="field">
+          <label>{{localize "ANTIQUE.Identity.CapacitePort"}}</label>
+          <div class="input-with-suffix">
+            <input type="number" name="system.capacitePort" value="{{system.capacitePort}}" />
+            <span class="field-suffix">kg</span>
+          </div>
+        </div>
       </div>
       <div class="historique-section">
         <label>{{localize "ANTIQUE.Identity.Historique"}}</label>
@@ -337,6 +344,15 @@
         <input type="number" name="system.or" value="{{system.or}}" />
       </div>
 
+      {{!-- Carry Weight Banner --}}
+      <div class="trait-balance carry-weight-banner {{#if overCapacity}}unbalanced{{else}}balanced{{/if}}">
+        <span class="trait-balance-label">{{localize "ANTIQUE.Inventory.CarryWeight"}} :</span>
+        <span class="trait-balance-value">{{poidsPorteTotal}} / {{capacitePortTotal}} kg</span>
+        {{#if overCapacity}}
+          <span class="trait-balance-status"><i class="fas fa-exclamation-triangle"></i> {{localize "ANTIQUE.Inventory.OverCapacity"}}</span>
+        {{/if}}
+      </div>
+
       <div class="inventory-layout">
         <div class="equipment-section">
           <h2>{{localize "ANTIQUE.Inventory.Equipment"}}
@@ -350,6 +366,7 @@
                 <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
                 <th>{{localize "ANTIQUE.Equipment.Quantity"}}</th>
                 <th>{{localize "ANTIQUE.Equipment.Price"}}</th>
+                <th>{{localize "ANTIQUE.Equipment.Poids"}}</th>
                 <th>{{localize "ANTIQUE.Equipment.Equipped"}}</th>
                 <th></th>
               </tr>
@@ -375,6 +392,7 @@
                 {{/ifEquals}}
               </td>
               <td class="price-cell">{{#if equip.system.price}}{{equip.system.price}}{{else}}—{{/if}}</td>
+              <td class="poids-cell">{{#if equip.system.poids}}{{equip.system.poids}} kg{{else}}—{{/if}}</td>
               <td class="equip-btn-cell">
                 {{#if equip.hasSlot}}
                 <a class="item-equip-btn {{#if equip.system.equipped}}active{{/if}}" title="{{equip.slotLabel}}">
@@ -392,7 +410,7 @@
               </td>
             </tr>
             <tr class="equip-desc-row" data-item-id="{{equip.id}}" style="display:none;">
-              <td colspan="6">
+              <td colspan="7">
                 <div class="equip-desc-content">{{{equip.system.description}}}</div>
               </td>
             </tr>

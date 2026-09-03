@@ -33,6 +33,7 @@
   "ANTIQUE.Identity.Poid": "Weight",
   "ANTIQUE.Identity.Sexe": "Sex",
   "ANTIQUE.Identity.Deplacement": "Movement",
+  "ANTIQUE.Identity.CapacitePort": "Carry Capacity",
   "ANTIQUE.Identity.Historique": "Background",
 
   "ANTIQUE.PV": "HP",
@@ -159,6 +160,7 @@
   "ANTIQUE.Equipment.NoSkillBonus": "None",
   "ANTIQUE.Equipment.SkillBonus": "Skill Bonus",
   "ANTIQUE.Equipment.Price": "Price",
+  "ANTIQUE.Equipment.Poids": "Weight",
   "ANTIQUE.Equipment.Slot": "Slot",
   "ANTIQUE.Equipment.NoSlot": "None",
   "ANTIQUE.Equipment.Equipped": "Equipped",
@@ -224,6 +226,8 @@
   "ANTIQUE.Shop.OrderByPriceDesc": "Price (high to low)",
 
   "ANTIQUE.Inventory.EquippedGear": "Worn Equipment",
+  "ANTIQUE.Inventory.CarryWeight": "Carried Weight",
+  "ANTIQUE.Inventory.OverCapacity": "Over carry capacity",
 
   "ANTIQUE.Slot.Tete": "Head",
   "ANTIQUE.Slot.Torse": "Chest",
