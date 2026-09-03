@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.62": {
+    title: "Version 0.6.62 — Correctif urgent : contrôles d'idempotence cassés dans l'écran de mise à jour",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le correctif "Athlète" a planté à l'exécution ("Cannot read properties of undefined") — cause racine : <code>doc.effects.length</code> n'existe pas sur ce type d'objet Foundry (une collection de type Map, qui utilise <code>.size</code>), donc tous les contrôles "cet effet existe-t-il déjà ?" de cette session étaient silencieusement toujours faux. Corrigé partout dans l'écran de mise à jour des compendiums.</li>
+        <li>Cause probable des doublons d'effets signalés sur certains avantages : un correctif déjà appliqué (qui pensait à tort qu'aucun effet n'existait) pouvait en ajouter un second par-dessus l'effet déjà présent depuis le déploiement normal.</li>
+        <li>Réessaie le correctif "Athlète" dans l'écran de mise à jour des compendiums — il devrait maintenant fonctionner.</li>
+      </ul>`
+  },
   "0.6.61": {
     title: "Version 0.6.61 — Correctif : Athlète sans effet actif",
     html: `

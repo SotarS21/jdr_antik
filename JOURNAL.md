@@ -2,6 +2,44 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 6) — Correctif urgent : `.effects.length` cassé dans tout l'écran de mise à jour (v0.6.61 → v0.6.62)
+
+En testant le correctif Athlète (0.6.61), erreur en jeu : `TypeError: Cannot read properties
+of undefined (reading 'system')` dans `fixAthleteEffect`. Cause racine identifiée : la
+collection d'effets embarqués d'un Document Foundry (`doc.effects`) est une `Map`, dont la
+propriété de comptage est `.size`, pas `.length` — `doc.effects.length` vaut donc toujours
+`undefined`, silencieusement (`undefined === 0` et `undefined > 1` sont tous les deux
+`false`, aucune exception levée). **Tous les contrôles d'idempotence écrits cette session
+dans `module/helpers/pack-updates.mjs` reposaient sur ce pattern cassé** — 6 occurrences dans
+5 fonctions (`embedMissingEffect`, `linkAndEmbedBatch2`, `linkAndMaybeEmbedBatch3`,
+`embedAuraEffect`, `fixAthleteEffect`).
+
+**Conséquence probable** : les correctifs `0.6.57-embed-effets-batch2`,
+`0.6.58-link-embed-effets-batch3` et `0.6.59-embed-auras`, en pensant à tort qu'aucun effet
+n'existait déjà sur un avantage, ont pu en ajouter un second par-dessus celui déjà présent
+depuis un déploiement normal du compendium — explique vraisemblablement la nouvelle note de
+`todo_foundry.txt` : "dans certains avantages, il y a deux effets". Le crash sur Athlète
+avait une cause différente mais liée : `doc.effects.contents[0]` sur une collection
+réellement vide (copie possédée sans aucun effet) retourne `undefined`, jamais intercepté
+faute du bon test `=== 0`.
+
+**Correctif** : les 6 occurrences remplacées par `.effects.size` (propriété standard de
+`Map`, garantie fiable, aucune ambiguïté contrairement à `.length` qui n'est qu'une
+commodité ajoutée par Foundry sur certaines collections mais pas celle-ci). Le code
+pré-existant du système (hors cette session) n'était pas concerné : `item-sheet.mjs`
+construit d'abord un vrai tableau JS via une boucle `for...of` avant d'appeler `.length`
+dessus, jamais directement sur la collection Foundry.
+
+**Reste à faire** : l'étape 4 (nettoyage des doublons + suppression du champ "Effet" +
+alignement des descriptifs, voir `todo_foundry.txt` lignes 453-455) va justement inclure un
+balayage générique de dédoublonnage qui répare la casse laissée par ce bug, sur le
+compendium et toutes les copies déjà possédées.
+
+**Fichiers** : `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 5) — Correctif : Athlète sans effet actif (v0.6.60 → v0.6.61)
 
 Retour utilisateur en test : "Athléte n'a pas d'effet actif, il faut le corriger." Audit de

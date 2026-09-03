@@ -121,7 +121,7 @@ function cleanName(name) {
 async function embedMissingEffect(doc) {
   const name = cleanName(doc.name);
   if (!SIMPLE_NAMES.includes(name)) return false;
-  if (doc.effects.length) return false;
+  if (doc.effects.size) return false;
 
   await doc.createEmbeddedDocuments("ActiveEffect", [{
     name,
@@ -241,7 +241,7 @@ async function linkAndEmbedBatch2(doc, entry) {
     changed = true;
   }
 
-  if (!doc.effects.length) {
+  if (!doc.effects.size) {
     await doc.createEmbeddedDocuments("ActiveEffect", [{
       name: entry.name,
       img: entry.img,
@@ -352,7 +352,7 @@ async function linkAndMaybeEmbedBatch3(doc, entry) {
     changed = true;
   }
 
-  if (entry.selfEmbed && !doc.effects.length) {
+  if (entry.selfEmbed && !doc.effects.size) {
     await doc.createEmbeddedDocuments("ActiveEffect", [{
       name: entry.effetName,
       img: doc.img,
@@ -398,7 +398,7 @@ async function applyLinkEmbedEffetsBatch3() {
 
 /** Voir packs/_embed-auras-on-advantages.js, dont cette fonction reprend la logique. */
 async function embedAuraEffect(doc, entry) {
-  if (doc.effects.length) return false;
+  if (doc.effects.size) return false;
 
   await doc.createEmbeddedDocuments("ActiveEffect", [{
     name: entry.effetName,
@@ -484,7 +484,7 @@ const ATHLETE_CHANGES = [{ key: "system.deplacement", type: "multiply", value: "
  * fixes the changes if the surviving one is wrong. Idempotent, safe to rerun.
  */
 async function fixAthleteEffect(doc) {
-  if (doc.effects.length === 0) {
+  if (doc.effects.size === 0) {
     await doc.createEmbeddedDocuments("ActiveEffect", [{
       name: "Athléte",
       img: doc.img,
@@ -497,7 +497,7 @@ async function fixAthleteEffect(doc) {
 
   let changed = false;
 
-  if (doc.effects.length > 1) {
+  if (doc.effects.size > 1) {
     const [, ...extraIds] = doc.effects.map(e => e.id);
     await doc.deleteEmbeddedDocuments("ActiveEffect", extraIds);
     changed = true;
