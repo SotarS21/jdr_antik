@@ -1367,6 +1367,67 @@
   cursor: pointer;
 }
 
+/* Pack update picker (module/apps/pack-update-picker.mjs) */
+
+.antique.pack-update-picker {
+  padding: 8px 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.antique .pack-update-intro {
+  margin: 0 0 10px;
+  color: var(--antique-dark);
+}
+
+.antique .pack-update-group {
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+  margin: 0 0 10px;
+  padding: 6px 10px 10px;
+}
+
+.antique .pack-update-group legend {
+  padding: 0 6px;
+  font-weight: bold;
+  color: var(--antique-brown);
+}
+
+.antique .pack-update-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.antique .pack-update-entry input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--antique-gold);
+}
+
+.antique .pack-update-entry-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.antique .pack-update-entry-label {
+  font-weight: bold;
+  color: var(--antique-dark);
+}
+
+.antique .pack-update-entry-desc {
+  font-size: 0.85em;
+  color: var(--antique-dark-gold);
+}
+
+.antique .pack-update-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .antique .shop-toolbar {
   display: flex;
   align-items: center;

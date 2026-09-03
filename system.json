@@ -2,7 +2,7 @@
   "id": "antique",
   "title": "Antique",
   "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.55",
+  "version": "0.6.56",
   "compatibility": {
     "minimum": "12",
     "verified": "14"
@@ -143,6 +143,6 @@
     }
   ],
   "url": "https://github.com/SotarS21/jdr_antik",
-  "manifest": "",
-  "download": ""
+  "manifest": "https://github.com/SotarS21/jdr_antik/releases/latest/download/system.json",
+  "download": "https://github.com/SotarS21/jdr_antik/releases/latest/download/system.zip"
 }

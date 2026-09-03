@@ -27,6 +27,7 @@ import { AntiqueItemSheet } from "./module/sheets/item-sheet.mjs";
 import { registerCompendiumContextMenu } from "./module/helpers/random-tables.mjs";
 import { registerMigrationSettings, migrateWorld } from "./module/helpers/migration.mjs";
 import { registerVersionCheckSettings, checkSystemVersionUpdate } from "./module/helpers/version-check.mjs";
+import { registerPackUpdateSettings, checkPendingPackUpdates } from "./module/helpers/pack-updates.mjs";
 import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-browser.mjs";
 import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
 import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
@@ -93,6 +94,7 @@ Hooks.once("init", function () {
   // Register migration tracking settings
   registerMigrationSettings();
   registerVersionCheckSettings();
+  registerPackUpdateSettings();
 
   // Hook LISTENERS only — must be attached in "init", not "ready": the compendium sidebar's
   // context-menu construction is a one-time event that fires while the UI is first built,
@@ -187,6 +189,10 @@ Hooks.once("ready", async function () {
   // Detect a system version change since this world's last load and, if so,
   // let the GM choose whether to refresh the bundled compendiums (GM only).
   await checkSystemVersionUpdate();
+
+  // Independent of the version-change check above: offer any not-yet-applied
+  // per-compendium content fix, every GM login, until it's been applied (GM only).
+  await checkPendingPackUpdates();
 });
 
 /* -------------------------------------------- */

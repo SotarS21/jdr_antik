@@ -2,6 +2,59 @@
 
 ---
 
+## Session du 3 septembre 2026 — Écran de mise à jour des compendiums, par compendium (v0.6.55 → v0.6.56)
+
+Jusqu'ici, propager une correction de contenu de compendium vers un monde déjà déployé
+passait par un script `packs/_fix-*-live.js` que l'utilisateur devait se souvenir de coller
+dans une macro GM et d'exécuter — point de friction déjà pris en défaut la veille (la macro
+`_fix-embed-effets-simple-live.js` de la session du 2 septembre est restée en attente une
+journée entière avant confirmation). Demande explicite : un écran par compendium, à cocher,
+pour choisir quoi mettre à jour, avec une fusion sélective plutôt qu'un écrasement en bloc.
+
+**Découverte en cours de route** : `module/helpers/version-check.mjs` contenait déjà une
+ébauche quasi identique (dialog GM au login sur changement de version, choix "tout écraser /
+tout garder" des compendiums) — mais gardée par `if (!game.system.manifest) return;`, et
+`system.json` avait `"manifest": ""`. Ni les notes de version ni ce dialog ne s'étaient donc
+jamais réellement affichés avec le déploiement Copy-Item habituel. Recherche sur l'API Foundry
+(manifest/download de `system.json`, mécanisme `isNewerVersion` du bouton "Update" de Setup) :
+`game.system.manifest` est une simple métadonnée statique lue depuis `system.json`, jamais
+vérifiée par le réseau tant que l'admin ne clique pas explicitement sur "Update" — renseigner
+`manifest`/`download` avec de vraies URLs GitHub Releases (`.../releases/latest/download/...`,
+en s'appuyant sur `url` déjà présent) suffit donc à activer ce mécanisme existant pour les deux
+modes de déploiement (Copy-Item et une future vraie install Foundry), sans toucher au code.
+Aucune Release GitHub réelle n'est nécessaire pour l'usage local ; en poser un jour (avec
+`system.json`/`system.zip` attachés à chaque tag) reste un prérequis distinct pour qu'une
+install Foundry externe puisse réellement récupérer une mise à jour — hors scope ici.
+
+**Nouveau mécanisme** (`module/helpers/pack-updates.mjs`) : un registre `PACK_UPDATES`, un
+objet par correctif (id stable, `pack` cible, `label`/`description`, fonction `apply`) —
+remplace, pour les futures sessions, l'écriture d'un script `_fix-*-live.js` à coller en macro.
+Un réglage monde caché `appliedPackFixes` retient les `id` déjà appliqués ; `checkPendingPackUpdates()`
+(hook `ready`, GM uniquement) ouvre l'écran de choix s'il en reste — **indépendamment** de
+`checkSystemVersionUpdate()` et sans condition de changement de version : tant qu'un correctif
+n'a pas été explicitement appliqué, il revient à chaque connexion GM. Premier correctif migré
+dans ce registre : `0.6.55-embed-effets-simple` (reprend telle quelle la logique de
+`packs/_fix-embed-effets-simple-live.js`, déjà exécutée et confirmée la veille — l'ancien
+script reste en archive, non rétro-porté au-delà de cet exemple).
+
+**Écran GM** (`module/apps/pack-update-picker.mjs`, `ApplicationV2`, même patron que
+`module/apps/alchemy-shop.mjs`) : une `<fieldset>` par compendium concerné (regroupement via
+`update.pack`, label résolu depuis `game.system.packs`), une case à cocher par correctif
+(cochée par défaut), boutons "Appliquer la sélection" (n'exécute que les correctifs cochés,
+marque leur id comme appliqué) et "Plus tard" (ferme sans rien marquer — tout ce qui n'a pas
+été coché/appliqué reste en attente).
+
+Le dialog existant "tout écraser / tout garder" (`overwriteSystemCompendiums()`) est conservé
+tel quel, en parallèle — décision utilisateur : coexistence, pas remplacement. Comme il n'était
+jamais réellement actif jusqu'ici, cette session est aussi la première fois qu'il s'affichera
+réellement en jeu (au passage de v0.6.55 à v0.6.56) : à surveiller au prochain retour utilisateur.
+
+**Fichiers** : `system.json` (`manifest`, `download`, version), `module/helpers/pack-updates.mjs`
+(nouveau), `module/apps/pack-update-picker.mjs` (nouveau), `templates/apps/pack-update-picker.hbs`
+(nouveau), `antique.mjs`, `css/antique.css`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 2 septembre 2026 — Correctif : les Effets simples n'étaient pas attachés aux avantages (v0.6.54 → v0.6.55)
 
 Après déploiement de la session précédente, retour utilisateur : "les effets actifs existe bien, mais

@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.56": {
+    title: "Version 0.6.56 — Écran de mise à jour des compendiums, par compendium",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : à la connexion, si un correctif de contenu de compendium est en attente, une fenêtre liste maintenant les compendiums concernés avec une case à cocher par correctif — décoche ce que tu ne veux pas appliquer, le reste se fait automatiquement (créations de documents manquants + corrections de champs ciblées, jamais un écrasement en bloc de tes propres modifications). Ce qui reste décoché est reproposé à ta prochaine connexion, tant que ça n'a pas été traité.</li>
+        <li>Remplace, pour les futures corrections de contenu, le besoin de coller une macro <code>_fix-*-live.js</code> dans la console GM.</li>
+        <li>Ce dialog "notes de version" que tu es en train de lire fonctionne maintenant lui aussi avec le déploiement habituel (auparavant il ne s'affichait jamais, faute d'URL de manifeste renseignée dans <code>system.json</code>).</li>
+      </ul>`
+  },
   "0.6.55": {
     title: "Version 0.6.55 — Les 24 nouveaux Effets sont maintenant attachés à leur avantage",
     html: `

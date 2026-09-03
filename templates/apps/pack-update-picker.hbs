@@ -1,0 +1,29 @@
+<div class="antique sheet pack-update-picker">
+
+  <p class="pack-update-intro">
+    Des corrections de contenu sont disponibles pour ces compendiums, déjà déployés dans ce
+    monde. Décoche ce que tu ne veux pas appliquer maintenant — les correctifs laissés de côté
+    resteront proposés à ta prochaine connexion.
+  </p>
+
+  {{#each groups as |group|}}
+  <fieldset class="pack-update-group">
+    <legend>{{group.label}}</legend>
+    {{#each group.entries as |entry|}}
+    <label class="pack-update-entry">
+      <input type="checkbox" data-id="{{entry.id}}" checked>
+      <span class="pack-update-entry-text">
+        <span class="pack-update-entry-label">{{entry.label}}</span>
+        <span class="pack-update-entry-desc">{{entry.description}}</span>
+      </span>
+    </label>
+    {{/each}}
+  </fieldset>
+  {{/each}}
+
+  <footer class="pack-update-footer">
+    <button type="button" class="pack-update-apply"><i class="fas fa-check"></i> Appliquer la sélection</button>
+    <button type="button" class="pack-update-later"><i class="fas fa-clock"></i> Plus tard</button>
+  </footer>
+
+</div>
