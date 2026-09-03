@@ -2,6 +2,51 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite) — 32 nouveaux Effets simples, étape 1/3 des avantages -2/-3/-5 (v0.6.56 → v0.6.57)
+
+Reprise du chantier Effets : l'utilisateur a étoffé `todo_foundry.txt` avec les avantages
+divins (paliers -2/-3/-5) qui n'étaient pas dans le périmètre de la vague de septembre
+(celle-ci ne couvrait que le palier -1). Audit avant construction : sur les 94 avantages du
+compendium, 52 avaient `effects: 0` (aucun effet embarqué), dont 3 légitimement exemptés
+(Mule reporté, Cuisine de Déméter et Connaissance d'Héphaistos qui ont leur propre mécanique
+distincte d'un effet auto-attaché). Décision utilisateur : traiter les 49 restants par étapes,
+en commençant par les effets purement narratifs.
+
+**Étape 1 : 32 effets narratifs simples** (`packs/_build-effets-batch2.js`, même patron que
+`packs/_build-effets-simple.js` de la première vague — Orientation, Porte bouclier, Don des
+langues, Volonté de fer, Maitre d'Arme, Maitre des forges, Faveur +, Etincelle de Zeus,
+Vision d'Héra, Voix d'Athéna, Moisson de Déméter, Talent de Dionysos, Flamme d'Hestia,
+Lanterne d'Hécate, Dieu de l'esquive, Dieu du stade, Dieu de la guerre, Rageux, Faveur ++,
+Sang de Zeus, Paume de Poséidon, Esprit d'Athéna, Armure d'Arès, Blé de Déméter, Oeil
+d'Apollon, Compagnon d'Artèmis, Yeux d'Héphaistos, Murmure d'Aphrodite, Message d'Hermes,
+Amphore de Dionysos, Bucher d'Héstia, Lune d'Hécate). **Différence avec la première vague** :
+cette fois le lien de description ET l'effet embarqué sont créés dans le même passage — la
+première vague avait dû faire un correctif de suivi séparé (`_embed-effets-simple-on-
+advantages.js`, session précédente) parce que seul le lien avait été posé au départ ; leçon
+retenue, plus la peine de refaire cette erreur.
+
+**Propagation** : contrairement à toutes les vagues précédentes, pas de nouveau script
+`packs/_fix-*-live.js` — les deux correctifs (créer les 32 documents dans `effets`, lier+
+embarquer sur les 32 avantages dans `avantages`) sont enregistrés comme entrées
+`0.6.57-create-effets-batch2` et `0.6.57-embed-effets-batch2` dans le registre
+`module/helpers/pack-updates.mjs` mis en place plus tôt cette session — premier usage réel
+du nouvel écran GM (`module/apps/pack-update-picker.mjs`) pour autre chose que la migration
+de l'exemple `0.6.55`.
+
+**Reste à faire** (étapes suivantes, pas dans cette session) :
+- Étape 2 : avantages avec un vrai effet mécanique — 16 "Aura d'X" (`ADD
+  system.abilities.<carac>.value +2`, champ vérifié non écrasé par `prepareDerivedData()`),
+  Mire d'Artèmis (`ADD system.attackBonuses.armeADistance.damageBonus +3`, même famille que
+  Visée d'Apollon), Talent d'Héphaistos (`ADD system.attackBonuses.armeBlanche.damageBonus
+  +3`, identique à Colère de Zeus), Pieds d'Hermes (`ADD system.deplacement +6`).
+- Étape 3 : Faveur de la Dame — hors gabarit ActiveEffect, demande un compteur décrémentable
+  (3→0) avec bouton d'usage/erreur et un bouton de reset, à cadrer séparément.
+
+**Fichiers** : `packs/effets.db`, `packs/avantages.db`, `packs/_build-effets-batch2.js`
+(nouveau), `module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 — Écran de mise à jour des compendiums, par compendium (v0.6.55 → v0.6.56)
 
 Jusqu'ici, propager une correction de contenu de compendium vers un monde déjà déployé

@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.57": {
+    title: "Version 0.6.57 — 32 nouveaux Effets simples (étape 1/3 des avantages -2/-3/-5)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : 32 nouveaux Effets narratifs dans le compendium Effets, un par avantage restant des paliers -2/-3/-5 qui n'en avait pas encore (Orientation, Etincelle de Zeus, Dieu de l'esquive, Faveur ++, Bucher d'Héstia, etc.) — chacun lié depuis la description de son avantage et directement embarqué dans son onglet "Effets", comme pour la première vague.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour des compendiums (compendiums Effets et Avantages).</li>
+        <li>Reste à traiter dans les prochaines versions : les avantages nécessitant un vrai effet mécanique (les 16 Auras, Mire d'Artèmis, Talent d'Héphaistos, Pieds d'Hermes) puis Faveur de la Dame (compteur à part).</li>
+      </ul>`
+  },
   "0.6.56": {
     title: "Version 0.6.56 — Écran de mise à jour des compendiums, par compendium",
     html: `
