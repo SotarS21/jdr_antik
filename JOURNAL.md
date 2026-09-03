@@ -2,6 +2,30 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 10) — Correctif : compendium verrouillé sur les correctifs de poids (v0.6.65 → v0.6.66)
+
+Erreur en jeu en testant la 0.6.65 : `You may not update documents in the locked compendium
+"antique.equipement"`, dans `applyItemWeightsEquipement`. Le code suivait pourtant le patron
+déjà utilisé (avec succès) dans toutes les fonctions précédentes de `pack-updates.mjs` :
+lire `pack.locked`, ne déverrouiller que si vrai, reverrouiller à la fin dans le même état.
+
+**Cause** : la lecture de `pack.locked` n'est pas fiable pour décider s'il faut déverrouiller
+— pour ce compendium précis, elle a manifestement renvoyé une valeur fausse (falsy),
+sautant l'appel `pack.configure({ locked: false })`, alors que le compendium était bel et
+bien verrouillé. Comme cette échec se produit avant toute écriture, le correctif n'a jamais
+été marqué comme appliqué (l'exception est interceptée par le picker) — pas besoin d'une
+nouvelle entrée, corriger la fonction suffit à ce qu'elle soit reproposée telle quelle.
+
+**Correctif** : les 13 occurrences du patron dans `pack-updates.mjs` rendues
+inconditionnelles — `pack.configure({ locked: false })`/`{ locked: true }` sont appelés
+systématiquement, sans dépendre de la lecture de `pack.locked` (verrouiller/déverrouiller
+un compendium déjà dans cet état est un no-op sans risque).
+
+**Fichiers** : `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 9) — Capacité de port (kg) + Mule (v0.6.64 → v0.6.65)
 
 Dernier point ouvert du chantier Effets (`todo_foundry.txt` lignes 353-354, mis de côté en

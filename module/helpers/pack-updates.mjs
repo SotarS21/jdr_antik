@@ -221,15 +221,14 @@ async function applyEmbedEffetsSimple() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const entry of index) {
       if (entry.type !== "advantage" || !SIMPLE_NAMES.includes(cleanName(entry.name))) continue;
       const doc = await pack.getDocument(entry._id);
       if (await embedMissingEffect(doc)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -307,10 +306,9 @@ async function applyCreateEffetsBatch2() {
   const missing = EFFETS_BATCH2.filter(e => !existingIds.has(e.id)).map(effetDocData);
   if (!missing.length) return 0;
 
-  const wasLocked = pack.locked;
-  if (wasLocked) await pack.configure({ locked: false });
+  await pack.configure({ locked: false });
   await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
-  if (wasLocked) await pack.configure({ locked: true });
+  await pack.configure({ locked: true });
   return missing.length;
 }
 
@@ -343,8 +341,7 @@ async function applyEmbedEffetsBatch2() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const entry = byName.get(cleanName(indexEntry.name));
@@ -352,7 +349,7 @@ async function applyEmbedEffetsBatch2() {
       const doc = await pack.getDocument(indexEntry._id);
       if (await linkAndEmbedBatch2(doc, entry)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -418,10 +415,9 @@ async function applyCreateEffetsBatch3() {
   const missing = EFFETS_BATCH3.filter(e => !existingIds.has(e.id)).map(effetDocDataBatch3);
   if (!missing.length) return 0;
 
-  const wasLocked = pack.locked;
-  if (wasLocked) await pack.configure({ locked: false });
+  await pack.configure({ locked: false });
   await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
-  if (wasLocked) await pack.configure({ locked: true });
+  await pack.configure({ locked: true });
   return missing.length;
 }
 
@@ -454,8 +450,7 @@ async function applyLinkEmbedEffetsBatch3() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const entry = byName.get(cleanName(indexEntry.name));
@@ -463,7 +458,7 @@ async function applyLinkEmbedEffetsBatch3() {
       const doc = await pack.getDocument(indexEntry._id);
       if (await linkAndMaybeEmbedBatch3(doc, entry)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -499,8 +494,7 @@ async function applyEmbedAuras() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const entry = byName.get(cleanName(indexEntry.name));
@@ -508,7 +502,7 @@ async function applyEmbedAuras() {
       const doc = await pack.getDocument(indexEntry._id);
       if (await embedAuraEffect(doc, entry)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -537,15 +531,14 @@ async function applySetFaveurDeLaDameLimitation() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       if (cleanName(indexEntry.name) !== "Faveur de la Dame") continue;
       const doc = await pack.getDocument(indexEntry._id);
       if (await setFaveurDeLaDameLimitation(doc)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -600,15 +593,14 @@ async function applyFixAthleteEffect() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       if (cleanName(indexEntry.name) !== "Athléte") continue;
       const doc = await pack.getDocument(indexEntry._id);
       if (await fixAthleteEffect(doc)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -764,14 +756,13 @@ async function applyCleanupEffectFieldForPack(packName, itemType, descriptions) 
 
   const pack = game.packs.get(`antique.${packName}`);
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const doc = await pack.getDocument(indexEntry._id);
       if (await cleanupEffectField(doc, descriptions)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -804,8 +795,7 @@ async function applyCreateEffetMule() {
   const index = await pack.getIndex();
   if (index.some(e => e._id === MULE_EFFET_ID)) return 0;
 
-  const wasLocked = pack.locked;
-  if (wasLocked) await pack.configure({ locked: false });
+  await pack.configure({ locked: false });
   await pack.documentClass.createDocuments([{
     _id: MULE_EFFET_ID,
     name: "Mule",
@@ -817,7 +807,7 @@ async function applyCreateEffetMule() {
     description: MULE_EFFET_DESCRIPTION,
     transfer: true
   }], { pack: pack.collection, keepId: true });
-  if (wasLocked) await pack.configure({ locked: true });
+  await pack.configure({ locked: true });
   return 1;
 }
 
@@ -849,15 +839,14 @@ async function applyEmbedEffetMule() {
 
   const pack = game.packs.get("antique.avantages");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       if (cleanName(indexEntry.name) !== "Mule") continue;
       const doc = await pack.getDocument(indexEntry._id);
       if (await embedMuleEffect(doc)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -925,8 +914,7 @@ async function applyItemWeightsArmes() {
 
   const pack = game.packs.get("antique.armes");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       if (indexEntry.type === "Item") continue;
@@ -935,7 +923,7 @@ async function applyItemWeightsArmes() {
       const key = doc.type === "weapon" ? baseWeaponName(doc.name) : doc.name;
       if (await setItemWeight(doc, table, key)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {
@@ -955,14 +943,13 @@ async function applyItemWeightsEquipement() {
 
   const pack = game.packs.get("antique.equipement");
   if (pack) {
-    const wasLocked = pack.locked;
-    if (wasLocked) await pack.configure({ locked: false });
+    await pack.configure({ locked: false });
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const doc = await pack.getDocument(indexEntry._id);
       if (await setItemWeight(doc, EQUIPEMENT_WEIGHTS, doc.name)) fixed++;
     }
-    if (wasLocked) await pack.configure({ locked: true });
+    await pack.configure({ locked: true });
   }
 
   for (const actor of game.actors ?? []) {

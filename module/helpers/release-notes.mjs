@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.66": {
+    title: "Version 0.6.66 — Correctif : \"compendium verrouillé\" sur les correctifs de poids",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le correctif "Poids de l'équipement" plantait avec "You may not update documents in the locked compendium" — le code lisait l'état verrouillé/déverrouillé du compendium avant de tenter le déverrouillage, et cette lecture n'était pas fiable pour tous les compendiums. Le dé/reverrouillage est maintenant systématique, sans dépendre de cette lecture.</li>
+        <li>Réessaie les correctifs de poids (Armes, Équipement) dans l'écran de mise à jour des compendiums.</li>
+      </ul>`
+  },
   "0.6.65": {
     title: "Version 0.6.65 — Capacité de port (kg) + Mule",
     html: `
