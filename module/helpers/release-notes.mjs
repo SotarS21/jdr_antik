@@ -5,6 +5,16 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.58": {
+    title: "Version 0.6.58 — 18 nouveaux Effets mécaniques (étape 2/3 des avantages -2/-3/-5)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : les 15 avantages "Aura d'X" ont maintenant un vrai effet — un bonus de +2 sur une caractéristique — lié depuis leur description sous le nom "Allié de l'aura d'X". <strong>À glisser sur un allié</strong>, pas sur soi-même : ce n'est pas un effet embarqué sur l'avantage, la description dit "renforce les jets de l'équipe".</li>
+        <li><strong>Ajouté</strong> : Mire d'Artèmis (+3 dégâts armes à distance), Talent d'Héphaistos (+3 dégâts corps à corps) et Pieds d'Hermes (+6m de déplacement) ont maintenant un effet mécanique réel, embarqué directement sur l'avantage (bonus sur le porteur lui-même, comme Colère de Zeus/Visée d'Apollon).</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour des compendiums.</li>
+        <li>Reste à traiter : Faveur de la Dame (compteur à part, hors gabarit ActiveEffect).</li>
+      </ul>`
+  },
   "0.6.57": {
     title: "Version 0.6.57 — 32 nouveaux Effets simples (étape 1/3 des avantages -2/-3/-5)",
     html: `

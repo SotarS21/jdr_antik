@@ -2,6 +2,48 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 2) — 18 nouveaux Effets mécaniques, étape 2/3 des avantages -2/-3/-5 (v0.6.57 → v0.6.58)
+
+Suite de l'étape 1 (effets narratifs) : les avantages restants avaient tous une vraie
+mécanique demandée dans `todo_foundry.txt`, faisable directement avec le schéma actuel.
+
+**Découverte en construisant** : les 15 "Aura d'X" ne sont **pas** des effets à
+auto-appliquer au porteur — la description déjà présente sur chaque avantage dit "Renforce
+les jets de &lt;carac&gt; de l'équipe", et le nom demandé par le todo est "Allié de l'aura
+d'X" (pas "Aura d'X"), donc un effet à glisser sur un allié. Traité comme Connaissance
+d'Héphaistos (31 août) : document Effet autonome avec un vrai `changes`, lié depuis la
+description de l'avantage, mais **sans** effet embarqué sur l'avantage lui-même — à
+distinguer clairement des 3 autres avantages de cette étape, qui eux sont des bonus sur le
+porteur (embarqués, comme Colère de Zeus/Visée d'Apollon).
+
+**15 Auras** (`ADD system.abilities.<carac>.value +2`) : mapping caractéristique par dieu
+repris à l'identique de `todo_foundry.txt` ET de la description déjà présente sur chaque
+avantage (les deux sources concordaient) — Zeus/Athéna/Arès/Héphaïstos → Force, Héra/
+Apollon/Hécate → Astuce, Poséidon/Demeter/Hadès → Constitution, Artèmis/Hermes →
+Dextérité, Aphrodite/Dionysos/Hestia → Charisme. Vérifié avant d'écrire :
+`system.abilities.<carac>.value` n'est jamais écrasé par `prepareDerivedData()` (seul
+`.mod` en est dérivé, à partir de `.value`) — contrairement au piège `saves.base` d'une
+session précédente, un ADD dessus persiste normalement.
+
+**3 bonus sur le porteur** : Mire d'Artèmis (`ADD system.attackBonuses.armeADistance.
+damageBonus +3`), Talent d'Héphaistos (`ADD system.attackBonuses.armeBlanche.damageBonus
++3`, littéralement le même effet que Colère de Zeus déjà en place), Pieds d'Hermes (`ADD
+system.deplacement +6` — la description de l'avantage dit "+4 cases", et la grille du
+système fait 1,5m/case, donc 4 × 1,5 = 6m, cohérent avec le todo qui demandait "+6m").
+
+**Propagation** : deux nouvelles entrées dans le registre `PACK_UPDATES`
+(`0.6.58-create-effets-batch3`, `0.6.58-link-embed-effets-batch3`), même mécanisme que
+l'étape 1, pas de macro à coller.
+
+**Reste à faire** : étape 3, Faveur de la Dame — hors gabarit ActiveEffect (compteur
+décrémentable 3→0 avec bouton d'usage/erreur + bouton de reset), à cadrer séparément.
+
+**Fichiers** : `packs/effets.db`, `packs/avantages.db`,
+`packs/_build-effets-batch3-mechaniques.js` (nouveau), `module/helpers/pack-updates.mjs`,
+`system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite) — 32 nouveaux Effets simples, étape 1/3 des avantages -2/-3/-5 (v0.6.56 → v0.6.57)
 
 Reprise du chantier Effets : l'utilisateur a étoffé `todo_foundry.txt` avec les avantages
