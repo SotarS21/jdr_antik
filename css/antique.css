@@ -1988,6 +1988,17 @@
   color: var(--antique-brown);
 }
 
+.antique .trait-charges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.antique .trait-charges button {
+  font-size: 0.85em;
+  padding: 2px 8px;
+}
+
 /* ---- Equipment List (Inventory) ---- */
 .antique .equip-img-col {
   width: 30px;

@@ -22,6 +22,18 @@
         <label>{{localize "ANTIQUE.Traits.Effect"}}</label>
         <input type="text" name="system.effect" value="{{system.effect}}" />
       </div>
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Traits.Limitation"}}</label>
+        <div class="limitation-fields">
+          <input type="number" name="system.limitation" value="{{system.limitation}}" min="0" />
+          {{#if (gt system.limitation 0)}}
+          <span class="limitation-counter">{{system.limitationValue}} / {{system.limitation}}</span>
+          {{else}}
+          <span class="limitation-counter">{{localize "ANTIQUE.Spell.Unlimited"}}</span>
+          {{/if}}
+        </div>
+        <span class="cout-hint">{{localize "ANTIQUE.Traits.LimitationHint"}}</span>
+      </div>
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
         {{richEditor "system.description" system.description editable=isEditable}}

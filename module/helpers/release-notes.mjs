@@ -5,6 +5,16 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.60": {
+    title: "Version 0.6.60 — Faveur de la Dame : compteur d'utilisations (étape 3/3)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau champ générique "Utilisations limitées" sur les avantages (onglet Description de la fiche d'objet) — un compteur apparaît sur la fiche du personnage avec un bouton "Utiliser" (décrémente, prévient quand il n'en reste plus) et "Réinitialiser" (remet au maximum).</li>
+        <li>Faveur de la Dame en profite la première : 3 utilisations, rechargeables via "Réinitialiser".</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour des compendiums.</li>
+        <li>Ceci clôt le chantier des avantages -2/-3/-5 de <code>todo_foundry.txt</code>.</li>
+      </ul>`
+  },
   "0.6.59": {
     title: "Version 0.6.59 — Les 15 Auras s'appliquent aussi au porteur",
     html: `

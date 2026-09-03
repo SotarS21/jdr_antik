@@ -2,6 +2,49 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 4) — Faveur de la Dame : compteur d'utilisations, étape 3/3 (v0.6.59 → v0.6.60)
+
+Dernière étape du complément au chantier Effets : Faveur de la Dame ("cherche un moyen de
+faire un bouton actif décrémenteur, commençant à 3... un autre bouton 'Rituel à la dame'
+permet de remettre à 3") ne rentre pas dans le gabarit ActiveEffect — c'est un compteur
+d'utilisations manuel, pas un modificateur de statistique.
+
+**Découverte utile en cherchant une base à réutiliser** : les Sorts ont déjà exactement ce
+mécanisme — `system.limitation`/`system.limitationValue` sur `item-spell.mjs`, avec
+compteur + avertissement "plus d'utilisations" dans `castSpell()`
+(`module/documents/item.mjs`). Plutôt que d'inventer un nouveau concept, les deux mêmes
+champs sont ajoutés à `item-advantage.mjs` — générique, réutilisable par n'importe quel
+futur avantage à charges limitées, pas seulement Faveur de la Dame.
+
+**Différence avec les Sorts** : la limitation d'un Sort se réinitialise automatiquement au
+repos long (`actor.mjs`, `longRest()`). Faveur de la Dame demande une réinitialisation
+manuelle ("Rituel à la dame" est une action de jeu de rôle, pas du repos) — deux nouvelles
+méthodes génériques sur `AntiqueItem` (`useCharge()`/`resetCharges()`), pas de branchement
+sur le repos long.
+
+**UI** : sur la fiche de personnage, dans la ligne de détail (dépliée) de chaque avantage,
+un compteur `X / Y` + boutons "Utiliser"/"Réinitialiser" apparaissent seulement si
+`system.limitation > 0` — aucun changement visuel pour les 111 autres avantages du
+compendium. Champ également exposé dans l'onglet Description de la fiche d'objet
+(mêmes classes CSS `.limitation-fields`/`.limitation-counter` que les Sorts).
+
+**Faveur de la Dame** configurée à `limitation: 3` dans `packs/avantages.db`. Propagation :
+`0.6.60-faveur-de-la-dame-limitation` dans `PACK_UPDATES`, avec une garde idempotente qui
+ne réinitialise jamais un compteur déjà entamé par un joueur (ne patche que si
+`limitation` n'est pas encore à 3).
+
+**Ceci clôt les 3 étapes** du complément au chantier Effets (todo_foundry.txt étoffé le
+3 septembre) : 32 effets narratifs + 18 effets mécaniques (dont correction des 15 Auras) +
+ce compteur. Tout le contenu -2/-3/-5 des avantages est désormais traité.
+
+**Fichiers** : `module/data-models/items/item-advantage.mjs`,
+`templates/item/advantage-sheet.hbs`, `templates/actor/character-sheet.hbs`,
+`module/sheets/actor-sheet.mjs`, `module/documents/item.mjs`, `css/antique.css`,
+`lang/{fr,en}.json`, `packs/avantages.db`, `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 3) — Les 15 Auras s'appliquent aussi au porteur (v0.6.58 → v0.6.59)
 
 Retour utilisateur sur l'étape 2 : "si je reviens sur ce que j'ai dit, les effets actifs

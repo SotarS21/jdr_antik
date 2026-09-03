@@ -469,6 +469,13 @@
                   {{#if adv.hasEffects}}
                   <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{adv.effectsSummary}}</div>
                   {{/if}}
+                  {{#if (gt adv.system.limitation 0)}}
+                  <div class="trait-charges" data-item-id="{{adv.id}}">
+                    <span class="limitation-counter">{{adv.system.limitationValue}} / {{adv.system.limitation}}</span>
+                    <button type="button" class="advantage-use-charge"><i class="fas fa-dice"></i> {{localize "ANTIQUE.Traits.UseCharge"}}</button>
+                    <button type="button" class="advantage-reset-charges"><i class="fas fa-rotate"></i> {{localize "ANTIQUE.Traits.ResetCharges"}}</button>
+                  </div>
+                  {{/if}}
                 </div>
               </td>
             </tr>

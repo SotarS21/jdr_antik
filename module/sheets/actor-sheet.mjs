@@ -694,6 +694,22 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     });
 
+    this.element.querySelectorAll(".advantage-use-charge").forEach(el => {
+      el.addEventListener("click", ev => {
+        const itemId = ev.currentTarget.closest(".trait-charges").dataset.itemId;
+        const item = this.actor.items.get(itemId);
+        if (item) item.useCharge();
+      });
+    });
+
+    this.element.querySelectorAll(".advantage-reset-charges").forEach(el => {
+      el.addEventListener("click", ev => {
+        const itemId = ev.currentTarget.closest(".trait-charges").dataset.itemId;
+        const item = this.actor.items.get(itemId);
+        if (item) item.resetCharges();
+      });
+    });
+
     // Generic "generate an item into chat" link — used in trait descriptions (ex.
     // Cuisine de Déméter) so anyone reading the chat message can drag the resulting
     // compendium item link onto their own sheet (native Foundry item-link behavior,

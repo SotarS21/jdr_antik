@@ -438,4 +438,28 @@ export class AntiqueItem extends Item {
       });
     }
   }
+
+  /**
+   * Decrement one charge of this item's limited-use counter (system.limitation/
+   * limitationValue — same fields as a spell's "Limitation", see item-spell.mjs). Used
+   * for advantages like Faveur de la Dame that grant a manually-tracked resource rather
+   * than a passive ActiveEffect. No-op with a warning if no charge is left.
+   */
+  async useCharge() {
+    if (this.system.limitationValue <= 0) {
+      ui.notifications.warn(`${this.name} : ${game.i18n.localize("ANTIQUE.Traits.NoChargesLeft")}`);
+      return;
+    }
+    await this.update({ "system.limitationValue": this.system.limitationValue - 1 });
+    refreshSheet(this.actor);
+    refreshSheet(this);
+  }
+
+  /** Reset this item's limited-use counter back to its maximum. */
+  async resetCharges() {
+    await this.update({ "system.limitationValue": this.system.limitation });
+    refreshSheet(this.actor);
+    refreshSheet(this);
+    ui.notifications.info(`${this.name} : ${this.system.limitation} ${game.i18n.localize("ANTIQUE.Traits.ChargesReset")}`);
+  }
 }

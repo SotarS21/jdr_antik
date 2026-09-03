@@ -77,6 +77,17 @@ export const PACK_UPDATES = [
       "— ajoute l'effet embarqué manquant dans leur onglet \"Effets\" (le lien de " +
       "description reste inchangé).",
     apply: applyEmbedAuras
+  },
+  {
+    id: "0.6.60-faveur-de-la-dame-limitation",
+    pack: "avantages",
+    version: "0.6.60",
+    label: "Faveur de la Dame — compteur d'utilisations (3)",
+    description:
+      "Configure le nouveau compteur d'utilisations limitées (3, rechargeable via le " +
+      "bouton \"Réinitialiser\" sur la fiche du personnage) sur l'avantage Faveur de la " +
+      "Dame — pas un ActiveEffect, une simple correction de champ.",
+    apply: applySetFaveurDeLaDameLimitation
   }
 ];
 
@@ -410,6 +421,41 @@ async function applyEmbedAuras() {
       const entry = byName.get(cleanName(item.name));
       if (!entry) continue;
       if (await embedAuraEffect(item, entry)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Voir packs/avantages.db (champ Faveur de la Dame) — simple correction de champ, pas
+ *  d'ActiveEffect impliqué. Idempotent : ne touche pas une copie déjà configurée ou dont
+ *  le compteur a déjà été entamé par le joueur (ne réinitialise jamais une valeur en cours). */
+async function setFaveurDeLaDameLimitation(doc) {
+  if (doc.system.limitation === 3) return false;
+  await doc.update({ "system.limitation": 3, "system.limitationValue": 3 });
+  return true;
+}
+
+async function applySetFaveurDeLaDameLimitation() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.avantages");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Faveur de la Dame") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setFaveurDeLaDameLimitation(doc)) fixed++;
+    }
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "advantage" || cleanName(item.name) !== "Faveur de la Dame") continue;
+      if (await setFaveurDeLaDameLimitation(item)) fixed++;
     }
   }
 
