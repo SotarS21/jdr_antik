@@ -184,6 +184,29 @@ export const PACK_UPDATES = [
     description:
       "Même correctif que pour les Armes, côté compendium Équipement.",
     apply: applyItemWeightsEquipement
+  },
+  {
+    id: "0.6.67-create-effets-desavantages",
+    pack: "effets",
+    version: "0.6.67",
+    label: "90 nouveaux effets pour les désavantages",
+    description:
+      "Crée les 90 documents Effet manquants pour les désavantages (Phobie, les Dévotion, " +
+      "etc.) — à appliquer avant ou avec le correctif \"Désavantages\" ci-dessous.",
+    apply: applyCreateEffetsDesavantages
+  },
+  {
+    id: "0.6.67-embed-effets-desavantages",
+    pack: "desavantages",
+    version: "0.6.67",
+    label: "90 effets liés + embarqués sur les désavantages",
+    description:
+      "Ajoute le lien vers l'effet et l'effet embarqué (onglet \"Effets\") sur les 90 " +
+      "désavantages qui n'en avaient pas encore. Narratif pour la plupart (la majorité " +
+      "des désavantages décrivent une conséquence conditionnelle/de jeu de rôle, pas un " +
+      "malus chiffré permanent) ; 3 cas ont un vrai malus de compétence (Petite nature, " +
+      "Enfant, Introverti).",
+    apply: applyEmbedEffetsDesavantages
   }
 ];
 
@@ -956,6 +979,193 @@ async function applyItemWeightsEquipement() {
     for (const item of actor.items) {
       if (item.type !== "equipment" || !(item.name in EQUIPEMENT_WEIGHTS)) continue;
       if (await setItemWeight(item, EQUIPEMENT_WEIGHTS, item.name)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+const EFFETS_DESAVANTAGES = [
+  { id: "eEft000000000080", name: "Phobie", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Petite peur qui offre un malus de -1 si echec de volonté</p>" },
+  { id: "eEft000000000081", name: "Dépendance légal", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une dépendance, vous devez vous y adonnez 1/2j sinon malus de -1/j</p>" },
+  { id: "eEft000000000082", name: "Marmotte", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez besoin de dormir plus que les autres, un sommeil court n'est qu'a moitie efficace</p>" },
+  { id: "eEft000000000083", name: "Cauchemards", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous faites des cauchemards, dormir vous fait peur. 1/3 chance de mauvais repos</p>" },
+  { id: "eEft000000000084", name: "Coeur sensible", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous ne pouvez laisser une personne plus faibre souffrir</p>" },
+  { id: "eEft000000000085", name: "Sosie", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Quelqu'un qui vous ressemblent à tendance à vous attiré des ennuis</p>" },
+  { id: "eEft000000000086", name: "Dette", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une dette envers un lambda (au choix)</p>" },
+  { id: "eEft000000000087", name: "Petite nature", img: "icons/svg/downgrade.svg", changes: [{"key":"system.skills.resistancePoisons.bonus","type":"add","value":"-2"}], description: "<p>Vous etes plus sensible que le commun des mortels au froid, poison</p>" },
+  { id: "eEft000000000088", name: "Enfant", img: "icons/svg/downgrade.svg", changes: [{"key":"system.skills.commandement.bonus","type":"add","value":"-2"}], description: "<p>On ne vous prend pas au sérieux au vue de votre jeune age -2 dans certaines comp de Char</p>" },
+  { id: "eEft000000000089", name: "Superstitieux", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous etes supertsitieux, ne pas vous proteger vous donne un malus de -1</p>" },
+  { id: "eEft000000000090", name: "Introverti", img: "icons/svg/downgrade.svg", changes: [{"key":"system.skills.baratin.bonus","type":"add","value":"-2"}], description: "<p>Lorsqu'il y a plus de 3 inconnus votre voix se perd -2 comp Char</p>" },
+  { id: "eEft000000000091", name: "Sinistre", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous n'avez pas l'air net (Baptiste?), on vous fais plus difficilement confiance</p>" },
+  { id: "eEft000000000092", name: "Moquerie de Zeus", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Zeus</p><p>Votre confiance en vous et votre sang froid sont mis à rudes épreuves lorsque l'on se moque de vous</p>" },
+  { id: "eEft000000000093", name: "Paranoïa d'Héra", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hera</p><p>Vous ne supportez pas que l'on parle sur vous, dans votre dos, et pourtant ça arrive sans cesse</p>" },
+  { id: "eEft000000000094", name: "Tempête de Poséidon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Poseïdon</p><p>Vous avez le mal de mer, ce qui est embettant pour un grec</p>" },
+  { id: "eEft000000000095", name: "Chouette d'Athéna", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Athéna</p><p>Vous etes obnubilé par une vision de chouette en or que vous auriez vu, et que vous voyez encor</p>" },
+  { id: "eEft000000000096", name: "Poigne d'Arès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Arès</p><p>Vos membres s'endoloris apres chaque actions, +1 diff pour deuxieme attaque</p>" },
+  { id: "eEft000000000097", name: "Carence de Déméter", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Déméter</p><p>Vous avez plus faim que la moyenne, vous devez plus manger et boire</p>" },
+  { id: "eEft000000000098", name: "Arc d'Apollon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Apollon</p><p>Vous semblez rendre les arcs inefficaces lorsque vous les touchés, les cordes laches, le bois craque</p>" },
+  { id: "eEft000000000099", name: "Proie d'Artèmis", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Artèmis</p><p>Les animaux sauvages ont une forte tendance à vous charger et/ ou à vous sentir de loin</p>" },
+  { id: "eEft000000000100", name: "Confiance d'Héphaïstos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Héphaïstos</p><p>Les forgerons ne vous font pas confiance, les tarifs sont plus cher pour vous</p>" },
+  { id: "eEft000000000101", name: "Outrage d'Aphrodite", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Aphrodite</p><p>Votre physique derange, vous n'étes pas moches mais pas attirants</p>" },
+  { id: "eEft000000000102", name: "Geste d'Hermès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hermes</p><p>Votre bourse a tendance à perdre quelques pieces</p>" },
+  { id: "eEft000000000103", name: "Coupe de Dionysos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Dionysos</p><p>Vous ne supportez pas l'alcool, vous avez l'alcool mauvais ou triste ça dépend</p>" },
+  { id: "eEft000000000104", name: "Destin d'Hestia", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hestia</p><p>On vous prend difficilement au serieux, vous faites presque trop figuration.</p>" },
+  { id: "eEft000000000105", name: "Perte d'Hécate", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hécate</p><p>Votre sens de l'orientation vous joue des tours</p>" },
+  { id: "eEft000000000106", name: "Horde d'Hadès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hadès</p><p>Les morts vous pourchassent et chuchotent en permanences</p>" },
+  { id: "eEft000000000107", name: "Gravement malade", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une maladie chronique qui peux venir et partir</p>" },
+  { id: "eEft000000000108", name: "Hostilité animal", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Les animaux ne vous font pas confiance</p>" },
+  { id: "eEft000000000109", name: "Phobie majeur", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une peur handicapante qui vous donne un malus de -2 si echec volonté</p>" },
+  { id: "eEft000000000110", name: "Loi d'Atrée", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous etes contraint de suivre la Loi d'Atrée, sur les liens qui unissent les voyageurs</p>" },
+  { id: "eEft000000000111", name: "Dette +", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une dette envers un membre respecté (au choix)</p>" },
+  { id: "eEft000000000112", name: "Hanté", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Quelques chose vous suit, un ancetre peut être, et à tendance à jouer avec vos nerfs</p>" },
+  { id: "eEft000000000113", name: "Culpabilité écrasante", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous vous en voulez facilement et vous devez vous racheter (Obole...)</p>" },
+  { id: "eEft000000000114", name: "Amnésie", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous ne vous souvenez pas qui vous êtes mais votre passé pourrais revenir d'une façon ou d'une autre</p>" },
+  { id: "eEft000000000115", name: "Blessure permanente", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Un de vos membres vous fait mal au vu d'une ancienne blessure (Avant j'étais aventurier)</p>" },
+  { id: "eEft000000000116", name: "Impétueux", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez un caractere violent et impulsif</p>" },
+  { id: "eEft000000000117", name: "Amoureux transit", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Votre moitié vous manque, vous n'avez d'yeux que pour elle.</p>" },
+  { id: "eEft000000000118", name: "Présence de Zeus", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Zeus</p><p>Vous avez une peur phobique de l'orage -Kéraunophobie-</p>" },
+  { id: "eEft000000000119", name: "Présence d'Héra", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hera</p><p>Vous avez une peur phobique des oiseaux -Ornitophobie-</p>" },
+  { id: "eEft000000000120", name: "Présence de Poséidon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Poseïdon</p><p>Vous avez une peur phobique de l'eau -Aquaphobie-</p>" },
+  { id: "eEft000000000121", name: "Présence d'Athéna", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Athéna</p><p>Vous avez une peur phobique de l'échec -atichiphobie-</p>" },
+  { id: "eEft000000000122", name: "Présence d'Arès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Arès</p><p>Vous avez une peur phobique du sang -Hématophobie-</p>" },
+  { id: "eEft000000000123", name: "Présence de Déméter", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Déméter</p><p>Vous avez une peur phobique des fruits -Carpophobie-</p>" },
+  { id: "eEft000000000124", name: "Présence d'Apollon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Apollon</p><p>Vous avez une peur de prendre la parole en public -Glossophobie-</p>" },
+  { id: "eEft000000000125", name: "Présence d'Artèmis", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Artèmis</p><p>Vous avez une peur phobique des forets -Hylophobie-</p>" },
+  { id: "eEft000000000126", name: "Présence d'Héphaïstos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Héphaïstos</p><p>Vous avez une peur phobique de la foule -Agoraphobie-</p>" },
+  { id: "eEft000000000127", name: "Présence d'Aphrodite", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Aphrodite</p><p>Vous avez une peur phobique de la solitude -Autophobie-</p>" },
+  { id: "eEft000000000128", name: "Présence d'Hermès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hermes</p><p>Vous avez une peur phobique des espaces confinés -Claustrophobie-</p>" },
+  { id: "eEft000000000129", name: "Présence de Dionysos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Dionysos</p><p>Vous avez une peur phobique des enfants -Pédophobie-</p>" },
+  { id: "eEft000000000130", name: "Présence d'Hestia", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hestia</p><p>Vous avez une peur phobique du feu -Pyrophobie-</p>" },
+  { id: "eEft000000000131", name: "Présence d'Hécate", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hécate</p><p>Vous avez une peur phobique de l'obscurité -Kénophobie-</p>" },
+  { id: "eEft000000000132", name: "Présence d'Hadès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hadès</p><p>Vous avez une peur de la mort -Thanatophobie-</p>" },
+  { id: "eEft000000000133", name: "Dépendance illégal", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une dépendance illégale, vous devez vous y adonnez 1/2j sinon malus de -1/j</p>" },
+  { id: "eEft000000000134", name: "Tache de naissance", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Une marque sur votre corps relativement visible qui vous rend sujet a des critiques, des messes basses</p>" },
+  { id: "eEft000000000135", name: "Némésis", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous vous étes fait un énemi d'une personne qui vous est supérieur</p>" },
+  { id: "eEft000000000136", name: "Recherché", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Votre tête est mise à prix dans diverses cités de la Gréces</p>" },
+  { id: "eEft000000000137", name: "Chat Noir", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous jouer de malchance, si un événement facheux se produit, il y a fort à parier que ce soit pour vous</p>" },
+  { id: "eEft000000000138", name: "Zélé", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous etes un croyant fanatique, seule la voix de votre dieu compte, les autres ne sont rien</p>" },
+  { id: "eEft000000000139", name: "Dette ++", img: "icons/svg/downgrade.svg", changes: [], description: "<p>Vous avez une dette envers un haut membre (au choix)</p>" },
+  { id: "eEft000000000140", name: "Syndrome de Zeus", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Zeus</p><p>Vous avez une forte tendance à vouloir tout contrôler, à prendre le leadership</p>" },
+  { id: "eEft000000000141", name: "Jugement d'Héra", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hera</p><p>La malchance vous poursuit, parfois vous devrez retenter vos jets</p>" },
+  { id: "eEft000000000142", name: "Maladie de Poséidon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Poseïdon</p><p>Les chevaux n'ont pas confiance en vous, ils sont tendus en votre presence</p>" },
+  { id: "eEft000000000143", name: "Sens d'Athéna", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Athéna</p><p>Vous avez tendance a ne pas faire le bon choix. Vous reflechissez longtemps aux choix</p>" },
+  { id: "eEft000000000144", name: "Serment d'Arès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Arès</p><p>Vos serments vous lie, Arès y veille</p>" },
+  { id: "eEft000000000145", name: "Pollen de Déméter", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Déméter</p><p>Vous avez des allergies à plusieurs plantes.</p>" },
+  { id: "eEft000000000146", name: "Diagnostique d'Apollon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Apollon</p><p>Les soins sont parfois moins efficaces sur vous.</p>" },
+  { id: "eEft000000000147", name: "Marche d'Artèmis", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Artèmis</p><p>Vous vous deplacer comme un boeuf, il vous faut beaucoup d'adresse pour ne pas faire de bruit</p>" },
+  { id: "eEft000000000148", name: "Defaut d'Héphaïstos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Héphaïstos</p><p>Vous armes s'émoussent plus rapidement que la moyenne</p>" },
+  { id: "eEft000000000149", name: "Ragot d'Aphrodite", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Aphrodite</p><p>Votre réputation vous precede, enfin une mauvaise réputation</p>" },
+  { id: "eEft000000000150", name: "Lubie d'Hermès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hermes</p><p>Parfois des petits malins s'amuse à mettre des affiches de recherche avec votre tête dessus</p>" },
+  { id: "eEft000000000151", name: "Insertion de Dionysos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Dionysos</p><p>Vous avez un vice, klépto? Parano? Nympho?</p>" },
+  { id: "eEft000000000152", name: "Honte d'Hestia", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hestia</p><p>En votre presence, les feux se font moins chaleureux, plus sombre, moins réconfortant</p>" },
+  { id: "eEft000000000153", name: "Marque d'Hécate", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hécate</p><p>Vous etes un la cible de sortileges</p>" },
+  { id: "eEft000000000154", name: "Prix d'Hadès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hadès</p><p>L'argent et l'or vous brûle les doigts, littéralement</p>" },
+  { id: "eEft000000000155", name: "Danse de Zeus", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Zeus</p><p>Les Curêtes de Zeus suivent vos pas, le moindre éclair peut être le signe de leur arriver</p>" },
+  { id: "eEft000000000156", name: "Jalousie d'Hera", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hera</p><p>Aucun doute, Héra à lacher Argos, le géant aux 100 yeux a vos trousses, vous sentez toujours son regard</p>" },
+  { id: "eEft000000000157", name: "Lignée de Poséidon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Poseïdon</p><p>Un oeil unique qui luit dans la nuit, l'odeur du mouton, pas de doute un cyclope vous traque</p>" },
+  { id: "eEft000000000158", name: "Défi d'Athéna", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Athéna</p><p>Gare aux descendants d'Arachné, si elle vous voient vous serez leurs proies</p>" },
+  { id: "eEft000000000159", name: "Fureur d'Arès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Arès</p><p>Vous etes habité par une Makhaï, un esprit du combat</p>" },
+  { id: "eEft000000000160", name: "Tristesse de Déméter", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Déméter</p><p>Vous semblez attirer la famine, si vous rester trop longtemps dans une ville sans demander pardon</p>" },
+  { id: "eEft000000000161", name: "Maux d'Apollon", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Apollon</p><p>Vous semblez attirer la peste, si vous rester trop longtemps dans une ville.</p>" },
+  { id: "eEft000000000162", name: "Chatiment d'Artèmis", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Artèmis</p><p>Des chasseresses Dryades vous pourchassent sans repos</p>" },
+  { id: "eEft000000000163", name: "Poursuite d'Héphaïstos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Héphaïstos</p><p>Un automate d'Héphaïstos vous poursuit, mais il peut ressembler a n'importe qui!</p>" },
+  { id: "eEft000000000164", name: "Déni d'Aphrodite", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Aphrodite</p><p>Vous avez un amour impossible, veritable creve coeur</p>" },
+  { id: "eEft000000000165", name: "Bande d'Hermès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hermes</p><p>C'est vraiment pas de chance, vous semblez tomber continuellement sur des voleurs et bandits</p>" },
+  { id: "eEft000000000166", name: "Folie de Dionysos", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Dionysos</p><p>Vous etes pourchassé par une Ménade, esprit de la folie, vous la sentez s'insinuer parfois, ou, toujours</p>" },
+  { id: "eEft000000000167", name: "Déception d'Hestia", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hestia</p><p>Votre propre famille vous à renier, certains même vous pourchasse, mais pourquoi?</p>" },
+  { id: "eEft000000000168", name: "Terreur d'Hécate", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hécate</p><p>Vous etes la proie d'une Empousa, sa jambe d'Ane et d'Or resonnent derriere vous.</p>" },
+  { id: "eEft000000000169", name: "Jugement d'Hadès", img: "icons/svg/sun.svg", changes: [], description: "<p><strong>Dévotion :</strong> Hadès</p><p>Les Erinyes vous pourchassent! Elles sont partout, tout le temps!</p>" }
+];
+
+function effetDocDataDesavantage(entry) {
+  return {
+    _id: entry.id,
+    name: entry.name,
+    img: entry.img,
+    type: "base",
+    system: { changes: entry.changes },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: entry.description,
+    origin: null,
+    tint: "#ffffff",
+    transfer: true,
+    statuses: [],
+    folder: null,
+    sort: 0,
+    flags: {}
+  };
+}
+
+async function applyCreateEffetsDesavantages() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  const missing = EFFETS_DESAVANTAGES.filter(e => !existingIds.has(e.id)).map(effetDocDataDesavantage);
+  if (!missing.length) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return missing.length;
+}
+
+async function linkAndEmbedDesavantage(doc, entry) {
+  let changed = false;
+
+  const uuidLink = `@UUID[Compendium.antique.effets.${entry.id}]{${entry.name}}`;
+  if (!doc.system.description?.includes(uuidLink)) {
+    await doc.update({ "system.description": doc.system.description + `<p>${uuidLink}</p>` });
+    changed = true;
+  }
+
+  if (!doc.effects.size) {
+    await doc.createEmbeddedDocuments("ActiveEffect", [{
+      name: entry.name,
+      img: entry.img,
+      "system.changes": entry.changes,
+      description: entry.description,
+      disabled: false,
+      transfer: true
+    }]);
+    changed = true;
+  } else {
+    const kept = doc.effects.contents[0];
+    if (kept.description !== entry.description) {
+      await kept.update({ description: entry.description });
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
+async function applyEmbedEffetsDesavantages() {
+  const byName = new Map(EFFETS_DESAVANTAGES.map(e => [e.name, e]));
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.desavantages");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const entry = byName.get(cleanName(indexEntry.name));
+      if (!entry) continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await linkAndEmbedDesavantage(doc, entry)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "disadvantage") continue;
+      const entry = byName.get(cleanName(item.name));
+      if (!entry) continue;
+      if (await linkAndEmbedDesavantage(item, entry)) fixed++;
     }
   }
 

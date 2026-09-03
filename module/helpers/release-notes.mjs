@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.67": {
+    title: "Version 0.6.67 — 90 nouveaux Effets pour les Désavantages",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : les 90 désavantages qui n'avaient pas encore d'effet actif en ont maintenant un — narratif pour la quasi-totalité (la plupart décrivent une conséquence conditionnelle ou de jeu de rôle, pas un malus chiffré permanent), avec 3 exceptions à vrai malus de compétence : Petite nature (-2 Résistance aux poisons), Enfant (-2 Commandement), Introverti (-2 Baratin).</li>
+        <li>Chaque effet est lié depuis la description de son désavantage et directement embarqué dans son onglet "Effets", comme pour les avantages.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour des compendiums (Effets, Désavantages).</li>
+      </ul>`
+  },
   "0.6.66": {
     title: "Version 0.6.66 — Correctif : \"compendium verrouillé\" sur les correctifs de poids",
     html: `

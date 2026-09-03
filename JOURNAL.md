@@ -2,6 +2,44 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 11) — 90 nouveaux Effets pour les Désavantages (v0.6.66 → v0.6.67)
+
+Demande utilisateur : appliquer le même travail qu'aux avantages, côté désavantages — "fait
+une liste comme ce que j'ai fait pour les avantages avant de le coder". Audit des 95
+désavantages (5 avaient déjà un effet : Sens défaillant, Frêle, Distrait, Dépressif,
+Maladroit) : contrairement aux avantages, la quasi-totalité des textes restants décrivent une
+conséquence **conditionnelle ou de jeu de rôle** (peur si échec de Volonté, malus
+situationnel, poursuivi par une créature, dépendance à gérer...) plutôt qu'un malus chiffré
+permanent — ce qu'un effet actif passif ne peut représenter fidèlement. Liste proposée à
+l'utilisateur avant codage (4 cas chiffrables + 86 narratifs), validée telle quelle.
+
+**4 cas avec un vrai malus de compétence** : Petite nature (`ADD skills.resistancePoisons.
+bonus -2`), Enfant (`ADD skills.commandement.bonus -2`), Introverti (`ADD skills.baratin.
+bonus -2`) — Poigne d'Arès reste narratif, aucun champ n'existe pour une pénalité de
+"deuxième attaque" (pas de nouveau mécanisme construit pour un seul cas).
+
+**86 autres** : effet "simple" narratif (aucun `changes`), même patron que les avantages
+narratifs — description reprise du désavantage.
+
+**Bug trouvé et corrigé pendant la construction** : le script initial
+(`packs/_build-effets-desavantages.js`) oubliait le champ `description` sur l'effet
+embarqué — exactement la régression que l'étape 4 avait corrigée pour les avantages
+(`todo_foundry.txt` ligne 455), reproduite sans y penser pour les désavantages. Corrigé
+avant déploiement : `description` backfillée sur les 90 effets déjà construits, script
+source corrigé pour l'avenir, et le correctif live (`linkAndEmbedDesavantage`) vérifie
+maintenant aussi la description sur un effet déjà présent, pas seulement sur sa création.
+
+**Propagation** : `0.6.67-create-effets-desavantages` + `0.6.67-embed-effets-desavantages`
+dans `PACK_UPDATES`, même mécanisme que pour les avantages — correspondance vérifiée
+programmatiquement (changes + description) entre les données dupliquées dans
+`pack-updates.mjs` et `desavantages.db`/`effets.db` avant déploiement (0 écart, 0 doublon).
+
+**Fichiers** : `packs/desavantages.db`, `packs/effets.db`,
+`packs/_build-effets-desavantages.js` (nouveau), `module/helpers/pack-updates.mjs`,
+`system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 10) — Correctif : compendium verrouillé sur les correctifs de poids (v0.6.65 → v0.6.66)
 
 Erreur en jeu en testant la 0.6.65 : `You may not update documents in the locked compendium
