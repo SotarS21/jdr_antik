@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.64": {
+    title: "Version 0.6.64 — Correctif : les descriptions des effets actifs n'étaient pas reprises",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : retour utilisateur "les effets actifs n'ont pas encore récupéré leurs descriptions" — les correctifs de la 0.6.63 lisaient le champ "Effet" en direct sur le monde pour le recopier, mais ce champ n'est plus lisible une fois retiré du schéma dans le même déploiement. Nouveaux correctifs qui recopient les bons textes (95 avantages/désavantages).</li>
+        <li>Disponibles dans l'écran de mise à jour des compendiums — les anciens correctifs 0.6.63 ne se reproposent pas (ils sont déjà marqués comme appliqués), d'où ces deux nouvelles entrées.</li>
+      </ul>`
+  },
   "0.6.63": {
     title: "Version 0.6.63 — Nettoyage du champ \"Effet\" (étape 4)",
     html: `

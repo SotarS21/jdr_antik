@@ -126,6 +126,28 @@ export const PACK_UPDATES = [
       "\"Effet\", reprend son contenu dans la description de l'effet actif existant (5 " +
       "désavantages seulement en ont un), et dédoublonne si besoin.",
     apply: applyCleanupEffectFieldDesavantages
+  },
+  {
+    id: "0.6.64-backfill-effect-descriptions-avantages",
+    pack: "avantages",
+    version: "0.6.64",
+    label: "Descriptions des effets actifs — vraiment cette fois",
+    description:
+      "Les correctifs \"Nettoyage : champ Effet\" (0.6.63) ne recopiaient rien : ils " +
+      "lisaient system.effect en direct sur le monde, mais ce champ n'est plus lisible " +
+      "une fois retiré du schéma. Ce correctif recopie les bons textes (codés en dur, " +
+      "extraits d'avantages.db) dans la description de chaque effet actif existant.",
+    apply: applyCleanupEffectFieldAvantages
+  },
+  {
+    id: "0.6.64-backfill-effect-descriptions-desavantages",
+    pack: "desavantages",
+    version: "0.6.64",
+    label: "Descriptions des effets actifs — vraiment cette fois",
+    description:
+      "Même correctif que pour les Avantages, côté Désavantages (5 désavantages ont un " +
+      "effet actif).",
+    apply: applyCleanupEffectFieldDesavantages
   }
 ];
 
@@ -564,16 +586,123 @@ async function applyFixAthleteEffect() {
 }
 
 /**
- * Voir packs/_remove-effect-field.js, dont cette fonction reprend la logique pour le
- * monde déjà déployé : dédoublonne (garde le premier, supprime le reste) et reprend le
- * texte encore présent dans system.effect (champ orphelin depuis le retrait du schéma,
- * mais pas encore purgé des documents déjà stockés) dans la description de l'effet
- * conservé, s'il n'en a pas déjà une. N'ajoute jamais d'effet à un document qui n'en a
- * aucun (Mule, Cuisine de Déméter, Connaissance d'Héphaistos, la plupart des
- * désavantages) — la tooltip retombe sur la description complète dans ce cas
- * (actor-sheet.mjs, _prepareTraitItems).
+ * Textes de description repris depuis packs/avantages.db / packs/desavantages.db après
+ * le passage de packs/_remove-effect-field.js (l'ancien contenu de system.effect). Codés
+ * en dur plutôt que lus depuis doc.system.effect : Foundry construit .system depuis le
+ * schéma DataModel actuel, donc dès que ce déploiement (schéma sans le champ effect) est
+ * actif, une valeur déjà stockée pour un champ retiré du schéma n'est plus lisible via
+ * .system — corrige le premier essai de ce correctif, qui lisait system.effect en live et
+ * ne trouvait donc plus rien à recopier.
  */
-async function cleanupEffectField(doc) {
+const EFFECT_DESCRIPTIONS_AVANTAGES = {
+  "Guerrier Aguerri": "Offre une deuxieme action de combat",
+  "Sens aiguisé": "Choisir un sens qui sera aiguisé (+2 bonus perception sens)",
+  "Equilibre félin": "Pas de malus sur terrain difficile",
+  "Fetard": "Pas de malus du à l'alcool/ manque de sommeil",
+  "Bon sens": "Une petite voix dans votre tête vous conseil parfois",
+  "Sens artistique": "Vous maitrisez un art ce qui vous donne +2 en representation/ art",
+  "Athléte": "Capacité de deplacement x2",
+  "Sang froid": "Vous resistez à la peur +2 en volonté",
+  "Commercant": "Augmente vos possibilité de commerce (vente et achat)",
+  "Visage passe partout": "Votre visage n'as rien de particulier, on vous oublie facilement",
+  "Peau dense": "Augmente la CA de Base de 2",
+  "Vif": "Réflexe base+2",
+  "Cuir de Hero": "Robustesse base+2",
+  "Pisteur": "La chasse n'as pas de secret pour vous +2 vig et nature/ dans la nature",
+  "Sommeil leger": "Vous dormez d'une oreille, avantage en cas de reveil soudain",
+  "Faveur": "Un lambda vous dois une faveur (au choix)",
+  "Colère de Zeus": "Dégats aux corps à corps +3",
+  "Respect d'Héra": "Tu peux percevoir la trahison dans ton entourage",
+  "Branchies de Poséidon": "Permet 1d6/lvl de régéneration avec de l'eau",
+  "Protection d'Athéna": "Augmente la CA de +2",
+  "Rage d'Arès": "Permet de faire deux attaques/ tour",
+  "Soin d'Apollon": "Permet de stabiliser un allié 2/j",
+  "Chasse d'Artèmis": "Chasse assuré",
+  "Beauté d'Aphrodite": "Permet de capter l'attention ou la rejeter au combat",
+  "Mains d'Hèrmès": "Permet de voler un petit objet avec 1 chance sur 6 d'etre reperer",
+  "Ivresse de Dionysos": "Permet de renforcer les effets de l'alcool",
+  "Chaleur d'Hestia": "Vous inspirez confiance",
+  "Vue d'Hécate": "Permet de toujours connaitre la voie à prendre",
+  "Don d'Hadès": "Permet de voir et de communiquer avec les morts reçents",
+  "Orientation": "Vous savez toujours vous reperer dans l'espace",
+  "Porte bouclier": "Vous avez un avantage lorsque vous étes le bouclier d'un autre",
+  "Chrono sens": "Vous savez toujours quand vous etes",
+  "Don des langues": "Polyglotte",
+  "Voix enchanteresse": "Auriez vous du sang de sirène, car votre voix est hypnotique (+2 certaines comp Char)",
+  "Volonté de fer": "vous n'avez peur de rien et vous etes rarement prit au dépourvu",
+  "Ami des animaux": "Vous avez grandis avec des animaux ce qui augmente leurs confiance en vous",
+  "Maitre d'Arme": "Vous etes un maitre du maniement d'une arme +2 si vous l'utilisez",
+  "Maitre des forges": "Votre talent en forgeronerie vous permet de construire ou reparer en toute circonstance",
+  "Ambidextrie": "Vos deux mains sont majeure, vous n'avez pas de faiblesse ni d'un coté ni de l'autre",
+  "Faveur +": "Un membre respecté vous dois une faveur (au choix)",
+  "Etincelle de Zeus": "1/4 chance de Stun 1 tour avec une arme",
+  "Vision d'Héra": "1 fois par jour: permet d'avoir des Info sur une personne connu",
+  "Force de Poséidon": "Augmente la CA de +1 de l'équipe (+2 si proche de la mer)",
+  "Voix d'Athéna": "Peut forcer quelqu'un a obeir a un ordre 1/j",
+  "Corps d'Arès": "Renforce la CA de +2",
+  "Moisson de Déméter": "Permet de trouver de la nourriture (végétaux)",
+  "Visée d'Apollon": "Permet d'ajouter un bonus de 2 au arme a distance",
+  "Mire d'Artèmis": "Dégats à distance +3",
+  "Talent d'Héphaistos": "Augmente les dégats de corps a corps +3",
+  "Charme d'Aphrodite": "Réduit le jet de touche de l'adversaire de 2",
+  "Pieds d'Hermes": "Augmente la distance de marche de 4 cases",
+  "Talent de Dionysos": "Resistance à la drogue et l'alcool",
+  "Flamme d'Hestia": "Votre corps est plus chaud que la moyenne pas de pénalité froid/humide",
+  "Lanterne d'Hécate": "Permet de voir dans le noir",
+  "Casque d'Hadès": "Permet de disparaitre dans les ombres 2/J",
+  "Taille imposante": "Mesure dans les 2M, point de vie augmenter de 10",
+  "Dieu de l'esquive": "L'esquive est un art que vous maitrisez, vous n'etes pas limité dans votre nombre d'esquive",
+  "Dieu du stade": "Vos capacités athétiques sont un atout majeur, vous ne fatiguez pas si facilement",
+  "Dieu de la guerre": "Si vous choisissez d'attaquer une seconde fois, aucun malus ne vous sera ajouter",
+  "Rageux": "Sous l'effet de la rage, vos coups font plus mal mais vous avez tendance a voir rouge",
+  "Faveur ++": "Un haut membre vous dois une faveur (au choix)",
+  "Aura de Zeus": "Renforce les jets de Force de l'équipe avec +2",
+  "Aura d'Héra": "Renforce les jets d'Astuce de l'équipe avec +2",
+  "Aura de Poséidon": "Renforce les jets de Constitution de l'équipe avec +2",
+  "Aura d'Athéna": "Renforce les jets de Force de l'équipe avec +2",
+  "Aura d'Arès": "Renforce les jets de Force de l'équipe avec +2",
+  "Aura de Demeter": "Renforce les jets de Constitution de l'équipe avec +2",
+  "Aura d'Apollon": "Renforce les jets de Astuce de l'équipe avec +2",
+  "Aura d'Artèmis": "Renforce les jets de Dexterité de l'équipe avec +2",
+  "Aura d'Héphaïstos": "Renforce les jets de Force de l'équipe avec +2",
+  "Aura d'Aphrodite": "Renforce les jets de Charisme de l'équipe avec +2",
+  "Aura d'Hermes": "Renforce les jets de Dextérité de l'équipe avec +2",
+  "Aura de Dionysos": "Renforce les jets de Charisme de l'équipe avec +2",
+  "Aura d'Hestia": "Renforce les jets de Charisme de l'équipe avec +2",
+  "Aura d'Hécate": "Renforce les jets de Astuce de l'équipe avec +2",
+  "Aura d'Hadès": "Renforce les jets de Constitution de l'équipe avec +2",
+  "Sang de Zeus": "Extra Life",
+  "Paume de Poséidon": "Offre un Bateau Magique",
+  "Esprit d'Athéna": "Athéna elle même vous préviens lorsque vous faite le mauvais choix",
+  "Armure d'Arès": "Frénesie apres deux kills qui double les PV temporaire",
+  "Blé de Déméter": "Permet de régénerer 3 fois plus de Pv en mangeant.",
+  "Oeil d'Apollon": "Oracle (vision dans le sommeil)",
+  "Compagnon d'Artèmis": "Animal magique",
+  "Yeux d'Héphaistos": "Permet de détécter la magie et les enchantements",
+  "Murmure d'Aphrodite": "Permet d'Obtenir de sombre secrets sur une personne connus",
+  "Message d'Hermes": "Permet de transmettre des messages court et simple à des alliés",
+  "Amphore de Dionysos": "Permet de récuperer tout ces PV avec de l'alcool/ 1j",
+  "Bucher d'Héstia": "Permet de creer un feu qui apporte protection et comfort",
+  "Lune d'Hécate": "Permet un rituel par nuit",
+  "Peau d'Hadès": "Multiplie les PV par deux"
+};
+
+const EFFECT_DESCRIPTIONS_DESAVANTAGES = {
+  "Sens défaïllant": "Choisir un sens qui sera défaïllant (-2 bonus perception sens)",
+  "Frêle": "Robustesse de base -1",
+  "Distrait": "Vous avez un désavantage en vigilance -2",
+  "Dépressif": "Volonté de base -1",
+  "Maladroit": "Reflexe de base -1"
+};
+
+/**
+ * Dédoublonne (garde le premier, supprime le reste) et reprend la description attendue
+ * (EFFECT_DESCRIPTIONS_AVANTAGES/DESAVANTAGES ci-dessus) dans l'effet conservé, s'il n'en
+ * a pas déjà une. N'ajoute jamais d'effet à un document qui n'en a aucun (Mule, Cuisine de
+ * Déméter, Connaissance d'Héphaistos, la plupart des désavantages) — la tooltip retombe
+ * sur la description complète dans ce cas (actor-sheet.mjs, _prepareTraitItems).
+ */
+async function cleanupEffectField(doc, descriptions) {
   if (doc.effects.size === 0) return false;
 
   let changed = false;
@@ -585,15 +714,16 @@ async function cleanupEffectField(doc) {
   }
 
   const kept = doc.effects.contents[0];
-  if (!kept.description && doc.system.effect) {
-    await kept.update({ description: doc.system.effect });
+  const expected = descriptions[cleanName(doc.name)];
+  if (expected && kept.description !== expected) {
+    await kept.update({ description: expected });
     changed = true;
   }
 
   return changed;
 }
 
-async function applyCleanupEffectFieldForPack(packName, itemType) {
+async function applyCleanupEffectFieldForPack(packName, itemType, descriptions) {
   let fixed = 0;
 
   const pack = game.packs.get(`antique.${packName}`);
@@ -603,7 +733,7 @@ async function applyCleanupEffectFieldForPack(packName, itemType) {
     const index = await pack.getIndex();
     for (const indexEntry of index) {
       const doc = await pack.getDocument(indexEntry._id);
-      if (await cleanupEffectField(doc)) fixed++;
+      if (await cleanupEffectField(doc, descriptions)) fixed++;
     }
     if (wasLocked) await pack.configure({ locked: true });
   }
@@ -611,7 +741,7 @@ async function applyCleanupEffectFieldForPack(packName, itemType) {
   for (const actor of game.actors ?? []) {
     for (const item of actor.items) {
       if (item.type !== itemType) continue;
-      if (await cleanupEffectField(item)) fixed++;
+      if (await cleanupEffectField(item, descriptions)) fixed++;
     }
   }
 
@@ -619,11 +749,11 @@ async function applyCleanupEffectFieldForPack(packName, itemType) {
 }
 
 async function applyCleanupEffectFieldAvantages() {
-  return applyCleanupEffectFieldForPack("avantages", "advantage");
+  return applyCleanupEffectFieldForPack("avantages", "advantage", EFFECT_DESCRIPTIONS_AVANTAGES);
 }
 
 async function applyCleanupEffectFieldDesavantages() {
-  return applyCleanupEffectFieldForPack("desavantages", "disadvantage");
+  return applyCleanupEffectFieldForPack("desavantages", "disadvantage", EFFECT_DESCRIPTIONS_DESAVANTAGES);
 }
 
 const SETTING_KEY = "appliedPackFixes";

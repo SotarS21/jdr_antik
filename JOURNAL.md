@@ -2,6 +2,40 @@
 
 ---
 
+## Session du 3 septembre 2026 (suite 8) — Correctif : descriptions des effets actifs pas reprises (v0.6.63 → v0.6.64)
+
+Retour utilisateur après test de la 0.6.63 : "ça marche, presque tout est bon" puis "les
+effets actifs simple n'ont pas encore récupéré leurs descriptions... ou même les autres
+effets actifs" — la reprise de description ne s'était appliquée nulle part, pas seulement
+sur les "effets simples".
+
+**Cause** : `applyCleanupEffectField{Avantages,Desavantages}` lisait `doc.system.effect` en
+direct sur le monde pour le recopier dans la description de l'effet actif — mais ce
+déploiement retire justement `effect` du schéma `item-advantage.mjs`/`item-disadvantage.mjs`
+dans le même mouvement. `.system` étant reconstruit par Foundry depuis le schéma DataModel
+actuel, un champ qui n'y figure plus n'est simplement plus lisible via `doc.system.effect`,
+même si la donnée brute existe encore quelque part en base — le correctif ne trouvait donc
+plus jamais rien à recopier (0 corrigé, aucune erreur, échec silencieux).
+
+**Autre piège découvert** : l'écran de mise à jour marque un correctif "appliqué" dès que sa
+fonction s'exécute sans lever d'exception — indépendamment du nombre réel de documents
+corrigés. Les deux correctifs `0.6.63-cleanup-effect-field-*`, bien qu'inopérants, étaient
+donc déjà marqués comme faits et ne se seraient jamais reproposés spontanément.
+
+**Correctif** : les textes attendus (extraits d'`avantages.db`/`desavantages.db` après le
+passage d'`_remove-effect-field.js`, 90 avantages + 5 désavantages) sont maintenant codés en
+dur dans `pack-updates.mjs` (`EFFECT_DESCRIPTIONS_AVANTAGES`/`_DESAVANTAGES`) plutôt que lus
+depuis le monde en direct. Deux **nouvelles** entrées `PACK_UPDATES`
+(`0.6.64-backfill-effect-descriptions-avantages`/`-desavantages`, réutilisant les mêmes
+fonctions `apply` désormais corrigées) plutôt que de modifier les entrées `0.6.63-*` déjà
+marquées appliquées — correspondance vérifiée programmatiquement contre les deux fichiers
+sources avant déploiement (95/95 noms, aucun manquant).
+
+**Fichiers** : `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 7) — Étape 4 : retrait du champ "Effet", dédoublonnage (v0.6.62 → v0.6.63)
 
 Dernières notes de `todo_foundry.txt` (lignes 453-455) traitées : le champ texte "Effet"
