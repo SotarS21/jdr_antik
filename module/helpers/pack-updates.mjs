@@ -275,6 +275,19 @@ export const PACK_UPDATES = [
       "Ajoute le lien vers l'effet \"Pétrifié\" dans la description de la capacité \"Regard " +
       "pétrifiant\" (compendium et copies déjà glissées sur un PNJ).",
     apply: applyLinkEffetPetrifie
+  },
+  {
+    id: "0.6.75-embed-effet-petrifie",
+    pack: "capacites-combat",
+    version: "0.6.75",
+    label: "Regard pétrifiant — effet visible dans l'onglet Effets",
+    description:
+      "Retour utilisateur : l'onglet Effets de \"Regard pétrifiant\" restait vide (le lien " +
+      "dans la description ne suffisait pas). Embarque maintenant aussi une copie de l'effet " +
+      "\"Pétrifié\" directement sur la capacité, en `transfer:false` — visible dans l'onglet " +
+      "Effets comme pour Charge furieuse, mais ne s'applique jamais à la créature qui possède " +
+      "la capacité (compendium et copies déjà glissées sur un PNJ).",
+    apply: applyLinkEffetPetrifie
   }
 ];
 
@@ -885,15 +898,35 @@ async function applyCreateEffetPetrifie() {
 }
 
 async function linkPetrifieEffect(doc) {
+  let changed = false;
+
   const uuidLink = `@UUID[Compendium.antique.effets.${PETRIFIE_EFFET_ID}]{Pétrifié (Regard de Méduse)}`;
-  if (doc.system.description?.includes(uuidLink)) return false;
-  await doc.update({
-    "system.description": doc.system.description +
-      "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
-      "l'effet ci-dessous directement sur le token de la victime :</em></p>" +
-      `<p>${uuidLink}</p>`
-  });
-  return true;
+  if (!doc.system.description?.includes(uuidLink)) {
+    await doc.update({
+      "system.description": doc.system.description +
+        "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
+        "l'effet ci-dessous directement sur le token de la victime :</em></p>" +
+        `<p>${uuidLink}</p>`
+    });
+    changed = true;
+  }
+
+  // transfer:false : reste visible dans l'onglet Effets de la capacité (même patron visuel
+  // que Charge furieuse), retour utilisateur du 10 septembre 2026 — mais ne s'applique
+  // jamais à la créature qui possède la capacité (contrairement à un effet transfer:true).
+  if (!doc.effects.size) {
+    await doc.createEmbeddedDocuments("ActiveEffect", [{
+      name: "Pétrifié (Regard de Méduse)",
+      img: "icons/svg/downgrade.svg",
+      "system.changes": [],
+      disabled: false,
+      transfer: false,
+      description: "Changée en statue de pierre : immobilisée, incapable d'agir."
+    }]);
+    changed = true;
+  }
+
+  return changed;
 }
 
 async function applyLinkEffetPetrifie() {

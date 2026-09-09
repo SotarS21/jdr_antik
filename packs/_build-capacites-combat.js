@@ -17,12 +17,14 @@
  *   doit rester en phase avec CHARGE_FURIEUSE_EFFET_ID dans module/helpers/pack-updates.mjs.
  * - Regard pétrifiant (Méduse) : le jet de sauvegarde et sa réussite/échec restent gérés
  *   manuellement par le MJ (aucune ActiveEffect ne peut forcer un jet), mais la conséquence
- *   en cas d'échec ("être pétrifiée") a maintenant, elle aussi, un document Effet autonome
- *   (10 septembre 2026, retour utilisateur — cohérence avec Charge furieuse/les avantages) :
- *   un marqueur purement narratif (aucun `changes`, comme la majorité des désavantages), à
- *   glisser par le MJ directement sur le token de la victime après un échec — PAS embarqué
- *   sur la capacité de Méduse elle-même (`transfer:true` l'appliquerait à Méduse, pas à sa
- *   victime).
+ *   en cas d'échec ("être pétrifiée") a un document Effet autonome (10 septembre 2026, retour
+ *   utilisateur — cohérence avec Charge furieuse/les avantages) : un marqueur purement
+ *   narratif (aucun `changes`, comme la majorité des désavantages). Embarqué avec
+ *   `transfer:false` (10 septembre 2026, suite) pour rester visible dans l'onglet Effets de
+ *   la capacité (même patron visuel que Charge furieuse) SANS s'appliquer à Méduse
+ *   elle-même — `transfer:true` l'aurait appliqué à la créature qui possède la capacité, pas
+ *   à sa victime. Le MJ glisse la copie autonome (liée dans la description) sur le token de
+ *   la victime après un échec de jet.
  *
  * Run:  node packs/_build-capacites-combat.js
  */
@@ -94,7 +96,21 @@ const docs = [
         `<p>${PETRIFIE_UUID_LINK}</p>`,
       gmNotes: ""
     },
-    effects: [],
+    effects: [{
+      _id: generateEmbeddedId("aNca000000000002_embedded_effect"),
+      name: "Pétrifié (Regard de Méduse)",
+      img: "icons/svg/downgrade.svg",
+      type: "base",
+      system: { changes: [] },
+      disabled: false,
+      transfer: false,
+      duration: { startTime: null, seconds: null, rounds: null, turns: null },
+      flags: {},
+      tint: null,
+      origin: null,
+      statuses: [],
+      description: "Changée en statue de pierre : immobilisée, incapable d'agir."
+    }],
     folder: null,
     sort: 100000,
     ownership: { default: 0 },

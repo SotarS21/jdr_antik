@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.75": {
+    title: "Version 0.6.75 — Correctif : effet \"Pétrifié\" visible dans l'onglet Effets",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : l'onglet Effets de "Regard pétrifiant" restait vide malgré le lien ajouté en 0.6.74 dans sa description. Une copie de l'effet "Pétrifié" est maintenant embarquée directement sur la capacité (en <code>transfer:false</code>, comme Charge furieuse visuellement, mais sans jamais s'appliquer à la créature qui la possède).</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour (Capacités de Combat).</li>
+      </ul>`
+  },
   "0.6.74": {
     title: "Version 0.6.74 — Effet \"Pétrifié\" pour Regard pétrifiant",
     html: `

@@ -2,6 +2,29 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 3) — Correctif : effet "Pétrifié" visible dans l'onglet Effets (v0.6.74 → v0.6.75)
+
+Retour utilisateur après test de la 0.6.74 : « toujours rien dans regard pétrifiant ». Clarifié
+par une question : l'onglet Effets de la capacité montrait bien 0 effet — voulu à l'origine
+(l'effet n'était que lié depuis la description, jamais embarqué, pour ne pas s'appliquer à
+Méduse elle-même via `transfer:true`), mais pas ce que l'utilisateur attendait — il voulait la
+même présentation visuelle que Charge furieuse (un effet listé dans l'onglet Effets).
+
+**Correctif** : l'effet "Pétrifié" est maintenant aussi embarqué directement sur la capacité,
+mais en **`transfer:false`** — reste visible dans l'onglet Effets (même patron visuel que Charge
+furieuse) sans jamais s'appliquer à la créature qui possède la capacité. Le lien dans la
+description (vers la copie autonome du compendium Effets, à glisser sur la victime) reste
+inchangé.
+
+**Propagation** : nouvelle entrée `PACK_UPDATES` (`0.6.75-embed-effet-petrifie`, réutilise la
+fonction déjà corrigée de la 0.6.74 — nouvel id nécessaire car l'ancien est déjà marqué appliqué
+chez l'utilisateur et ne se serait pas reproposé).
+
+**Fichiers** : `packs/_build-capacites-combat.js`, `packs/capacites-combat.db`,
+`module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 2) — Effet "Pétrifié" pour Regard pétrifiant (v0.6.73 → v0.6.74)
 
 Retour utilisateur après validation de Charge furieuse : « il faut que tu ajoutes l'effet du
