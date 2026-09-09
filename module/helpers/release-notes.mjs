@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.74": {
+    title: "Version 0.6.74 — Effet \"Pétrifié\" pour Regard pétrifiant",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : comme Charge furieuse, "Regard pétrifiant" a maintenant un document Effet autonome dans le compendium Effets — un marqueur narratif ("Pétrifié (Regard de Méduse)"), à glisser par le MJ directement sur la victime après un échec de jet de sauvegarde (jamais sur la créature elle-même).</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour (Effets, Capacités de Combat).</li>
+      </ul>`
+  },
   "0.6.73": {
     title: "Version 0.6.73 — Charge furieuse : bonus actif en permanence",
     html: `

@@ -15,9 +15,14 @@
  *   autonome dans packs/effets.db (bibliothèque générale) + un lien vers ce document dans
  *   la description, en plus de la copie embarquée sur l'objet lui-même. L'ID de l'effet
  *   doit rester en phase avec CHARGE_FURIEUSE_EFFET_ID dans module/helpers/pack-updates.mjs.
- * - Regard pétrifiant (Méduse) : entièrement narratif (jet de sauvegarde + conséquence
- *   gérés par le MJ), aucun effet embarqué — même principe que les désavantages
- *   narratifs du chantier Effets.
+ * - Regard pétrifiant (Méduse) : le jet de sauvegarde et sa réussite/échec restent gérés
+ *   manuellement par le MJ (aucune ActiveEffect ne peut forcer un jet), mais la conséquence
+ *   en cas d'échec ("être pétrifiée") a maintenant, elle aussi, un document Effet autonome
+ *   (10 septembre 2026, retour utilisateur — cohérence avec Charge furieuse/les avantages) :
+ *   un marqueur purement narratif (aucun `changes`, comme la majorité des désavantages), à
+ *   glisser par le MJ directement sur le token de la victime après un échec — PAS embarqué
+ *   sur la capacité de Méduse elle-même (`transfer:true` l'appliquerait à Méduse, pas à sa
+ *   victime).
  *
  * Run:  node packs/_build-capacites-combat.js
  */
@@ -35,6 +40,9 @@ const effetsPath = path.join(__dirname, "effets.db");
 const CHARGE_FURIEUSE_EFFET_ID = "eEft000000000170";
 const CHARGE_FURIEUSE_CHANGES = [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "2" }];
 const CHARGE_FURIEUSE_UUID_LINK = `@UUID[Compendium.antique.effets.${CHARGE_FURIEUSE_EFFET_ID}]{Charge furieuse}`;
+
+const PETRIFIE_EFFET_ID = "eEft000000000171";
+const PETRIFIE_UUID_LINK = `@UUID[Compendium.antique.effets.${PETRIFIE_EFFET_ID}]{Pétrifié (Regard de Méduse)}`;
 
 const docs = [
   {
@@ -81,8 +89,9 @@ const docs = [
         "<p>Toute créature qui croise le regard de la créature doit réussir un jet de Robustesse " +
         "(difficulté 18) ou être pétrifiée. Les combattants avisés utilisent un miroir ou " +
         "combattent les yeux fermés (-4 à l'attaque).</p>" +
-        "<p><em>Capacité narrative — aucun effet mécanique automatique : le jet de sauvegarde et " +
-        "ses conséquences sont gérés manuellement par le MJ.</em></p>",
+        "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
+        "l'effet ci-dessous directement sur le token de la victime :</em></p>" +
+        `<p>${PETRIFIE_UUID_LINK}</p>`,
       gmNotes: ""
     },
     effects: [],
@@ -96,11 +105,8 @@ const docs = [
 fs.writeFileSync(outPath, docs.map(d => JSON.stringify(d)).join("\n") + "\n", "utf-8");
 console.log(`Écrit ${docs.length} documents dans ${outPath}.`);
 
-const effetsLines = fs.readFileSync(effetsPath, "utf-8").split("\n").filter(Boolean);
-if (effetsLines.some(l => JSON.parse(l)._id === CHARGE_FURIEUSE_EFFET_ID)) {
-  console.log(`${CHARGE_FURIEUSE_EFFET_ID} déjà présent dans ${effetsPath}, rien à faire.`);
-} else {
-  const effetDoc = {
+const libraryEffets = [
+  {
     _id: CHARGE_FURIEUSE_EFFET_ID,
     name: "Charge furieuse",
     img: "icons/svg/sword.svg",
@@ -116,7 +122,34 @@ if (effetsLines.some(l => JSON.parse(l)._id === CHARGE_FURIEUSE_EFFET_ID)) {
     folder: null,
     sort: 0,
     flags: {}
-  };
-  fs.writeFileSync(effetsPath, effetsLines.concat([JSON.stringify(effetDoc)]).join("\n") + "\n", "utf-8");
-  console.log(`Ajouté l'effet Charge furieuse (${CHARGE_FURIEUSE_EFFET_ID}) à ${effetsPath}.`);
+  },
+  {
+    _id: PETRIFIE_EFFET_ID,
+    name: "Pétrifié (Regard de Méduse)",
+    img: "icons/svg/downgrade.svg",
+    type: "base",
+    system: { changes: [] },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description:
+      "<p>Changée en statue de pierre : immobilisée, incapable d'agir. Marqueur narratif — à " +
+      "retirer manuellement par le MJ quand la situation le justifie.</p>",
+    origin: null,
+    tint: "#ffffff",
+    transfer: false,
+    statuses: [],
+    folder: null,
+    sort: 100000,
+    flags: {}
+  }
+];
+
+const effetsLines = fs.readFileSync(effetsPath, "utf-8").split("\n").filter(Boolean);
+const existingIds = new Set(effetsLines.map(l => JSON.parse(l)._id));
+const newEffets = libraryEffets.filter(e => !existingIds.has(e._id));
+if (!newEffets.length) {
+  console.log(`Rien à ajouter à ${effetsPath} (déjà présents).`);
+} else {
+  fs.writeFileSync(effetsPath, effetsLines.concat(newEffets.map(e => JSON.stringify(e))).join("\n") + "\n", "utf-8");
+  console.log(`Ajouté ${newEffets.map(e => e.name).join(", ")} à ${effetsPath}.`);
 }

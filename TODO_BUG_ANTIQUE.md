@@ -186,8 +186,13 @@ lié depuis la description, même patron que les avantages). Voir `JOURNAL.md`, 
 
 **Étape 3 (10 septembre 2026, v0.6.73)** : retour de test — le bonus d'attaque doit être actif
 en permanence, pas désactivé par défaut. Corrigé (compendium + copie déjà glissée sur un PNJ).
-Voir `JOURNAL.md`, session du 10 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu**
-avant de généraliser à toutes les créatures/PNJ existants (reste à faire, pas encore planifié).
+Voir `JOURNAL.md`, session du 10 septembre 2026 (suite). Confirmé par l'utilisateur en jeu.
+
+**Étape 4 (10 septembre 2026, v0.6.74)** : "Regard pétrifiant" a maintenant lui aussi un document
+Effet autonome ("Pétrifié (Regard de Méduse)", marqueur narratif, jamais embarqué sur la capacité
+elle-même) — voir `JOURNAL.md`, session du 10 septembre 2026 (suite 2). **À confirmer par
+l'utilisateur en jeu** avant de généraliser à toutes les créatures/PNJ existants (reste à faire,
+pas encore planifié).
 
 ## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
 

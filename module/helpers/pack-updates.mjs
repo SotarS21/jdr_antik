@@ -253,6 +253,28 @@ export const PACK_UPDATES = [
       "permanence, pas désactivé par défaut. Active l'effet déjà présent (compendium et copies " +
       "déjà glissées sur un PNJ) et corrige le texte de la description en conséquence.",
     apply: applyEnableEffetChargeFurieuse
+  },
+  {
+    id: "0.6.74-create-effet-petrifie",
+    pack: "effets",
+    version: "0.6.74",
+    label: "Effet \"Pétrifié (Regard de Méduse)\" (Capacités de combat)",
+    description:
+      "Crée le document Effet autonome \"Pétrifié (Regard de Méduse)\" dans le compendium " +
+      "Effets — marqueur narratif à glisser par le MJ sur la victime après un échec de jet de " +
+      "sauvegarde (jamais embarqué sur la capacité elle-même). À appliquer avant ou avec le " +
+      "correctif ci-dessous.",
+    apply: applyCreateEffetPetrifie
+  },
+  {
+    id: "0.6.74-link-effet-petrifie",
+    pack: "capacites-combat",
+    version: "0.6.74",
+    label: "Regard pétrifiant — lien vers l'effet",
+    description:
+      "Ajoute le lien vers l'effet \"Pétrifié\" dans la description de la capacité \"Regard " +
+      "pétrifiant\" (compendium et copies déjà glissées sur un PNJ).",
+    apply: applyLinkEffetPetrifie
   }
 ];
 
@@ -822,6 +844,77 @@ async function applyEnableEffetChargeFurieuse() {
     for (const item of actor.items) {
       if (item.type !== "npcability" || cleanName(item.name) !== "Charge furieuse") continue;
       if (await enableChargeFurieuseEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Voir packs/_build-capacites-combat.js. Contrairement à Charge furieuse, cet effet n'est
+ *  JAMAIS embarqué sur la capacité "Regard pétrifiant" elle-même (transfer:true
+ *  l'appliquerait à la créature qui possède la capacité, pas à sa victime) — juste un lien
+ *  dans la description, à glisser manuellement par le MJ sur le token de la victime après un
+ *  échec de jet de sauvegarde. Marqueur narratif (aucun `changes`), même principe que la
+ *  majorité des effets de désavantages. */
+const PETRIFIE_EFFET_ID = "eEft000000000171";
+const PETRIFIE_EFFET_DESCRIPTION =
+  "<p>Changée en statue de pierre : immobilisée, incapable d'agir. Marqueur narratif — à " +
+  "retirer manuellement par le MJ quand la situation le justifie.</p>";
+
+async function applyCreateEffetPetrifie() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  if (index.some(e => e._id === PETRIFIE_EFFET_ID)) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments([{
+    _id: PETRIFIE_EFFET_ID,
+    name: "Pétrifié (Regard de Méduse)",
+    img: "icons/svg/downgrade.svg",
+    type: "base",
+    system: { changes: [] },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: PETRIFIE_EFFET_DESCRIPTION,
+    transfer: false
+  }], { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return 1;
+}
+
+async function linkPetrifieEffect(doc) {
+  const uuidLink = `@UUID[Compendium.antique.effets.${PETRIFIE_EFFET_ID}]{Pétrifié (Regard de Méduse)}`;
+  if (doc.system.description?.includes(uuidLink)) return false;
+  await doc.update({
+    "system.description": doc.system.description +
+      "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
+      "l'effet ci-dessous directement sur le token de la victime :</em></p>" +
+      `<p>${uuidLink}</p>`
+  });
+  return true;
+}
+
+async function applyLinkEffetPetrifie() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.capacites-combat");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Regard pétrifiant") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await linkPetrifieEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "npcability" || cleanName(item.name) !== "Regard pétrifiant") continue;
+      if (await linkPetrifieEffect(item)) fixed++;
     }
   }
 

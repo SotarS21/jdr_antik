@@ -2,6 +2,29 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 2) — Effet "Pétrifié" pour Regard pétrifiant (v0.6.73 → v0.6.74)
+
+Retour utilisateur après validation de Charge furieuse : « il faut que tu ajoutes l'effet du
+regard pétrifiant ». Contrairement à Charge furieuse, aucune ActiveEffect ne peut forcer un jet
+de sauvegarde ou en interpréter le résultat — le jet reste entièrement géré par le MJ. Ce qui
+peut avoir un effet, c'est sa **conséquence** en cas d'échec ("être pétrifiée").
+
+**Décision de conception** : cet effet n'est **jamais embarqué sur la capacité elle-même**
+(`transfer:true` l'appliquerait à Méduse, pas à sa victime) — juste un document autonome dans
+`effets.db` (marqueur narratif, aucun `changes`, même principe que la majorité des désavantages)
+lié depuis la description de "Regard pétrifiant", à glisser manuellement par le MJ sur le token
+de la victime après un échec. Nouvel effet `eEft000000000171` "Pétrifié (Regard de Méduse)".
+
+**Propagation** : 2 nouvelles entrées `PACK_UPDATES` (`0.6.74-create-effet-petrifie`/
+`-link-effet-petrifie`), même patron que Charge furieuse — compendium + copie déjà glissée sur
+un PNJ.
+
+**Fichiers** : `packs/_build-capacites-combat.js`, `packs/capacites-combat.db`,
+`packs/effets.db`, `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite) — Charge furieuse : bonus actif en permanence (v0.6.72 → v0.6.73)
 
 Retour utilisateur après test de la 0.6.72 : « l'effet actif est présent mais désactivé, elle
