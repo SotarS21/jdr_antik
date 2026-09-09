@@ -169,6 +169,11 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       })
     };
 
+    // --- Apothicaire: gates the whole "Ingrédients" tab, same pattern as isMagicPractitioner ---
+    const apothicaireFields = {
+      hasIngredientBag: new fields.BooleanField({ initial: false })
+    };
+
     return {
       ...identityFields,
       ...pvFields,
@@ -179,7 +184,8 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       ...currencyFields,
       ...backgroundFields,
       ...favoriteFields,
-      ...magicFields
+      ...magicFields,
+      ...apothicaireFields
     };
   }
 

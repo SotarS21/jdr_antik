@@ -2,6 +2,27 @@
 
 ---
 
+## Session du 9 septembre 2026 (suite 3) — Case "Sac à ingrédient" (v0.6.69 → v0.6.70)
+
+Point 17 de `TODO_BUG_ANTIQUE.md` : ajouter une case à côté de "Praticien de la magie" (onglet
+Background) qui affiche/cache l'onglet Ingrédients selon son état. Nouveau champ
+`system.hasIngredientBag` (`actor-character.mjs`), même patron que `isMagicPractitioner` : seul
+le lien de navigation de l'onglet est gardé par la condition (pas le contenu de l'onglet
+lui-même), exactement comme pour l'onglet Magie.
+
+**Rétro-compatibilité** : ce champ étant nouveau (`initial: false`), tout personnage existant qui
+a déjà des ingrédients dans son inventaire perdrait sinon l'accès à son propre onglet. Nouveau
+correctif `PACK_UPDATES` (`0.6.70-backfill-ingredient-bag`) qui coche automatiquement la case pour
+tout personnage possédant déjà un objet d'équipement catégorisé apothicaire — premier correctif de
+ce registre à ne toucher que des acteurs du monde, aucun compendium (nouveau groupe "acteurs" dans
+l'écran de mise à jour, pas de vrai nom de compendium associé).
+
+**Fichiers** : `module/data-models/actor-character.mjs`, `templates/actor/character-sheet.hbs`,
+`css/antique.css`, `lang/{fr,en}.json`, `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 9 septembre 2026 (suite) — Recherche de compétence (v0.6.68 → v0.6.69)
 
 Point 14 de `TODO_BUG_ANTIQUE.md` (issu de l'audit de `todo_foundry.txt`) : permettre de taper

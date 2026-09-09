@@ -122,25 +122,31 @@ Champ de recherche ajouté en haut de l'onglet Compétences : la compétence cor
 surlignée (halo doré) pendant que les autres s'estompent, sans rien masquer. Voir `JOURNAL.md`,
 session du 9 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
 
-## 15. Colonnes en haut de la fiche de personnage
+## 15. Colonnes en haut de la fiche de personnage — EN PAUSE (9 septembre 2026)
 
 Demande d'origine : « ajouter des colonnes sur le haut de la fiche de perso » — concept flou, le
-header est actuellement en flex empilé. **À re-préciser avec l'utilisateur** avant tout codage.
-Source : `todo_foundry.txt`, audit du 9 septembre 2026.
-
-## 16. « Charger en async la barre des favoris »
-
-Demande d'origine ambiguë (« Check Ajax »). La barre de favoris a déjà été isolée dans un partial
-Handlebars rendu isolément sans re-render complet de la fiche (v0.6.29, voir
-`TODO_FICHE_PERSONNAGE.md` point 2) — possible que cette demande soit déjà satisfaite en pratique
-et le concept obsolète. **À clarifier avec l'utilisateur ou abandonner**. Source : `todo_foundry.txt`,
-audit du 9 septembre 2026.
-
-## 17. Checkbox « Sac à ingrédient » (onglet Background)
-
-À côté de « Praticien de la magie », ajouter une checkbox qui affiche/cache l'onglet Ingrédients
-selon son état. Tentative commencée puis abandonnée en cours de route, jamais relivrée. Source :
+header est actuellement en flex empilé. Clarifié le 9 septembre 2026 : il s'agit bien de
+réorganiser les champs déjà présents (Nom, Dévotion, Joueur, PV, PM, CA, Avantage temporaire,
+icônes de traits) en colonnes plutôt que d'en ajouter de nouveaux — mais la répartition précise
+reste à trancher, l'utilisateur ayant mis ce point en pause le temps de retrouver l'objectif
+d'origine. **Ne pas coder avant qu'il revienne avec une répartition précise.** Source :
 `todo_foundry.txt`, audit du 9 septembre 2026.
+
+## 16. ~~« Charger en async la barre des favoris »~~ — DÉJÀ FAIT (confirmé 9 septembre 2026)
+
+Demande d'origine ambiguë (« Check Ajax »), mais déjà satisfaite en pratique : `_refreshFavoritesBar()`
+(`actor-sheet.mjs:301-312`) rend la barre de favoris isolément via `renderTemplate()` + remplacement
+du `innerHTML` de son conteneur, sans re-render complet de la fiche ni blocage sur `actor.update()`
+(v0.6.29, voir `TODO_FICHE_PERSONNAGE.md` point 2) — antérieur à ce fichier `todo_foundry.txt`.
+Aucun code à ajouter.
+
+## 17. ~~Checkbox « Sac à ingrédient » (onglet Background)~~ — CORRIGÉ (9 septembre 2026, v0.6.70)
+
+À côté de « Praticien de la magie », nouvelle checkbox « Sac à ingrédient » (`system.hasIngredientBag`)
+qui affiche/cache l'onglet Ingrédients selon son état. Correctif de rétro-compatibilité disponible
+dans l'écran de mise à jour pour cocher automatiquement les personnages qui ont déjà des
+ingrédients. Voir `JOURNAL.md`, session du 9 septembre 2026 (suite 3). **À confirmer par
+l'utilisateur en jeu** (cocher/décocher la case, vérifier que l'onglet apparaît/disparaît).
 
 ## 18. Utilité du champ « composant » des sorts
 

@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.70": {
+    title: "Version 0.6.70 — Case \"Sac à ingrédient\" (onglet Ingrédients optionnel)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouvelle case "Sac à ingrédient" dans l'onglet Background, à côté de "Praticien de la magie" — l'onglet Ingrédients ne s'affiche dans la barre d'onglets que si elle est cochée.</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour : coche automatiquement la case pour tout personnage qui a déjà des objets d'apothicaire dans son inventaire, pour ne pas lui faire perdre l'accès à ce qu'il a déjà.</li>
+      </ul>`
+  },
   "0.6.69": {
     title: "Version 0.6.69 — Recherche de compétence dans l'onglet Compétences",
     html: `

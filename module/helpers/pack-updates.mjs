@@ -207,6 +207,18 @@ export const PACK_UPDATES = [
       "malus chiffré permanent) ; 3 cas ont un vrai malus de compétence (Petite nature, " +
       "Enfant, Introverti).",
     apply: applyEmbedEffetsDesavantages
+  },
+  {
+    id: "0.6.70-backfill-ingredient-bag",
+    pack: "acteurs",
+    version: "0.6.70",
+    label: "Sac à ingrédient — activation rétroactive",
+    description:
+      "Le nouvel onglet \"Ingrédients\" n'est plus visible que si la case \"Sac à ingrédient\" " +
+      "(onglet Background) est cochée. Coche-la automatiquement sur tout personnage qui " +
+      "possède déjà au moins un objet d'inventaire catégorisé apothicaire, pour ne pas lui " +
+      "faire perdre l'accès à son propre inventaire.",
+    apply: applyBackfillIngredientBag
   }
 ];
 
@@ -631,6 +643,23 @@ async function applyFixAthleteEffect() {
       if (item.type !== "advantage" || cleanName(item.name) !== "Athléte") continue;
       if (await fixAthleteEffect(item)) fixed++;
     }
+  }
+
+  return fixed;
+}
+
+/** Backfills system.hasIngredientBag on any character who already has at least one
+ *  apothCategory item, so the new tab-visibility toggle doesn't hide an inventory
+ *  the player already built (see character-sheet.hbs's nav guard on this field). */
+async function applyBackfillIngredientBag() {
+  let fixed = 0;
+
+  for (const actor of game.actors ?? []) {
+    if (actor.type !== "character" || actor.system.hasIngredientBag) continue;
+    const hasIngredients = actor.items.some(i => i.type === "equipment" && i.system.apothCategory);
+    if (!hasIngredients) continue;
+    await actor.update({ "system.hasIngredientBag": true });
+    fixed++;
   }
 
   return fixed;

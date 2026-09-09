@@ -2824,6 +2824,7 @@
   padding: 6px 10px;
   display: flex;
   align-items: center;
+  gap: 20px;
 }
 
 .antique .bg-histoire {

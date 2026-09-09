@@ -72,7 +72,9 @@
     {{#if system.isMagicPractitioner}}
     <a class="item" data-tab="magic">{{localize "ANTIQUE.Tab.Magic"}}</a>
     {{/if}}
+    {{#if system.hasIngredientBag}}
     <a class="item" data-tab="apothicaire">{{localize "ANTIQUE.Tab.Apothicaire"}}</a>
+    {{/if}}
     <a class="item" data-tab="background">{{localize "ANTIQUE.Tab.Background"}}</a>
   </nav>
 
@@ -810,6 +812,10 @@
           <label>
             <input type="checkbox" name="system.isMagicPractitioner" {{#if system.isMagicPractitioner}}checked{{/if}} />
             {{localize "ANTIQUE.Magic.Practitioner"}}
+          </label>
+          <label>
+            <input type="checkbox" name="system.hasIngredientBag" {{#if system.hasIngredientBag}}checked{{/if}} />
+            {{localize "ANTIQUE.Apoth.HasBag"}}
           </label>
         </div>
 
