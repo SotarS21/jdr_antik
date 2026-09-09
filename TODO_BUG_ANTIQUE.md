@@ -157,11 +157,14 @@ restante, purement historique : le changelog de `release-notes.mjs`). Ce point d
 `todo_foundry.txt` est antérieur à cette suppression, jamais nettoyé du fichier source. Aucun
 code à ajouter.
 
-## 19. Erreur d'ouverture de fenêtre à l'édition d'un ingrédient
+## 19. ~~Erreur d'ouverture de fenêtre à l'édition d'un ingrédient~~ — DÉJÀ FAIT (confirmé 9 septembre 2026)
 
-Signalement d'une erreur lors de l'édition d'un ingrédient (fenêtre qui s'ouvre en erreur) — jamais
-investigué (distinct du bug 404 `potion.svg` déjà corrigé en v0.6.39, voir point 2 ci-dessus).
-Source : `todo_foundry.txt`, audit du 9 septembre 2026.
+Ré-audit du 9 septembre 2026 : contrairement à ma note précédente, ce n'est **pas** distinct du
+point 2. Dans `todo_foundry.txt`, les 4 lignes consécutives sans saut de paragraphe (« Erreur à
+l'édition d'ingredient la fenettre s'ouvre » suivi des deux lignes de console « Failed to load
+resource ... 404 ... potion.svg ») ne forment qu'un seul signalement — exactement le bug déjà
+corrigé en v0.6.39 (point 2 ci-dessus : icône `potion.svg` inexistante dans la bibliothèque
+Foundry). Doublon, aucun code à ajouter.
 
 ## 20. Compendium de compétences de combat PNJ façon bestiaire mythologique
 
