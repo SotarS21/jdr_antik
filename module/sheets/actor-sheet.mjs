@@ -580,10 +580,14 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".actor-effect-toggle").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest("[data-effect-id]");
         const effect = this.actor.effects.get(li.dataset.effectId);
-        if (effect) effect.update({ disabled: !effect.disabled }).then(() => this.render({ force: true }));
+        if (!effect) return;
+        const focusState = captureFocusState(this.element);
+        await effect.update({ disabled: !effect.disabled });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 

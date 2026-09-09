@@ -2,6 +2,33 @@
 
 ---
 
+## Session du 9 septembre 2026 — Audit `todo_foundry.txt` + correctif focus/scroll effet (v0.6.67 → v0.6.68)
+
+Demande utilisateur : reprendre le travail, en repartant du fichier de suivi personnel
+`C:\Users\arthe\Desktop\todo_foundry.txt` (hors du dépôt, jamais vu par Claude avant cette
+session — mélange les projets "antique" et un projet "pirate" séparé, avec des items marqués
+`done`/`[X]` de façon inconsistante). Audit croisé contre `JOURNAL.md` et le code réel (pas de
+confiance aveugle aux marqueurs du fichier) : la quasi-totalité des items antique étaient déjà
+livrés ; 9 points réellement ouverts identifiés et ajoutés à `TODO_BUG_ANTIQUE.md`
+(points 13 à 21).
+
+**Point 13 traité dans la foulée** : "focus perdu après validation" recouvrait deux cas
+distincts dans le fichier source.
+- **Champ de compétence + Entrée** : déjà corrigé de longue date par le mécanisme générique
+  `preventEnterSubmit` (`module/helpers/sheet-utils.mjs`), qui bloque la soumission implicite du
+  formulaire sur Entrée pour tous les champs texte/nombre — couvre `.skill-bonus-input` sans
+  modification nécessaire. Le signalement du fichier source datait d'avant l'ajout de ce
+  mécanisme.
+- **Toggle actif/inactif d'un effet (onglet Traits)** : bug réel, non couvert. Le handler
+  `.actor-effect-toggle` (`actor-sheet.mjs`) faisait un `render({force:true})` brut après
+  `effect.update()`, sans passer par `captureFocusState`/`restoreFocusState` comme le reste de la
+  fiche (`_processSubmitData`, barre de favoris). Corrigé avec le même patron déjà établi.
+
+**Fichiers** : `module/sheets/actor-sheet.mjs`, `TODO_BUG_ANTIQUE.md`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 3 septembre 2026 (suite 11) — 90 nouveaux Effets pour les Désavantages (v0.6.66 → v0.6.67)
 
 Demande utilisateur : appliquer le même travail qu'aux avantages, côté désavantages — "fait

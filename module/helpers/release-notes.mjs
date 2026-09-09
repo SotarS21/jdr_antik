@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.68": {
+    title: "Version 0.6.68 — Correctif : focus/scroll perdu au toggle d'un effet (onglet Traits)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : cliquer sur actif/inactif pour un effet dans l'onglet Traits faisait remonter la fiche en haut et perdait le focus, au lieu de rester à l'endroit où on était.</li>
+        <li>Le cas similaire signalé pour les champs de compétence (Entrée qui fait remonter la fiche) était déjà corrigé depuis longtemps par le même mécanisme général de préservation du focus/scroll.</li>
+      </ul>`
+  },
   "0.6.67": {
     title: "Version 0.6.67 — 90 nouveaux Effets pour les Désavantages",
     html: `

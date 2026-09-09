@@ -107,11 +107,14 @@ Cause : le `<select>` d'emplacement (fiche d'objet) n'avait pas de largeur/flex-
 partager l'espace avec son label. Corrigé pour tous les `<select>` des fiches d'objet (même défaut
 partagé). Voir `JOURNAL.md`, session du 31 août 2026 (suite 11).
 
-## 13. Focus perdu après validation — compétence (Entrée) et toggle d'effet (Traits)
+## 13. ~~Focus perdu après validation — compétence (Entrée) et toggle d'effet (Traits)~~ — CORRIGÉ (9 septembre 2026, v0.6.68)
 
 Deux cas distincts remontant en haut de la fiche au lieu de garder le focus/scroll à l'endroit où
-l'utilisateur était : (a) valider un champ de compétence avec Entrée, (b) cliquer sur actif/inactif
-d'un effet dans l'onglet Traits. Source : `todo_foundry.txt` (Desktop), audit du 9 septembre 2026.
+l'utilisateur était : (a) valider un champ de compétence avec Entrée — **déjà corrigé de longue
+date** par le mécanisme générique `preventEnterSubmit`, aucun changement nécessaire ; (b) cliquer
+sur actif/inactif d'un effet dans l'onglet Traits — bug réel, corrigé en appliquant le même patron
+`captureFocusState`/`restoreFocusState` que le reste de la fiche. Voir `JOURNAL.md`, session du
+9 septembre 2026. **À confirmer par l'utilisateur en jeu.**
 
 ## 14. Recherche/surlignage d'une compétence dans l'onglet Compétences
 
