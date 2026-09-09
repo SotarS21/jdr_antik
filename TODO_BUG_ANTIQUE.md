@@ -166,12 +166,19 @@ resource ... 404 ... potion.svg ») ne forment qu'un seul signalement — exacte
 corrigé en v0.6.39 (point 2 ci-dessus : icône `potion.svg` inexistante dans la bibliothèque
 Foundry). Doublon, aucun code à ajouter.
 
-## 20. Compendium de compétences de combat PNJ façon bestiaire mythologique
+## 20. Compendium de compétences de combat PNJ façon bestiaire mythologique — EN COURS (architecture livrée, v0.6.71)
 
 Demande d'origine : ajouter aux PNJ des compétences de combat avec un compendium associé, en
 s'inspirant des descriptions de créatures mythologiques. Seul un simple tableau de bonus d'attaque
-par catégorie a été livré (v0.6.44, voir point 8 ci-dessus) — la version « compendium de
-compétences » n'a pas été construite. Source : `todo_foundry.txt`, audit du 9 septembre 2026.
+par catégorie avait été livré (v0.6.44, voir point 8 ci-dessus).
+
+**Étape 1 (9 septembre 2026, v0.6.71)** : architecture livrée — nouveau type d'objet
+`npcability`, nouveau compendium "Capacités de Combat (PNJ)", nouvelle section dans l'onglet
+Combat du PNJ, avec effet mécanique réel (pas juste du texte), comme demandé. **2 exemples
+seulement** pour valider le patron avant généralisation (Charge furieuse, Regard pétrifiant) —
+voir `JOURNAL.md`, session du 9 septembre 2026 (suite 4). **À confirmer par l'utilisateur en
+jeu** avant de généraliser à toutes les créatures/PNJ existants (reste à faire, pas encore
+planifié).
 
 ## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
 

@@ -2,6 +2,52 @@
 
 ---
 
+## Session du 9 septembre 2026 (suite 4) — Capacités de combat PNJ : architecture + 2 exemples (v0.6.70 → v0.6.71)
+
+Point 20 de `TODO_BUG_ANTIQUE.md` : « sur les pnj, ajouter des compétences de combat, avec un
+compendium associé, s'inspirant des descriptions des créatures mythologiques ». Clarifié avec
+l'utilisateur avant codage : capacités avec un **vrai effet mécanique** (pas juste du texte),
+comme les effets d'avantages PJ — et démarrage petit (architecture + 2-3 exemples à valider)
+plutôt que tout généraliser d'un coup, chantier trop gros (comparable à celui des Effets PJ) pour
+une seule session.
+
+**Architecture** (même patron que les avantages/effets PJ) : nouveau type d'objet `npcability`
+(`module/data-models/items/item-npcability.mjs` — juste `description` + `gmNotes`, pas de
+`cout`/`limitation`, concepts PJ), enregistré dans `template.json`/`antique.mjs`, nouvelle fiche
+`templates/item/npcability-sheet.hbs` (copie d'`advantage-sheet.hbs` sans les champs de coût),
+nouveau compendium **"Capacités de Combat (PNJ)"** (`packs/capacites-combat.db`, type Item).
+Nouvelle section dans l'onglet Combat du PNJ (GM only, déjà gardé par `{{#if isGM}}`) : tableau
+accordéon identique à celui des Avantages/Désavantages PJ (`_prepareNpcAbilityItems()` dans
+`npc-sheet.mjs`, calque de `_prepareTraitItems()` d'`actor-sheet.mjs`), glisser-déposer depuis le
+compendium fonctionne sans changement (pas dans `STACKABLE_TYPES`, tombe sur la création
+normale).
+
+**2 exemples repris de `packs/creatures.db`** (`packs/_build-capacites-combat.js`, nouveau) :
+- **Charge furieuse** (Minotaure) : `+2 attaque` mécanisé via un effet embarqué ADD sur
+  `system.attackBonuses.armeBlanche.total`, **désactivé par défaut** (le MJ l'active pendant la
+  charge, le désactive ensuite) — pas de bouton dédié, juste le toggle actif/inactif déjà présent
+  sur la fiche de l'objet. Le `+4 dégâts` annoncé reste **narratif** : les armes de PNJ n'ont
+  qu'une formule de dégâts en texte libre (pas de champ de bonus numérique séparé comme
+  `armeADistance.damageBonus` côté PJ), rien à sommer automatiquement dessus sans construire une
+  infra dédiée — hors scope de cette première étape.
+- **Regard pétrifiant** (Méduse) : entièrement narratif (jet de sauvegarde + conséquence gérés
+  par le MJ), aucun effet embarqué — même limite déjà rencontrée et acceptée pour la quasi-
+  totalité des désavantages PJ (conséquence conditionnelle, pas un malus chiffré permanent).
+
+**Décision de scope** : contrairement aux effets PJ, l'effet de Charge furieuse n'est **pas**
+dupliqué dans le compendium `effets` — embarqué uniquement sur l'objet capacité, plus simple tant
+qu'aucune réutilisation croisée entre capacités n'est nécessaire. À revoir si ça change en
+généralisant à toutes les créatures.
+
+**Fichiers** : `template.json`, `antique.mjs`,
+`module/data-models/items/item-npcability.mjs` (nouveau),
+`templates/item/npcability-sheet.hbs` (nouveau), `module/sheets/item-sheet.mjs`,
+`module/sheets/npc-sheet.mjs`, `templates/actor/npc-sheet.hbs`, `lang/{fr,en}.json`,
+`system.json`, `packs/capacites-combat.db` (nouveau),
+`packs/_build-capacites-combat.js` (nouveau), `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 9 septembre 2026 (suite 3) — Case "Sac à ingrédient" (v0.6.69 → v0.6.70)
 
 Point 17 de `TODO_BUG_ANTIQUE.md` : ajouter une case à côté de "Praticien de la magie" (onglet

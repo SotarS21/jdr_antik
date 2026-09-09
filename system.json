@@ -2,7 +2,7 @@
   "id": "antique",
   "title": "Antique",
   "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.70",
+  "version": "0.6.71",
   "compatibility": {
     "minimum": "12",
     "verified": "14"
@@ -139,6 +139,12 @@
       "name": "sorts",
       "label": "Sorts & Rituels",
       "path": "packs/sorts.db",
+      "type": "Item"
+    },
+    {
+      "name": "capacites-combat",
+      "label": "Capacités de Combat (PNJ)",
+      "path": "packs/capacites-combat.db",
       "type": "Item"
     }
   ],

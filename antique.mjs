@@ -12,6 +12,7 @@ import { AntiqueDisadvantage } from "./module/data-models/items/item-disadvantag
 import { AntiqueBlessing } from "./module/data-models/items/item-blessing.mjs";
 import { AntiqueSpell } from "./module/data-models/items/item-spell.mjs";
 import { AntiqueCurse } from "./module/data-models/items/item-curse.mjs";
+import { AntiqueNpcAbility } from "./module/data-models/items/item-npcability.mjs";
 
 // Import Document classes
 import { AntiqueActor } from "./module/documents/actor.mjs";
@@ -58,6 +59,7 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.blessing = AntiqueBlessing;
   CONFIG.Item.dataModels.spell = AntiqueSpell;
   CONFIG.Item.dataModels.curse = AntiqueCurse;
+  CONFIG.Item.dataModels.npcability = AntiqueNpcAbility;
 
   // Register Actor sheets
   foundry.documents.collections.Actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);

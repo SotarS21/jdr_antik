@@ -12,7 +12,7 @@
     }
   },
   "Item": {
-    "types": ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "effect", "curse"],
+    "types": ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "effect", "curse", "npcability"],
     "weapon": {
       "templates": []
     },
@@ -35,6 +35,9 @@
       "templates": []
     },
     "curse": {
+      "templates": []
+    },
+    "npcability": {
       "templates": []
     }
   }

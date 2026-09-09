@@ -221,6 +221,44 @@
         </table>
       </div>
 
+      {{!-- Combat Abilities (item type "npcability") --}}
+      <div class="traits-section">
+        <h2>{{localize "ANTIQUE.Combat.NpcAbilities"}}
+          <a class="item-create" data-type="npcability" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+        </h2>
+        <table class="item-list traits-table">
+          <thead>
+            <tr>
+              <th class="trait-img-col"></th>
+              <th>{{localize "ANTIQUE.Traits.TraitName"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each npcAbilities as |ab|}}
+            <tr class="item trait-row" data-item-id="{{ab.id}}">
+              <td class="trait-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{ab.img}}" width="24" height="24" /></td>
+              <td class="trait-name"><i class="fas fa-caret-right trait-toggle-icon"></i> {{ab.name}}</td>
+              <td class="item-controls">
+                <a class="item-edit"><i class="fas fa-edit"></i></a>
+                <a class="item-delete"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            <tr class="trait-detail-row" data-item-id="{{ab.id}}">
+              <td colspan="3">
+                <div class="trait-detail-content">
+                  {{{ab.system.description}}}
+                  {{#if ab.hasEffects}}
+                  <div class="trait-effects-list"><strong>{{localize "ANTIQUE.Traits.Effect"}} :</strong> {{ab.effectsSummary}}</div>
+                  {{/if}}
+                </div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
     </div>
     {{/if}}
 

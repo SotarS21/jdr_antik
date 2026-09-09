@@ -92,6 +92,7 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         linkedAmmoQty: linkedAmmo?.system.quantity ?? null
       };
     });
+    context.npcAbilities = this._prepareNpcAbilityItems();
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
     context.spells = this._prepareSpellItems();
     context.instantSpells = context.spells.filter(s => !s.ritual);
@@ -172,6 +173,13 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       });
     });
 
+    this.element.querySelectorAll(".trait-row").forEach(el => {
+      el.addEventListener("click", ev => {
+        if (ev.target.closest("a, input, button")) return;
+        el.classList.toggle("expanded");
+      });
+    });
+
     this.element.querySelectorAll(".item-create").forEach(el => {
       el.addEventListener("click", this._onItemCreate.bind(this));
     });
@@ -248,6 +256,31 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this.actor }),
       flavor
+    });
+  }
+
+  /** Combat abilities (item type "npcability", see item-npcability.mjs) — same accordion
+   *  pattern as the character sheet's advantages/disadvantages (_prepareTraitItems in
+   *  actor-sheet.mjs): description + a plain-language summary of any embedded mechanical
+   *  effect, shown expanded on click. Purely narrative abilities (e.g. Regard pétrifiant)
+   *  simply have no effect and hasEffects stays false. */
+  _prepareNpcAbilityItems() {
+    return this.actor.items.filter(i => i.type === "npcability").map(item => {
+      const effectLabels = [];
+      for (const effect of item.effects) {
+        if (effect.disabled) continue;
+        for (const change of effect.changes) {
+          effectLabels.push(CONFIG.ANTIQUE.getEffectChangeLabel(change));
+        }
+      }
+      return {
+        id: item.id,
+        name: item.name,
+        img: item.img,
+        system: item.system,
+        effectsSummary: effectLabels.join(", "),
+        hasEffects: effectLabels.length > 0
+      };
     });
   }
 

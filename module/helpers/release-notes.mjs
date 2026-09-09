@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.71": {
+    title: "Version 0.6.71 — Capacités de combat pour les PNJ (architecture + 2 exemples)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau type d'objet "Capacité de combat" + nouveau compendium "Capacités de Combat (PNJ)", glissable sur un PNJ (nouvelle section dans l'onglet Combat, GM only).</li>
+        <li>2 exemples pour valider l'architecture avant de généraliser : Charge furieuse (Minotaure — effet actif +2 attaque, désactivé par défaut) et Regard pétrifiant (Méduse — purement narratif, pas d'effet).</li>
+      </ul>`
+  },
   "0.6.70": {
     title: "Version 0.6.70 — Case \"Sac à ingrédient\" (onglet Ingrédients optionnel)",
     html: `

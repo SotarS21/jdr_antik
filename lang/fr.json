@@ -125,6 +125,7 @@
   "ANTIQUE.Combat.AbilityModUntrained": "Ne s'applique pas : compétence non entraînée",
   "ANTIQUE.Combat.SkillBonus": "Bonus Compétence",
   "ANTIQUE.Combat.Weapons": "Armes",
+  "ANTIQUE.Combat.NpcAbilities": "Capacités de combat",
 
   "ANTIQUE.WeaponCat.MainNue": "Main nue",
   "ANTIQUE.WeaponCat.ArmeBlanche": "Arme blanche",
@@ -324,6 +325,7 @@
   "ANTIQUE.ItemType.Spell": "Sort",
   "ANTIQUE.ItemType.Effect": "Effet",
   "ANTIQUE.ItemType.Curse": "Malédiction",
+  "ANTIQUE.ItemType.Npcability": "Capacité de combat",
 
   "ANTIQUE.Dodge.Hint": "Réaction : coûte -1 temporaire à cette compétence (cumulatif ce tour-ci), remis à zéro au début du prochain tour de cet acteur",
   "ANTIQUE.Dodge.ReactionFlavor": "Réaction (-1 temporaire ce tour-ci)",
