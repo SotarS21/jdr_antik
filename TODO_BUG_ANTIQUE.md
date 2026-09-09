@@ -145,15 +145,17 @@ Aucun code à ajouter.
 À côté de « Praticien de la magie », nouvelle checkbox « Sac à ingrédient » (`system.hasIngredientBag`)
 qui affiche/cache l'onglet Ingrédients selon son état. Correctif de rétro-compatibilité disponible
 dans l'écran de mise à jour pour cocher automatiquement les personnages qui ont déjà des
-ingrédients. Voir `JOURNAL.md`, session du 9 septembre 2026 (suite 3). **À confirmer par
-l'utilisateur en jeu** (cocher/décocher la case, vérifier que l'onglet apparaît/disparaît).
+ingrédients. Voir `JOURNAL.md`, session du 9 septembre 2026 (suite 3). **Confirmé par
+l'utilisateur en jeu** (9 septembre 2026).
 
-## 18. Utilité du champ « composant » des sorts
+## 18. ~~Utilité du champ « composant » des sorts~~ — DÉJÀ FAIT (confirmé 9 septembre 2026)
 
-Vérifier si le champ composant des sorts sert réellement à quelque chose ou doit être supprimé —
-jamais tranché (à ne pas confondre avec le champ `costText`, déjà traité en v0.6.41, voir point 3
-ci-dessus, qui concernait spécifiquement les rituels). Source : `todo_foundry.txt`, audit du
-9 septembre 2026.
+Doublon du point 3 ci-dessus : le champ composant a été confirmé pure duplication de `costText`
+et retiré (schéma, template, affichage chat, `_build-sorts.js`, langues, `sorts.db`) en v0.6.41.
+Vérifié le 9 septembre 2026 : aucune trace du champ nulle part dans le code actuel (seule mention
+restante, purement historique : le changelog de `release-notes.mjs`). Ce point de
+`todo_foundry.txt` est antérieur à cette suppression, jamais nettoyé du fichier source. Aucun
+code à ajouter.
 
 ## 19. Erreur d'ouverture de fenêtre à l'édition d'un ingrédient
 
