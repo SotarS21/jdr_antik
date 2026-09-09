@@ -447,6 +447,22 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       });
     }
 
+    // Live highlight for the Compétences tab — dims non-matching rows instead of hiding
+    // them, so the user keeps their bearings across ability groups. Read-only too, like
+    // the ingredient search above.
+    const skillSearch = this.element.querySelector(".skill-search-input");
+    if (skillSearch) {
+      skillSearch.addEventListener("input", ev => {
+        const query = ev.currentTarget.value.trim().toLowerCase();
+        this.element.querySelectorAll(".skill-row").forEach(row => {
+          const name = row.querySelector(".skill-name")?.textContent.toLowerCase() ?? "";
+          const isMatch = !query || name.includes(query);
+          row.classList.toggle("search-match", !!query && isMatch);
+          row.classList.toggle("search-dim", !!query && !isMatch);
+        });
+      });
+    }
+
     if (!this.isEditable) return;
 
     this.element.querySelectorAll(".ability-roll").forEach(el => {

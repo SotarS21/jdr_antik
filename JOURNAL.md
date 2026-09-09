@@ -2,6 +2,24 @@
 
 ---
 
+## Session du 9 septembre 2026 (suite) — Recherche de compétence (v0.6.68 → v0.6.69)
+
+Point 14 de `TODO_BUG_ANTIQUE.md` (issu de l'audit de `todo_foundry.txt`) : permettre de taper
+une recherche pour mettre en évidence une compétence dans l'onglet Compétences.
+
+**Choix** : surlignage (dim des non-correspondances + halo doré sur les correspondances) plutôt
+que masquage — contrairement au filtre déjà existant sur l'onglet Ingrédients
+(`.ingredient-search`, qui masque les lignes non trouvées), garder toutes les compétences
+visibles évite de perdre ses repères entre les 6 groupes de caractéristiques. Champ de recherche
+sans `name` (pas de donnée d'acteur, juste un filtre d'affichage JS), même patron d'écoute
+`"input"` que la recherche d'ingrédients, placé hors de la garde `isEditable` pour fonctionner
+aussi en lecture seule.
+
+**Fichiers** : `templates/actor/character-sheet.hbs`, `module/sheets/actor-sheet.mjs`,
+`css/antique.css`, `lang/{fr,en}.json`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 9 septembre 2026 — Audit `todo_foundry.txt` + correctif focus/scroll effet (v0.6.67 → v0.6.68)
 
 Demande utilisateur : reprendre le travail, en repartant du fichier de suivi personnel

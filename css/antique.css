@@ -1165,6 +1165,29 @@
   cursor: help;
 }
 
+.antique .skills-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: var(--antique-brown);
+}
+
+.antique .skills-search-bar .skill-search-input {
+  flex: 1;
+  padding: 4px 8px;
+}
+
+.antique .skill-row.search-match {
+  outline: 2px solid var(--antique-gold);
+  outline-offset: -1px;
+  background: rgba(201, 162, 39, 0.28);
+}
+
+.antique .skill-row.search-dim {
+  opacity: 0.3;
+}
+
 .antique .ingredient-search-bar {
   display: flex;
   align-items: center;

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.69": {
+    title: "Version 0.6.69 — Recherche de compétence dans l'onglet Compétences",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : un champ de recherche en haut de l'onglet Compétences de la fiche de personnage — la compétence recherchée est mise en évidence (surlignée) pendant que les autres s'estompent, sans rien masquer ni changer de disposition.</li>
+      </ul>`
+  },
   "0.6.68": {
     title: "Version 0.6.68 — Correctif : focus/scroll perdu au toggle d'un effet (onglet Traits)",
     html: `

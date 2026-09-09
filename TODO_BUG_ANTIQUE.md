@@ -116,11 +116,11 @@ sur actif/inactif d'un effet dans l'onglet Traits — bug réel, corrigé en app
 `captureFocusState`/`restoreFocusState` que le reste de la fiche. Voir `JOURNAL.md`, session du
 9 septembre 2026. **À confirmer par l'utilisateur en jeu.**
 
-## 14. Recherche/surlignage d'une compétence dans l'onglet Compétences
+## 14. ~~Recherche/surlignage d'une compétence dans l'onglet Compétences~~ — CORRIGÉ (9 septembre 2026, v0.6.69)
 
-Permettre de taper une recherche pour mettre en évidence une compétence dans la longue liste de
-l'onglet Compétences de la fiche PJ. Jamais implémenté. Source : `todo_foundry.txt`, audit du
-9 septembre 2026.
+Champ de recherche ajouté en haut de l'onglet Compétences : la compétence correspondante est
+surlignée (halo doré) pendant que les autres s'estompent, sans rien masquer. Voir `JOURNAL.md`,
+session du 9 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
 
 ## 15. Colonnes en haut de la fiche de personnage
 
