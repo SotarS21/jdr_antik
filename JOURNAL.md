@@ -2,6 +2,40 @@
 
 ---
 
+## Session du 10 septembre 2026 — Correctifs capacités de combat : fiche + lien vers l'effet (v0.6.71 → v0.6.72)
+
+Retour utilisateur après test de la 0.6.71 : « le compendium existe bien, j'arrive à ajouter la
+capacité de combat sur le pnj, cependant quand je clique sur l'item dans le compendium je ne vois
+pas la description » + demande explicite de reprendre le patron des avantages (document Effet
+autonome + lien dans la description, pas seulement la copie embarquée).
+
+**Bug n°1 — description invisible** : `antique.mjs`, l'enregistrement de `AntiqueItemSheet`
+(`Items.registerSheet`) restreint les types pris en charge à une liste figée
+(`weapon, equipment, advantage, disadvantage, blessing, spell, curse`) — **`npcability` n'y
+figurait pas**, ajouté à la 0.6.71 mais oublié à cet endroit. Foundry retombait donc sur une
+fiche générique qui ne connaît pas le champ `description`, d'où la fiche vide à l'ouverture
+depuis le compendium (fonctionnait quand même en liste sur le PNJ, qui lit `system.description`
+directement côté serveur sans passer par la fiche). Corrigé : type ajouté à la liste.
+
+**Bug n°2 — pas de document Effet autonome** : contrairement aux avantages (`Cuir de Héros`,
+`Mule`...), "Charge furieuse" n'avait qu'une copie d'effet embarquée directement sur l'objet,
+sans document autonome dans le compendium Effets ni lien dans sa description — choix de scope
+délibéré de la session précédente, revu à la demande de l'utilisateur pour rester cohérent avec
+le patron des avantages. Ajouté : `eEft000000000170` dans `effets.db` (bibliothèque générale,
+réutilisable/glissable sur un token) + lien `@UUID[...]` dans la description de la capacité, même
+patron que `_build-effet-mule.js`/`MULE_EFFET_ID` dans `pack-updates.mjs`.
+
+**Propagation** : 2 nouvelles entrées `PACK_UPDATES`
+(`0.6.72-create-effet-charge-furieuse`/`-link-effet-charge-furieuse`) — création du document
+Effet + correction de la description sur le compendium "capacites-combat" et toute copie déjà
+glissée sur un PNJ (le cas de l'utilisateur, qui avait déjà testé le drag&drop en 0.6.71).
+
+**Fichiers** : `antique.mjs`, `packs/capacites-combat.db`, `packs/effets.db`,
+`packs/_build-capacites-combat.js`, `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 9 septembre 2026 (suite 4) — Capacités de combat PNJ : architecture + 2 exemples (v0.6.70 → v0.6.71)
 
 Point 20 de `TODO_BUG_ANTIQUE.md` : « sur les pnj, ajouter des compétences de combat, avec un

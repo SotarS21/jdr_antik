@@ -10,7 +10,10 @@
  *   ActiveEffect embarqué, désactivé par défaut — le MJ l'active pendant la charge). Le
  *   bonus de dégâts (+4) reste narratif : les armes de PNJ n'ont pas de champ numérique de
  *   bonus de dégâts séparé (juste une formule de dégâts en texte libre), donc rien à
- *   sommer automatiquement dessus.
+ *   sommer automatiquement dessus. Même patron que les avantages : un document Effet
+ *   autonome dans packs/effets.db (bibliothèque générale) + un lien vers ce document dans
+ *   la description, en plus de la copie embarquée sur l'objet lui-même. L'ID de l'effet
+ *   doit rester en phase avec CHARGE_FURIEUSE_EFFET_ID dans module/helpers/pack-updates.mjs.
  * - Regard pétrifiant (Méduse) : entièrement narratif (jet de sauvegarde + conséquence
  *   gérés par le MJ), aucun effet embarqué — même principe que les désavantages
  *   narratifs du chantier Effets.
@@ -26,6 +29,11 @@ function generateEmbeddedId(seed) {
 }
 
 const outPath = path.join(__dirname, "capacites-combat.db");
+const effetsPath = path.join(__dirname, "effets.db");
+
+const CHARGE_FURIEUSE_EFFET_ID = "eEft000000000170";
+const CHARGE_FURIEUSE_CHANGES = [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "2" }];
+const CHARGE_FURIEUSE_UUID_LINK = `@UUID[Compendium.antique.effets.${CHARGE_FURIEUSE_EFFET_ID}]{Charge furieuse}`;
 
 const docs = [
   {
@@ -39,7 +47,8 @@ const docs = [
         "<p><strong>+2 à l'attaque</strong> (effet ci-dessous, désactivé par défaut — à activer " +
         "pendant la charge, désactiver ensuite) et <strong>+4 aux dégâts</strong>, à ajouter " +
         "manuellement au jet de dégâts (aucun champ de bonus de dégâts séparé n'existe pour les " +
-        "armes de PNJ).</p>",
+        "armes de PNJ).</p>" +
+        `<p>${CHARGE_FURIEUSE_UUID_LINK}</p>`,
       gmNotes: ""
     },
     effects: [{
@@ -47,7 +56,7 @@ const docs = [
       name: "Charge furieuse",
       img: "icons/svg/sword.svg",
       type: "base",
-      system: { changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "2" }] },
+      system: { changes: CHARGE_FURIEUSE_CHANGES },
       disabled: true,
       transfer: true,
       duration: { startTime: null, seconds: null, rounds: null, turns: null },
@@ -86,3 +95,28 @@ const docs = [
 
 fs.writeFileSync(outPath, docs.map(d => JSON.stringify(d)).join("\n") + "\n", "utf-8");
 console.log(`Écrit ${docs.length} documents dans ${outPath}.`);
+
+const effetsLines = fs.readFileSync(effetsPath, "utf-8").split("\n").filter(Boolean);
+if (effetsLines.some(l => JSON.parse(l)._id === CHARGE_FURIEUSE_EFFET_ID)) {
+  console.log(`${CHARGE_FURIEUSE_EFFET_ID} déjà présent dans ${effetsPath}, rien à faire.`);
+} else {
+  const effetDoc = {
+    _id: CHARGE_FURIEUSE_EFFET_ID,
+    name: "Charge furieuse",
+    img: "icons/svg/sword.svg",
+    type: "base",
+    system: { changes: CHARGE_FURIEUSE_CHANGES },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: "<p>+2 à l'attaque (armes de corps à corps), tant que cet effet est actif.</p>",
+    origin: null,
+    tint: "#ffffff",
+    transfer: true,
+    statuses: [],
+    folder: null,
+    sort: 0,
+    flags: {}
+  };
+  fs.writeFileSync(effetsPath, effetsLines.concat([JSON.stringify(effetDoc)]).join("\n") + "\n", "utf-8");
+  console.log(`Ajouté l'effet Charge furieuse (${CHARGE_FURIEUSE_EFFET_ID}) à ${effetsPath}.`);
+}

@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.72": {
+    title: "Version 0.6.72 — Correctifs : fiche des capacités de combat, lien vers l'effet",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les capacités de combat (nouveau type d'objet de la 0.6.71) n'affichaient pas leur description à l'ouverture — le type n'était pas encore reconnu par le système pour choisir la bonne fiche.</li>
+        <li><strong>Ajouté</strong> : comme pour les avantages, "Charge furieuse" a maintenant un document Effet autonome dans le compendium Effets (réutilisable/glissable sur un token), lié depuis sa description — en plus de la copie déjà embarquée sur la capacité.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour (Effets, Capacités de Combat).</li>
+      </ul>`
+  },
   "0.6.71": {
     title: "Version 0.6.71 — Capacités de combat pour les PNJ (architecture + 2 exemples)",
     html: `

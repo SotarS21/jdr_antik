@@ -88,7 +88,7 @@ Hooks.once("init", function () {
   // Register Item sheets
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
   foundry.documents.collections.Items.registerSheet("antique", AntiqueItemSheet, {
-    types: ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "curse"],
+    types: ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "curse", "npcability"],
     makeDefault: true,
     label: "ANTIQUE.Sheet.Item"
   });

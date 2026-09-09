@@ -219,6 +219,29 @@ export const PACK_UPDATES = [
       "possède déjà au moins un objet d'inventaire catégorisé apothicaire, pour ne pas lui " +
       "faire perdre l'accès à son propre inventaire.",
     apply: applyBackfillIngredientBag
+  },
+  {
+    id: "0.6.72-create-effet-charge-furieuse",
+    pack: "effets",
+    version: "0.6.72",
+    label: "Effet \"Charge furieuse\" (Capacités de combat)",
+    description:
+      "Crée le document Effet autonome \"Charge furieuse\" (+2 attaque, armes de corps à corps) " +
+      "dans le compendium Effets — même patron que les avantages, à appliquer avant ou avec le " +
+      "correctif ci-dessous.",
+    apply: applyCreateEffetChargeFurieuse
+  },
+  {
+    id: "0.6.72-link-effet-charge-furieuse",
+    pack: "capacites-combat",
+    version: "0.6.72",
+    label: "Charge furieuse — lien vers l'effet + fiche corrigée",
+    description:
+      "Ajoute le lien vers l'effet dans la description de la capacité \"Charge furieuse\" " +
+      "(compendium et copies déjà glissées sur un PNJ) — la première version n'avait ni le " +
+      "lien, ni la bonne fiche d'objet (le type \"npcability\" n'était pas encore reconnu par " +
+      "le système, corrigé dans ce même déploiement).",
+    apply: applyLinkEffetChargeFurieuse
   }
 ];
 
@@ -660,6 +683,86 @@ async function applyBackfillIngredientBag() {
     if (!hasIngredients) continue;
     await actor.update({ "system.hasIngredientBag": true });
     fixed++;
+  }
+
+  return fixed;
+}
+
+/** Voir packs/_build-capacites-combat.js, dont ces données/fonctions reprennent la logique.
+ *  Même patron que Mule (MULE_EFFET_ID et consorts, plus haut) : un document Effet
+ *  autonome dans le compendium "effets" (bibliothèque générale, réutilisable/glissable
+ *  sur n'importe quel token) + un lien vers ce document dans la description de la
+ *  capacité, en plus de la copie déjà embarquée sur l'objet lui-même. */
+const CHARGE_FURIEUSE_EFFET_ID = "eEft000000000170";
+const CHARGE_FURIEUSE_CHANGES = [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "2" }];
+const CHARGE_FURIEUSE_EFFET_DESCRIPTION = "<p>+2 à l'attaque (armes de corps à corps), tant que cet effet est actif.</p>";
+
+async function applyCreateEffetChargeFurieuse() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  if (index.some(e => e._id === CHARGE_FURIEUSE_EFFET_ID)) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments([{
+    _id: CHARGE_FURIEUSE_EFFET_ID,
+    name: "Charge furieuse",
+    img: "icons/svg/sword.svg",
+    type: "base",
+    system: { changes: CHARGE_FURIEUSE_CHANGES },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: CHARGE_FURIEUSE_EFFET_DESCRIPTION,
+    transfer: true
+  }], { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return 1;
+}
+
+async function linkChargeFurieuseEffect(doc) {
+  let changed = false;
+
+  const uuidLink = `@UUID[Compendium.antique.effets.${CHARGE_FURIEUSE_EFFET_ID}]{Charge furieuse}`;
+  if (!doc.system.description?.includes(uuidLink)) {
+    await doc.update({ "system.description": doc.system.description + `<p>${uuidLink}</p>` });
+    changed = true;
+  }
+
+  if (!doc.effects.size) {
+    await doc.createEmbeddedDocuments("ActiveEffect", [{
+      name: "Charge furieuse",
+      img: doc.img,
+      "system.changes": CHARGE_FURIEUSE_CHANGES,
+      disabled: true,
+      transfer: true
+    }]);
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyLinkEffetChargeFurieuse() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.capacites-combat");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Charge furieuse") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await linkChargeFurieuseEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "npcability" || cleanName(item.name) !== "Charge furieuse") continue;
+      if (await linkChargeFurieuseEffect(item)) fixed++;
+    }
   }
 
   return fixed;

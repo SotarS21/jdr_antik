@@ -176,9 +176,14 @@ par catégorie avait été livré (v0.6.44, voir point 8 ci-dessus).
 `npcability`, nouveau compendium "Capacités de Combat (PNJ)", nouvelle section dans l'onglet
 Combat du PNJ, avec effet mécanique réel (pas juste du texte), comme demandé. **2 exemples
 seulement** pour valider le patron avant généralisation (Charge furieuse, Regard pétrifiant) —
-voir `JOURNAL.md`, session du 9 septembre 2026 (suite 4). **À confirmer par l'utilisateur en
-jeu** avant de généraliser à toutes les créatures/PNJ existants (reste à faire, pas encore
-planifié).
+voir `JOURNAL.md`, session du 9 septembre 2026 (suite 4).
+
+**Étape 2 (10 septembre 2026, v0.6.72)** : retour de test — description invisible à l'ouverture
+depuis le compendium (type `npcability` oublié dans l'enregistrement de la fiche d'objet,
+corrigé) + document Effet autonome manquant pour "Charge furieuse" (ajouté dans `effets.db`,
+lié depuis la description, même patron que les avantages). Voir `JOURNAL.md`, session du
+10 septembre 2026. **À confirmer par l'utilisateur en jeu** avant de généraliser à toutes les
+créatures/PNJ existants (reste à faire, pas encore planifié).
 
 ## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
 
