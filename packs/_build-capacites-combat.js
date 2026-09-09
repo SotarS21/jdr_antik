@@ -15,16 +15,18 @@
  *   autonome dans packs/effets.db (bibliothèque générale) + un lien vers ce document dans
  *   la description, en plus de la copie embarquée sur l'objet lui-même. L'ID de l'effet
  *   doit rester en phase avec CHARGE_FURIEUSE_EFFET_ID dans module/helpers/pack-updates.mjs.
- * - Regard pétrifiant (Méduse) : le jet de sauvegarde et sa réussite/échec restent gérés
- *   manuellement par le MJ (aucune ActiveEffect ne peut forcer un jet), mais la conséquence
- *   en cas d'échec ("être pétrifiée") a un document Effet autonome (10 septembre 2026, retour
- *   utilisateur — cohérence avec Charge furieuse/les avantages) : un marqueur purement
- *   narratif (aucun `changes`, comme la majorité des désavantages). Embarqué avec
- *   `transfer:false` (10 septembre 2026, suite) pour rester visible dans l'onglet Effets de
- *   la capacité (même patron visuel que Charge furieuse) SANS s'appliquer à Méduse
- *   elle-même — `transfer:true` l'aurait appliqué à la créature qui possède la capacité, pas
- *   à sa victime. Le MJ glisse la copie autonome (liée dans la description) sur le token de
- *   la victime après un échec de jet.
+ * - Regard pétrifiant (Méduse) : `saveAbility`/`saveDC` (Robustesse, DC 18) affichent un
+ *   bouton "Jet de sauvegarde" sur la carte de chat quand la capacité est postée (voir
+ *   AntiqueItem#postToChat) — la victime clique elle-même, sur son propre client, avec les
+ *   stats de son personnage assigné (game.user.character, pas celles du posteur — voir le
+ *   hook ".roll-save-button" dans antique.mjs). La conséquence en cas d'échec ("être
+ *   pétrifiée") a un document Effet autonome (10 septembre 2026, retour utilisateur —
+ *   cohérence avec Charge furieuse/les avantages) : un marqueur purement narratif (aucun
+ *   `changes`, comme la majorité des désavantages). Embarqué avec `transfer:false` (10
+ *   septembre 2026, suite) pour rester visible dans l'onglet Effets de la capacité (même
+ *   patron visuel que Charge furieuse) SANS s'appliquer à Méduse elle-même — `transfer:true`
+ *   l'aurait appliqué à la créature qui possède la capacité, pas à sa victime. Le MJ glisse
+ *   la copie autonome (liée dans la description) sur le token de la victime après un échec.
  *
  * Run:  node packs/_build-capacites-combat.js
  */
@@ -91,10 +93,14 @@ const docs = [
         "<p>Toute créature qui croise le regard de la créature doit réussir un jet de Robustesse " +
         "(difficulté 18) ou être pétrifiée. Les combattants avisés utilisent un miroir ou " +
         "combattent les yeux fermés (-4 à l'attaque).</p>" +
-        "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
-        "l'effet ci-dessous directement sur le token de la victime :</em></p>" +
+        "<p><em>Poster cette capacité dans le chat (clic sur son nom ou son icône) fait " +
+        "apparaître un bouton pour que la victime lance elle-même son jet de sauvegarde. En " +
+        "cas d'échec, glisser l'effet ci-dessous directement sur le token de la victime :" +
+        "</em></p>" +
         `<p>${PETRIFIE_UUID_LINK}</p>`,
-      gmNotes: ""
+      gmNotes: "",
+      saveAbility: "robustesse",
+      saveDC: 18
     },
     effects: [{
       _id: generateEmbeddedId("aNca000000000002_embedded_effect"),

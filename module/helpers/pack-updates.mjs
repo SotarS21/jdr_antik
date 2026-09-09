@@ -288,6 +288,18 @@ export const PACK_UPDATES = [
       "Effets comme pour Charge furieuse, mais ne s'applique jamais à la créature qui possède " +
       "la capacité (compendium et copies déjà glissées sur un PNJ).",
     apply: applyLinkEffetPetrifie
+  },
+  {
+    id: "0.6.76-add-save-to-petrifiant",
+    pack: "capacites-combat",
+    version: "0.6.76",
+    label: "Regard pétrifiant — bouton de jet de sauvegarde",
+    description:
+      "Ajoute un bouton \"Jet de sauvegarde\" (Robustesse DC 18) sur la carte de chat de " +
+      "\"Regard pétrifiant\" — la victime clique elle-même, sur son propre client, avec les " +
+      "stats de son personnage assigné. Met aussi à jour le paragraphe de description qui " +
+      "l'explique (compendium et copies déjà glissées sur un PNJ).",
+    apply: applyAddSaveToPetrifiant
   }
 ];
 
@@ -948,6 +960,60 @@ async function applyLinkEffetPetrifie() {
     for (const item of actor.items) {
       if (item.type !== "npcability" || cleanName(item.name) !== "Regard pétrifiant") continue;
       if (await linkPetrifieEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Retour utilisateur : bouton "Jet de sauvegarde" (Robustesse DC 18) sur la carte de chat
+ *  de "Regard pétrifiant", pour que la victime lance elle-même son jet — voir
+ *  packs/_build-capacites-combat.js et AntiqueItem#postToChat. Backfill des champs
+ *  saveAbility/saveDC (absents des versions précédentes) + remplacement du paragraphe
+ *  de description devenu obsolète ("le jet de sauvegarde reste géré manuellement par le
+ *  MJ", qui ne mentionnait pas encore le bouton). */
+async function addSaveToPetrifiant(doc) {
+  let changed = false;
+
+  if (!doc.system.saveAbility || !doc.system.saveDC) {
+    await doc.update({ "system.saveAbility": "robustesse", "system.saveDC": 18 });
+    changed = true;
+  }
+
+  const oldText =
+    "<p><em>Le jet de sauvegarde reste géré manuellement par le MJ. En cas d'échec, glisser " +
+    "l'effet ci-dessous directement sur le token de la victime :</em></p>";
+  const newText =
+    "<p><em>Poster cette capacité dans le chat (clic sur son nom ou son icône) fait " +
+    "apparaître un bouton pour que la victime lance elle-même son jet de sauvegarde. En cas " +
+    "d'échec, glisser l'effet ci-dessous directement sur le token de la victime :</em></p>";
+  if (doc.system.description?.includes(oldText)) {
+    await doc.update({ "system.description": doc.system.description.replace(oldText, newText) });
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyAddSaveToPetrifiant() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.capacites-combat");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Regard pétrifiant") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await addSaveToPetrifiant(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "npcability" || cleanName(item.name) !== "Regard pétrifiant") continue;
+      if (await addSaveToPetrifiant(item)) fixed++;
     }
   }
 

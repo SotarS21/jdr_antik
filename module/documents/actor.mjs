@@ -1,4 +1,4 @@
-import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { buildAttackFlavor, buildSaveFlavor } from "../helpers/rolls.mjs";
 import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
 import { refreshSheet } from "../helpers/sheet-utils.mjs";
 
@@ -159,8 +159,11 @@ export class AntiqueActor extends Actor {
   /**
    * Roll a save.
    * @param {string} saveKey - The save key (reflexes, robustesse, volonte)
+   * @param {number} [dc=0] - Optional difficulty to beat (ex. a monster ability's chat
+   *   button, "Robustesse DC 18") — shows a success/failure result under the roll. 0 = no
+   *   comparison, same plain roll as before.
    */
-  async rollSave(saveKey) {
+  async rollSave(saveKey, dc = 0) {
     const save = this.system.saves[saveKey];
     if (!save) return;
     const label = game.i18n.localize(CONFIG.ANTIQUE.saves[saveKey]?.label ?? saveKey);
@@ -168,7 +171,7 @@ export class AntiqueActor extends Actor {
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${label} - Jet de sauvegarde`
+      flavor: buildSaveFlavor(`${label} - Jet de sauvegarde`, roll.total, dc)
     });
     return roll;
   }

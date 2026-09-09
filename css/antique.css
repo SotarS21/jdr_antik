@@ -2138,6 +2138,30 @@
   color: var(--antique-brown, #5c3d2e);
 }
 
+.antique.item-chat-card .roll-save-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: var(--antique-dark, #2b1d14);
+  background: linear-gradient(180deg, var(--antique-gold, #c9a227), var(--antique-dark-gold, #9a7a1e));
+  border: 2px solid var(--antique-dark-gold, #9a7a1e);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.antique.item-chat-card .roll-save-button:hover {
+  background: linear-gradient(180deg, #ddb62f, var(--antique-gold, #c9a227));
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+}
+
 .antique.item-chat-card .card-content {
   font-size: 0.9em;
   border-top: 1px solid var(--antique-border, #8b7355);

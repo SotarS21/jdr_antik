@@ -398,3 +398,26 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     canvas.app.view.oncontextmenu = onCancel;
   });
 });
+
+// Capacité de combat PNJ avec un jet de sauvegarde (ex. Regard pétrifiant, "Robustesse DC
+// 18") — le joueur visé clique lui-même ce bouton, sur son propre client, pour lancer le
+// jet avec les stats de SON personnage assigné (game.user.character), pas celles de qui a
+// posté le message.
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const element = html;
+  if (!element) return;
+  const btn = element.querySelector(".roll-save-button");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const saveAbility = btn.dataset.saveAbility;
+    const dc = Number(btn.dataset.saveDc) || 0;
+    const actor = game.user.character;
+    if (!actor) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Errors.NoAssignedCharacter"));
+      return;
+    }
+    await actor.rollSave(saveAbility, dc);
+  });
+});

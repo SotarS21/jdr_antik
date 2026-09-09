@@ -68,3 +68,33 @@ export function buildAttackFlavor(baseFlavor, rollTotal) {
       <span class="attack-outcome">${resultLabel}</span>
     </div>`;
 }
+
+/**
+ * Build a save result flavor HTML that includes a success/failure comparison against a
+ * fixed difficulty (ex. a monster ability's "Robustesse DC 18"). Unlike buildAttackFlavor,
+ * the DC is never hidden — it's a known, printed value on the ability itself, not a
+ * secret NPC stat.
+ * @param {string} baseFlavor - The base flavor text (e.g. "Robustesse - Jet de sauvegarde")
+ * @param {number} rollTotal - The total of the save roll
+ * @param {number} dc - The difficulty to beat
+ * @returns {string} HTML flavor string
+ */
+export function buildSaveFlavor(baseFlavor, rollTotal, dc) {
+  if (!dc || dc <= 0) return baseFlavor;
+
+  const success = rollTotal >= dc;
+  // Reuses the attack-hit/attack-miss classes/CSS (buildAttackFlavor above) — same
+  // green/red success-failure look, just a different label ("Réussite"/"Échec" instead of
+  // "Touché"/"Manqué").
+  const resultClass = success ? "attack-hit" : "attack-miss";
+  const resultLabel = success
+    ? game.i18n.localize("ANTIQUE.Save.Success")
+    : game.i18n.localize("ANTIQUE.Save.Failure");
+  const vsLabel = game.i18n.format("ANTIQUE.Save.VsDC", { dc });
+
+  return `${baseFlavor}
+    <div class="antique attack-result ${resultClass}">
+      <span class="attack-vs">${vsLabel}</span>
+      <span class="attack-outcome">${resultLabel}</span>
+    </div>`;
+}

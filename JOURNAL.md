@@ -2,6 +2,49 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 4) — Capacités cliquables dans le chat + bouton de jet de sauvegarde (v0.6.75 → v0.6.76)
+
+Demande utilisateur (dernière du soir) : « il faut que les capacités de combat soient cliquables
+pour les afficher dans le chat. Que la description soit visible dans le chat avec l'icône et le
+titre. Pour le regard pétrifiant il faut que le pj visé puisse cliquer sur un bouton pour lancer
+un test de sauvegarde avec ses stats mais avec la difficulté indiquée dans la description, il
+faut aussi qu'il y ait le lien de l'effet "Pétrifier" (vers le compendium) pour que le MJ puisse
+l'appliquer sur le pj ou des pnj [...] ».
+
+**Cliquable + chat** : `AntiqueItem#postToChat()` (générique, déjà utilisé par armes/sorts/etc.)
+fonctionnait déjà pour ce type d'objet (icône + titre + description) — seule l'icône de la ligne
+avait la classe `.item-chat` dans `npc-sheet.hbs`, le nom n'en avait pas. Ajouté sur le nom aussi
+(`.item-chat.clickable`), même patron que `.spell-chat` pour les sorts.
+
+**Bouton de jet de sauvegarde** : nouveaux champs `system.saveAbility`/`system.saveDC` sur le
+type `npcability` (`item-npcability.mjs`), configurables dans la fiche (`npcability-sheet.hbs`,
+liste déroulante Réflexe/Robustesse/Volonté + DC). `postToChat()` ajoute un bouton
+"Jet de sauvegarde" sur la carte quand ces champs sont renseignés. Le clic (nouveau hook
+`renderChatMessageHTML` sur `.roll-save-button` dans `antique.mjs`) utilise volontairement
+`game.user.character` (le personnage assigné à l'utilisateur qui clique, PAS l'acteur qui a
+posté le message) : c'est bien la victime, sur son propre client, qui lance son propre jet.
+`AntiqueActor#rollSave()` accepte maintenant un DC optionnel, affiche réussite/échec (nouveau
+`buildSaveFlavor()` dans `rolls.mjs`, réutilise les classes CSS `attack-hit`/`attack-miss` déjà
+existantes). "Regard pétrifiant" configuré avec Robustesse DC 18 — le lien vers l'effet
+"Pétrifié" (compendium Effets) était déjà présent dans la description depuis la session
+précédente, donc déjà inclus automatiquement dans la carte de chat (Foundry enrichit les liens
+`@UUID[...]` dans le contenu d'un ChatMessage).
+
+**Propagation** : nouvelle entrée `PACK_UPDATES` (`0.6.76-add-save-to-petrifiant`) pour
+appliquer `saveAbility`/`saveDC` + le nouveau texte de description au compendium et à la copie
+déjà glissée sur le PNJ de l'utilisateur.
+
+**Fichiers** : `templates/actor/npc-sheet.hbs`, `module/documents/item.mjs`,
+`module/documents/actor.mjs`, `module/helpers/rolls.mjs`,
+`module/data-models/items/item-npcability.mjs`, `templates/item/npcability-sheet.hbs`,
+`module/sheets/item-sheet.mjs`, `antique.mjs`, `css/antique.css`, `lang/{fr,en}.json`,
+`packs/_build-capacites-combat.js`, `packs/capacites-combat.db`,
+`module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+**Fin de session** — utilisateur signale s'arrêter là pour ce soir après ce traitement.
+
+---
+
 ## Session du 10 septembre 2026 (suite 3) — Correctif : effet "Pétrifié" visible dans l'onglet Effets (v0.6.74 → v0.6.75)
 
 Retour utilisateur après test de la 0.6.74 : « toujours rien dans regard pétrifiant ». Clarifié

@@ -112,6 +112,11 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
         .map(([key, cfg]) => ({ key, label: game.i18n.localize(cfg.label) }));
     }
 
+    if (this.item.type === "npcability") {
+      context.saveOptions = Object.entries(CONFIG.ANTIQUE.saves)
+        .map(([key, cfg]) => ({ key, label: game.i18n.localize(cfg.label) }));
+    }
+
     // Real stock (character's "Ingrédients" tab) matching each checklist entry
     // by name — surfaced read-only next to the row so the link between the
     // spell's declarative ingredients and the actor's actual inventory is visible.

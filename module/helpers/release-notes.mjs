@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.76": {
+    title: "Version 0.6.76 — Capacités de combat cliquables + bouton de jet de sauvegarde",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : cliquer sur le nom ou l'icône d'une capacité de combat (PNJ) l'affiche maintenant dans le chat, avec son icône, son titre et sa description.</li>
+        <li><strong>Ajouté</strong> : "Regard pétrifiant" affiche un bouton "Jet de sauvegarde (Robustesse DC 18)" sur sa carte de chat — le joueur visé clique lui-même, sur son propre client, avec les stats de son personnage assigné, et voit un résultat réussite/échec.</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour (Capacités de Combat).</li>
+      </ul>`
+  },
   "0.6.75": {
     title: "Version 0.6.75 — Correctif : effet \"Pétrifié\" visible dans l'onglet Effets",
     html: `

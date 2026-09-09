@@ -4,6 +4,7 @@
   "ANTIQUE.Sheet.Item": "Fiche d'objet Antique",
 
   "ANTIQUE.Errors.OrphanedTokenSheet": "Ce token n'existe plus sur la scène : la fiche se ferme.",
+  "ANTIQUE.Errors.NoAssignedCharacter": "Aucun personnage assigné à cet utilisateur.",
 
   "ANTIQUE.Tab.Identity": "Identit\u00e9",
   "ANTIQUE.Tab.Abilities": "Caract. & Comp.",
@@ -108,6 +109,10 @@
   "ANTIQUE.Attack.Hit": "Touch\u00e9 !",
   "ANTIQUE.Attack.Miss": "Rat\u00e9 !",
   "ANTIQUE.Attack.VsCA": "contre",
+  "ANTIQUE.Save.Success": "Réussite !",
+  "ANTIQUE.Save.Failure": "Échec !",
+  "ANTIQUE.Save.VsDC": "Difficulté {dc}",
+  "ANTIQUE.Save.RollButton": "Jet de sauvegarde",
 
   "ANTIQUE.Combat.CA": "Classe d'armure",
   "ANTIQUE.Combat.CAHiddenFromPlayers": "Classe d'armure masquée aux joueurs",
@@ -326,6 +331,9 @@
   "ANTIQUE.ItemType.Effect": "Effet",
   "ANTIQUE.ItemType.Curse": "Malédiction",
   "ANTIQUE.ItemType.Npcability": "Capacité de combat",
+  "ANTIQUE.NpcAbility.SaveAbility": "Jet de sauvegarde",
+  "ANTIQUE.NpcAbility.NoSave": "Aucun",
+  "ANTIQUE.NpcAbility.SaveDC": "Difficulté (DC)",
 
   "ANTIQUE.Dodge.Hint": "Réaction : coûte -1 temporaire à cette compétence (cumulatif ce tour-ci), remis à zéro au début du prochain tour de cet acteur",
   "ANTIQUE.Dodge.ReactionFlavor": "Réaction (-1 temporaire ce tour-ci)",

@@ -196,8 +196,15 @@ Effet autonome ("Pétrifié (Regard de Méduse)", marqueur narratif). Voir `JOUR
 restait vide (l'effet n'était que lié dans la description, pas embarqué). Corrigé : effet
 maintenant aussi embarqué sur la capacité en `transfer:false` (visible dans l'onglet Effets,
 sans s'appliquer à la créature elle-même). Voir `JOURNAL.md`, session du 10 septembre 2026
-(suite 3). **À confirmer par l'utilisateur en jeu** avant de généraliser à toutes les
-créatures/PNJ existants (reste à faire, pas encore planifié).
+(suite 3).
+
+**Étape 6 (10 septembre 2026, v0.6.76)** : capacités de combat cliquables (nom + icône) pour
+les afficher dans le chat (icône, titre, description) — patron déjà générique
+(`AntiqueItem#postToChat()`), juste la classe manquante sur le nom. "Regard pétrifiant" affiche
+désormais un bouton "Jet de sauvegarde" (Robustesse DC 18) sur sa carte de chat : le joueur visé
+clique lui-même, avec les stats de son personnage assigné. Voir `JOURNAL.md`, session du
+10 septembre 2026 (suite 4). **À confirmer par l'utilisateur en jeu** avant de généraliser à
+toutes les créatures/PNJ existants (reste à faire, pas encore planifié).
 
 ## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
 
