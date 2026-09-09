@@ -2,6 +2,22 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite) — Charge furieuse : bonus actif en permanence (v0.6.72 → v0.6.73)
+
+Retour utilisateur après test de la 0.6.72 : « l'effet actif est présent mais désactivé, elle
+devrait être par défaut activé ». Revirement assumé par rapport au choix initial (conditionnel,
+à activer manuellement pendant la charge) — l'effet embarqué de "Charge furieuse" passe
+`disabled: false` par défaut, à la fois dans `packs/_build-capacites-combat.js`/
+`capacites-combat.db` (pour toute future installation fraîche) et via un nouveau correctif
+`PACK_UPDATES` (`0.6.73-enable-effet-charge-furieuse`) pour activer l'effet déjà créé désactivé
+sur le compendium et la copie déjà glissée sur le PNJ de l'utilisateur — corrige aussi le texte
+de la description qui mentionnait encore "désactivé par défaut".
+
+**Fichiers** : `packs/_build-capacites-combat.js`, `packs/capacites-combat.db`,
+`module/helpers/pack-updates.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 — Correctifs capacités de combat : fiche + lien vers l'effet (v0.6.71 → v0.6.72)
 
 Retour utilisateur après test de la 0.6.71 : « le compendium existe bien, j'arrive à ajouter la

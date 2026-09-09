@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.73": {
+    title: "Version 0.6.73 — Charge furieuse : bonus actif en permanence",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : retour utilisateur après test — le bonus d'attaque de "Charge furieuse" doit être actif en permanence, pas désactivé par défaut. Corrigé sur le compendium et sur les copies déjà glissées sur un PNJ.</li>
+        <li>Correctif de propagation disponible dans l'écran de mise à jour (Capacités de Combat).</li>
+      </ul>`
+  },
   "0.6.72": {
     title: "Version 0.6.72 — Correctifs : fiche des capacités de combat, lien vers l'effet",
     html: `

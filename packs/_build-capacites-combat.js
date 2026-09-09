@@ -7,8 +7,9 @@
  *
  * Contenu repris de packs/creatures.db (champ "notes") :
  * - Charge furieuse (Minotaure) : mécanique pour la partie chiffrable (+2 attaque, via un
- *   ActiveEffect embarqué, désactivé par défaut — le MJ l'active pendant la charge). Le
- *   bonus de dégâts (+4) reste narratif : les armes de PNJ n'ont pas de champ numérique de
+ *   ActiveEffect embarqué, actif en permanence — décision utilisateur du 10 septembre 2026,
+ *   après avoir testé la version "désactivé par défaut" du premier jet). Le bonus de dégâts
+ *   (+4) reste narratif : les armes de PNJ n'ont pas de champ numérique de
  *   bonus de dégâts séparé (juste une formule de dégâts en texte libre), donc rien à
  *   sommer automatiquement dessus. Même patron que les avantages : un document Effet
  *   autonome dans packs/effets.db (bibliothèque générale) + un lien vers ce document dans
@@ -44,10 +45,9 @@ const docs = [
     system: {
       description:
         "<p>En chargeant en ligne droite, la créature frappe avec une force dévastatrice.</p>" +
-        "<p><strong>+2 à l'attaque</strong> (effet ci-dessous, désactivé par défaut — à activer " +
-        "pendant la charge, désactiver ensuite) et <strong>+4 aux dégâts</strong>, à ajouter " +
-        "manuellement au jet de dégâts (aucun champ de bonus de dégâts séparé n'existe pour les " +
-        "armes de PNJ).</p>" +
+        "<p><strong>+2 à l'attaque</strong> (effet ci-dessous, actif en permanence) et " +
+        "<strong>+4 aux dégâts</strong>, à ajouter manuellement au jet de dégâts (aucun champ de " +
+        "bonus de dégâts séparé n'existe pour les armes de PNJ).</p>" +
         `<p>${CHARGE_FURIEUSE_UUID_LINK}</p>`,
       gmNotes: ""
     },
@@ -57,7 +57,7 @@ const docs = [
       img: "icons/svg/sword.svg",
       type: "base",
       system: { changes: CHARGE_FURIEUSE_CHANGES },
-      disabled: true,
+      disabled: false,
       transfer: true,
       duration: { startTime: null, seconds: null, rounds: null, turns: null },
       flags: {},

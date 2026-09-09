@@ -242,6 +242,17 @@ export const PACK_UPDATES = [
       "lien, ni la bonne fiche d'objet (le type \"npcability\" n'était pas encore reconnu par " +
       "le système, corrigé dans ce même déploiement).",
     apply: applyLinkEffetChargeFurieuse
+  },
+  {
+    id: "0.6.73-enable-effet-charge-furieuse",
+    pack: "capacites-combat",
+    version: "0.6.73",
+    label: "Charge furieuse — bonus actif en permanence",
+    description:
+      "Retour utilisateur : le bonus d'attaque de \"Charge furieuse\" doit être actif en " +
+      "permanence, pas désactivé par défaut. Active l'effet déjà présent (compendium et copies " +
+      "déjà glissées sur un PNJ) et corrige le texte de la description en conséquence.",
+    apply: applyEnableEffetChargeFurieuse
   }
 ];
 
@@ -734,7 +745,7 @@ async function linkChargeFurieuseEffect(doc) {
       name: "Charge furieuse",
       img: doc.img,
       "system.changes": CHARGE_FURIEUSE_CHANGES,
-      disabled: true,
+      disabled: false,
       transfer: true
     }]);
     changed = true;
@@ -762,6 +773,55 @@ async function applyLinkEffetChargeFurieuse() {
     for (const item of actor.items) {
       if (item.type !== "npcability" || cleanName(item.name) !== "Charge furieuse") continue;
       if (await linkChargeFurieuseEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Retour utilisateur après test de la 0.6.72 : le bonus doit être actif en permanence, pas
+ *  désactivé par défaut (revirement par rapport au choix initial de "conditionnel, à activer
+ *  pendant la charge") — corrige l'effet embarqué déjà créé désactivé par le correctif
+ *  ci-dessus, sur le compendium et toute copie déjà glissée sur un PNJ. */
+async function enableChargeFurieuseEffect(doc) {
+  let changed = false;
+
+  const effect = doc.effects.find(e => e.name === "Charge furieuse");
+  if (effect?.disabled) {
+    await effect.update({ disabled: false });
+    changed = true;
+  }
+
+  const oldText = "(effet ci-dessous, désactivé par défaut — à activer pendant la charge, désactiver ensuite)";
+  if (doc.system.description?.includes(oldText)) {
+    await doc.update({
+      "system.description": doc.system.description.replace(oldText, "(effet ci-dessous, actif en permanence)")
+    });
+    changed = true;
+  }
+
+  return changed;
+}
+
+async function applyEnableEffetChargeFurieuse() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.capacites-combat");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (cleanName(indexEntry.name) !== "Charge furieuse") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await enableChargeFurieuseEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "npcability" || cleanName(item.name) !== "Charge furieuse") continue;
+      if (await enableChargeFurieuseEffect(item)) fixed++;
     }
   }
 

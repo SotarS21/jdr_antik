@@ -182,8 +182,12 @@ voir `JOURNAL.md`, session du 9 septembre 2026 (suite 4).
 depuis le compendium (type `npcability` oublié dans l'enregistrement de la fiche d'objet,
 corrigé) + document Effet autonome manquant pour "Charge furieuse" (ajouté dans `effets.db`,
 lié depuis la description, même patron que les avantages). Voir `JOURNAL.md`, session du
-10 septembre 2026. **À confirmer par l'utilisateur en jeu** avant de généraliser à toutes les
-créatures/PNJ existants (reste à faire, pas encore planifié).
+10 septembre 2026.
+
+**Étape 3 (10 septembre 2026, v0.6.73)** : retour de test — le bonus d'attaque doit être actif
+en permanence, pas désactivé par défaut. Corrigé (compendium + copie déjà glissée sur un PNJ).
+Voir `JOURNAL.md`, session du 10 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu**
+avant de généraliser à toutes les créatures/PNJ existants (reste à faire, pas encore planifié).
 
 ## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
 
