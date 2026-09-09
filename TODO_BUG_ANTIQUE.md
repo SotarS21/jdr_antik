@@ -107,6 +107,65 @@ Cause : le `<select>` d'emplacement (fiche d'objet) n'avait pas de largeur/flex-
 partager l'espace avec son label. Corrigé pour tous les `<select>` des fiches d'objet (même défaut
 partagé). Voir `JOURNAL.md`, session du 31 août 2026 (suite 11).
 
+## 13. Focus perdu après validation — compétence (Entrée) et toggle d'effet (Traits)
+
+Deux cas distincts remontant en haut de la fiche au lieu de garder le focus/scroll à l'endroit où
+l'utilisateur était : (a) valider un champ de compétence avec Entrée, (b) cliquer sur actif/inactif
+d'un effet dans l'onglet Traits. Source : `todo_foundry.txt` (Desktop), audit du 9 septembre 2026.
+
+## 14. Recherche/surlignage d'une compétence dans l'onglet Compétences
+
+Permettre de taper une recherche pour mettre en évidence une compétence dans la longue liste de
+l'onglet Compétences de la fiche PJ. Jamais implémenté. Source : `todo_foundry.txt`, audit du
+9 septembre 2026.
+
+## 15. Colonnes en haut de la fiche de personnage
+
+Demande d'origine : « ajouter des colonnes sur le haut de la fiche de perso » — concept flou, le
+header est actuellement en flex empilé. **À re-préciser avec l'utilisateur** avant tout codage.
+Source : `todo_foundry.txt`, audit du 9 septembre 2026.
+
+## 16. « Charger en async la barre des favoris »
+
+Demande d'origine ambiguë (« Check Ajax »). La barre de favoris a déjà été isolée dans un partial
+Handlebars rendu isolément sans re-render complet de la fiche (v0.6.29, voir
+`TODO_FICHE_PERSONNAGE.md` point 2) — possible que cette demande soit déjà satisfaite en pratique
+et le concept obsolète. **À clarifier avec l'utilisateur ou abandonner**. Source : `todo_foundry.txt`,
+audit du 9 septembre 2026.
+
+## 17. Checkbox « Sac à ingrédient » (onglet Background)
+
+À côté de « Praticien de la magie », ajouter une checkbox qui affiche/cache l'onglet Ingrédients
+selon son état. Tentative commencée puis abandonnée en cours de route, jamais relivrée. Source :
+`todo_foundry.txt`, audit du 9 septembre 2026.
+
+## 18. Utilité du champ « composant » des sorts
+
+Vérifier si le champ composant des sorts sert réellement à quelque chose ou doit être supprimé —
+jamais tranché (à ne pas confondre avec le champ `costText`, déjà traité en v0.6.41, voir point 3
+ci-dessus, qui concernait spécifiquement les rituels). Source : `todo_foundry.txt`, audit du
+9 septembre 2026.
+
+## 19. Erreur d'ouverture de fenêtre à l'édition d'un ingrédient
+
+Signalement d'une erreur lors de l'édition d'un ingrédient (fenêtre qui s'ouvre en erreur) — jamais
+investigué (distinct du bug 404 `potion.svg` déjà corrigé en v0.6.39, voir point 2 ci-dessus).
+Source : `todo_foundry.txt`, audit du 9 septembre 2026.
+
+## 20. Compendium de compétences de combat PNJ façon bestiaire mythologique
+
+Demande d'origine : ajouter aux PNJ des compétences de combat avec un compendium associé, en
+s'inspirant des descriptions de créatures mythologiques. Seul un simple tableau de bonus d'attaque
+par catégorie a été livré (v0.6.44, voir point 8 ci-dessus) — la version « compendium de
+compétences » n'a pas été construite. Source : `todo_foundry.txt`, audit du 9 septembre 2026.
+
+## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
+
+Après consommation, chaque ingrédient se resynchronise avec le stock réel (livré, voir point 3
+ci-dessus) mais le recochage visuel automatique dans la fiche du sort après incantation n'est pas
+confirmé. **À vérifier en jeu** avant de coder quoi que ce soit de plus. Source : `todo_foundry.txt`,
+audit du 9 septembre 2026.
+
 ---
 
 ## Notes techniques générales
