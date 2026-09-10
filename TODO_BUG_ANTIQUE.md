@@ -227,18 +227,17 @@ boutons de contrôle de la ligne (actif/inactif, éditer, supprimer). Corrigé e
 `pointer-events: auto` explicitement sur ces boutons. Voir `JOURNAL.md`, session du
 10 septembre 2026 (suite 10). **À confirmer par l'utilisateur en jeu.**
 
-## 23. Regard pétrifiant — bouton de jet de sauvegarde manquant (signalé)
+## 23. Regard pétrifiant — bouton de jet de sauvegarde manquant (probablement lié au point 26)
 
 Signalé le 10 septembre 2026, dans la même session que sa création (v0.6.76) et sa confirmation
 ("ça marche bien"). Vérifié : la donnée source (`packs/capacites-combat.db`, doc "Regard
 pétrifiant") a bien `saveAbility: "robustesse"`/`saveDC: 18`, et sa copie embarquée sur Méduse
 (`packs/creatures.db`, ajoutée en v0.6.79) aussi — rien à corriger côté source. Cause la plus
-probable : le monde déjà déployé de l'utilisateur n'a pas encore reçu les correctifs
-`PACK_UPDATES` correspondants (`0.6.76-add-save-to-petrifiant` et/ou
-`0.6.79-embed-capacites-bestiaire`) via l'écran de mise à jour MJ. **À vérifier avec
-l'utilisateur** : a-t-il vu et appliqué l'écran de correctifs en attente récemment, et sur
-quelle copie exactement observe-t-il le bouton manquant (le compendium "Capacités de Combat",
-une Méduse fraîchement glissée depuis "Créatures Mythologiques", ou son ancien PNJ de test) ?
+probable, trouvée dans la foulée : l'utilisateur avait tenté "Écraser mes compendiums" (dialogue
+de version), qui échouait totalement (403 sur les 14 packs, voir point 26) — n'a donc rien
+copié. **À revérifier par l'utilisateur** maintenant que le point 26 est corrigé (v0.6.83) : soit
+réessayer "Écraser mes compendiums", soit passer par l'écran "Correctifs de compendium"
+(PACK_UPDATES, `0.6.76-add-save-to-petrifiant`/`0.6.79-embed-capacites-bestiaire`), au choix.
 
 ## 24. Compendiums "Effets" et "Capacités de Combat" absents du Navigateur de Compendium
 
@@ -249,6 +248,18 @@ figurent nulle part — inaccessibles autrement que par le panneau de compendium
 Foundry. Demande précise : ajouter `antique.effets` à l'onglet Traits existant (aux côtés des
 avantages/désavantages/etc.), et créer un **nouvel onglet dédié** pour
 `antique.capacites-combat` (pas mélangé avec Traits ni Bestiaire). Pas encore codé.
+
+## 26. ~~"Écraser mes compendiums" échoue (403 sur les 14 packs)~~ — CORRIGÉ (10 septembre 2026, v0.6.83)
+
+Foundry bloque désormais le téléchargement direct d'un fichier `.db` (famille LevelDB) comme
+asset statique — le bouton "Écraser mes compendiums" du dialogue de version, qui allait
+chercher `packs/*.db` par HTTP pour resemer les compendiums, échouait donc systématiquement (0
+mis à jour, 14 échecs). Corrigé via un miroir `.json` de chaque pack (`packs/_json-mirrors/`,
+généré automatiquement à chaque déploiement par `packs/_sync-json-mirrors.js`), extension non
+bloquée. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 11) — attention, cette session a
+aussi accidentellement écrasé un fichier `packs/dieux.json` préexistant (restauré) et perdu 13
+fichiers `.json` non suivis par git dont le contenu d'origine est inconnu ; voir le détail dans
+le journal. **À confirmer par l'utilisateur en jeu** (retenter "Écraser mes compendiums").
 
 ## 25. ~~Filtre "Consommable" (Navigateur de Compendium, onglet Équipement) mal nommé~~ — CORRIGÉ (10 septembre 2026, v0.6.81)
 

@@ -2,6 +2,48 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 11) — Correctif : "Écraser mes compendiums" refonctionne (v0.6.82 → v0.6.83)
+
+Signalé par l'utilisateur (erreurs console) : le bouton "Écraser mes compendiums" du dialogue
+de mise à jour de version (`checkSystemVersionUpdate()`/`overwriteSystemCompendiums()` dans
+`version-check.mjs`) échouait pour les 14 compendiums système, avec `HTTP 403` sur chaque
+`packs/*.db`. C'est ce mécanisme, distinct de l'écran de correctifs `PACK_UPDATES`, qui
+expliquait probablement pourquoi Regard pétrifiant restait sans bouton chez l'utilisateur
+(point 23) : la tentative de tout réécraser n'avait en réalité rien copié.
+
+**Cause** : Foundry bloque désormais (403) le fetch HTTP direct de fichiers portant une
+extension de la famille LevelDB (`.db` inclus) — mesure anti-fuite pour les données de
+compendium — cassant silencieusement cette fonctionnalité qui téléchargeait le contenu shippé
+directement depuis `packs/*.db` en tant qu'asset statique.
+
+**Correctif choisi** (option complète, demandée explicitement par l'utilisateur plutôt qu'un
+simple retrait du bouton) : nouveau script `packs/_sync-json-mirrors.js`, qui régénère un
+miroir `.json` (contenu NDJSON identique, juste l'extension) de chaque `packs/<nom>.db` dans un
+sous-dossier dédié `packs/_json-mirrors/` — extension non bloquée par Foundry. `version-
+check.mjs` fetch désormais ce miroir au lieu du `.db` directement. Le script tourne
+automatiquement à chaque déploiement (`.claude/commands/deploy.md` mis à jour, exécuté avant le
+`Copy-Item`), pour qu'il ne puisse jamais être désynchronisé d'un `.db` modifié en session —
+aucune étape manuelle à retenir.
+
+**Attention lors de la construction** : la première version du script écrivait les miroirs
+directement dans `packs/` sous leur nom nu (`packs/avantages.json`, etc.) — collision avec des
+fichiers déjà présents portant exactement ces noms. `packs/dieux.json` était un fichier suivi
+par git (ancien format, contenu réel différent) et a été écrasé par erreur ; restauré via
+`git checkout` avant tout commit. 13 autres (`pnj.json`, `effets.json`, etc.) n'étaient jamais
+suivis par git (aucun historique) — probablement des sorties jetables d'anciens scripts
+d'inspection/import ponctuels déjà présents dans `packs/`, mais leur contenu d'origine, non
+suivi, n'a pas pu être récupéré après écrasement. Corrigé en isolant tous les miroirs dans le
+sous-dossier `_json-mirrors/`, qui n'existait pas avant — plus aucun risque de collision.
+**Signalé à l'utilisateur** : si l'un de ces 13 fichiers avait un contenu qui comptait, il est
+perdu ; sinon, aucune conséquence.
+
+**Fichiers** : `packs/_sync-json-mirrors.js` (nouveau), `packs/_json-mirrors/*.json`
+(nouveau), `module/helpers/version-check.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`, `C:\projet\VTT_Foundry\.claude\commands\deploy.md` (hors
+dépôt du système, dans le dépôt parent VTT_Foundry).
+
+---
+
 ## Session du 10 septembre 2026 (suite 10) — Correctif : effets désactivés à nouveau cliquables (v0.6.81 → v0.6.82)
 
 Signalé par l'utilisateur (point 22) : une fois un effet actif désactivé, ses boutons (actif/

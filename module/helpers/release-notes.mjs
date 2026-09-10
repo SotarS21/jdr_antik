@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.83": {
+    title: "Version 0.6.83 — Correctif : \"Écraser mes compendiums\" refonctionne",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le bouton "Écraser mes compendiums" (dialogue de mise à jour de version) ne faisait plus rien depuis que Foundry bloque le téléchargement direct des fichiers de compendium (.db) pour raisons de sécurité — 403 Forbidden sur chaque pack, 0 mise à jour. Le système passe maintenant par un miroir .json (non bloqué) de chaque pack, régénéré à chaque déploiement.</li>
+      </ul>`
+  },
   "0.6.82": {
     title: "Version 0.6.82 — Correctif : effets désactivés à nouveau cliquables",
     html: `

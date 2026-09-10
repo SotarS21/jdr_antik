@@ -96,11 +96,14 @@ export async function checkSystemVersionUpdate() {
 }
 
 /**
- * Re-seed every system-bundled compendium from its packs/<name>.db source file
- * (served as a static asset alongside the system, same file the `fvtt` CLI
- * packs from) — upserts by _id (update existing, create missing), never
- * deletes an entry that isn't present in the source (a GM's own additions to
- * a system compendium are left alone even when overwriting).
+ * Re-seed every system-bundled compendium from its packs/<name>.json source file
+ * (a byte-identical mirror of packs/<name>.db, the file the `fvtt` CLI actually packs
+ * from — see packs/_sync-json-mirrors.js for why a mirror exists at all: current
+ * Foundry versions return HTTP 403 fetching a `.db` file directly as a static asset,
+ * an anti-leak measure for compendium data, which silently broke this feature entirely
+ * until the mirror was introduced) — upserts by _id (update existing, create missing),
+ * never deletes an entry that isn't present in the source (a GM's own additions to a
+ * system compendium are left alone even when overwriting).
  */
 async function overwriteSystemCompendiums() {
   ui.notifications.info("Antique – mise à jour des compendiums en cours…");
@@ -111,10 +114,12 @@ async function overwriteSystemCompendiums() {
     const pack = game.packs.get(`antique.${packDef.name}`);
     if (!pack) continue;
 
-    // Not packDef.path: Foundry normalizes that field (strips ".db", and on some versions
-    // resolves it to a full "systems/antique/..." path already) — building the fetch URL
-    // straight from the pack's own name/our fixed on-disk convention avoids both quirks.
-    const packFile = `packs/${packDef.name}.db`;
+    // Not packDef.path: Foundry normalizes that field (strips the extension, and on some
+    // versions resolves it to a full "systems/antique/..." path already) — building the
+    // fetch URL straight from the pack's own name/our fixed on-disk convention avoids
+    // both quirks. packs/_json-mirrors/, not packs/<name>.db directly — see the function
+    // doc above and packs/_sync-json-mirrors.js.
+    const packFile = `packs/_json-mirrors/${packDef.name}.json`;
     let entries;
     try {
       const response = await fetch(`systems/antique/${packFile}`);
