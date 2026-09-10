@@ -2,6 +2,29 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 6) — Recochage automatique des ingrédients après restock (v0.6.77 → v0.6.78)
+
+Retour utilisateur après le correctif précédent : quand un ingrédient manque, sa case
+"Possédé" (checklist Ingrédients d'un sort/rituel) reste décochée — logique, mais si on
+re-stocke l'ingrédient ensuite, rien ne recochait automatiquement la case : il fallait rouvrir
+le sort et cocher à la main.
+
+**Ajouté** : `syncSpellIngredientPossession(actor)` (nouveau, `module/helpers/actor-utils.mjs`) —
+reprend exactement la formule déjà utilisée après un cast dans `AntiqueItem#castSpell`
+(`getIngredientStock(actor, name) >= quantity`) mais appliquée à **tous** les sorts de l'acteur,
+pas seulement celui qu'on vient de lancer ; ne touche que les entrées qui correspondent à un
+ingrédient réellement possédé (une entrée purement narrative, sans stock réel, n'est jamais
+retouchée). Câblée via un nouveau hook générique `registerIngredientStockSyncHook()` sur
+`Hooks.on("updateItem")`, filtré sur les objets équipement-ingrédient (`apothCategory` renseigné,
+hors besace) dont `system.quantity` a changé — couvre en une seule fois le bouton "+", une
+modification directe de la quantité depuis la fiche de l'objet, `item.consume()`, et l'empilement
+par glisser-déposer, puisque ces quatre chemins passent tous par `Item#update()`.
+
+**Fichiers** : `module/helpers/actor-utils.mjs`, `antique.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 5) — Correctif : +1 ingrédient ne rafraîchit plus toute la fiche (v0.6.76 → v0.6.77)
 
 Point 21 de `TODO_BUG_ANTIQUE.md` : l'utilisateur a testé le recochage automatique de la

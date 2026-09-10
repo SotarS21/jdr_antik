@@ -33,6 +33,7 @@ import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-
 import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
 import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
 import { registerDodgeResetHook } from "./module/helpers/dodge-reset.mjs";
+import { registerIngredientStockSyncHook } from "./module/helpers/actor-utils.mjs";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -109,6 +110,7 @@ Hooks.once("init", function () {
   registerCompendiumBrowserFooterButton();
   registerHotbarMacroDrop();
   registerDodgeResetHook();
+  registerIngredientStockSyncHook();
 
   // Preload Handlebars templates
   return preloadHandlebarsTemplates();

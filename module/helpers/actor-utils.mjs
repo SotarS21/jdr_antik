@@ -1,3 +1,5 @@
+import { refreshSheet } from "./sheet-utils.mjs";
+
 /**
  * True if `actor` is a synthetic token-actor whose Token no longer exists in its
  * scene (e.g. deleted from the canvas while its sheet stayed open). Document
@@ -35,4 +37,50 @@ export function findIngredientItems(actor, name) {
 /** Total real quantity of an ingredient (matched by name) currently owned by `actor`. */
 export function getIngredientStock(actor, name) {
   return findIngredientItems(actor, name).reduce((sum, i) => sum + (i.system.quantity ?? 0), 0);
+}
+
+/**
+ * Re-sync every spell's "Ingrédients" checklist ("possede" checkbox) on `actor`
+ * with the real stock currently on hand — same formula already used after a
+ * cast in AntiqueItem#castSpell, reused here so restocking an ingredient
+ * outside of casting (the "+" button, a direct quantity edit, drag-stacking a
+ * duplicate) auto-ticks the checkbox again instead of requiring a manual
+ * re-check. Only touches an entry that actually matches a real inventory item
+ * — a purely narrative entry (no real match) is left exactly as the player
+ * set it.
+ */
+export async function syncSpellIngredientPossession(actor) {
+  if (!actor) return;
+  const spells = actor.items.filter(i => i.type === "spell" && (i.system.ingredients?.length ?? 0) > 0);
+  for (const spell of spells) {
+    let changed = false;
+    const updated = spell.system.ingredients.map(ing => {
+      if (!findIngredientItems(actor, ing.name).length) return ing;
+      const possede = getIngredientStock(actor, ing.name) >= (ing.quantity ?? 0);
+      if (possede === ing.possede) return ing;
+      changed = true;
+      return { ...ing, possede };
+    });
+    if (changed) {
+      await spell.update({ "system.ingredients": updated });
+      refreshSheet(spell);
+    }
+  }
+}
+
+/**
+ * Registers the hook that triggers the sync above whenever an ingredient-tagged
+ * equipment item's quantity changes on a character actor — covers every path
+ * that can restock/deplete one (the "+" button, a direct edit on the item's
+ * own sheet, AntiqueItem#consume(), drag-and-drop stacking), since they all
+ * funnel through Item#update().
+ */
+export function registerIngredientStockSyncHook() {
+  Hooks.on("updateItem", (item, changes) => {
+    if (item.type !== "equipment" || !item.system.apothCategory || item.system.isIngredientBag) return;
+    if (foundry.utils.getProperty(changes, "system.quantity") === undefined) return;
+    const actor = item.actor;
+    if (!actor || actor.type !== "character" || !actor.isOwner) return;
+    syncSpellIngredientPossession(actor);
+  });
 }

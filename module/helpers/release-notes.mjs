@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.78": {
+    title: "Version 0.6.78 — Recochage automatique des ingrédients après restock",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : quand un ingrédient manquant est de nouveau en stock suffisant (bouton "+", édition directe de la quantité, ou glisser-déposer d'un duplicata), la case "Possédé" de la checklist "Ingrédients" de chaque sort/rituel concerné se recoche automatiquement — plus besoin de la cocher à la main.</li>
+      </ul>`
+  },
   "0.6.77": {
     title: "Version 0.6.77 — Correctif : le bouton +1 ingrédient ne rafraîchit plus toute la fiche",
     html: `

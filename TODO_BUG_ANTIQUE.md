@@ -220,6 +220,12 @@ ci-dessus) et le recochage visuel automatique dans la fiche du sort après incan
 effacée) pour une simple incrémentation. Corrigé par une mise à jour directe du DOM (juste le
 nombre affiché), sans re-rendu. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 5).
 
+**Amélioration demandée dans la foulée (v0.6.78)** : quand un ingrédient manquant est restocké
+(bouton "+", édition directe, glisser-déposer), la case "Possédé" de chaque sort/rituel concerné
+se recoche maintenant automatiquement dès que le stock redevient suffisant — plus besoin de la
+recocher à la main. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 6). **À confirmer par
+l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales
