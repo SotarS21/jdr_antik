@@ -2,6 +2,35 @@
 
 ---
 
+## Bilan de la session du 10 septembre 2026 (v0.6.76 → v0.6.84)
+
+Session longue, 12 étapes ("suite" 1 à 12 ci-dessous), toutes testées et confirmées par
+l'utilisateur en jeu sauf mention contraire :
+
+1. **v0.6.77** — le bouton "+" d'un ingrédient ne rafraîchit plus toute la fiche perso (scroll,
+   recherche préservés).
+2. **v0.6.78** — restocker un ingrédient recoche automatiquement "Possédé" sur tous les
+   sorts/rituels concernés, pas seulement celui en cours de test.
+3. **v0.6.79** — capacités de combat PNJ généralisées aux 26 créatures restantes du bestiaire
+   (51 nouvelles capacités, 6 mécaniques), embarquées directement sur chaque créature.
+4. **v0.6.80** — bouton MJ pour lancer un jet de sauvegarde sur le(s) token(s) sélectionné(s),
+   en plus du bouton joueur existant.
+5. **v0.6.81** — filtre "Consommable" renommé "Alchimie" (Navigateur de Compendium).
+6. **v0.6.82** — effets désactivés à nouveau cliquables (collision de classe CSS avec le
+   noyau de Foundry).
+7. **v0.6.83 → v0.6.84** — "Écraser mes compendiums" entièrement réparé : blocage HTTP 403
+   sur les `.db` (miroir `.json` automatique), puis dossiers d'organisation et RollTables mal
+   gérés une fois le fetch relancé. Explique aussi pourquoi Regard pétrifiant restait sans
+   bouton chez l'utilisateur (point 23 du TODO).
+
+**Points ouverts en fin de session** (`TODO_BUG_ANTIQUE.md`) : #15 (colonnes du header de
+fiche perso, en pause — attend une répartition précise de l'utilisateur) et #24 (ajouter les
+compendiums Effets/Capacités de Combat au Navigateur de Compendium, demandé mais pas codé).
+
+**Utilisateur signale s'arrêter là pour aujourd'hui.**
+
+---
+
 ## Session du 10 septembre 2026 (suite 12) — Correctif : dossiers + RollTables dans "Écraser mes compendiums" (v0.6.83 → v0.6.84)
 
 Retour utilisateur après test du correctif précédent (le 403 est bien résolu, "715 mis à jour,
