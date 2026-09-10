@@ -2,6 +2,18 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 9) — Filtre "Alchimie" renommé (v0.6.80 → v0.6.81)
+
+Retour utilisateur : dans le Navigateur de Compendium, onglet Équipement, le filtre qui montre
+le contenu du compendium Alchimie (potions/ingrédients) s'appelait "Consommable" — nom hérité de
+la clé interne (`classifyEquipmentItem()`, `packId === "antique.alchimie"` → `"consommable"`),
+jamais renommé côté affichage. Renommé "Alchimie" (label seulement, la clé de filtre interne
+`consommable` reste inchangée).
+
+**Fichiers** : `lang/{fr,en}.json`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 8) — Jet de sauvegarde pour les tokens sélectionnés (v0.6.79 → v0.6.80)
 
 Demande utilisateur : pour les capacités de monstres avec jet de sauvegarde, pouvoir le lancer

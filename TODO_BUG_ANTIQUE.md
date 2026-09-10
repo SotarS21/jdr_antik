@@ -256,6 +256,11 @@ Foundry. Demande précise : ajouter `antique.effets` à l'onglet Traits existant
 avantages/désavantages/etc.), et créer un **nouvel onglet dédié** pour
 `antique.capacites-combat` (pas mélangé avec Traits ni Bestiaire). Pas encore codé.
 
+## 25. ~~Filtre "Consommable" (Navigateur de Compendium, onglet Équipement) mal nommé~~ — CORRIGÉ (10 septembre 2026, v0.6.81)
+
+Ce filtre montre en fait le contenu du compendium Alchimie (potions/ingrédients) — renommé
+"Alchimie" pour plus de clarté. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 9).
+
 ## 21. ~~Recochage automatique visuel des ingrédients après incantation d'un rituel~~ — CONFIRMÉ (10 septembre 2026)
 
 Après consommation, chaque ingrédient se resynchronise avec le stock réel (livré, voir point 3

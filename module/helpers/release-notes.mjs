@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.81": {
+    title: "Version 0.6.81 — Filtre \"Alchimie\" renommé (Navigateur de Compendium)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : dans l'onglet Équipement du Navigateur de Compendium, le filtre qui montrait le contenu du compendium Alchimie s'appelait "Consommable" — renommé "Alchimie", plus clair.</li>
+      </ul>`
+  },
   "0.6.80": {
     title: "Version 0.6.80 — Jet de sauvegarde pour les tokens sélectionnés (MJ)",
     html: `
