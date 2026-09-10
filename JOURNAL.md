@@ -2,6 +2,29 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 10) — Correctif : effets désactivés à nouveau cliquables (v0.6.81 → v0.6.82)
+
+Signalé par l'utilisateur (point 22) : une fois un effet actif désactivé, ses boutons (actif/
+inactif, éditer, supprimer) ne réagissent plus du tout au clic — confirmé "rien du tout ne se
+passe". Revue du JS (`item-sheet.mjs`/`actor-sheet.mjs`) : aucun des handlers ne conditionne la
+recherche du document ni l'attache du listener sur `effect.disabled`. La CSS de ce système
+(`.effect-row.disabled`/`.trait-row.disabled`) ne pose que de l'opacité.
+
+**Cause réelle** : le noyau de Foundry a sa propre classe utilitaire générique `.disabled` qui
+pose `pointer-events: none` — `pointer-events` est une propriété héritée en CSS, donc ce
+`none` descend sur tous les enfants de la ligne, y compris ses propres boutons de contrôle
+(`.effect-controls`/`.item-controls`). Notre CSS ajoutait juste l'opacité par-dessus sans
+jamais réactiver les clics sur ces boutons précis.
+
+**Correctif** : deux nouvelles règles CSS qui réactivent `pointer-events: auto` explicitement
+sur `.effect-row.disabled .effect-controls` (tous les onglets Effets d'objet) et
+`.trait-row.disabled .item-controls` (section Effets autonome de l'onglet Traits) — la ligne
+reste visuellement grisée (opacité inchangée), seuls ses boutons redeviennent cliquables.
+
+**Fichiers** : `css/antique.css`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 9) — Filtre "Alchimie" renommé (v0.6.80 → v0.6.81)
 
 Retour utilisateur : dans le Navigateur de Compendium, onglet Équipement, le filtre qui montre

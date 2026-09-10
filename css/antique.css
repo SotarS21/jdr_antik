@@ -1781,6 +1781,14 @@
   opacity: 0.5;
 }
 
+/* Same fix as .effect-row.disabled above: Foundry's core `.disabled` class sets
+   `pointer-events: none`, inherited down to the toggle/edit/delete icons — re-enable
+   clicks on the controls specifically. */
+.antique .trait-row.disabled .item-controls,
+.antique .trait-row.disabled .item-controls a {
+  pointer-events: auto;
+}
+
 .antique .trait-toggle-icon {
   color: var(--antique-border);
   font-size: 0.8em;
@@ -2445,6 +2453,16 @@
 
 .antique .effect-row.disabled {
   opacity: 0.5;
+}
+
+/* Foundry's own core stylesheet sets `pointer-events: none` on any element carrying a
+   plain `.disabled` class — inherited by every descendant, silently blocking clicks on
+   the toggle/edit/delete icons of a disabled effect (reported 10 septembre 2026: nothing
+   happens at all when clicking them). Re-enable clicks specifically on the controls;
+   the row itself stays visually dimmed via the opacity rule above. */
+.antique .effect-row.disabled .effect-controls,
+.antique .effect-row.disabled .effect-controls a {
+  pointer-events: auto;
 }
 
 .antique .effect-icon {

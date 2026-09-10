@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.82": {
+    title: "Version 0.6.82 — Correctif : effets désactivés à nouveau cliquables",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : une fois un effet actif désactivé (grisé), ses boutons actif/inactif, éditer et supprimer ne réagissaient plus du tout au clic — la classe CSS "disabled" partagée avec le noyau de Foundry coupait les clics sur toute la ligne, y compris ses propres boutons. Corrigé partout (onglet Effets d'un objet, et section Effets autonome de l'onglet Traits).</li>
+      </ul>`
+  },
   "0.6.81": {
     title: "Version 0.6.81 — Filtre \"Alchimie\" renommé (Navigateur de Compendium)",
     html: `

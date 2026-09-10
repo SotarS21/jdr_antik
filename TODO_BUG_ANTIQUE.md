@@ -218,20 +218,14 @@ scène l'amène déjà équipée) — y compris un retrofit de Minotaure/Méduse
 leur propre capacité embarquée sur eux-mêmes jusqu'ici. Voir `JOURNAL.md`, session du
 10 septembre 2026 (suite 7). **À confirmer par l'utilisateur en jeu.**
 
-## 22. Effets désactivés — grisés, plus éditables ni réactivables
+## 22. ~~Effets désactivés — grisés, plus éditables ni réactivables~~ — CORRIGÉ (10 septembre 2026, v0.6.82)
 
-Signalé le 10 septembre 2026 : quand un effet actif est désactivé, sa ligne devient grisée
-(normal, `opacity: 0.5` en CSS) mais ne peut ensuite plus être ni édité ni réactivé. Relu tout
-le code concerné (`module/sheets/actor-sheet.mjs` : `.actor-effect-toggle`/`.actor-effect-edit`
-sur les effets autonomes de l'onglet Traits ; `module/sheets/item-sheet.mjs` :
-`.effect-toggle`/`.effect-edit` sur l'onglet Effets d'un objet) — aucune des deux ne conditionne
-la recherche du document ou l'attache du listener sur `effect.disabled`, et le CSS
-(`.trait-row.disabled`/`.effect-row.disabled`) ne pose que de l'opacité, jamais de
-`pointer-events: none`. Pas de cause trouvée par relecture statique seule. **Besoin de
-précisions utilisateur avant de coder un correctif** : dans quel écran exactement (onglet
-Effets d'une fiche d'objet type Charge furieuse/Cuir de Héros, ou section "Effets" autonome de
-l'onglet Traits de la fiche Personnage) et que se passe-t-il précisément au clic (rien, une
-erreur console, un comportement différent) ?
+Cause : la classe CSS `.disabled` (ajoutée sur la ligne d'un effet désactivé, pour le griser)
+porte aussi le même nom qu'une classe utilitaire du noyau de Foundry qui pose
+`pointer-events: none` — propriété héritée, elle coupait donc aussi les clics sur les propres
+boutons de contrôle de la ligne (actif/inactif, éditer, supprimer). Corrigé en réactivant
+`pointer-events: auto` explicitement sur ces boutons. Voir `JOURNAL.md`, session du
+10 septembre 2026 (suite 10). **À confirmer par l'utilisateur en jeu.**
 
 ## 23. Regard pétrifiant — bouton de jet de sauvegarde manquant (signalé)
 
