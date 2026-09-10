@@ -223,8 +223,8 @@ nombre affiché), sans re-rendu. Voir `JOURNAL.md`, session du 10 septembre 2026
 **Amélioration demandée dans la foulée (v0.6.78)** : quand un ingrédient manquant est restocké
 (bouton "+", édition directe, glisser-déposer), la case "Possédé" de chaque sort/rituel concerné
 se recoche maintenant automatiquement dès que le stock redevient suffisant — plus besoin de la
-recocher à la main. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 6). **À confirmer par
-l'utilisateur en jeu.**
+recocher à la main. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 6). **Confirmé par
+l'utilisateur en jeu (10 septembre 2026)** : "ça marche bien".
 
 ---
 
