@@ -2138,7 +2138,8 @@
   color: var(--antique-brown, #5c3d2e);
 }
 
-.antique.item-chat-card .roll-save-button {
+.antique.item-chat-card .roll-save-button,
+.antique.item-chat-card .roll-save-selected-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2157,9 +2158,23 @@
   transition: all 0.2s;
 }
 
-.antique.item-chat-card .roll-save-button:hover {
+.antique.item-chat-card .roll-save-button:hover,
+.antique.item-chat-card .roll-save-selected-button:hover {
   background: linear-gradient(180deg, #ddb62f, var(--antique-gold, #c9a227));
   box-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+}
+
+/* Bouton MJ (jet pour les tokens sélectionnés) : même style, teinte plus sourde pour le
+   distinguer visuellement du bouton joueur juste au-dessus. */
+.antique.item-chat-card .roll-save-selected-button {
+  color: var(--antique-parchment, #f0e6d2);
+  background: linear-gradient(180deg, #5a4a3a, #3a2f24);
+  border-color: #2b1d14;
+}
+
+.antique.item-chat-card .roll-save-selected-button:hover {
+  background: linear-gradient(180deg, #6c594490, #4a3d2f);
+  box-shadow: 0 0 8px rgba(43, 29, 20, 0.5);
 }
 
 .antique.item-chat-card .card-content {

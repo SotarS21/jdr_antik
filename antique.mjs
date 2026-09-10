@@ -423,3 +423,34 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     await actor.rollSave(saveAbility, dc);
   });
 });
+
+// Même carte de chat, bouton MJ uniquement : lance le même jet de sauvegarde pour le(s)
+// token(s) actuellement sélectionné(s) sur le canevas (leur acteur respectif), plutôt que
+// pour le personnage assigné du joueur qui clique — utile quand la cible est un PNJ/monstre
+// sans joueur assigné. Retiré côté client pour tout non-MJ (le contenu du message est le
+// même pour tout le monde, ce bouton n'a de sens que pour le MJ).
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const element = html;
+  if (!element) return;
+  const btn = element.querySelector(".roll-save-selected-button");
+  if (!btn) return;
+
+  if (!game.user.isGM) {
+    btn.remove();
+    return;
+  }
+
+  btn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const saveAbility = btn.dataset.saveAbility;
+    const dc = Number(btn.dataset.saveDc) || 0;
+    const tokens = canvas.tokens?.controlled ?? [];
+    if (!tokens.length) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Errors.NoTokenSelected"));
+      return;
+    }
+    for (const token of tokens) {
+      if (token.actor) await token.actor.rollSave(saveAbility, dc);
+    }
+  });
+});

@@ -2,6 +2,33 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 8) — Jet de sauvegarde pour les tokens sélectionnés (v0.6.79 → v0.6.80)
+
+Demande utilisateur : pour les capacités de monstres avec jet de sauvegarde, pouvoir le lancer
+sur le(s) token(s) sélectionné(s) plutôt que de dépendre uniquement du personnage assigné du
+joueur qui clique — utile quand la victime est un PNJ/monstre (aucun joueur assigné).
+
+**Clarifié avant codage** (2 questions) : garder le bouton joueur existant tel quel, en ajouter
+un second réservé au MJ plutôt que remplacer le comportement ; un jet par token sélectionné si
+plusieurs le sont.
+
+**`AntiqueActor#rollSave()` étendu aux PNJ** : ne lisait que `system.saves[clé].total`, un champ
+qui n'existe que sur les personnages (les PNJ n'ont pas de système de sauvegarde). Pour un PNJ,
+utilise maintenant le meilleur des deux modificateurs de caractéristique liés à cette
+sauvegarde (ex. Robustesse = max(CON, FOR)) — même esprit simplifié que leur table de bonus
+d'attaque.
+
+**Nouveau bouton** (`AntiqueItem#postToChat`, classe `.roll-save-selected-button`) sur la carte
+de chat d'une capacité avec `saveAbility`/`saveDC` — retiré côté client pour tout non-MJ (le
+hook `renderChatMessageHTML` dans `antique.mjs` le supprime du DOM si `!game.user.isGM`). Au
+clic, lance le jet pour chaque token actuellement contrôlé sur le canevas (`canvas.tokens.
+controlled`), un jet indépendant par token.
+
+**Fichiers** : `module/documents/actor.mjs`, `module/documents/item.mjs`, `antique.mjs`,
+`css/antique.css`, `lang/{fr,en}.json`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 7) — Capacités de combat généralisées à tout le bestiaire (v0.6.78 → v0.6.79)
 
 Point 20 de `TODO_BUG_ANTIQUE.md` : demande explicite de généraliser le patron

@@ -5,6 +5,7 @@
 
   "ANTIQUE.Errors.OrphanedTokenSheet": "Ce token n'existe plus sur la scène : la fiche se ferme.",
   "ANTIQUE.Errors.NoAssignedCharacter": "Aucun personnage assigné à cet utilisateur.",
+  "ANTIQUE.Errors.NoTokenSelected": "Aucun token sélectionné sur le canevas.",
 
   "ANTIQUE.Tab.Identity": "Identit\u00e9",
   "ANTIQUE.Tab.Abilities": "Caract. & Comp.",
@@ -113,6 +114,7 @@
   "ANTIQUE.Save.Failure": "Échec !",
   "ANTIQUE.Save.VsDC": "Difficulté {dc}",
   "ANTIQUE.Save.RollButton": "Jet de sauvegarde",
+  "ANTIQUE.Save.RollSelectedButton": "Jet de sauvegarde (sélection MJ)",
 
   "ANTIQUE.Combat.CA": "Classe d'armure",
   "ANTIQUE.Combat.CAHiddenFromPlayers": "Classe d'armure masquée aux joueurs",

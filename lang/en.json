@@ -5,6 +5,7 @@
 
   "ANTIQUE.Errors.OrphanedTokenSheet": "This token no longer exists on the scene: closing the sheet.",
   "ANTIQUE.Errors.NoAssignedCharacter": "No character assigned to this user.",
+  "ANTIQUE.Errors.NoTokenSelected": "No token selected on the canvas.",
 
   "ANTIQUE.Tab.Identity": "Identity",
   "ANTIQUE.Tab.Abilities": "Abilities & Skills",
@@ -113,6 +114,7 @@
   "ANTIQUE.Save.Failure": "Failure!",
   "ANTIQUE.Save.VsDC": "Difficulty {dc}",
   "ANTIQUE.Save.RollButton": "Saving throw",
+  "ANTIQUE.Save.RollSelectedButton": "Saving throw (GM selection)",
 
   "ANTIQUE.Combat.CA": "Armor Class",
   "ANTIQUE.Combat.CAHiddenFromPlayers": "Armor Class hidden from players",

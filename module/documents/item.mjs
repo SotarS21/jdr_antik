@@ -170,13 +170,19 @@ export class AntiqueItem extends Item {
     // Saving throw button (Capacités de combat with a saveAbility set, ex. Regard
     // pétrifiant's "Robustesse DC 18") — the targeted player clicks it themself, in their
     // own client, rolling their own character's stats (see the ".roll-save-button" hook in
-    // antique.mjs, which uses game.user.character rather than the poster's actor).
+    // antique.mjs, which uses game.user.character rather than the poster's actor). A second,
+    // GM-only button rolls the same save for whichever token(s) are currently selected on
+    // the canvas instead — useful when the victim is an NPC/monster with no assigned player
+    // (see ".roll-save-selected-button", removed client-side for non-GMs).
     let saveButton = "";
     if (this.type === "npcability" && this.system.saveAbility && this.system.saveDC > 0) {
       const saveLabel = game.i18n.localize(CONFIG.ANTIQUE.saves[this.system.saveAbility]?.label ?? this.system.saveAbility);
       saveButton = `
         <button type="button" class="roll-save-button" data-save-ability="${this.system.saveAbility}" data-save-dc="${this.system.saveDC}">
           <i class="fas fa-dice-d20"></i> ${game.i18n.localize("ANTIQUE.Save.RollButton")} (${saveLabel} DC ${this.system.saveDC})
+        </button>
+        <button type="button" class="roll-save-selected-button" data-save-ability="${this.system.saveAbility}" data-save-dc="${this.system.saveDC}">
+          <i class="fas fa-dice-d20"></i> ${game.i18n.localize("ANTIQUE.Save.RollSelectedButton")} (${saveLabel} DC ${this.system.saveDC})
         </button>`;
     }
     const content = `

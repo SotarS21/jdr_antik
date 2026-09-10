@@ -164,10 +164,16 @@ export class AntiqueActor extends Actor {
    *   comparison, same plain roll as before.
    */
   async rollSave(saveKey, dc = 0) {
-    const save = this.system.saves[saveKey];
-    if (!save) return;
-    const label = game.i18n.localize(CONFIG.ANTIQUE.saves[saveKey]?.label ?? saveKey);
-    const roll = new Roll("1d20 + @total", { total: save.total });
+    const saveConfig = CONFIG.ANTIQUE.saves[saveKey];
+    // NPCs have no system.saves block at all (no skill/save system, see actor-npc.mjs) —
+    // fall back to the better of the two abilities tied to this save, same simplified
+    // "flat number" spirit as their attackBonuses table.
+    const total = this.type === "npc"
+      ? Math.max(...(saveConfig?.abilities ?? []).map(a => this.system.abilities?.[a]?.mod ?? 0))
+      : this.system.saves?.[saveKey]?.total;
+    if (total === undefined) return;
+    const label = game.i18n.localize(saveConfig?.label ?? saveKey);
+    const roll = new Roll("1d20 + @total", { total });
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),

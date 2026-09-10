@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.80": {
+    title: "Version 0.6.80 — Jet de sauvegarde pour les tokens sélectionnés (MJ)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : sur la carte de chat d'une capacité de combat avec jet de sauvegarde, un second bouton (visible seulement du MJ) lance le même jet pour le(s) token(s) actuellement sélectionné(s) sur le canevas — utile quand la victime est un PNJ/monstre sans joueur assigné. Un jet est lancé par token sélectionné.</li>
+      </ul>`
+  },
   "0.6.79": {
     title: "Version 0.6.79 — Capacités de combat généralisées à tout le bestiaire",
     html: `
