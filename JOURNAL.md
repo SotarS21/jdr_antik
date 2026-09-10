@@ -2,6 +2,53 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 7) — Capacités de combat généralisées à tout le bestiaire (v0.6.78 → v0.6.79)
+
+Point 20 de `TODO_BUG_ANTIQUE.md` : demande explicite de généraliser le patron
+Charge furieuse/Regard pétrifiant (architecture livrée v0.6.71-76, 2 exemples seulement) à
+l'ensemble des 28 créatures de `packs/creatures.db`.
+
+**Approche confirmée avec l'utilisateur avant codage** (3 questions) : même discipline que le
+chantier des Désavantages (mécanique seulement si un champ NPC existant correspond, narratif
+sinon — le système n'a pas de champ pour la régénération, le poison au fil du temps, les
+attaques multiples, la peur/charme, l'incorporel, etc.) ; embarquer aussi chaque capacité
+directement sur sa créature dans `creatures.db` (pas seulement le compendium séparé) ; tout
+bonus chiffré situationnel (charge, attaque en piqué) actif en permanence, pas désactivé par
+défaut — cohérent avec la décision finale déjà prise pour Charge furieuse.
+
+**Extraction** : pour chacune des 26 créatures restantes (Minotaure/Méduse déjà faites), les
+capacités notables du champ `notes` (hors lignes "Habitat"/"Faiblesse", qui restent de la
+couleur locale pour le MJ) sont devenues des items `npcability`. Cyclope, Pégase et Hippocampe
+n'ont rien reçu — leurs seules capacités notables sont déjà entièrement couvertes par leurs
+armes existantes (Lancer de rocher, etc.), rien à ajouter. Résultat : 51 nouvelles capacités,
+6 mécaniques (Sphinx et Griffon : bonus d'attaque en piqué ; Triton : bonus attaque+CA aquatique ;
+Centaure guerrier, Sanglier d'Érymanthe, Taureau de Crète : bonus de charge), le reste narratif
+avec bouton de jet de sauvegarde quand le texte d'origine précisait une difficulté chiffrée
+(Réflexes/Robustesse/Volonté — les seules 3 caractéristiques de sauvegarde du système ; un texte
+mentionnant une autre caractéristique, comme "Navigation" pour Charybde, reste sans bouton).
+
+**Collisions de noms détectées et corrigées avant déploiement** : 6 créatures avaient déjà une
+arme portant exactement le même nom qu'une capacité générée depuis leurs notes (Chimère/Érinye :
+le duplicata ajoutait un vrai bonus — renommé "(jet de sauvegarde)" pour les distinguer sans les
+supprimer ; Cyclope/Spectre du Styx/Typhon/Stymphale : le duplicata n'ajoutait rien de mécanique
+par rapport à l'arme déjà présente — abandonné plutôt que renommé). Un script Node
+(`packs/_build-capacites-bestiaire.js`) vérifie l'absence de collision par recoupement
+programmatique avant chaque exécution.
+
+**Propagation** : deux nouvelles entrées `PACK_UPDATES` — `0.6.79-create-capacites-bestiaire`
+(crée les 51 documents manquants dans `capacites-combat`) et
+`0.6.79-embed-capacites-bestiaire` (les embarque sur chaque créature du compendium
+"Créatures Mythologiques" et sur toute copie déjà glissée sur un PNJ du monde, y compris le
+retrofit Minotaure/Méduse). Les deux données sont dupliquées en dur dans `pack-updates.mjs`
+(mêmes IDs que dans `packs/capacites-combat.db`/`creatures.db`) pour ne pas dépendre d'un ordre
+d'exécution entre elles.
+
+**Fichiers** : `packs/_build-capacites-bestiaire.js` (nouveau), `packs/capacites-combat.db`,
+`packs/creatures.db`, `module/helpers/pack-updates.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 6) — Recochage automatique des ingrédients après restock (v0.6.77 → v0.6.78)
 
 Retour utilisateur après le correctif précédent : quand un ingrédient manque, sa case

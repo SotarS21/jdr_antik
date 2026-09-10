@@ -204,9 +204,19 @@ les afficher dans le chat (icône, titre, description) — patron déjà génér
 désormais un bouton "Jet de sauvegarde" (Robustesse DC 18) sur sa carte de chat : le joueur visé
 clique lui-même, avec les stats de son personnage assigné. Voir `JOURNAL.md`, session du
 10 septembre 2026 (suite 4). **Confirmé par l'utilisateur en jeu (10 septembre 2026)** : "ça
-marche bien". Reste à faire (pas encore planifié) : généraliser le patron capacités de combat
-(avec effet mécanique + document Effet autonome) à toutes les créatures/PNJ existants, au-delà
-des 2 exemples (Charge furieuse, Regard pétrifiant).
+marche bien".
+
+**Étape 7 (10 septembre 2026, v0.6.79) — généralisé à tout le bestiaire.** Les 26 créatures
+restantes de "Créatures Mythologiques" (toutes sauf Minotaure/Méduse déjà faites, et sauf
+Cyclope/Pégase/Hippocampe qui n'avaient rien à ajouter) ont reçu 51 nouvelles capacités de
+combat, même discipline que les désavantages : mécanique (ActiveEffect embarqué, actif en
+permanence) seulement quand ça correspond à un champ existant (6 cas : Sphinx, Griffon, Triton,
+Centaure guerrier, Sanglier d'Érymanthe, Taureau de Crète), bouton de jet de sauvegarde quand le
+texte précise une difficulté (Réflexes/Robustesse/Volonté), narratif sinon. Chaque capacité est
+aussi embarquée directement sur sa créature dans le compendium (glisser une créature sur une
+scène l'amène déjà équipée) — y compris un retrofit de Minotaure/Méduse, qui n'avaient jamais eu
+leur propre capacité embarquée sur eux-mêmes jusqu'ici. Voir `JOURNAL.md`, session du
+10 septembre 2026 (suite 7). **À confirmer par l'utilisateur en jeu.**
 
 ## 21. ~~Recochage automatique visuel des ingrédients après incantation d'un rituel~~ — CONFIRMÉ (10 septembre 2026)
 

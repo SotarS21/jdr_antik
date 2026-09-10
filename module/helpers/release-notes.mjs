@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.79": {
+    title: "Version 0.6.79 — Capacités de combat généralisées à tout le bestiaire",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : le compendium "Capacités de Combat (PNJ)" couvre maintenant les 28 créatures de "Créatures Mythologiques" (51 nouvelles capacités, en plus de Charge furieuse/Regard pétrifiant) — bonus d'attaque/CA embarqués quand une capacité correspond à un champ existant (6 cas), bouton de jet de sauvegarde quand le texte d'origine en précise un, sinon narratif.</li>
+        <li><strong>Ajouté</strong> : glisser une créature du compendium sur une scène l'amène désormais déjà équipée de sa/ses capacité(s) — y compris Minotaure et Méduse, qui ne l'étaient pas encore eux-mêmes.</li>
+        <li>Correctifs de propagation disponibles dans l'écran de mise à jour (Capacités de Combat, Créatures Mythologiques).</li>
+      </ul>`
+  },
   "0.6.78": {
     title: "Version 0.6.78 — Recochage automatique des ingrédients après restock",
     html: `

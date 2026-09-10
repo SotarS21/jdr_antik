@@ -300,6 +300,32 @@ export const PACK_UPDATES = [
       "stats de son personnage assigné. Met aussi à jour le paragraphe de description qui " +
       "l'explique (compendium et copies déjà glissées sur un PNJ).",
     apply: applyAddSaveToPetrifiant
+  },
+  {
+    id: "0.6.79-create-capacites-bestiaire",
+    pack: "capacites-combat",
+    version: "0.6.79",
+    label: "51 nouvelles capacités de combat (bestiaire complet)",
+    description:
+      "Généralise Charge furieuse/Regard pétrifiant à tout le bestiaire : crée les 51 " +
+      "documents manquants (une ou plusieurs capacités par créature de \"Créatures " +
+      "Mythologiques\", sauf Pégase/Hippocampe/Cyclope qui n'ont rien à ajouter) — 6 " +
+      "mécaniques (bonus d'attaque/CA embarqué), le reste narratif, comme pour les " +
+      "désavantages. À appliquer avant ou avec le correctif ci-dessous.",
+    apply: applyCreateCapacitesBestiaire
+  },
+  {
+    id: "0.6.79-embed-capacites-bestiaire",
+    pack: "creatures",
+    version: "0.6.79",
+    label: "Capacités embarquées sur chaque créature du bestiaire",
+    description:
+      "Embarque chaque nouvelle capacité directement sur la créature correspondante dans " +
+      "\"Créatures Mythologiques\", et sur toute copie déjà glissée sur un PNJ du monde — " +
+      "glisser une créature du compendium sur une scène l'amène déjà équipée. Retrofit " +
+      "inclus : Minotaure/Méduse eux-mêmes n'avaient jamais reçu Charge furieuse/Regard " +
+      "pétrifiant sur leur propre fiche (seulement glissés sur une copie PNJ de test).",
+    apply: applyEmbedCapacitesBestiaire
   }
 ];
 
@@ -1015,6 +1041,169 @@ async function applyAddSaveToPetrifiant() {
       if (item.type !== "npcability" || cleanName(item.name) !== "Regard pétrifiant") continue;
       if (await addSaveToPetrifiant(item)) fixed++;
     }
+  }
+
+  return fixed;
+}
+
+/**
+ * Voir packs/_build-capacites-bestiaire.js, dont ces données reprennent la sortie
+ * exacte — généralisation du point 20 de TODO_BUG_ANTIQUE.md à tout le bestiaire
+ * (26 créatures en plus de Minotaure/Méduse, déjà propagées via les correctifs
+ * 0.6.72-0.6.76 ci-dessus). `changes`/`transfer` présents = capacité mécanique
+ * (ActiveEffect embarqué, transfer:true, actif en permanence) ; sinon narrative
+ * (saveAbility/saveDC quand le texte d'origine précise un jet de sauvegarde).
+ */
+const CAPACITES_BESTIAIRE = [
+  { id: "aNca000000000003", creature: "Hydre de Lerne", name: "Régénération", img: "icons/svg/regen.svg", description: "<p>Récupère <strong>5 PV par tour</strong>. Si une tête est tranchée, deux repoussent au tour suivant (+2 à l'attaque tant qu'elles ne sont pas retranchées). Le feu empêche la régénération.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000004", creature: "Hydre de Lerne", name: "Souffle venimeux", img: "icons/svg/poison.svg", description: "<p>Son haleine est mortelle dans un rayon de 3m (1d8 poison).</p>", saveAbility: "robustesse", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000005", creature: "Cerbère", name: "Trois têtes", img: "icons/svg/combat.svg", description: "<p>Peut attaquer trois cibles différentes par tour. Avantage aux jets de perception (ne peut être surpris).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000006", creature: "Cerbère", name: "Queue serpent", img: "icons/svg/poison.svg", description: "<p>Attaque supplémentaire de queue, indépendante des trois têtes (1d6+2 poison).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000007", creature: "Chimère", name: "Souffle de feu (jet de sauvegarde)", img: "icons/svg/fire.svg", description: "<p>Cône de 5m, 3d6 dégâts de feu (moitié en cas de réussite). Utilisable tous les 2 tours. Complète l'attaque déjà représentée par l'arme \"Souffle de feu\" — donne le bouton de jet de sauvegarde.</p>", saveAbility: "reflexes", saveDC: 15, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000008", creature: "Chimère", name: "Triple menace", img: "icons/svg/combat.svg", description: "<p>Tête de lion (morsure), corps de chèvre (charge), queue serpent (poison) : trois modes d'attaque distincts au choix du MJ.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000009", creature: "Sphinx", name: "Énigme mortelle", img: "icons/svg/daze.svg", description: "<p>Pose une énigme (Intelligence diff 20 ou Astuce diff 18). Échec = la proie se fige de terreur (paralysée 1 tour) puis est dévorée.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000010", creature: "Sphinx", name: "Attaque en piqué", img: "icons/svg/wing.svg", description: "<p><strong>+2 à l'attaque</strong> (effet ci-dessous, actif en permanence) lors d'une attaque menée depuis les airs.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "2" }], transfer: true, effectDesc: "+2 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
+  { id: "aNca000000000011", creature: "Griffon", name: "Attaque en piqué (Griffon)", img: "icons/svg/wing.svg", description: "<p><strong>+3 à l'attaque</strong> (effet ci-dessous, actif en permanence) et +2 aux dégâts (à ajouter manuellement, aucun champ de bonus de dégâts séparé n'existe pour les armes de PNJ) lors d'une attaque en piqué.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
+  { id: "aNca000000000012", creature: "Scylla", name: "Six têtes", img: "icons/svg/combat.svg", description: "<p>Peut attaquer jusqu'à 6 cibles différentes par tour.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000013", creature: "Scylla", name: "Attaque éclair", img: "icons/svg/lightning.svg", description: "<p>Ses cous s'allongent à une vitesse fulgurante — la victime n'a droit qu'à un jet de Réflexes pour esquiver.</p>", saveAbility: "reflexes", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000014", creature: "Charybde", name: "Maelström", img: "icons/svg/hazard.svg", description: "<p>Trois fois par jour, aspire tout dans un rayon de 30m (Navigation diff 22 pour y échapper). Un navire pris dans le tourbillon est détruit en 3 tours.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000015", creature: "Sirène", name: "Chant envoûtant", img: "icons/svg/sound.svg", description: "<p>Échec = la victime est charmée et se dirige vers la Sirène. Portée 200m. Se boucher les oreilles avec de la cire annule l'effet.</p>", saveAbility: "volonte", saveDC: 20, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000016", creature: "Triton", name: "Combattant aquatique", img: "icons/svg/water.svg", description: "<p><strong>+3 à l'attaque et +2 à la CA</strong> (effet ci-dessous, actif en permanence) quand il combat dans l'eau.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }, { key: "system.ca.value", type: "add", value: "2" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps) et +2 à la CA, tant que cet effet est actif." },
+  { id: "aNca000000000017", creature: "Centaure guerrier", name: "Charge de cavalerie", img: "icons/svg/sword.svg", description: "<p><strong>+3 à l'attaque</strong> (effet ci-dessous, actif en permanence) et +4 aux dégâts (à ajouter manuellement) en charge directe (5m minimum en ligne droite).</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
+  { id: "aNca000000000018", creature: "Centaure guerrier", name: "Piétinement", img: "icons/svg/combat.svg", description: "<p>Peut piétiner un adversaire au sol (1d8+4 contondant).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000019", creature: "Satyre", name: "Musique de Pan", img: "icons/svg/sound.svg", description: "<p>Joue de la flûte (syrinx) : peut charmer, effrayer ou endormir, au choix du MJ.</p>", saveAbility: "volonte", saveDC: 14, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000020", creature: "Satyre", name: "Agilité forestière", img: "icons/svg/wing.svg", description: "<p>Se déplace sans bruit en forêt. Avantage en discrétion en milieu naturel.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000021", creature: "Harpie", name: "Vol rapide", img: "icons/svg/wing.svg", description: "<p>Extrêmement rapide en vol, très difficile à attraper.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000022", creature: "Harpie", name: "Puanteur", img: "icons/svg/poison.svg", description: "<p>Aura nauséabonde dans un rayon de 3m. Échec = -2 à toutes les actions tant que la cible reste dans le rayon.</p>", saveAbility: "robustesse", saveDC: 12, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000023", creature: "Harpie", name: "Larcin aérien", img: "icons/svg/hazard.svg", description: "<p>Peut voler un objet en vol — la victime peut tenter d'en empêcher le vol.</p>", saveAbility: "reflexes", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000024", creature: "Empusa", name: "Métamorphose (Empusa)", img: "icons/svg/mystery-man.svg", description: "<p>Prend l'apparence d'une belle femme (Perception diff 18 pour voir à travers l'illusion).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000025", creature: "Empusa", name: "Drain vital", img: "icons/svg/blood.svg", description: "<p>Sa morsure draine 1d6 PV supplémentaires qu'elle absorbe.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000026", creature: "Lamie", name: "Métamorphose (Lamie)", img: "icons/svg/mystery-man.svg", description: "<p>Peut prendre forme humaine (Perception diff 16 pour la détecter).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000027", creature: "Lamie", name: "Constriction (Lamie)", img: "icons/svg/net.svg", description: "<p>En forme serpentine, peut enserrer une cible (1d6+2 par tour). La victime peut tenter de se libérer.</p>", saveAbility: "robustesse", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000028", creature: "Lamie", name: "Yeux amovibles", img: "icons/svg/eye.svg", description: "<p>Peut retirer ses yeux pour les cacher. Sans yeux : immunisée aux effets visuels mais aveugle.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000029", creature: "Python", name: "Constriction (Python)", img: "icons/svg/net.svg", description: "<p>Enserre sa proie (2d6+5 par tour). La victime peut tenter de se libérer.</p>", saveAbility: "robustesse", saveDC: 20, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000030", creature: "Python", name: "Venin (Python)", img: "icons/svg/poison.svg", description: "<p>Morsure empoisonnée (2d6 poison et affaibli en cas d'échec).</p>", saveAbility: "robustesse", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000031", creature: "Python", name: "Gardien de l'Oracle", img: "icons/svg/mage-shield.svg", description: "<p>Résistance à la magie (avantage aux jets contre les sorts).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000032", creature: "Spectre du Styx", name: "Incorporel", img: "icons/svg/frozen.svg", description: "<p>Les armes normales passent à travers (demi-dégâts). Les armes de bronze béni ou divines infligent des dégâts pleins.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000033", creature: "Spectre du Styx", name: "Gémissement", img: "icons/svg/terror.svg", description: "<p>Pousse un cri terrifiant. Échec = effrayé pendant 1d4 tours.</p>", saveAbility: "volonte", saveDC: 14, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000034", creature: "Érinye (Furie)", name: "Traque implacable", img: "icons/svg/eye.svg", description: "<p>Détecte automatiquement la culpabilité. Ne peut être semée ni trompée par un coupable.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000035", creature: "Érinye (Furie)", name: "Fouet enflammé (jet de sauvegarde)", img: "icons/svg/fire.svg", description: "<p>Inflige douleur et folie. Échec = la victime est prise de terreur et de remords paralysants. Complète l'attaque déjà représentée par l'arme \"Fouet enflammé\" — donne le bouton de jet de sauvegarde.</p>", saveAbility: "volonte", saveDC: 16, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000036", creature: "Érinye (Furie)", name: "Vol (Érinye)", img: "icons/svg/wing.svg", description: "<p>Ailes de chauve-souris, vol rapide.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000037", creature: "Carcinos", name: "Prise broyeuse (immobilisation)", img: "icons/svg/net.svg", description: "<p>Agrippe et broie (1d8+4 par tour). La victime peut tenter de se libérer.</p>", saveAbility: "robustesse", saveDC: 18, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000038", creature: "Géant (Gigante)", name: "Fils de Gaïa", img: "icons/svg/regen.svg", description: "<p>Régénère 5 PV par tour tant qu'il touche le sol. Perdre le contact avec la terre annule la régénération.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000039", creature: "Géant (Gigante)", name: "Lancer de rocher (Géant)", img: "icons/svg/hazard.svg", description: "<p>Peut lancer d'énormes rochers ou des arbres.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000040", creature: "Géant (Gigante)", name: "Jambes serpentines", img: "icons/svg/poison.svg", description: "<p>Ses jambes-serpents peuvent mordre les ennemis proches, en plus de son attaque principale.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000041", creature: "Typhon", name: "Cent têtes", img: "icons/svg/combat.svg", description: "<p>Peut attaquer tous les ennemis dans un rayon de 10m simultanément.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000042", creature: "Typhon", name: "Tempête", img: "icons/svg/hazard.svg", description: "<p>Génère des ouragans et des tremblements de terre autour de lui.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000043", creature: "Lion de Némée", name: "Peau impénétrable", img: "icons/svg/holy-shield.svg", description: "<p>Immunisé aux armes tranchantes et perforantes. Seuls les dégâts contondants ou l'étranglement fonctionnent.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000044", creature: "Lion de Némée", name: "Rugissement", img: "icons/svg/terror.svg", description: "<p>Échec = effrayé pendant 1d4 tours.</p>", saveAbility: "volonte", saveDC: 14, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000045", creature: "Lion de Némée", name: "Prédateur suprême", img: "icons/svg/eye.svg", description: "<p>Avantage aux jets de traque et de discrétion en terrain naturel.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000046", creature: "Aigle du Caucase", name: "Déchiquetage", img: "icons/svg/blood.svg", description: "<p>En combat prolongé, peut arracher des morceaux de chair (dégâts continus 1d4 par tour si la morsure initiale a touché).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000047", creature: "Aigle du Caucase", name: "Vol supérieur", img: "icons/svg/wing.svg", description: "<p>Vitesse et manœuvrabilité exceptionnelles en vol.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000048", creature: "Sanglier d'Érymanthe", name: "Charge dévastatrice", img: "icons/svg/sword.svg", description: "<p><strong>+4 à l'attaque</strong> (effet ci-dessous, actif en permanence) et +6 aux dégâts (à ajouter manuellement) en charge (5m minimum). Renverse les cibles de taille humaine.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "4" }], transfer: true, effectDesc: "+4 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
+  { id: "aNca000000000049", creature: "Sanglier d'Érymanthe", name: "Défenses acérées", img: "icons/svg/sword.svg", description: "<p>Ses défenses sont capables de transpercer le bronze.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000050", creature: "Taureau de Crète", name: "Souffle de feu (Taureau)", img: "icons/svg/fire.svg", description: "<p>Peut cracher des flammes (2d6 feu, cône de 3m). Don de Poséidon.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000051", creature: "Taureau de Crète", name: "Charge du Taureau", img: "icons/svg/sword.svg", description: "<p><strong>+3 à l'attaque</strong> (effet ci-dessous, actif en permanence) et +6 aux dégâts (à ajouter manuellement) en charge directe.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
+  { id: "aNca000000000052", creature: "Stymphale", name: "Nuée", img: "icons/svg/combat.svg", description: "<p>En groupe de 5 individus ou plus, forment une nuée qui obscurcit le ciel (-2 en perception visuelle pour les ennemis).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
+  { id: "aNca000000000053", creature: "Stymphale", name: "Fiente toxique", img: "icons/svg/poison.svg", description: "<p>Poison au contact. Échec = 1d4 dégâts de poison par tour.</p>", saveAbility: "robustesse", saveDC: 12, changes: null, transfer: null, effectDesc: null }
+];
+
+function capaciteBestiaireDocData(entry) {
+  const doc = {
+    _id: entry.id,
+    name: entry.name,
+    img: entry.img,
+    type: "npcability",
+    system: {
+      description: entry.description,
+      gmNotes: "",
+      saveAbility: entry.saveAbility,
+      saveDC: entry.saveDC
+    },
+    effects: [],
+    folder: null,
+    sort: 0,
+    ownership: { default: 0 },
+    flags: {}
+  };
+  if (entry.changes) {
+    // Nested inline here (raw creation data for the parent Item's own "effects" array,
+    // same shape as packs/*.db), NOT the dotted "system.changes" key used elsewhere in
+    // this file when calling createEmbeddedDocuments() as its own separate API call.
+    doc.effects.push({
+      name: entry.name,
+      img: entry.img,
+      type: "base",
+      system: { changes: entry.changes },
+      disabled: false,
+      transfer: entry.transfer,
+      description: entry.effectDesc
+    });
+  }
+  return doc;
+}
+
+async function applyCreateCapacitesBestiaire() {
+  const pack = game.packs.get("antique.capacites-combat");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  const missing = CAPACITES_BESTIAIRE.filter(e => !existingIds.has(e.id)).map(capaciteBestiaireDocData);
+  if (!missing.length) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return missing.length;
+}
+
+/** Embarque, sur `creature` (un Actor — document du compendium "creatures" ou copie déjà
+ *  glissée dans le monde), toute capacité de CAPACITES_BESTIAIRE qui lui appartient et n'y
+ *  est pas déjà, plus le retrofit Charge furieuse/Regard pétrifiant sur Minotaure/Méduse
+ *  (jamais embarquées sur elles-mêmes jusqu'ici — seulement glissées sur une copie PNJ de
+ *  test). Idempotent : ne recrée jamais un item déjà présent (comparaison par _id).
+ */
+async function embedCapacitesOnCreature(creature) {
+  const existingIds = new Set(creature.items.map(i => i._id));
+  const toCreate = [];
+
+  for (const entry of CAPACITES_BESTIAIRE) {
+    if (entry.creature !== creature.name || existingIds.has(entry.id)) continue;
+    toCreate.push(capaciteBestiaireDocData(entry));
+  }
+
+  if (creature.name === "Minotaure" && !existingIds.has("aNca000000000001")) {
+    const chargeFurieuse = await game.packs.get("antique.capacites-combat")?.getDocument("aNca000000000001");
+    if (chargeFurieuse) toCreate.push(chargeFurieuse.toObject());
+  }
+  if (creature.name === "Méduse" && !existingIds.has("aNca000000000002")) {
+    const regardPetrifiant = await game.packs.get("antique.capacites-combat")?.getDocument("aNca000000000002");
+    if (regardPetrifiant) toCreate.push(regardPetrifiant.toObject());
+  }
+
+  if (!toCreate.length) return false;
+  await creature.createEmbeddedDocuments("Item", toCreate, { keepId: true });
+  return true;
+}
+
+async function applyEmbedCapacitesBestiaire() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.creatures");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedCapacitesOnCreature(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    if (actor.type !== "npc") continue;
+    if (await embedCapacitesOnCreature(actor)) fixed++;
   }
 
   return fixed;
