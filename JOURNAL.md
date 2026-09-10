@@ -2,6 +2,28 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 5) — Correctif : +1 ingrédient ne rafraîchit plus toute la fiche (v0.6.76 → v0.6.77)
+
+Point 21 de `TODO_BUG_ANTIQUE.md` : l'utilisateur a testé le recochage automatique de la
+checklist "Ingrédients" d'un sort après un cast — **confirmé, ça fonctionne**. En testant, il a
+trouvé un problème connexe : cliquer sur le bouton "+" d'un ingrédient (onglet Apothicaire de la
+fiche Personnage) remonte toute la fiche en haut et efface le champ de recherche en cours.
+
+**Cause** : le handler `.ingredient-restock` (`actor-sheet.mjs`) faisait
+`await item.update(...); this.render({force:true})` — un re-rendu complet de la fiche pour
+incrémenter un simple nombre. Contrairement au bouton `.item-consume` juste à côté (qui ne force
+aucun rendu et laisse Foundry gérer la mise à jour), ce force-render était superflu et surtout
+destructeur (perd le scroll et la valeur du champ `.ingredient-search`).
+
+**Correctif** : remplacé par une correction directe du DOM — après l'update, le `<span
+class="quantity-value">` de la ligne est mis à jour en place (texte + classe `.empty`), ainsi que
+`.apoth-row-empty` sur la ligne, sans aucun appel à `render()`. Plus de perte de scroll ni de
+recherche en cours.
+
+**Fichiers** : `module/sheets/actor-sheet.mjs`, `system.json`, `module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 4) — Capacités cliquables dans le chat + bouton de jet de sauvegarde (v0.6.75 → v0.6.76)
 
 Demande utilisateur (dernière du soir) : « il faut que les capacités de combat soient cliquables

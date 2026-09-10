@@ -773,11 +773,20 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     this.element.querySelectorAll(".ingredient-restock").forEach(el => {
       el.addEventListener("click", async ev => {
         ev.preventDefault();
-        const li = ev.currentTarget.closest(".item");
-        const item = this.actor.items.get(li.dataset.itemId);
+        const row = ev.currentTarget.closest(".item");
+        const item = this.actor.items.get(row.dataset.itemId);
         if (!item) return;
-        await item.update({ "system.quantity": (item.system.quantity ?? 0) + 1 });
-        this.render({ force: true });
+        const quantity = (item.system.quantity ?? 0) + 1;
+        await item.update({ "system.quantity": quantity });
+        // Patch just the quantity display in place — a full render (previously
+        // this.render({force:true})) reset scroll position and cleared the
+        // ingredient search field, which is disruptive for a simple +1 click.
+        const valueEl = row.querySelector(".quantity-value");
+        if (valueEl) {
+          valueEl.textContent = quantity;
+          valueEl.classList.toggle("empty", quantity < 1);
+        }
+        row.classList.toggle("apoth-row-empty", quantity < 1);
       });
     });
 

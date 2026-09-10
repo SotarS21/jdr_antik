@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.77": {
+    title: "Version 0.6.77 — Correctif : le bouton +1 ingrédient ne rafraîchit plus toute la fiche",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : cliquer sur le bouton "+" d'un ingrédient (onglet Apothicaire) ne recharge plus toute la fiche — seul le nombre affiché se met à jour. Avant, ça remontait la fiche en haut et effaçait la recherche en cours.</li>
+      </ul>`
+  },
   "0.6.76": {
     title: "Version 0.6.76 — Capacités de combat cliquables + bouton de jet de sauvegarde",
     html: `

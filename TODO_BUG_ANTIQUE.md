@@ -203,15 +203,22 @@ les afficher dans le chat (icône, titre, description) — patron déjà génér
 (`AntiqueItem#postToChat()`), juste la classe manquante sur le nom. "Regard pétrifiant" affiche
 désormais un bouton "Jet de sauvegarde" (Robustesse DC 18) sur sa carte de chat : le joueur visé
 clique lui-même, avec les stats de son personnage assigné. Voir `JOURNAL.md`, session du
-10 septembre 2026 (suite 4). **À confirmer par l'utilisateur en jeu** avant de généraliser à
-toutes les créatures/PNJ existants (reste à faire, pas encore planifié).
+10 septembre 2026 (suite 4). **Confirmé par l'utilisateur en jeu (10 septembre 2026)** : "ça
+marche bien". Reste à faire (pas encore planifié) : généraliser le patron capacités de combat
+(avec effet mécanique + document Effet autonome) à toutes les créatures/PNJ existants, au-delà
+des 2 exemples (Charge furieuse, Regard pétrifiant).
 
-## 21. Recochage automatique visuel des ingrédients après incantation d'un rituel
+## 21. ~~Recochage automatique visuel des ingrédients après incantation d'un rituel~~ — CONFIRMÉ (10 septembre 2026)
 
 Après consommation, chaque ingrédient se resynchronise avec le stock réel (livré, voir point 3
-ci-dessus) mais le recochage visuel automatique dans la fiche du sort après incantation n'est pas
-confirmé. **À vérifier en jeu** avant de coder quoi que ce soit de plus. Source : `todo_foundry.txt`,
-audit du 9 septembre 2026.
+ci-dessus) et le recochage visuel automatique dans la fiche du sort après incantation est
+**confirmé par l'utilisateur en jeu** (10 septembre 2026). Source : `todo_foundry.txt`, audit du
+9 septembre 2026.
+
+**Bug connexe trouvé en testant, corrigé le même jour (v0.6.77)** : le bouton "+" d'un ingrédient
+(onglet Apothicaire) forçait un re-rendu complet de la fiche (scroll remonté en haut, recherche
+effacée) pour une simple incrémentation. Corrigé par une mise à jour directe du DOM (juste le
+nombre affiché), sans re-rendu. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 5).
 
 ---
 
