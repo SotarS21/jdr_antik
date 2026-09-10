@@ -218,6 +218,44 @@ scène l'amène déjà équipée) — y compris un retrofit de Minotaure/Méduse
 leur propre capacité embarquée sur eux-mêmes jusqu'ici. Voir `JOURNAL.md`, session du
 10 septembre 2026 (suite 7). **À confirmer par l'utilisateur en jeu.**
 
+## 22. Effets désactivés — grisés, plus éditables ni réactivables
+
+Signalé le 10 septembre 2026 : quand un effet actif est désactivé, sa ligne devient grisée
+(normal, `opacity: 0.5` en CSS) mais ne peut ensuite plus être ni édité ni réactivé. Relu tout
+le code concerné (`module/sheets/actor-sheet.mjs` : `.actor-effect-toggle`/`.actor-effect-edit`
+sur les effets autonomes de l'onglet Traits ; `module/sheets/item-sheet.mjs` :
+`.effect-toggle`/`.effect-edit` sur l'onglet Effets d'un objet) — aucune des deux ne conditionne
+la recherche du document ou l'attache du listener sur `effect.disabled`, et le CSS
+(`.trait-row.disabled`/`.effect-row.disabled`) ne pose que de l'opacité, jamais de
+`pointer-events: none`. Pas de cause trouvée par relecture statique seule. **Besoin de
+précisions utilisateur avant de coder un correctif** : dans quel écran exactement (onglet
+Effets d'une fiche d'objet type Charge furieuse/Cuir de Héros, ou section "Effets" autonome de
+l'onglet Traits de la fiche Personnage) et que se passe-t-il précisément au clic (rien, une
+erreur console, un comportement différent) ?
+
+## 23. Regard pétrifiant — bouton de jet de sauvegarde manquant (signalé)
+
+Signalé le 10 septembre 2026, dans la même session que sa création (v0.6.76) et sa confirmation
+("ça marche bien"). Vérifié : la donnée source (`packs/capacites-combat.db`, doc "Regard
+pétrifiant") a bien `saveAbility: "robustesse"`/`saveDC: 18`, et sa copie embarquée sur Méduse
+(`packs/creatures.db`, ajoutée en v0.6.79) aussi — rien à corriger côté source. Cause la plus
+probable : le monde déjà déployé de l'utilisateur n'a pas encore reçu les correctifs
+`PACK_UPDATES` correspondants (`0.6.76-add-save-to-petrifiant` et/ou
+`0.6.79-embed-capacites-bestiaire`) via l'écran de mise à jour MJ. **À vérifier avec
+l'utilisateur** : a-t-il vu et appliqué l'écran de correctifs en attente récemment, et sur
+quelle copie exactement observe-t-il le bouton manquant (le compendium "Capacités de Combat",
+une Méduse fraîchement glissée depuis "Créatures Mythologiques", ou son ancien PNJ de test) ?
+
+## 24. Compendiums "Effets" et "Capacités de Combat" absents du Navigateur de Compendium
+
+Demandé le 10 septembre 2026 : `module/apps/compendium-browser.mjs` a 5 onglets
+(`packs:` par onglet, voir `key: "traits"` ligne 40-41 : avantages/désavantages/
+bénédictions/avantages-divins) mais ni `antique.effets` ni `antique.capacites-combat` n'y
+figurent nulle part — inaccessibles autrement que par le panneau de compendiums natif de
+Foundry. Demande précise : ajouter `antique.effets` à l'onglet Traits existant (aux côtés des
+avantages/désavantages/etc.), et créer un **nouvel onglet dédié** pour
+`antique.capacites-combat` (pas mélangé avec Traits ni Bestiaire). Pas encore codé.
+
 ## 21. ~~Recochage automatique visuel des ingrédients après incantation d'un rituel~~ — CONFIRMÉ (10 septembre 2026)
 
 Après consommation, chaque ingrédient se resynchronise avec le stock réel (livré, voir point 3
