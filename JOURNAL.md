@@ -2,6 +2,32 @@
 
 ---
 
+## Session du 10 septembre 2026 (suite 12) — Correctif : dossiers + RollTables dans "Écraser mes compendiums" (v0.6.83 → v0.6.84)
+
+Retour utilisateur après test du correctif précédent (le 403 est bien résolu, "715 mis à jour,
+209 créés") : la console montre encore deux catégories d'échecs.
+
+**Dossiers traités comme du contenu normal** : l'export NDJSON plat d'un pack mélange les vrais
+documents (armes, sorts...) et les documents Dossier (Folder) qui servent à les organiser dans
+la barre latérale — 23 au total (armes ×7, sorts ×5, alchimie ×5, avantages-divins ×4,
+historique ×2). Un Dossier a lui-même un champ `type` qui vaut le nom de la classe du pack
+("Item", "RollTable"...) — ça ressemble à s'y méprendre à un document de contenu invalide de ce
+même type, d'où l'erreur "type: Item n'est pas un type valide". Discriminant fiable : seul un
+Dossier porte un champ `sorting` dans cette forme. Corrigé : ces entrées passent maintenant par
+`pack.folders`/`Folder.create()` au lieu de `pack.documentClass`.
+
+**RollTables de l'Historique (`_stats.lastModifiedBy` invalide)** : 5 tables portaient une
+valeur technique `_stats.lastModifiedBy: "buildScript"` (héritée d'un ancien script de
+construction, pas un vrai ID utilisateur à 16 caractères) — rejetée par la validation dès qu'un
+`.update()` la repasse telle quelle. `_stats` est de toute façon géré par Foundry lui-même (qui
+a modifié/quand) et ne devrait jamais être réécrit depuis un fichier de départ statique — retiré
+de la charge utile pour toutes les entrées, pas seulement l'Historique.
+
+**Fichiers** : `module/helpers/version-check.mjs`, `system.json`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 10 septembre 2026 (suite 11) — Correctif : "Écraser mes compendiums" refonctionne (v0.6.82 → v0.6.83)
 
 Signalé par l'utilisateur (erreurs console) : le bouton "Écraser mes compendiums" du dialogue

@@ -249,7 +249,7 @@ Foundry. Demande précise : ajouter `antique.effets` à l'onglet Traits existant
 avantages/désavantages/etc.), et créer un **nouvel onglet dédié** pour
 `antique.capacites-combat` (pas mélangé avec Traits ni Bestiaire). Pas encore codé.
 
-## 26. ~~"Écraser mes compendiums" échoue (403 sur les 14 packs)~~ — CORRIGÉ (10 septembre 2026, v0.6.83)
+## 26. ~~"Écraser mes compendiums" échoue (403 sur les 14 packs)~~ — CORRIGÉ (10 septembre 2026, v0.6.83 → v0.6.84)
 
 Foundry bloque désormais le téléchargement direct d'un fichier `.db` (famille LevelDB) comme
 asset statique — le bouton "Écraser mes compendiums" du dialogue de version, qui allait
@@ -259,7 +259,14 @@ généré automatiquement à chaque déploiement par `packs/_sync-json-mirrors.j
 bloquée. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 11) — attention, cette session a
 aussi accidentellement écrasé un fichier `packs/dieux.json` préexistant (restauré) et perdu 13
 fichiers `.json` non suivis par git dont le contenu d'origine est inconnu ; voir le détail dans
-le journal. **À confirmer par l'utilisateur en jeu** (retenter "Écraser mes compendiums").
+le journal.
+
+**Test utilisateur (v0.6.83)** : le 403 est bien résolu (715 mis à jour, 209 créés), mais deux
+nouveaux types d'échec apparus dans la console (masqués jusque-là par l'échec total) : des
+dossiers d'organisation (armes/sorts/alchimie/avantages-divins/historique) traités par erreur
+comme du contenu normal, et 5 tables aléatoires de l'Historique rejetées pour une donnée
+technique invalide. Les deux corrigés en v0.6.84. Voir `JOURNAL.md`, session du
+10 septembre 2026 (suite 12). **À reconfirmer par l'utilisateur en jeu.**
 
 ## 25. ~~Filtre "Consommable" (Navigateur de Compendium, onglet Équipement) mal nommé~~ — CORRIGÉ (10 septembre 2026, v0.6.81)
 

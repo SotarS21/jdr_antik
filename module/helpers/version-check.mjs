@@ -137,13 +137,37 @@ async function overwriteSystemCompendiums() {
 
     for (const entry of entries) {
       try {
-        const existing = await pack.getDocument(entry._id);
+        // _stats is Foundry's own bookkeeping (who/when last modified) — never overwrite
+        // it from a static seed file; some historical entries even carry an invalid
+        // placeholder (ex. lastModifiedBy: "buildScript", not a real 16-char user id),
+        // which fails validation outright if passed through untouched.
+        const { _id, _stats, ...data } = entry;
+
+        // The flat NDJSON export of a pack mixes real content documents with the Folder
+        // documents used to organize them in the compendium sidebar — only Folders carry
+        // a "sorting" field in this shape, and they need Folder's own document class, not
+        // this pack's (ex. an "Item" pack's real documents are weapons/spells/etc., never
+        // literally type "Item" — that value belongs to a Folder saying "this organizes
+        // Items", which used to be fed into pack.documentClass.create() by mistake and
+        // rejected as an invalid Item type).
+        if ("sorting" in entry) {
+          const existingFolder = pack.folders.get(_id);
+          if (existingFolder) {
+            await existingFolder.update(data);
+            updated++;
+          } else {
+            await Folder.create({ _id, ...data }, { pack: pack.collection, keepId: true });
+            created++;
+          }
+          continue;
+        }
+
+        const existing = await pack.getDocument(_id);
         if (existing) {
-          const { _id, ...data } = entry;
           await existing.update(data);
           updated++;
         } else {
-          await pack.documentClass.create(entry, { pack: pack.collection, keepId: true });
+          await pack.documentClass.create({ _id, ...data }, { pack: pack.collection, keepId: true });
           created++;
         }
       } catch (err) {

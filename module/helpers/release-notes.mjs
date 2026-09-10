@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.84": {
+    title: "Version 0.6.84 — Correctif : \"Écraser mes compendiums\" (dossiers + RollTables)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : 23 dossiers d'organisation (Armes, Sorts, Alchimie, Avantages divins, Historique) échouaient systématiquement lors de l'écrasement des compendiums — traités par erreur comme du contenu normal au lieu de vrais dossiers Foundry.</li>
+        <li><strong>Corrigé</strong> : 5 tables aléatoires de l'onglet Historique échouaient aussi (donnée technique invalide héritée d'un ancien script). Plus généralement, cette donnée technique n'est plus jamais réécrasée par ce mécanisme.</li>
+      </ul>`
+  },
   "0.6.83": {
     title: "Version 0.6.83 — Correctif : \"Écraser mes compendiums\" refonctionne",
     html: `
