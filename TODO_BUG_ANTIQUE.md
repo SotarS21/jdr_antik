@@ -227,17 +227,13 @@ boutons de contrôle de la ligne (actif/inactif, éditer, supprimer). Corrigé e
 `pointer-events: auto` explicitement sur ces boutons. Voir `JOURNAL.md`, session du
 10 septembre 2026 (suite 10). **À confirmer par l'utilisateur en jeu.**
 
-## 23. Regard pétrifiant — bouton de jet de sauvegarde manquant (probablement lié au point 26)
+## 23. ~~Regard pétrifiant — bouton de jet de sauvegarde manquant~~ — CORRIGÉ (10 septembre 2026, via le point 26)
 
 Signalé le 10 septembre 2026, dans la même session que sa création (v0.6.76) et sa confirmation
-("ça marche bien"). Vérifié : la donnée source (`packs/capacites-combat.db`, doc "Regard
-pétrifiant") a bien `saveAbility: "robustesse"`/`saveDC: 18`, et sa copie embarquée sur Méduse
-(`packs/creatures.db`, ajoutée en v0.6.79) aussi — rien à corriger côté source. Cause la plus
-probable, trouvée dans la foulée : l'utilisateur avait tenté "Écraser mes compendiums" (dialogue
-de version), qui échouait totalement (403 sur les 14 packs, voir point 26) — n'a donc rien
-copié. **À revérifier par l'utilisateur** maintenant que le point 26 est corrigé (v0.6.83) : soit
-réessayer "Écraser mes compendiums", soit passer par l'écran "Correctifs de compendium"
-(PACK_UPDATES, `0.6.76-add-save-to-petrifiant`/`0.6.79-embed-capacites-bestiaire`), au choix.
+("ça marche bien"). Cause : l'utilisateur avait tenté "Écraser mes compendiums", qui échouait
+totalement (403 sur les 14 packs, voir point 26) — n'avait donc rien copié. Résolu de fait par
+le correctif du point 26 (v0.6.83 → v0.6.84). **Confirmé par l'utilisateur en jeu**
+("ça marche bien").
 
 ## 24. Compendiums "Effets" et "Capacités de Combat" absents du Navigateur de Compendium
 
@@ -266,7 +262,8 @@ nouveaux types d'échec apparus dans la console (masqués jusque-là par l'éche
 dossiers d'organisation (armes/sorts/alchimie/avantages-divins/historique) traités par erreur
 comme du contenu normal, et 5 tables aléatoires de l'Historique rejetées pour une donnée
 technique invalide. Les deux corrigés en v0.6.84. Voir `JOURNAL.md`, session du
-10 septembre 2026 (suite 12). **À reconfirmer par l'utilisateur en jeu.**
+10 septembre 2026 (suite 12). **Confirmé par l'utilisateur en jeu (10 septembre 2026)** : "ça
+marche bien".
 
 ## 25. ~~Filtre "Consommable" (Navigateur de Compendium, onglet Équipement) mal nommé~~ — CORRIGÉ (10 septembre 2026, v0.6.81)
 
