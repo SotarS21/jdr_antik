@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.85": {
+    title: "Version 0.6.85 — Effets et Capacités de Combat dans le Navigateur de Compendium",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : le compendium "Effets" apparaît désormais dans l'onglet Traits du Navigateur de Compendium (à côté des avantages/désavantages/bénédictions/avantages divins) — glisser un effet ou cliquer "Prendre" l'applique directement à l'acteur ciblé.</li>
+        <li><strong>Ajouté</strong> : nouvel onglet "Capacités de Combat" dédié au compendium "Capacités de Combat (PNJ)".</li>
+      </ul>`
+  },
   "0.6.84": {
     title: "Version 0.6.84 — Correctif : \"Écraser mes compendiums\" (dossiers + RollTables)",
     html: `

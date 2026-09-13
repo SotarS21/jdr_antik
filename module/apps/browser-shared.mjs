@@ -48,6 +48,18 @@ export async function grantItemToActor(targetActor, compendiumItem) {
 }
 
 /**
+ * Apply a copy of a compendium ActiveEffect (Effets library) directly onto the target actor —
+ * grantItemToActor's counterpart for the Traits tab's Effets pack. No stacking concept for
+ * effects, so always a fresh copy.
+ */
+export async function grantEffectToActor(targetActor, compendiumEffect) {
+  const data = compendiumEffect.toObject();
+  delete data._id;
+  await targetActor.createEmbeddedDocuments("ActiveEffect", [data]);
+  refreshSheet(targetActor);
+}
+
+/**
  * Handle a stackable item (weapon/equipment) dropped onto `actor` from anywhere other than
  * that same actor (compendium, another actor, the world Items directory) — reuses/increments
  * a matching existing item (same match rule as grantItemToActor) by the dropped item's own

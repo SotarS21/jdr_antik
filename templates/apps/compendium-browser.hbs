@@ -78,7 +78,7 @@
               </thead>
               <tbody>
                 {{#each section.items as |item|}}
-                <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="Item" data-filter-kind="{{item.filterKind}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+                <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="{{section.dragType}}" data-filter-kind="{{item.filterKind}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
                   <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" title="{{localize 'ANTIQUE.Browser.ClickImageHint'}}" /></td>
                   <td class="equip-name-cell">
                     <a class="equip-toggle" draggable="false"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
@@ -176,7 +176,7 @@
             </thead>
             <tbody>
               {{#each section.items as |item|}}
-              <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="Item" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
+              <tr class="item shop-row" data-uuid="{{item.uuid}}" data-drag-type="{{section.dragType}}" title="{{localize 'ANTIQUE.Browser.DragHint'}}">
                 <td class="equip-img"><img src="{{item.img}}" width="24" height="24" draggable="false" title="{{localize 'ANTIQUE.Browser.ClickImageHint'}}" /></td>
                 <td class="equip-name-cell">
                   <a class="equip-toggle" draggable="false"><i class="fas fa-caret-right equip-toggle-icon"></i></a>

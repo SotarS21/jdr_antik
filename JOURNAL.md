@@ -2,6 +2,33 @@
 
 ---
 
+## Session du 13 septembre 2026 — Effets et Capacités de Combat dans le Navigateur de Compendium (v0.6.84 → v0.6.85)
+
+Reprise du point #24 laissé en pause en fin de session précédente.
+
+- `antique.effets` ajouté à l'onglet Traits du Navigateur de Compendium
+  (`module/apps/compendium-browser.mjs`), aux côtés d'avantages/désavantages/bénédictions/
+  avantages-divins (`filterByPack: true`, donc case de filtre automatique). Ses documents sont
+  des `ActiveEffect`, jamais gérés jusqu'ici par `_prepareContext` (seuls Item/Actor/RollTable
+  l'étaient) — nouvelle branche dédiée, champs lus directement sur le document (`effect.img`,
+  `effect.description`, pas de `system.*`, contrairement à un Item).
+- Nouveau bouton "Prendre" pour un effet : `grantEffectToActor()` (`browser-shared.mjs`),
+  pendant de `grantItemToActor()` mais sans notion de prix/stack — applique une copie fraîche
+  directement sur l'acteur ciblé.
+- Nouvel onglet dédié "Capacités de Combat" pour `antique.capacites-combat`, sans filtre (un
+  seul pack) — premier onglet de ce genre, exercice au passage de la branche "sans filtre" du
+  template qui n'avait jamais servi jusqu'ici (tous les onglets précédents avaient au moins un
+  filtre).
+- **Bug latent trouvé et corrigé en marge** : le `data-drag-type` du glisser-déposer était
+  hardcodé à `"Item"` dans le template (`compendium-browser.hbs`) pour toute section de type
+  "item", au lieu de lire `section.dragType`. Sans incidence tant que seuls des Items passaient
+  par cette branche ; glisser un effet l'aurait fait atterrir comme un faux Item au lieu d'un
+  ActiveEffect. Corrigé pour les deux variantes du template (mise en page avec/sans filtres).
+
+**Point #24 du `TODO_BUG_ANTIQUE.md` clos. À confirmer par l'utilisateur en jeu.**
+
+---
+
 ## Bilan de la session du 10 septembre 2026 (v0.6.76 → v0.6.84)
 
 Session longue, 12 étapes ("suite" 1 à 12 ci-dessous), toutes testées et confirmées par

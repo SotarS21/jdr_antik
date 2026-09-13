@@ -235,15 +235,23 @@ totalement (403 sur les 14 packs, voir point 26) — n'avait donc rien copié. R
 le correctif du point 26 (v0.6.83 → v0.6.84). **Confirmé par l'utilisateur en jeu**
 ("ça marche bien").
 
-## 24. Compendiums "Effets" et "Capacités de Combat" absents du Navigateur de Compendium
+## 24. ~~Compendiums "Effets" et "Capacités de Combat" absents du Navigateur de Compendium~~ — CORRIGÉ (13 septembre 2026, v0.6.85)
 
-Demandé le 10 septembre 2026 : `module/apps/compendium-browser.mjs` a 5 onglets
-(`packs:` par onglet, voir `key: "traits"` ligne 40-41 : avantages/désavantages/
-bénédictions/avantages-divins) mais ni `antique.effets` ni `antique.capacites-combat` n'y
-figurent nulle part — inaccessibles autrement que par le panneau de compendiums natif de
-Foundry. Demande précise : ajouter `antique.effets` à l'onglet Traits existant (aux côtés des
-avantages/désavantages/etc.), et créer un **nouvel onglet dédié** pour
-`antique.capacites-combat` (pas mélangé avec Traits ni Bestiaire). Pas encore codé.
+Demandé le 10 septembre 2026 : `module/apps/compendium-browser.mjs` avait 5 onglets
+(`packs:` par onglet, voir `key: "traits"` : avantages/désavantages/bénédictions/avantages-divins)
+mais ni `antique.effets` ni `antique.capacites-combat` n'y figuraient nulle part — inaccessibles
+autrement que par le panneau de compendiums natif de Foundry. `antique.effets` ajouté à l'onglet
+Traits existant (aux côtés des avantages/désavantages/etc., avec sa propre case de filtre) ; ses
+documents sont des `ActiveEffect`, un type de document jamais géré jusqu'ici par le Navigateur
+(seuls Item/Actor/RollTable l'étaient) — nouvelle branche dédiée dans `_prepareContext` +
+`grantEffectToActor()` (`browser-shared.mjs`) pour le bouton "Prendre" (pas de notion de prix/
+stack, contrairement à un Item). Nouvel onglet dédié "Capacités de Combat" créé pour
+`antique.capacites-combat`, sans filtre (un seul pack). **Bug latent corrigé au passage** : le
+`data-drag-type` du glisser-déposer était hardcodé à `"Item"` dans le template pour toutes les
+sections de type "item", au lieu de lire `section.dragType` — sans incidence tant que seuls des
+Items y passaient, mais aurait cassé le glisser d'un effet vers une fiche (créé comme un faux
+Item au lieu d'un ActiveEffect). Voir `JOURNAL.md`, session du 13 septembre 2026. **À confirmer
+par l'utilisateur en jeu.**
 
 ## 26. ~~"Écraser mes compendiums" échoue (403 sur les 14 packs)~~ — CORRIGÉ (10 septembre 2026, v0.6.83 → v0.6.84)
 

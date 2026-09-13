@@ -1,9 +1,9 @@
-import { resolveShopTargetActors, grantItemToActor, attachBrowserRowInteractions, withRowLock } from "./browser-shared.mjs";
+import { resolveShopTargetActors, grantItemToActor, grantEffectToActor, attachBrowserRowInteractions, withRowLock } from "./browser-shared.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Top tabs group this system's 12 compendiums by content category rather than one tab per
+ * Top tabs group this system's 14 compendiums by content category rather than one tab per
  * pack — mirrors PF2e's real Compendium Browser (tabs like "Équipement"/"Sorts"/"Bestiaires"
  * aggregate several source compendiums at once, narrowed down with filters instead of one
  * tab per source). Confirmed with the user against a screenshot of the real PF2e browser.
@@ -38,7 +38,7 @@ const TABS = [
   },
   {
     key: "traits", label: "ANTIQUE.Browser.TabTraits",
-    packs: ["antique.avantages", "antique.desavantages", "antique.benedictions", "antique.avantages-divins"],
+    packs: ["antique.avantages", "antique.desavantages", "antique.benedictions", "antique.avantages-divins", "antique.effets"],
     filterByPack: true
   },
   {
@@ -55,7 +55,8 @@ const TABS = [
     packs: ["antique.pnj", "antique.dieux", "antique.creatures"],
     filterByPack: true
   },
-  { key: "historique", label: "ANTIQUE.Browser.TabHistorique", packs: ["antique.historique"], filterByFolder: true }
+  { key: "historique", label: "ANTIQUE.Browser.TabHistorique", packs: ["antique.historique"], filterByFolder: true },
+  { key: "capacites-combat", label: "ANTIQUE.Browser.TabCapacitesCombat", packs: ["antique.capacites-combat"] }
 ];
 
 /**
@@ -196,6 +197,7 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
           tab.sections.push({
             key: packId,
             kind: "item",
+            dragType: "Item",
             label: pack.metadata.label,
             items: priced
               .sort(comparator)
@@ -207,6 +209,26 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
                 hasPrice: !!d.system.price,
                 filterKind: classify ? classify(d) : null,
                 description: d.system.description
+              }))
+          });
+        } else if (pack.documentName === "ActiveEffect") {
+          // Effets library: no price/quantity concept, so price/hasPrice are always empty/false
+          // (the row's Take button still works — see _onTake's ActiveEffect branch).
+          tab.sections.push({
+            key: packId,
+            kind: "item",
+            dragType: "ActiveEffect",
+            label: pack.metadata.label,
+            items: documents
+              .sort(comparator)
+              .map(d => ({
+                uuid: d.uuid,
+                name: d.name,
+                img: d.img,
+                price: "",
+                hasPrice: false,
+                filterKind: classify ? classify(d) : null,
+                description: d.description
               }))
           });
         } else if (pack.documentName === "Actor") {
@@ -304,8 +326,8 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
     event.preventDefault();
     await withRowLock(event, async () => {
       const uuid = event.currentTarget.closest(".shop-row")?.dataset.uuid;
-      const compendiumItem = uuid ? await fromUuid(uuid) : null;
-      if (!compendiumItem) return;
+      const compendiumDoc = uuid ? await fromUuid(uuid) : null;
+      if (!compendiumDoc) return;
 
       const actors = resolveShopTargetActors();
       if (!actors.length) {
@@ -313,12 +335,13 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
         return;
       }
 
-      for (const actor of actors) await grantItemToActor(actor, compendiumItem);
+      const grant = compendiumDoc.documentName === "ActiveEffect" ? grantEffectToActor : grantItemToActor;
+      for (const actor of actors) await grant(actor, compendiumDoc);
 
       if (actors.length === 1) {
-        ui.notifications.info(game.i18n.format("ANTIQUE.Shop.Taken", { name: compendiumItem.name, target: actors[0].name }));
+        ui.notifications.info(game.i18n.format("ANTIQUE.Shop.Taken", { name: compendiumDoc.name, target: actors[0].name }));
       } else {
-        ui.notifications.info(game.i18n.format("ANTIQUE.Shop.TakenAll", { name: compendiumItem.name }));
+        ui.notifications.info(game.i18n.format("ANTIQUE.Shop.TakenAll", { name: compendiumDoc.name }));
       }
     });
   }
