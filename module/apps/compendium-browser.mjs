@@ -26,7 +26,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TABS = [
   {
     key: "equipement", label: "ANTIQUE.Browser.TabEquipement",
-    packs: ["antique.armes", "antique.equipement", "antique.alchimie"],
+    packs: ["antique.armes", "antique.equipement", "antique.alchimie", "antique.tresors"],
     filters: [
       { key: "arme", label: "ANTIQUE.Browser.FilterArme" },
       { key: "arme-jet", label: "ANTIQUE.Browser.FilterArmeJet" },
@@ -34,7 +34,8 @@ const TABS = [
       { key: "armure", label: "ANTIQUE.Browser.FilterArmure" },
       { key: "bouclier", label: "ANTIQUE.Browser.FilterBouclier" },
       { key: "munition", label: "ANTIQUE.Browser.FilterMunition" },
-      { key: "consommable", label: "ANTIQUE.Browser.FilterConsommable" }
+      { key: "consommable", label: "ANTIQUE.Browser.FilterConsommable" },
+      { key: "tresor", label: "ANTIQUE.Browser.FilterTresor" }
     ],
     classify: (doc, packId) => classifyEquipmentItem(doc, packId)
   },
@@ -71,10 +72,12 @@ const TABS = [
  *   packs/_build-armes.js).
  * - antique.equipement: its only priced items are the 9 named Greek armor pieces → "armure".
  * - antique.alchimie: ingredients/potions → "consommable".
+ * - antique.tresors: loot items (type "treasure") → "tresor".
  */
 function classifyEquipmentItem(doc, packId) {
   if (packId === "antique.alchimie") return "consommable";
   if (packId === "antique.equipement") return "armure";
+  if (packId === "antique.tresors") return "tresor";
   // `doc.folder` is a ForeignDocumentField: Foundry resolves it to the actual Folder document
   // (not its id string) as soon as the document is initialized — read `.name` straight off it.
   const folderName = doc.folder?.name;

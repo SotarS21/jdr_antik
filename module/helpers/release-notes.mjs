@@ -5,6 +5,20 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.93": {
+    title: "Version 0.6.93 — Nouveau type d'objet \"Trésor\"",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau type d'objet "Trésor" (bijoux, parchemins, lettres, statuettes, parfum, pierres précieuses...) avec description, description MJ cachée des joueurs, image et prix. Premier lot de 7 objets dans le nouveau compendium "Trésors".</li>
+      </ul>`
+  },
+  "0.6.92": {
+    title: "Version 0.6.92 — Correctif : PV/PM qui augmentaient à chaque champ modifié",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : sous un buff actif, les PV (ou les PM) augmentaient à chaque modification d'un champ quelconque de la fiche — même cause que l'ancien bug de CA (v0.6.38).</li>
+      </ul>`
+  },
   "0.6.91": {
     title: "Version 0.6.91 — Arbalète, munitions, et catégorie d'arme corrigée",
     html: `

@@ -2,6 +2,63 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 7) — Nouveau type d'objet "Trésor" (v0.6.92 → v0.6.93)
+
+Demande : objets de trésor (bijoux, parchemins, lettres, statuettes à l'effigie d'un dieu,
+parfum, pierres précieuses, cailloux...) avec description, description MJ (cachée des
+joueurs), image et prix. Choix confirmé avec l'utilisateur : un nouveau type d'objet dédié et
+simple plutôt que réutiliser "equipment" (qui aurait affiché des champs sans rapport —
+emplacement, consommable, bonus de compétence...).
+
+- Nouveau type d'objet `treasure` (`template.json`, `module/data-models/items/item-treasure.mjs`)
+  : `quantity`, `price`, `poids`, `description`, `gmNotes` — rien d'autre.
+- Nouvelle fiche minimale `templates/item/treasure-sheet.hbs` (image, nom, description,
+  description MJ visible seulement si `isGM`, prix, poids) — même patron que la section
+  Description/gm-notes d'`equipment-sheet.hbs`, sans les onglets Détails/Effets superflus.
+- Nouveau compendium "Trésors" (`packs/tresors.db`, `packs/_build-tresors.js`) : 7 premiers
+  objets (Bijou orné, Parchemin scellé, Lettre cachetée, Statuette à l'effigie d'un dieu,
+  Flacon de parfum, Pierre précieuse, Caillou) — les 2 derniers ont un prix "0 po" plutôt que
+  vide : l'onglet Équipement du Navigateur de Compendium n'affiche que les objets avec un
+  `system.price` non-vide, une chaîne vide les aurait masqués.
+- Nouveau filtre "Trésor" dans l'onglet Équipement du Navigateur de Compendium
+  (`classifyEquipmentItem()` reconnaît `antique.tresors`).
+- Nouveau correctif `PACK_UPDATES` (`0.6.93-create-tresors`) pour peupler ce nouveau
+  compendium dans un monde déjà déployé — un pack tout neuf déclaré dans `system.json` est
+  créé vide par Foundry au redémarrage, son contenu doit ensuite être créé en direct (même cas
+  que l'Arbalète/Munition ci-dessus).
+
+**Fichiers modifiés/créés** : `template.json`, `antique.mjs`,
+`module/data-models/items/item-treasure.mjs` (nouveau), `templates/item/treasure-sheet.hbs`
+(nouveau), `module/sheets/item-sheet.mjs`, `module/apps/compendium-browser.mjs`,
+`module/helpers/pack-updates.mjs`, `packs/_build-tresors.js` (nouveau), `packs/tresors.db`
+(nouveau), `system.json`, `lang/fr.json`, `lang/en.json`.
+
+---
+
+## Session du 15 septembre 2026 (suite 6) — PV/PM qui augmentaient à chaque modification de champ (v0.6.91 → v0.6.92)
+
+Signalé : cocher la case "Sac à ingrédient" (onglet Background), ou modifier les points de
+mana, faisait augmenter les PV — en fait dès qu'on touchait n'importe quel champ de la fiche.
+
+**Même bug, exactement, que le point 1 du `TODO_BUG_ANTIQUE.md`** (CA/Sauvegardes qui
+augmentaient à chaque update, v0.6.38) : `system.pv.value`/`system.pv.max` (et
+`system.pm.*`) sont à la fois des champs éditables ET des cibles valides d'ActiveEffect en
+mode ADD (voir `ANTIQUE.getEffectChangeLabel`, `config.mjs`, qui gère explicitement
+"system.pv.max"/"system.pv.value"). Foundry applique les ActiveEffect avant
+`prepareDerivedData()` — l'input affichait donc déjà `valeur_stockée + bonus_actif`, et la
+soumission du formulaire à chaque changement de champ (`submitOnChange: true`) persistait
+cette valeur gonflée comme nouvelle valeur brute, regonflée à nouveau au rendu suivant.
+
+Corrigé avec exactement le même patron que `caTempSource`/`tempSource` (`actor-sheet.mjs`,
+v0.6.38) : les inputs PV/PM lisent désormais la valeur brute persistée
+(`actor._source.system.pv`/`.pm`, jamais touchée par les ActiveEffect) via `pvSource`/
+`pmSource`, sur la fiche Personnage ET la fiche PNJ (même schéma, même risque).
+
+**Fichiers modifiés** : `module/sheets/actor-sheet.mjs`, `module/sheets/npc-sheet.mjs`,
+`templates/actor/character-sheet.hbs`, `templates/actor/npc-sheet.hbs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 5) — Munitions, Arbalète, et catégorie d'arme corrigée (v0.6.90 → v0.6.91)
 
 Demande : munitions réelles (flèches, carreaux d'arbalète, pierres de fronde) pour les armes à

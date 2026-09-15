@@ -7,6 +7,7 @@ import { AntiqueNpc } from "./module/data-models/actor-npc.mjs";
 import { AntiqueDeity } from "./module/data-models/actor-deity.mjs";
 import { AntiqueWeapon } from "./module/data-models/items/item-weapon.mjs";
 import { AntiqueEquipment } from "./module/data-models/items/item-equipment.mjs";
+import { AntiqueTreasure } from "./module/data-models/items/item-treasure.mjs";
 import { AntiqueAdvantage } from "./module/data-models/items/item-advantage.mjs";
 import { AntiqueDisadvantage } from "./module/data-models/items/item-disadvantage.mjs";
 import { AntiqueBlessing } from "./module/data-models/items/item-blessing.mjs";
@@ -55,6 +56,7 @@ Hooks.once("init", function () {
   CONFIG.Actor.dataModels.deity = AntiqueDeity;
   CONFIG.Item.dataModels.weapon = AntiqueWeapon;
   CONFIG.Item.dataModels.equipment = AntiqueEquipment;
+  CONFIG.Item.dataModels.treasure = AntiqueTreasure;
   CONFIG.Item.dataModels.advantage = AntiqueAdvantage;
   CONFIG.Item.dataModels.disadvantage = AntiqueDisadvantage;
   CONFIG.Item.dataModels.blessing = AntiqueBlessing;
@@ -89,7 +91,7 @@ Hooks.once("init", function () {
   // Register Item sheets
   foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
   foundry.documents.collections.Items.registerSheet("antique", AntiqueItemSheet, {
-    types: ["weapon", "equipment", "advantage", "disadvantage", "blessing", "spell", "curse", "npcability"],
+    types: ["weapon", "equipment", "treasure", "advantage", "disadvantage", "blessing", "spell", "curse", "npcability"],
     makeDefault: true,
     label: "ANTIQUE.Sheet.Item"
   });

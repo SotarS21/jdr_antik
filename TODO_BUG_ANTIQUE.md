@@ -363,6 +363,47 @@ mains, à distance). Corrigé sur les 100 armes du compendium + toute copie déj
 `JOURNAL.md`, session du 15 septembre 2026 (suite 5). **À confirmer par l'utilisateur en jeu**
 — nécessite de cocher le correctif correspondant dans l'écran de mise à jour (MJ).
 
+## 35. ~~PV/PM qui augmentaient à chaque champ modifié~~ — CORRIGÉ (15 septembre 2026, v0.6.92)
+
+Même bug que le point 1 (CA/Sauvegardes, v0.6.38) : `system.pv`/`system.pm` sont à la fois
+éditables et cibles valides d'ActiveEffect — sous un buff actif, l'input affichait déjà la
+valeur gonflée, resoumise comme nouvelle valeur brute à chaque changement de champ ailleurs sur
+la fiche. Corrigé avec le même patron (`pvSource`/`pmSource` lisant `actor._source.system`),
+fiches Personnage et PNJ. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 6). **À
+confirmer par l'utilisateur en jeu** (poser un buff de PV, modifier un autre champ, vérifier
+que les PV ne bougent plus).
+
+## 36. ~~Nouveau type d'objet "Trésor"~~ — CORRIGÉ (15 septembre 2026, v0.6.93)
+
+Demandé : bijoux, parchemins, lettres, statuettes, parfum, pierres précieuses, cailloux, avec
+description/description MJ (cachée des joueurs)/image/prix. Nouveau type d'objet dédié
+(`treasure`) plutôt que réutiliser "equipment" (choix confirmé). Premier lot de 7 objets dans
+un nouveau compendium "Trésors", avec son propre filtre dans le Navigateur de Compendium
+(onglet Équipement). Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 7). **À confirmer
+par l'utilisateur en jeu** — nécessite de cocher le correctif "7 premiers objets de trésor"
+dans l'écran de mise à jour (MJ), le nouveau compendium étant vide tant qu'il n'est pas
+appliqué.
+
+## 37. Fiches PNJ (via jeton) et fiche perso pas synchronisées — EN ATTENTE D'INFO (15 septembre 2026)
+
+Signalé : les valeurs divergent entre la fiche ouverte via un jeton et celle ouverte depuis
+l'onglet Acteurs, pour un jeton confirmé "lié" (Actor Link coché) — ce qui, par conception de
+Foundry, devrait rendre les deux fiches strictement identiques (même document). Aucune cause
+trouvée dans le code (aucun override suspect autour de `token.actor`/mise en cache de fiche).
+**Bloqué en attente d'un exemple concret** : quel champ précis diverge, et confirmation qu'il
+s'agit bien du même acteur (pas deux acteurs distincts portant le même nom).
+
+## 38. Redimensionnement de fenêtre parfois bloqué — EN ATTENTE D'INFO (15 septembre 2026)
+
+Signalé : après avoir cliqué sur la poignée de redimensionnement d'une fenêtre, il arrive de
+rester bloqué en mode redimensionnement même après avoir relâché le clic. Recherche dans
+`antique.css`/le code JS du système : rien ne touche `.window-resize-handle`,
+`pointer-events`/`touch-action` autour, ni de hook qui forcerait un re-rendu en boucle —
+ressemble à un comportement natif Foundry/navigateur (capture de pointeur), pas un bug
+introduit par ce système. **À reprendre si l'utilisateur peut préciser** : une fenêtre en
+particulier (fiche perso/PNJ, Navigateur de Compendium...) ou une action qui précède
+systématiquement le blocage.
+
 ---
 
 ## Notes techniques générales

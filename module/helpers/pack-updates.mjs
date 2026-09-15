@@ -352,6 +352,17 @@ export const PACK_UPDATES = [
       "fiche d'une arme à distance consommable (menu \"Munition liée\") pour un vrai suivi " +
       "de stock, même mécanisme que les ingrédients d'alchimie.",
     apply: applyCreateArbaleteMunitions
+  },
+  {
+    id: "0.6.93-create-tresors",
+    pack: "tresors",
+    version: "0.6.93",
+    label: "7 premiers objets de trésor",
+    description:
+      "Peuple le nouveau compendium \"Trésors\" (nouveau type d'objet dédié) avec un premier " +
+      "lot : Bijou orné, Parchemin scellé, Lettre cachetée, Statuette à l'effigie d'un dieu, " +
+      "Flacon de parfum, Pierre précieuse, Caillou.",
+    apply: applyCreateTresors
   }
 ];
 
@@ -1695,6 +1706,57 @@ async function applyCreateArbaleteMunitions() {
 
   await pack.configure({ locked: true });
   return created;
+}
+
+/** Same 7 documents as packs/_build-tresors.js, same ids (keepId). */
+const TRESORS = [
+  { id: "aTrs000000000001", name: "Bijou orné", img: "icons/commodities/treasure/brooch-jewel-gold-blue.webp",
+    price: "25 po", poids: 0.1,
+    description: "<p>Une broche en or sertie d'une pierre bleue, travail délicat digne d'un atelier de cité.</p>", gmNotes: "" },
+  { id: "aTrs000000000002", name: "Parchemin scellé", img: "icons/sundries/scrolls/scroll-bound-brown-tan.webp",
+    price: "5 po", poids: 0.1,
+    description: "<p>Un rouleau de parchemin fermé par un cordon, son contenu inconnu tant qu'il n'est pas ouvert.</p>",
+    gmNotes: "<p>À définir par le MJ selon l'intrigue : une carte, un contrat, une prophétie...</p>" },
+  { id: "aTrs000000000003", name: "Lettre cachetée", img: "icons/sundries/documents/document-letter-tan.webp",
+    price: "0 po", poids: 0.05,
+    description: "<p>Une lettre pliée, cachetée à la cire d'un sceau qu'on ne reconnaît pas.</p>",
+    gmNotes: "<p>Auteur et contenu à définir par le MJ — un indice, un message codé, une correspondance privée.</p>" },
+  { id: "aTrs000000000004", name: "Statuette à l'effigie d'un dieu", img: "icons/commodities/treasure/figurine-idol.webp",
+    price: "15 po", poids: 0.5,
+    description: "<p>Une petite statuette de marbre représentant une divinité de l'Olympe, offrande votive ou objet de culte domestique.</p>", gmNotes: "" },
+  { id: "aTrs000000000005", name: "Flacon de parfum", img: "icons/consumables/potions/potion-vial-corked-labeled-purple.webp",
+    price: "8 po", poids: 0.1,
+    description: "<p>Un petit flacon de verre soufflé contenant une essence parfumée, importée de loin.</p>", gmNotes: "" },
+  { id: "aTrs000000000006", name: "Pierre précieuse", img: "icons/commodities/gems/gem-faceted-diamond-blue.webp",
+    price: "50 po", poids: 0.05,
+    description: "<p>Une gemme taillée, dont la valeur dépend de sa pureté et de sa couleur.</p>", gmNotes: "" },
+  { id: "aTrs000000000007", name: "Caillou", img: "icons/commodities/stone/stone-chunk-brown.webp",
+    price: "0 po", poids: 0.05,
+    description: "<p>Un simple caillou. Sans valeur marchande, sauf circonstance particulière.</p>",
+    gmNotes: "<p>Objet narratif par défaut : à réserver aux cas où un \"trésor\" n'en est pas vraiment un.</p>" }
+];
+
+function tresorDocData(entry) {
+  return {
+    _id: entry.id, name: entry.name, type: "treasure", img: entry.img,
+    system: { quantity: 1, price: entry.price, poids: entry.poids, description: entry.description, gmNotes: entry.gmNotes },
+    effects: [], folder: null, sort: 0, ownership: { default: 0 }, flags: {}
+  };
+}
+
+async function applyCreateTresors() {
+  const pack = game.packs.get("antique.tresors");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  const missing = TRESORS.filter(e => !existingIds.has(e.id)).map(tresorDocData);
+  if (!missing.length) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return missing.length;
 }
 
 async function applyItemWeightsEquipement() {

@@ -19,6 +19,7 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
   static PARTS = {
     weapon:       { template: "systems/antique/templates/item/weapon-sheet.hbs" },
     equipment:    { template: "systems/antique/templates/item/equipment-sheet.hbs" },
+    treasure:     { template: "systems/antique/templates/item/treasure-sheet.hbs" },
     advantage:    { template: "systems/antique/templates/item/advantage-sheet.hbs" },
     disadvantage: { template: "systems/antique/templates/item/disadvantage-sheet.hbs" },
     blessing:     { template: "systems/antique/templates/item/blessing-sheet.hbs" },
