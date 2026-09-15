@@ -472,6 +472,17 @@ Corrigé sur `.item-consume`, `.dodge-roll`, `.long-rest`, `.spell-cast-btn`, `.
 `JOURNAL.md`, session du 15 septembre 2026 (suite 14). **Confirmé par l'utilisateur en jeu
 (15 septembre 2026)** : "ça marche bien".
 
+## 47. ~~Vraies images pour les armes/armures~~ — CORRIGÉ (15 septembre 2026, v0.6.101)
+
+120 images fournies par l'utilisateur (`img/equipement/`), cadrées en carré ("contain", sans
+perte de pixel). **16 des 74 retenues pour des objets existants (~22 %) se sont révélées
+protégées par des droits d'auteur** (jeux vidéo commerciaux, produit Weta Workshop, jeu de
+plateau Plaid Hat Games, filigrane de banque d'images, marketplace Patreon) — exclues après
+vérification visuelle systématique, signalée à l'utilisateur avant intégration. 58 images
+propres retenues, couvrant 60 objets du compendium armes. Voir `JOURNAL.md`, session du
+15 septembre 2026 (suite 15). **À confirmer par l'utilisateur en jeu** — nécessite de cocher
+le correctif correspondant dans l'écran de mise à jour (MJ).
+
 ---
 
 ## Notes techniques générales

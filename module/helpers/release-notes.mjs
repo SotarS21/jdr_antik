@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.101": {
+    title: "Version 0.6.101 — Vraies images pour 60 armes/armures",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : 60 armes/armures affichent désormais une vraie image au lieu de l'icône générique partagée par catégorie.</li>
+      </ul>`
+  },
   "0.6.100": {
     title: "Version 0.6.100 — Correctif : focus perdu sur plusieurs boutons d'action",
     html: `

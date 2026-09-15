@@ -400,6 +400,19 @@ export const PACK_UPDATES = [
       "avantage), un bouton \"Appliquer l'effet\" sur la carte de lancer l'applique à la " +
       "cible. Premiers exemples avant de généraliser aux 30 autres sorts.",
     apply: applyEmbedSpellEffects
+  },
+  {
+    id: "0.6.101-weapon-armor-real-images",
+    pack: "armes",
+    version: "0.6.101",
+    label: "Vraies images pour 60 armes/armures (au lieu des icônes génériques)",
+    description:
+      "Remplace l'icône générique (un seul SVG partagé par catégorie) par une vraie image " +
+      "pour 60 armes/armures — sur les ~120 images fournies, seules celles vérifiées libres " +
+      "de tout filigrane/logo/marque identifiable ont été retenues (voir JOURNAL.md, séance " +
+      "\"images d'équipement\"). Corrige le compendium et toute copie déjà possédée par un " +
+      "acteur.",
+    apply: applyWeaponArmorRealImages
   }
 ];
 
@@ -2114,6 +2127,102 @@ async function applyEmbedSpellEffects() {
     for (const item of actor.items) {
       if (item.type !== "spell") continue;
       if (await embedSpellEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 60 entries as packs/img/items/ — kept in sync by hand (see JOURNAL.md). */
+const WEAPON_ARMOR_IMAGES = {
+  "Couteau (Simple facture)": "systems/antique/img/items/couteau-simple.jpg",
+  "Couteau (Bonne facture)": "systems/antique/img/items/couteau-bonne.jpg",
+  "Couteau (Parfaite facture)": "systems/antique/img/items/couteau-parfaite.jpg",
+  "Dague (Simple facture)": "systems/antique/img/items/dague-simple.jpg",
+  "Dague (Moyenne facture)": "systems/antique/img/items/dague-moyenne.jpg",
+  "Dague (Excellente facture)": "systems/antique/img/items/dague-excellente.jpg",
+  "Dague (Parfaite facture)": "systems/antique/img/items/dague-parfaite.jpg",
+  "Glaive (Simple facture)": "systems/antique/img/items/glaive-simple.jpg",
+  "Glaive (Moyenne facture)": "systems/antique/img/items/glaive-moyenne.jpg",
+  "Glaive (Bonne facture)": "systems/antique/img/items/glaive-bonne.jpg",
+  "Glaive (Excellente facture)": "systems/antique/img/items/glaive-excellente.jpg",
+  "Épée courte (Simple facture)": "systems/antique/img/items/epee-courte-simple.jpg",
+  "Épée courte (Moyenne facture)": "systems/antique/img/items/epee-courte-moyenne.jpg",
+  "Épée courte (Très bonne facture)": "systems/antique/img/items/epee-courte-tresbonne.jpg",
+  "Lance (Moyenne facture)": "systems/antique/img/items/lance-moyenne.jpg",
+  "Lance (Bonne facture)": "systems/antique/img/items/lance-bonne.jpg",
+  "Hache (Simple facture)": "systems/antique/img/items/hache-simple.jpg",
+  "Hache (Bonne facture)": "systems/antique/img/items/hache-bonne.jpg",
+  "Hache (Très bonne facture)": "systems/antique/img/items/hache-tresbonne.jpg",
+  "Hache (Parfaite facture)": "systems/antique/img/items/hache-parfaite.jpg",
+  "Javeline (Simple facture)": "systems/antique/img/items/javeline-simple.jpg",
+  "Javeline (Moyenne facture)": "systems/antique/img/items/javeline-moyenne.jpg",
+  "Javeline (Bonne facture)": "systems/antique/img/items/javeline-bonne.jpg",
+  "Hache de lancer (Moyenne facture)": "systems/antique/img/items/hache-de-lancer-moyenne.jpg",
+  "Bolas (Simple facture)": "systems/antique/img/items/bolas-simple.jpg",
+  "Bolas (Moyenne facture)": "systems/antique/img/items/bolas-moyenne.jpg",
+  "Bouclier de lancer (Simple facture)": "systems/antique/img/items/bouclier-de-lancer-simple.png",
+  "Bouclier de lancer (Moyenne facture)": "systems/antique/img/items/bouclier-de-lancer-moyenne.jpg",
+  "Bouclier de lancer (Bonne facture)": "systems/antique/img/items/bouclier-de-lancer-bonne.jpg",
+  "Filet (Simple facture)": "systems/antique/img/items/filet-simple.jpg",
+  "Filet (Bonne facture)": "systems/antique/img/items/filet-bonne.jpg",
+  "Couteau de lancer (Simple facture)": "systems/antique/img/items/couteau-de-lancer-simple.jpg",
+  "Couteau de lancer (Bonne facture)": "systems/antique/img/items/couteau-de-lancer-bonne.jpg",
+  "Chakram (Simple facture)": "systems/antique/img/items/chakram-simple.jpg",
+  "Chakram (Moyenne facture)": "systems/antique/img/items/chakram-moyenne.jpg",
+  "Chakram (Bonne facture)": "systems/antique/img/items/chakram-bonne.jpg",
+  "Bâton (Simple facture)": "systems/antique/img/items/baton-simple.jpg",
+  "Bâton (Moyenne facture)": "systems/antique/img/items/baton-moyenne.jpg",
+  "Bâton (Bonne facture)": "systems/antique/img/items/baton-bonne.jpg",
+  "Gourdin (Simple facture)": "systems/antique/img/items/gourdin-simple.jpg",
+  "Gourdin (Bonne facture)": "systems/antique/img/items/gourdin-bonne.jpg",
+  "Double hache (Simple facture)": "systems/antique/img/items/double-hache-simple.jpg",
+  "Double hache (Moyenne facture)": "systems/antique/img/items/double-hache-moyenne.jpg",
+  "Arc court (Simple facture)": "systems/antique/img/items/arc-court-simple.jpg",
+  "Arc long (Simple facture)": "systems/antique/img/items/arc-long-simple.jpg",
+  "Fronde (Simple facture)": "systems/antique/img/items/fronde-simple.jpg",
+  "Fronde (Moyenne facture)": "systems/antique/img/items/fronde-moyenne.jpg",
+  "Fouet (Simple facture)": "systems/antique/img/items/fouet-simple.jpg",
+  "Fouet (Moyenne facture)": "systems/antique/img/items/fouet-moyenne.jpg",
+  "Fouet (Bonne facture)": "systems/antique/img/items/fouet-bonne.jpg",
+  "Arbalète (Simple facture)": "systems/antique/img/items/arbalete.jpg",
+  "Arbalète (Moyenne facture)": "systems/antique/img/items/arbalete.jpg",
+  "Arbalète (Bonne facture)": "systems/antique/img/items/arbalete.jpg",
+  "Armure de cuir": "systems/antique/img/items/armure-de-cuir.jpg",
+  "Armure de cuir cloutée": "systems/antique/img/items/armure-de-cuir-cloutee.jpg",
+  "Armure de cuivre": "systems/antique/img/items/armure-de-cuivre.jpg",
+  "Armure en plaque": "systems/antique/img/items/armure-en-plaque.jpg",
+  "Armure en peau": "systems/antique/img/items/armure-en-peau.jpg",
+  "Cuirasse": "systems/antique/img/items/cuirasse.jpg",
+  "Carreaux d'arbalète": "systems/antique/img/items/carreaux-arbalete.jpg"
+};
+
+async function setItemImage(doc) {
+  const img = WEAPON_ARMOR_IMAGES[doc.name];
+  if (!img || doc.img === img) return false;
+  await doc.update({ img });
+  return true;
+}
+
+async function applyWeaponArmorRealImages() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.armes");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (indexEntry.type === "Item") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setItemImage(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "weapon" && item.type !== "equipment") continue;
+      if (await setItemImage(item)) fixed++;
     }
   }
 

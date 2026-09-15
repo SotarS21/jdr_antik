@@ -2,6 +2,50 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 15) — Vraies images pour 60 armes/armures (v0.6.100 → v0.6.101)
+
+Demande : reprendre les images fournies par l'utilisateur dans `img/equipement/` (120 fichiers)
+pour remplacer les icônes génériques (un seul SVG partagé par catégorie, ex. toutes les
+armures utilisent `icons/svg/shield.svg`) — cadrées en carré pour rentrer dans les vignettes.
+
+**Étape 1 — cadrage** : correspondance fichier→objet établie manuellement (noms de fichiers
+pleins de coquilles : "cimetère" pour "cimeterre", "doucle_hache" pour "double_hache",
+"bolas_simpàle" pour "bolas_simple", etc.). Cadrage d'abord tenté en "cover" (recadrage centré,
+remplit le carré) mais rejeté après vérification visuelle : une épée très allongée perdait sa
+pointe et son pommeau. Repris en "contain" (redimensionne dans un carré avec marges, aucun
+pixel perdu) — correspond aussi mieux au texte de la demande ("cadrés pour les rentrer dans le
+carré").
+
+**Étape 2 — un problème plus grave découvert en vérifiant visuellement chaque image cadrée** :
+**16 des 74 images retenues pour des objets existants (~22 %) se sont révélées protégées par
+des droits d'auteur** — pas de simples "photos libres" : renders promotionnels de jeux vidéo
+commerciaux avec logo (Ubisoft "Immortals Fenyx Rising", "Back 4 Blood"/Warner Bros, une démo
+Unreal Engine "ThinkTank Training Centre"), photo produit officielle Weta Workshop
+("© WETA WORKSHOP"), composant de jeu de plateau ("© Plaid Hat Games 2016"), filigrane de banque
+d'images (pngtree.com), signatures d'artiste identifiables, et plusieurs icônes de marketplace
+Patreon vendues sous un nom propre ("Wyrmshide Bow", "Kirin Hornbow", "Flanker's Bow",
+"Redeemer's Regards", "Arc of the Alicorn", "The Griffon's Saddlebag", "Dungeon Strugglers").
+Signalé immédiatement à l'utilisateur avant toute intégration — confirmé : vérifier chaque
+image et exclure les problématiques plutôt que les utiliser telles quelles.
+
+**Résultat final** : 58 images propres retenues (sur les 74 initialement cadrées), couvrant
+60 objets du compendium armes (l'Arbalète, sans photo par palier, réutilise sa seule image
+pour ses 3 paliers). Copiées dans `img/items/` (nouveau dossier, chemin
+`systems/antique/img/items/<nom>`) — les images d'origine dans `img/equipement/` restent
+intactes, ce sont les fichiers livrés par l'utilisateur. Les objets dont la seule image
+disponible était protégée (ex. Bouclier de bois, Bouclier cuivre, Épée courte "Bonne facture",
+Glaive "Parfaite facture") gardent leur icône générique faute d'alternative propre.
+
+Comme pour toute modification de contenu déjà déployé, `packs/armes.db` (source) a été mis à
+jour mais ça ne suffit pas à propager le changement au monde déjà en jeu — nouveau correctif
+`PACK_UPDATES` (`0.6.101-weapon-armor-real-images`) qui met à jour le compendium déployé et
+toute copie déjà possédée par un acteur.
+
+**Fichiers modifiés/créés** : `img/items/` (58 nouveaux fichiers), `packs/armes.db`,
+`module/helpers/pack-updates.mjs`, `system.json`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 14) — Focus perdu sur plusieurs boutons d'action (v0.6.99 → v0.6.100)
 
 Signalé : le bouton "Consommer" de la liste d'ingrédients remonte la fiche en haut au
