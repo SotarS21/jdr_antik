@@ -2,6 +2,34 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite) — Filtre Bouclier + onglet Capacités de Combat réservé au MJ (v0.6.86 → v0.6.87)
+
+Deux bugs signalés dans le Navigateur de Compendium :
+
+1. **Les boucliers apparaissaient sous le filtre "Arme" au lieu de "Bouclier"** (et, en
+   creusant, les armures avaient très probablement le même souci — juste jamais remarqué).
+   Cause réelle, dans `classifyEquipmentItem()` (`module/apps/compendium-browser.mjs`) : le
+   champ `folder` d'un document Foundry est un `ForeignDocumentField` — dès l'initialisation du
+   document, Foundry le résout en le **document Folder lui-même** (vérifié dans le code source
+   client, `common/data/fields.mjs`, `ForeignDocumentField#initialize`), jamais en un simple id
+   string. Le code construisait une `Map` `folderNamesById` indexée par `folder.id` puis faisait
+   `folderNamesById.get(doc.folder)` — `doc.folder` étant un objet Folder et non son id, la
+   recherche échouait toujours silencieusement, et la fonction retombait systématiquement sur
+   son cas par défaut `"arme"`. Corrigé en lisant directement `doc.folder?.name` (plus besoin de
+   Map du tout). **Même bug corrigé en passant** dans la classification de l'onglet Historique
+   (`filterByFolder`, `doc => doc.folder` → `doc => doc.folder?.id`) — jamais signalé, mais
+   souffrait très probablement du même problème (le filtre par dossier n'aurait jamais pu
+   fonctionner).
+2. **Les joueurs ne devraient pas voir l'onglet "Capacités de Combat" (PNJ)** — contenu
+   mécanique réservé au MJ, comme l'onglet Combat des fiches PNJ (`npc-sheet.mjs`, déjà
+   `isGM`-gated). Nouveau flag `gmOnly: true` sur cette entrée de `TABS`, onglet sauté
+   entièrement dans `_prepareContext` (`if (tabDef.gmOnly && !game.user.isGM) continue;`) —
+   invisible pour un non-MJ, pas juste désactivé/grisé.
+
+**Fichiers modifiés** : `module/apps/compendium-browser.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 — Placeholder de recherche du Navigateur de Compendium (v0.6.85 → v0.6.86)
 
 Signalé : le champ de recherche du Navigateur de Compendium affichait « Rechercher un

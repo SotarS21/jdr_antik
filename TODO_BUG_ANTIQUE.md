@@ -304,6 +304,19 @@ n'importe quel type de contenu. Nouvelle clé dédiée `ANTIQUE.Browser.SearchPl
 onglet Ingrédients). Voir `JOURNAL.md`, session du 15 septembre 2026. **À confirmer par
 l'utilisateur en jeu.**
 
+## 28. ~~Navigateur de Compendium — filtre "Bouclier" ne fonctionnait pas~~ — CORRIGÉ (15 septembre 2026, v0.6.87)
+
+Les boucliers ressortaient classés comme "Arme". Cause : `doc.folder` renvoie le document
+Folder lui-même (résolu automatiquement par Foundry), pas un id — la comparaison contre une
+`Map` indexée par id échouait toujours. Corrigé en lisant `doc.folder?.name` directement. Même
+correctif appliqué à l'onglet Historique (bug identique, jamais signalé). Voir `JOURNAL.md`,
+session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
+
+## 29. ~~Navigateur de Compendium — Capacités de Combat visibles par les joueurs~~ — CORRIGÉ (15 septembre 2026, v0.6.87)
+
+Onglet PNJ réservé au MJ désormais, comme l'onglet Combat des fiches PNJ. Voir `JOURNAL.md`,
+session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales

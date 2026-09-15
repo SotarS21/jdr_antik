@@ -34,7 +34,7 @@ const TABS = [
       { key: "munition", label: "ANTIQUE.Browser.FilterMunition" },
       { key: "consommable", label: "ANTIQUE.Browser.FilterConsommable" }
     ],
-    classify: (doc, packId, ctx) => classifyEquipmentItem(doc, packId, ctx.folderNamesById)
+    classify: (doc, packId) => classifyEquipmentItem(doc, packId)
   },
   {
     key: "traits", label: "ANTIQUE.Browser.TabTraits",
@@ -56,7 +56,9 @@ const TABS = [
     filterByPack: true
   },
   { key: "historique", label: "ANTIQUE.Browser.TabHistorique", packs: ["antique.historique"], filterByFolder: true },
-  { key: "capacites-combat", label: "ANTIQUE.Browser.TabCapacitesCombat", packs: ["antique.capacites-combat"] }
+  // GM-only: these are the mechanics a GM applies to an NPC/creature, not player-facing content
+  // (mirrors the NPC sheet's own isGM-gated Combat tab, see npc-sheet.mjs).
+  { key: "capacites-combat", label: "ANTIQUE.Browser.TabCapacitesCombat", packs: ["antique.capacites-combat"], gmOnly: true }
 ];
 
 /**
@@ -69,11 +71,13 @@ const TABS = [
  * data) — the filter option still exists, ready for when some are added, same as a PF2e filter
  * that can legitimately return zero results.
  */
-function classifyEquipmentItem(doc, packId, folderNamesById) {
+function classifyEquipmentItem(doc, packId) {
   if (packId === "antique.alchimie") return "consommable";
   if (packId === "antique.equipement") return "armure";
   if (doc.type === "weapon") return "arme";
-  const folderName = folderNamesById.get(doc.folder);
+  // `doc.folder` is a ForeignDocumentField: Foundry resolves it to the actual Folder document
+  // (not its id string) as soon as the document is initialized — read `.name` straight off it.
+  const folderName = doc.folder?.name;
   if (folderName === "Armure") return "armure";
   if (folderName === "Bouclier") return "bouclier";
   return "arme";
@@ -149,6 +153,7 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
 
     const tabs = [];
     for (const tabDef of TABS) {
+      if (tabDef.gmOnly && !game.user.isGM) continue;
       const tab = { key: tabDef.key, label: game.i18n.localize(tabDef.label), active: tabDef.key === this._activeTab, sections: [] };
       const isEquipmentTab = tabDef.key === "equipement";
 
@@ -179,17 +184,14 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
         if (!pack) continue;
         const documents = await pack.getDocuments();
 
-        let folderNamesById = null;
-        if (isEquipmentTab || tabDef.filterByFolder) {
-          folderNamesById = new Map();
-          for (const folder of pack.folders) folderNamesById.set(folder.id, folder.name);
-        }
         const classify = tabDef.classify
-          ? doc => tabDef.classify(doc, packId, { folderNamesById })
+          ? doc => tabDef.classify(doc, packId)
           : tabDef.filterByPack
             ? () => packId
             : tabDef.filterByFolder
-              ? doc => doc.folder
+              // `doc.folder` resolves to the actual Folder document (ForeignDocumentField),
+              // not its id — read `.id` off it to match the filter checkboxes' `folder.id` keys.
+              ? doc => doc.folder?.id ?? null
               : null;
 
         if (pack.documentName === "Item") {
