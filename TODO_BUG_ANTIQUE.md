@@ -469,8 +469,8 @@ fois sur des handlers qui rafraîchissent via `refreshSheet()` (volontairement i
 scroll quand il rafraîchit une AUTRE fiche — mais ici c'est la propre fiche de l'utilisateur).
 Corrigé sur `.item-consume`, `.dodge-roll`, `.long-rest`, `.spell-cast-btn`, `.weapon-attack`,
 `.item-delete`, `.item-equip-btn`, `.npc-combat-quick input` (fiches Personnage et PNJ). Voir
-`JOURNAL.md`, session du 15 septembre 2026 (suite 14). **À confirmer par l'utilisateur en
-jeu.**
+`JOURNAL.md`, session du 15 septembre 2026 (suite 14). **Confirmé par l'utilisateur en jeu
+(15 septembre 2026)** : "ça marche bien".
 
 ---
 
