@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.100": {
+    title: "Version 0.6.100 — Correctif : focus perdu sur plusieurs boutons d'action",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : plusieurs boutons (Consommer un ingrédient, Esquive/Parade, Repos long, Lancer un sort, Attaquer, Supprimer/Équiper un objet) remontaient la fiche tout en haut au rafraîchissement.</li>
+      </ul>`
+  },
   "0.6.99": {
     title: "Version 0.6.99 — Reclasser un trait depuis sa propre fiche",
     html: `

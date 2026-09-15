@@ -166,9 +166,11 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     });
 
     this.element.querySelectorAll(".dodge-roll").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         if (ev.target.tagName === "INPUT") return;
-        this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill);
+        const focusState = captureFocusState(this.element);
+        await this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill);
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -180,10 +182,13 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     // `name` with the Stats tab's own inputs would break the shared form's submission
     // entirely), so they're saved here directly instead of via form submit.
     this.element.querySelectorAll(".npc-combat-quick input[data-field]").forEach(el => {
-      el.addEventListener("change", ev => {
+      el.addEventListener("change", async ev => {
         const field = ev.currentTarget.dataset.field;
         const value = Number(ev.currentTarget.value) || 0;
-        this.actor.update({ [field]: value }).then(() => this.render({ force: true }));
+        const focusState = captureFocusState(this.element);
+        await this.actor.update({ [field]: value });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -207,18 +212,25 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     });
 
     this.element.querySelectorAll(".item-delete").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.delete().then(() => this.render({ force: true }));
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.delete();
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 
     this.element.querySelectorAll(".weapon-attack").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.rollAttack();
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.rollAttack();
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -231,18 +243,24 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     });
 
     this.element.querySelectorAll(".item-consume").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.consume();
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.consume();
+        restoreFocusState(this.element, focusState);
       });
     });
 
     this.element.querySelectorAll(".spell-cast-btn").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.castSpell();
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.castSpell();
+        restoreFocusState(this.element, focusState);
       });
     });
 

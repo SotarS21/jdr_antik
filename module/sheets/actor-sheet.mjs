@@ -515,11 +515,23 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".dodge-roll").forEach(el => {
-      el.addEventListener("click", ev => this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill));
+      el.addEventListener("click", async ev => {
+        // rollDodgeSkill() mutates tempPenalty and refreshes this same sheet
+        // internally (refreshSheet(), which doesn't preserve scroll/focus on
+        // purpose — see the .item-consume handler below for why).
+        const focusState = captureFocusState(this.element);
+        await this.actor.rollDodgeSkill(ev.currentTarget.dataset.skill);
+        restoreFocusState(this.element, focusState);
+      });
     });
 
     this.element.querySelectorAll(".long-rest").forEach(el => {
-      el.addEventListener("click", () => this.actor.longRest().then(() => this.render({ force: true })));
+      el.addEventListener("click", async () => {
+        const focusState = captureFocusState(this.element);
+        await this.actor.longRest();
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
+      });
     });
 
     this.element.querySelectorAll(".avantage-temp-badge").forEach(el => {
@@ -564,10 +576,14 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".item-delete").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.delete().then(() => this.render({ force: true }));
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.delete();
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -619,12 +635,16 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".item-equip-btn").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         ev.preventDefault();
         ev.stopPropagation();
         const li = ev.currentTarget.closest("[data-item-id]");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.update({ "system.equipped": !item.system.equipped }).then(() => this.render({ force: true }));
+        if (!item) return;
+        const focusState = captureFocusState(this.element);
+        await item.update({ "system.equipped": !item.system.equipped });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -687,10 +707,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".weapon-attack").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.rollAttack();
+        if (!item) return;
+        // Only refreshes this sheet when the weapon is consumable and consumes
+        // linked ammo (see AntiqueItem#_doRollAttack) — harmless to always wrap.
+        const focusState = captureFocusState(this.element);
+        await item.rollAttack();
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -717,10 +742,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".spell-cast-btn").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.castSpell();
+        if (!item) return;
+        // castSpell() consumes PM/ingredients and refreshes this same sheet
+        // internally (refreshSheet()) — same reasoning as .item-consume below.
+        const focusState = captureFocusState(this.element);
+        await item.castSpell();
+        restoreFocusState(this.element, focusState);
       });
     });
 
@@ -741,10 +771,17 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".item-consume").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const li = ev.currentTarget.closest(".item");
         const item = this.actor.items.get(li.dataset.itemId);
-        if (item) item.consume();
+        if (!item) return;
+        // item.consume() refreshes this actor's own sheet internally via the shared
+        // refreshSheet() utility, which deliberately doesn't touch scroll/focus (it's
+        // meant for refreshing a sheet other than the one the user is acting on) —
+        // capture/restore here instead, on the sheet actually being interacted with.
+        const focusState = captureFocusState(this.element);
+        await item.consume();
+        restoreFocusState(this.element, focusState);
       });
     });
 

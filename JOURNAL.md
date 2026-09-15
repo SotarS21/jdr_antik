@@ -2,6 +2,28 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 14) — Focus perdu sur plusieurs boutons d'action (v0.6.99 → v0.6.100)
+
+Signalé : le bouton "Consommer" de la liste d'ingrédients remonte la fiche en haut au
+rafraîchissement — même famille que les points 13b/30/43, mais cette fois sur des handlers qui
+appellent une méthode (`item.consume()`, `castSpell()`, `rollAttack()`, `rollDodgeSkill()`...)
+dont le rafraîchissement passe par `refreshSheet()` — un utilitaire *volontairement*
+indifférent au scroll/focus (il sert à rafraîchir une fiche *différente* de celle sur laquelle
+l'utilisateur agit, voir le point 32). Quand l'acteur rafraîchi via `refreshSheet()` est en fait
+la **propre fiche déjà ouverte** de l'utilisateur (le cas courant ici), il faut capturer/
+restaurer l'état localement dans le handler du bouton, pas compter sur `refreshSheet()`.
+
+Audité et corrigé sur les fiches Personnage et PNJ, tout handler de clic appelant une méthode
+mutante sans déjà passer par `captureFocusState`/`restoreFocusState` : `.item-consume`,
+`.dodge-roll`, `.long-rest`, `.spell-cast-btn`, `.weapon-attack`, `.item-delete`,
+`.item-equip-btn` (fiche Personnage) + les mêmes plus `.npc-combat-quick input` (fiche PNJ).
+`.weapon-damage`/`.save-roll`/`.item-chat`/`.spell-chat` vérifiés non concernés (ne mutent
+jamais l'acteur, pas de rafraîchissement à préserver).
+
+**Fichiers modifiés** : `module/sheets/actor-sheet.mjs`, `module/sheets/npc-sheet.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 13) — Deuxième point d'entrée pour reclasser un trait (v0.6.98 → v0.6.99)
 
 Demande : en plus du glisser-déposer (suite 10), pouvoir reclasser un Avantage/Désavantage en

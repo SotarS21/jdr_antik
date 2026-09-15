@@ -462,6 +462,16 @@ glisser-déposer. Logique de conversion déplacée vers `AntiqueItem#convertTrai
 (document) pour être partagée par les deux entrées. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 13). **À confirmer par l'utilisateur en jeu.**
 
+## 46. ~~Focus perdu sur plusieurs boutons d'action~~ — CORRIGÉ (15 septembre 2026, v0.6.100)
+
+Signalé sur le bouton "Consommer" (liste d'ingrédients) ; même famille que 13b/30/43, cette
+fois sur des handlers qui rafraîchissent via `refreshSheet()` (volontairement indifférent au
+scroll quand il rafraîchit une AUTRE fiche — mais ici c'est la propre fiche de l'utilisateur).
+Corrigé sur `.item-consume`, `.dodge-roll`, `.long-rest`, `.spell-cast-btn`, `.weapon-attack`,
+`.item-delete`, `.item-equip-btn`, `.npc-combat-quick input` (fiches Personnage et PNJ). Voir
+`JOURNAL.md`, session du 15 septembre 2026 (suite 14). **À confirmer par l'utilisateur en
+jeu.**
+
 ---
 
 ## Notes techniques générales
