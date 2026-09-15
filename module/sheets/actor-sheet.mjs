@@ -1039,6 +1039,12 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
   }
 
   async _onDropItem(event, item) {
+    // Every branch below re-renders the sheet after the drop (new/changed embedded
+    // item) — captured once here so every exit path restores the same scroll/focus
+    // position instead of jumping back to the top of the sheet (the drop itself
+    // already moved focus away from any field the user had been in).
+    const focusState = captureFocusState(this.element);
+
     const slotEl = event.target.closest(".equip-slot");
     if (slotEl && item.parent?.uuid === this.actor.uuid) {
       const slotKey = slotEl.dataset.slot;
@@ -1048,7 +1054,8 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
         return null;
       }
       await item.update({ "system.slot": slotKey, "system.equipped": true });
-      this.render({ force: true });
+      await this.render({ force: true });
+      restoreFocusState(this.element, focusState);
       return item;
     }
 
@@ -1063,7 +1070,7 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       const targetType = traitSectionEl.dataset.traitSection;
       if ((targetType === "blessing" || targetType === "curse")
         && (item.type === "advantage" || item.type === "disadvantage")) {
-        return this._convertTraitType(item, targetType);
+        return this._convertTraitType(item, targetType, focusState);
       }
     }
 
@@ -1074,13 +1081,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     if (item.parent?.uuid !== this.actor.uuid) {
       const stacked = await stackOrCreateDroppedItem(this.actor, item);
       if (stacked) {
-        this.render({ force: true });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
         return stacked;
       }
     }
 
     const result = await super._onDropItem(event, item);
-    this.render({ force: true });
+    await this.render({ force: true });
+    restoreFocusState(this.element, focusState);
     return result;
   }
 
@@ -1093,9 +1102,9 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
    * context.traitBalance.
    * @param {Item} item
    * @param {"blessing"|"curse"} targetType
+   * @param {object} [focusState] - Pre-captured by _onDropItem; captured here too if omitted.
    */
-  async _convertTraitType(item, targetType) {
-    const focusState = captureFocusState(this.element);
+  async _convertTraitType(item, targetType, focusState = captureFocusState(this.element)) {
     const [created] = await this.actor.createEmbeddedDocuments("Item", [{
       name: item.name,
       type: targetType,

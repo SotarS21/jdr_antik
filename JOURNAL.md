@@ -2,6 +2,20 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 11) — Focus perdu au glisser-déposer d'un objet (v0.6.96 → v0.6.97)
+
+Signalé : glisser un objet (ex. depuis Alchimie) dans le sac à ingrédient d'un PJ remonte la
+liste tout en haut à chaque fois. Même famille de bug que les points 13b/30 (toggle d'effet,
+toggle de compétence) : `AntiqueActorSheet#_onDropItem()` et `AntiqueNpcSheet#_onDropItem()`
+n'avaient jamais été mis à jour avec `captureFocusState`/`restoreFocusState` — un oubli plus
+ancien que les autres correctifs déjà appliqués cette session, jamais remarqué faute de test.
+Corrigé sur les 4 issues possibles de `_onDropItem` (dépôt sur un emplacement d'équipement,
+reclassement de trait, empilement d'un objet glissé d'ailleurs, dépôt générique).
+
+**Fichiers modifiés** : `module/sheets/actor-sheet.mjs`, `module/sheets/npc-sheet.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 10) — Glisser-déposer Avantage/Désavantage → Bénédiction/Malédiction + Flèches empoisonnées (v0.6.95 → v0.6.96)
 
 Deux demandes :

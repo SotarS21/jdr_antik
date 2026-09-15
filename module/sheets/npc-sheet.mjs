@@ -26,19 +26,23 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
   };
 
   async _onDropItem(event, item) {
+    const focusState = captureFocusState(this.element);
+
     // Dropped from elsewhere (compendium, another actor, the world Items directory) —
     // stack onto a matching existing item instead of letting the default drop handler
     // create a duplicate row. A drop from this same actor (reordering) is left untouched.
     if (item.parent?.uuid !== this.actor.uuid) {
       const stacked = await stackOrCreateDroppedItem(this.actor, item);
       if (stacked) {
-        this.render({ force: true });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
         return stacked;
       }
     }
 
     const result = await super._onDropItem(event, item);
-    this.render({ force: true });
+    await this.render({ force: true });
+    restoreFocusState(this.element, focusState);
     return result;
   }
 

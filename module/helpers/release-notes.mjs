@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.97": {
+    title: "Version 0.6.97 — Correctif : focus perdu au glisser-déposer d'un objet",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : glisser un objet dans l'inventaire (ex. dans le sac à ingrédient) remontait la fiche tout en haut à chaque fois.</li>
+      </ul>`
+  },
   "0.6.96": {
     title: "Version 0.6.96 — Reclasser un trait par glisser-déposer + Flèches empoisonnées",
     html: `

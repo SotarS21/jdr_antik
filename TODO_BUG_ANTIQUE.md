@@ -435,6 +435,12 @@ résolution manuelle. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 10)
 par l'utilisateur en jeu** — nécessite de cocher le correctif "Flèches empoisonnées" dans
 l'écran de mise à jour (MJ).
 
+## 43. ~~Focus perdu au glisser-déposer d'un objet~~ — CORRIGÉ (15 septembre 2026, v0.6.97)
+
+Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ) n'avait jamais
+été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
+15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales
