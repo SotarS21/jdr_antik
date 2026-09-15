@@ -29,6 +29,8 @@ const TABS = [
     packs: ["antique.armes", "antique.equipement", "antique.alchimie"],
     filters: [
       { key: "arme", label: "ANTIQUE.Browser.FilterArme" },
+      { key: "arme-jet", label: "ANTIQUE.Browser.FilterArmeJet" },
+      { key: "arme-distance", label: "ANTIQUE.Browser.FilterArmeDistance" },
       { key: "armure", label: "ANTIQUE.Browser.FilterArmure" },
       { key: "bouclier", label: "ANTIQUE.Browser.FilterBouclier" },
       { key: "munition", label: "ANTIQUE.Browser.FilterMunition" },
@@ -63,8 +65,10 @@ const TABS = [
 
 /**
  * Classify one Équipement-tab document into a "Types d'inventaire" filter bucket.
- * - antique.armes: weapons → "arme"; equipment → look up its folder name ("Armure"/"Bouclier",
- *   see packs/_build-armes.js).
+ * - antique.armes: weapons → look up their folder ("Arme blanche"/"Arme exotique"/"Arme à deux
+ *   mains" fold into the generic "arme" bucket; "Arme de jet" and "Arme à distance" get their
+ *   own dedicated filters); equipment → look up its folder name ("Armure"/"Bouclier", see
+ *   packs/_build-armes.js).
  * - antique.equipement: its only priced items are the 9 named Greek armor pieces → "armure".
  * - antique.alchimie: ingredients/potions → "consommable".
  * "munition" has no matching items yet (no dedicated ammunition items exist in this system's
@@ -74,10 +78,14 @@ const TABS = [
 function classifyEquipmentItem(doc, packId) {
   if (packId === "antique.alchimie") return "consommable";
   if (packId === "antique.equipement") return "armure";
-  if (doc.type === "weapon") return "arme";
   // `doc.folder` is a ForeignDocumentField: Foundry resolves it to the actual Folder document
   // (not its id string) as soon as the document is initialized — read `.name` straight off it.
   const folderName = doc.folder?.name;
+  if (doc.type === "weapon") {
+    if (folderName === "Arme de jet") return "arme-jet";
+    if (folderName === "Arme à distance") return "arme-distance";
+    return "arme";
+  }
   if (folderName === "Armure") return "armure";
   if (folderName === "Bouclier") return "bouclier";
   return "arme";

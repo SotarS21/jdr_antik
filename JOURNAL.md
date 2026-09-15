@@ -2,6 +2,25 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 3) — Filtres "Arme de jet" et "Arme à distance" (v0.6.88 → v0.6.89)
+
+Demandé : dans l'onglet Équipement du Navigateur de Compendium, les armes à distance (jets et
+tir) étaient toutes fondues dans le filtre générique "Arme" — ajout de deux filtres dédiés.
+Clarifié avec l'utilisateur : deux filtres séparés reflétant les deux dossiers déjà distincts
+du compendium `antique.armes` (`packs/_build-armes.js`), pas un seul filtre combiné.
+
+- Deux nouvelles entrées dans les filtres de l'onglet Équipement :
+  `ANTIQUE.Browser.FilterArmeJet` ("Arme de jet") et `ANTIQUE.Browser.FilterArmeDistance`
+  ("Arme à distance").
+- `classifyEquipmentItem()` (`module/apps/compendium-browser.mjs`) vérifie désormais le nom du
+  dossier d'un item de type `weapon` : "Arme de jet" → `arme-jet`, "Arme à distance" →
+  `arme-distance`, tout le reste (Arme blanche/exotique/à deux mains) reste dans `arme` comme
+  avant.
+
+**Fichiers modifiés** : `module/apps/compendium-browser.mjs`, `lang/fr.json`, `lang/en.json`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 2) — Focus perdu au toggle "maîtrisé" d'une compétence (v0.6.87 → v0.6.88)
 
 Même famille de bug que le point 13b du `TODO_BUG_ANTIQUE.md` (toggle actif/inactif d'un effet

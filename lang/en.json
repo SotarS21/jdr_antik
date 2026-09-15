@@ -204,6 +204,8 @@
   "ANTIQUE.Browser.TabHistorique": "Background",
   "ANTIQUE.Browser.TabCapacitesCombat": "Combat Abilities",
   "ANTIQUE.Browser.FilterArme": "Weapon",
+  "ANTIQUE.Browser.FilterArmeJet": "Thrown Weapon",
+  "ANTIQUE.Browser.FilterArmeDistance": "Ranged Weapon",
   "ANTIQUE.Browser.FilterArmure": "Armor",
   "ANTIQUE.Browser.FilterBouclier": "Shield",
   "ANTIQUE.Browser.FilterMunition": "Ammunition",

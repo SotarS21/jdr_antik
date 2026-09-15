@@ -204,6 +204,8 @@
   "ANTIQUE.Browser.TabHistorique": "Historique",
   "ANTIQUE.Browser.TabCapacitesCombat": "Capacités de Combat",
   "ANTIQUE.Browser.FilterArme": "Arme",
+  "ANTIQUE.Browser.FilterArmeJet": "Arme de jet",
+  "ANTIQUE.Browser.FilterArmeDistance": "Arme à distance",
   "ANTIQUE.Browser.FilterArmure": "Armure",
   "ANTIQUE.Browser.FilterBouclier": "Bouclier",
   "ANTIQUE.Browser.FilterMunition": "Munition",

@@ -326,6 +326,14 @@ Même bug que le point 13b (toggle d'effet, Traits) : re-rendu forcé sans passe
 le même patron. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 2). **Confirmé par
 l'utilisateur en jeu (15 septembre 2026)** : "ça marche bien".
 
+## 31. ~~Filtres "Arme de jet" / "Arme à distance" manquants~~ — CORRIGÉ (15 septembre 2026, v0.6.89)
+
+Demande : dans l'onglet Équipement du Navigateur de Compendium, les armes à distance étaient
+fondues dans le filtre générique "Arme". Deux filtres dédiés ajoutés, reflétant les deux
+dossiers déjà distincts du compendium (choix confirmé par l'utilisateur : filtres séparés,
+pas un seul filtre combiné). Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 3). **À
+confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales
