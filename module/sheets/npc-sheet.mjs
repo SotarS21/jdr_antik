@@ -64,6 +64,16 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     context.isGM = game.user.isGM;
     context.hasFullAccess = game.user.isGM || this.actor.isOwner;
 
+    // system.pv.value/max and system.pm.value/max are both editable AND valid
+    // ActiveEffect targets (see ANTIQUE.getEffectChangeLabel's "PV" branch,
+    // config.mjs) — same reasoning as actor-sheet.mjs's caTempSource: the input
+    // must show the raw persisted value, not the derived (already effect-buffed)
+    // one, or resubmitting the form on any field change would bake the bonus
+    // back in as the new raw value and stack it again next time the effect applies.
+    const rawSystem = this.actor._source.system;
+    context.pvSource = rawSystem.pv;
+    context.pmSource = rawSystem.pm;
+
     context.abilityLabels = {};
     for (const [key, locKey] of Object.entries(CONFIG.ANTIQUE.abilities)) {
       context.abilityLabels[key] = game.i18n.localize(locKey);

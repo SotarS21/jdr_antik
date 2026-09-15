@@ -76,6 +76,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     const rawSystem = this.actor._source.system;
     context.caTempSource = rawSystem.ca.temp;
 
+    // Same reasoning as the "Temp" fields above: system.pv.value/max and
+    // system.pm.value/max are both editable AND valid ActiveEffect targets
+    // (see ANTIQUE.getEffectChangeLabel's dedicated "PV" branch, config.mjs) —
+    // an input bound to the derived value would resubmit the buffed number as
+    // the new raw one on every unrelated field change, stacking further on the
+    // next active-effect application.
+    context.pvSource = rawSystem.pv;
+    context.pmSource = rawSystem.pm;
+
     context.caTooltip = `${game.i18n.localize("ANTIQUE.Combat.CABase")} ${system.ca.base} `
       + `${sign(system.ca.armure)} ${game.i18n.localize("ANTIQUE.Combat.Armure")} `
       + `${sign(system.ca.bouclier)} ${game.i18n.localize("ANTIQUE.Combat.Bouclier")} `

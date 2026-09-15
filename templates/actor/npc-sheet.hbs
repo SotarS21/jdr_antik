@@ -22,16 +22,16 @@
       {{#if isGM}}
       <div class="pv-bar">
         <label>{{localize "ANTIQUE.PV"}}</label>
-        <input type="number" name="system.pv.value" value="{{system.pv.value}}" class="pv-current" />
+        <input type="number" name="system.pv.value" value="{{pvSource.value}}" class="pv-current" />
         <span>/</span>
-        <input type="number" name="system.pv.max" value="{{system.pv.max}}" class="pv-max" />
+        <input type="number" name="system.pv.max" value="{{pvSource.max}}" class="pv-max" />
       </div>
       {{#if system.isMagicPractitioner}}
       <div class="pm-bar">
         <label>{{localize "ANTIQUE.PM"}}</label>
-        <input type="number" name="system.pm.value" value="{{system.pm.value}}" class="pm-current" />
+        <input type="number" name="system.pm.value" value="{{pmSource.value}}" class="pm-current" />
         <span>/</span>
-        <input type="number" name="system.pm.max" value="{{system.pm.max}}" class="pm-max" />
+        <input type="number" name="system.pm.max" value="{{pmSource.max}}" class="pm-max" />
       </div>
       {{/if}}
       {{/if}}
