@@ -419,6 +419,22 @@ puisque l'ancien reste marqué "appliqué" même s'il a créé les mauvaises don
 `JOURNAL.md`, session du 15 septembre 2026 (suite 9). **À confirmer par l'utilisateur en jeu**
 — nécessite de cocher le nouveau correctif dans l'écran de mise à jour (MJ).
 
+## 41. ~~Déplacer un Avantage/Désavantage vers Malédiction/Bénédiction~~ — CORRIGÉ (15 septembre 2026, v0.6.96)
+
+Choix confirmé : glisser-déposer (pas un bouton dédié). Déposer un Avantage/Désavantage déjà
+possédé sur la section Bénédictions/Malédictions de l'onglet Traits le reclasse (nouvel objet
+du type cible créé avant suppression de l'original, coût non repris — n'existe pas sur
+Bénédiction/Malédiction). Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 10). **À
+confirmer par l'utilisateur en jeu.**
+
+## 42. ~~Flèches empoisonnées~~ — CORRIGÉ (15 septembre 2026, v0.6.96)
+
+4e munition, dossier "Munition". Pas de mécanique de poison automatisée (aucune arme ne
+déclenche de sauvegarde/dégâts additionnels au toucher dans ce système) — note MJ pour
+résolution manuelle. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 10). **À confirmer
+par l'utilisateur en jeu** — nécessite de cocher le correctif "Flèches empoisonnées" dans
+l'écran de mise à jour (MJ).
+
 ---
 
 ## Notes techniques générales

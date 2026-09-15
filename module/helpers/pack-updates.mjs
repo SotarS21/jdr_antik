@@ -366,6 +366,18 @@ export const PACK_UPDATES = [
     apply: applyFixMunitionConsumable
   },
   {
+    id: "0.6.96-create-fleche-empoisonnee",
+    pack: "armes",
+    version: "0.6.96",
+    label: "Flèches empoisonnées",
+    description:
+      "Ajoute une 4e munition dans le dossier \"Munition\" — pas d'effet de poison " +
+      "automatisé (aucune arme de ce système ne déclenche de jet de sauvegarde ou de " +
+      "dégâts additionnels au toucher), à résoudre manuellement par le MJ (voir sa note " +
+      "MJ dédiée sur l'objet).",
+    apply: applyCreateFlecheEmpoisonnee
+  },
+  {
     id: "0.6.93-create-tresors",
     pack: "tresors",
     version: "0.6.93",
@@ -1756,6 +1768,33 @@ async function applyFixMunitionConsumable() {
   }
 
   return fixed;
+}
+
+/** Same document as packs/_add-fleche-empoisonnee.js, same id (keepId). */
+async function applyCreateFlecheEmpoisonnee() {
+  const pack = game.packs.get("antique.armes");
+  if (!pack) return 0;
+
+  const id = "aEqp000000000124";
+  const existing = await pack.getDocument(id);
+  if (existing) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments([{
+    _id: id, name: "Flèches empoisonnées", type: "equipment",
+    img: "icons/weapons/ammunition/arrow-broadhead-green.webp",
+    system: {
+      quantity: 1, consumable: true, caBonus: 0, healAmount: 0, linkedSkill: "", skillBonus: 0,
+      slot: "", equipped: false, price: "3 po", poids: 0.02,
+      apothCategory: "", apothType: "", isIngredientBag: false,
+      description: "<p>Une flèche dont la pointe a été trempée dans un poison de contact.</p>",
+      gmNotes: "<p>Effet du poison à définir par le MJ (dégâts et/ou jet de sauvegarde " +
+        "Robustesse) — non automatisé, à appliquer manuellement quand le tir touche.</p>"
+    },
+    effects: [], folder: "fArm000000000120", sort: 0, ownership: { default: 0 }, flags: {}
+  }], { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return 1;
 }
 
 /** Same 7 documents as packs/_build-tresors.js, same ids (keepId). */

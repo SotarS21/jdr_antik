@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.96": {
+    title: "Version 0.6.96 — Reclasser un trait par glisser-déposer + Flèches empoisonnées",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : glisser un Avantage ou un Désavantage déjà possédé sur la section Bénédictions ou Malédictions (onglet Traits) le reclasse dans ce type.</li>
+        <li><strong>Ajouté</strong> : "Flèches empoisonnées", 4e munition dans le dossier "Munition".</li>
+      </ul>`
+  },
   "0.6.95": {
     title: "Version 0.6.95 — Correctif : munitions liables aux armes",
     html: `

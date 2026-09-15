@@ -642,6 +642,16 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       el.addEventListener("drop", () => el.classList.remove("drag-over"));
     });
 
+    // Visual affordance for dropping an Avantage/Désavantage onto Bénédictions/
+    // Malédictions to reclassify it (see _onDropItem) — same drag-over idiom as
+    // .equip-slot above; whether the drop actually applies (right item type) is
+    // still resolved in _onDropItem itself, this is only the hover highlight.
+    this.element.querySelectorAll('[data-trait-section="blessing"], [data-trait-section="curse"]').forEach(el => {
+      el.addEventListener("dragenter", () => el.classList.add("drag-over"));
+      el.addEventListener("dragleave", () => el.classList.remove("drag-over"));
+      el.addEventListener("drop", () => el.classList.remove("drag-over"));
+    });
+
     this.element.querySelectorAll(".equip-slot-unequip").forEach(el => {
       el.addEventListener("click", ev => {
         ev.preventDefault();
@@ -1042,6 +1052,21 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       return item;
     }
 
+    // Dropping an already-possessed Avantage/Désavantage onto the Bénédictions or
+    // Malédictions section reclassifies it as a Bénédiction/Malédiction — a trait
+    // that started as a chosen build trait (with a "coût" weighed into
+    // context.traitBalance) can turn out, narratively, to be divinely imposed
+    // instead (and vice versa isn't offered: converting the other way already has
+    // its own dedicated sections/creation buttons).
+    const traitSectionEl = event.target.closest("[data-trait-section]");
+    if (traitSectionEl && item.parent?.uuid === this.actor.uuid) {
+      const targetType = traitSectionEl.dataset.traitSection;
+      if ((targetType === "blessing" || targetType === "curse")
+        && (item.type === "advantage" || item.type === "disadvantage")) {
+        return this._convertTraitType(item, targetType);
+      }
+    }
+
     // Dropped from elsewhere (compendium, another actor, the world Items directory) —
     // stack onto a matching existing item instead of letting the default drop handler
     // create a duplicate row. A drop from this same actor (reordering the list) is left
@@ -1057,6 +1082,34 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     const result = await super._onDropItem(event, item);
     this.render({ force: true });
     return result;
+  }
+
+  /**
+   * Reclassify an owned Avantage/Désavantage as a Bénédiction/Malédiction: creates the
+   * new item first (carrying over name/image/description/GM notes/embedded effects),
+   * only deleting the original once that succeeds, so a mid-flight error never loses
+   * data. The "coût" field doesn't exist on blessing/curse (see item-curse.mjs) and is
+   * deliberately not carried over — a Bénédiction/Malédiction never weighs into
+   * context.traitBalance.
+   * @param {Item} item
+   * @param {"blessing"|"curse"} targetType
+   */
+  async _convertTraitType(item, targetType) {
+    const focusState = captureFocusState(this.element);
+    const [created] = await this.actor.createEmbeddedDocuments("Item", [{
+      name: item.name,
+      type: targetType,
+      img: item.img,
+      system: {
+        description: item.system.description,
+        gmNotes: item.system.gmNotes
+      },
+      effects: item.effects.map(e => e.toObject())
+    }]);
+    await item.delete();
+    await this.render({ force: true });
+    restoreFocusState(this.element, focusState);
+    return created;
   }
 
   async _onDropActor(event, data) {

@@ -2,6 +2,35 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 10) — Glisser-déposer Avantage/Désavantage → Bénédiction/Malédiction + Flèches empoisonnées (v0.6.95 → v0.6.96)
+
+Deux demandes :
+
+1. **Glisser-déposer un trait pour le reclasser.** Déposer un Avantage ou un Désavantage déjà
+   possédé sur la section Bénédictions ou Malédictions de l'onglet Traits le convertit — choix
+   confirmé avec l'utilisateur : glisser-déposer plutôt qu'un bouton dédié. Techniquement,
+   Foundry ne permet pas de changer le `type` d'un document existant : `_onDropItem()`
+   (`actor-sheet.mjs`) détecte le dépôt sur une section marquée `data-trait-section` (nouvel
+   attribut sur les 4 sections de traits), et `_convertTraitType()` crée un nouvel objet du
+   type cible (nom/image/description/note MJ/effets embarqués repris) **avant** de supprimer
+   l'original — jamais l'inverse, pour ne rien perdre en cas d'échec. Le champ "coût"
+   (Avantage/Désavantage) n'est délibérément pas repris : il n'existe pas sur Bénédiction/
+   Malédiction (une malédiction est subie, pas choisie — voir le commentaire déjà présent dans
+   `item-curse.mjs`). Reste de la ligne (`.item-list .item`) déjà glissable nativement par le
+   mixin DragDrop de Foundry (`dragSelector: ".item-list .item"`, `draggable` posé en JS), donc
+   aucun changement côté template pour l'activer. Surbrillance au survol ajoutée par cohérence
+   avec `.equip-slot.drag-over` déjà existant.
+2. **Flèches empoisonnées** — 4e munition, même dossier "Munition" que les 3 précédentes.
+   Aucune mécanique de poison automatisée dans ce système (aucune arme ne déclenche de jet de
+   sauvegarde ou de dégâts additionnels au toucher) — laissé comme note MJ à résoudre
+   manuellement, même convention que les objets narratifs du compendium Trésors.
+
+**Fichiers modifiés/créés** : `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`,
+`css/antique.css`, `packs/_add-fleche-empoisonnee.js` (nouveau), `packs/armes.db`,
+`module/helpers/pack-updates.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 9) — Munitions non liables aux armes (v0.6.94 → v0.6.95)
 
 Signalé : les munitions ajoutées en (suite 5) n'apparaissaient pas dans le menu "Munition liée"

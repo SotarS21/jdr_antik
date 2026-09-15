@@ -3649,6 +3649,13 @@
   box-shadow: 0 0 0 2px var(--antique-gold), 0 0 8px rgba(201, 162, 39, 0.6);
 }
 
+/* Dropping an Avantage/Désavantage onto Bénédictions/Malédictions reclassifies it —
+   see AntiqueActorSheet#_onDropItem/_convertTraitType. */
+.antique .traits-section.drag-over {
+  box-shadow: 0 0 0 2px var(--antique-gold), 0 0 8px rgba(201, 162, 39, 0.6);
+  border-radius: 4px;
+}
+
 /* ============================================= */
 /*  RESPONSIVE — Container Queries               */
 /* ============================================= */
