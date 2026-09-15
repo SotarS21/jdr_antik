@@ -2,6 +2,40 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 17) — Icône d'effet sur jeton + panneau d'effets flottant (v0.6.102 → v0.6.103)
+
+Demande explicite : quand un effet de sort est appliqué sur un token, l'afficher comme icône
+d'état sur le jeton, et rendre les effets du personnage visibles dans une UI dédiée quand son
+jeton est sélectionné côté MJ — en s'inspirant de Pathfinder 2e, avec retrait au clic gauche.
+
+Recherche préalable (workflow à 3 agents en parallèle, lisant le client Foundry v14.367.0
+installé localement) : pas de panneau d'effets natif dans Foundry ; l'icône de jeton n'apparaît
+que si `showIcon` vaut `ALWAYS` (le défaut `CONDITIONAL` n'affiche que les effets à durée
+réelle) ; aucun retrait au clic n'existe nativement sur les icônes de jeton.
+
+**Ajouté** :
+- `module/apps/effects-panel.mjs` : petit panneau flottant (`#antique-effects-panel`, DOM
+  injecté, pas une ApplicationV2 — pas besoin de barre de titre/redimensionnement) listant
+  `actor.effects` (uniquement les effets embarqués directement sur l'acteur, pas ceux transférés
+  depuis un objet possédé) du dernier jeton contrôlé ; icône cliquable (clic gauche = suppression
+  immédiate, sans confirmation, comme le pattern `.actor-effect-delete` existant).
+- `applyCaBonus`/`applyEffectChanges` (`module/documents/actor.mjs`) : ajout de
+  `showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS` sur les deux branches (création ET mise à
+  jour d'un effet existant) pour que l'icône apparaisse bien sur le jeton.
+- CSS dédié en fin de `css/antique.css`.
+
+Revue de code adversariale (workflow à 2 agents) menée avant finalisation : a confirmé et fait
+corriger (1) `effect.delete()` non protégé par un `.catch()` (rejet de promesse non géré si le
+joueur n'a pas la permission), et (2) absence de hook `deleteActor` (le panneau restait affiché
+avec les anciens effets si l'acteur était supprimé pendant que son jeton restait sélectionné).
+Un troisième point (les effets `showIcon: ALWAYS` apparaissent aussi dans le Combat Tracker via
+`Actor#appliedEffects`) a été jugé comme un effet de bord acceptable, pas un bug.
+
+**Fichiers modifiés** : `module/apps/effects-panel.mjs` (nouveau), `antique.mjs`,
+`module/documents/actor.mjs`, `css/antique.css`, `system.json`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 16) — Effet lié aux sorts, suite (5 exemples de plus) (v0.6.101 → v0.6.102)
 
 Continuation du point 44 pendant qu'une recherche de fond tournait en arrière-plan (voir point

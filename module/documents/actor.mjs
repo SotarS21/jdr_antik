@@ -258,9 +258,18 @@ export class AntiqueActor extends Actor {
     const before = this.system.ca.total;
     const changes = [{ key: "system.ca.temp", mode: 2, value: String(amount) }];
 
+    // showIcon: ALWAYS — without it, Foundry's default (CONDITIONAL) only draws a
+    // token badge for effects with a real duration (see Token#_drawEffects), which
+    // this one-off buff effect doesn't set; ALWAYS decouples "shows on token" from
+    // "has an expiry", appropriate for a spell buff the player should see at a glance.
+    // Set on both branches: an effect created before this fix existed would
+    // otherwise keep its stale CONDITIONAL default forever, only ever hitting the
+    // update branch from here on.
     const existing = this.effects.find(e => e.name === name);
-    if (existing) await existing.update({ changes });
-    else await this.createEmbeddedDocuments("ActiveEffect", [{ name, icon, changes, transfer: true }]);
+    if (existing) await existing.update({ changes, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+    else await this.createEmbeddedDocuments("ActiveEffect", [{
+      name, icon, changes, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+    }]);
 
     const after = this.system.ca.total;
 
@@ -283,9 +292,13 @@ export class AntiqueActor extends Actor {
    * @param {{name: string, icon?: string}} options
    */
   async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg" }) {
+    // showIcon: ALWAYS on both branches — see the identical comment in
+    // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
     const existing = this.effects.find(e => e.name === name);
-    if (existing) await existing.update({ changes });
-    else await this.createEmbeddedDocuments("ActiveEffect", [{ name, icon, changes, transfer: true }]);
+    if (existing) await existing.update({ changes, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+    else await this.createEmbeddedDocuments("ActiveEffect", [{
+      name, icon, changes, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+    }]);
     refreshSheet(this);
   }
 

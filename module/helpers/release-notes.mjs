@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.103": {
+    title: "Version 0.6.103 — Icône d'effet sur le jeton + panneau d'effets flottant",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : les effets de sort (Bénédiction des Titans, etc.) affichent désormais une icône sur le jeton du personnage concerné.</li>
+        <li><strong>Ajouté</strong> : un petit panneau flottant (inspiré de Pathfinder 2e), en bas à gauche de l'écran, liste les effets actifs du jeton sélectionné — clic gauche sur une icône pour retirer l'effet.</li>
+      </ul>`
+  },
   "0.6.102": {
     title: "Version 0.6.102 — Effet lié aux sorts (5 exemples de plus)",
     html: `

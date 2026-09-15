@@ -485,6 +485,20 @@ propres retenues, couvrant 60 objets du compendium armes. Voir `JOURNAL.md`, ses
 15 septembre 2026 (suite 15). **À confirmer par l'utilisateur en jeu** — nécessite de cocher
 le correctif correspondant dans l'écran de mise à jour (MJ).
 
+## 48. ~~Icône d'effet sur jeton + panneau d'effets flottant~~ — CORRIGÉ (16 septembre 2026, v0.6.103)
+
+Demande explicite : afficher une icône d'état sur le jeton quand un effet de sort est appliqué,
+et rendre les effets du personnage visibles côté MJ via une UI dédiée quand le jeton est
+sélectionné, inspirée de Pathfinder 2e, retirable au clic gauche. Précédé d'une recherche à 3
+agents en parallèle (lecture du client Foundry v14.367.0 installé) confirmant qu'aucun panneau
+d'effets natif n'existe et que `showIcon: ALWAYS` est requis pour l'icône de jeton. Nouveau
+`module/apps/effects-panel.mjs` (DOM injecté, pas une ApplicationV2). Revue de code
+adversariale (2 agents) menée avant finalisation : a fait corriger un rejet de promesse non
+géré sur `effect.delete()` et l'absence d'un hook `deleteActor` (panneau qui restait affiché
+avec les anciens effets si l'acteur était supprimé pendant que son jeton restait sélectionné).
+Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 17). **À confirmer par l'utilisateur en
+jeu.**
+
 ---
 
 ## Notes techniques générales
