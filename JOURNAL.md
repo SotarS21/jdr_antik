@@ -2,6 +2,25 @@
 
 ---
 
+## Session du 15 septembre 2026 — Placeholder de recherche du Navigateur de Compendium (v0.6.85 → v0.6.86)
+
+Signalé : le champ de recherche du Navigateur de Compendium affichait « Rechercher un
+ingrédient... » alors qu'on peut y chercher n'importe quel type de contenu (armes, sorts,
+traits, créatures, etc.), pas seulement des ingrédients.
+
+Cause : `templates/apps/compendium-browser.hbs` réutilisait telle quelle la clé
+`ANTIQUE.Apoth.SearchPlaceholder`, partagée avec la boutique alchimie (`alchemy-shop.hbs`) et
+l'onglet Ingrédients de la fiche personnage (`character-sheet.hbs`) — correcte à ces deux
+endroits, où la recherche porte bien uniquement sur des ingrédients.
+
+Corrigé en donnant au Navigateur de Compendium sa propre clé générique
+`ANTIQUE.Browser.SearchPlaceholder` (« Rechercher... » / « Search... »), sans toucher aux deux
+autres usages.
+
+**Fichiers modifiés** : `templates/apps/compendium-browser.hbs`, `lang/fr.json`, `lang/en.json`.
+
+---
+
 ## Session du 13 septembre 2026 — Effets et Capacités de Combat dans le Navigateur de Compendium (v0.6.84 → v0.6.85)
 
 Reprise du point #24 laissé en pause en fin de session précédente.

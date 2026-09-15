@@ -296,6 +296,14 @@ se recoche maintenant automatiquement dès que le stock redevient suffisant — 
 recocher à la main. Voir `JOURNAL.md`, session du 10 septembre 2026 (suite 6). **Confirmé par
 l'utilisateur en jeu (10 septembre 2026)** : "ça marche bien".
 
+## 27. ~~Navigateur de Compendium — placeholder de recherche incorrect~~ — CORRIGÉ (15 septembre 2026, v0.6.86)
+
+Le champ de recherche affichait « Rechercher un ingrédient... » alors qu'on peut y chercher
+n'importe quel type de contenu. Nouvelle clé dédiée `ANTIQUE.Browser.SearchPlaceholder`
+(« Rechercher... »), sans toucher aux usages légitimes de l'ancienne clé (boutique alchimie,
+onglet Ingrédients). Voir `JOURNAL.md`, session du 15 septembre 2026. **À confirmer par
+l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales
