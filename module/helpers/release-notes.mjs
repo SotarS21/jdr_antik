@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.102": {
+    title: "Version 0.6.102 — Effet lié aux sorts (5 exemples de plus)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin (+3 à une caractéristique) et Souffle aux Pieds Legers (+4 Initiative) embarquent maintenant un vrai effet, appliqué via un bouton au lancer.</li>
+        <li><strong>Ajouté</strong> : Rage Incontrôlable et Peau de Fer récupèrent leur bonus de CA (+1 / +2).</li>
+      </ul>`
+  },
   "0.6.101": {
     title: "Version 0.6.101 — Vraies images pour 60 armes/armures",
     html: `

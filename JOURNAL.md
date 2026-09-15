@@ -2,6 +2,38 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 16) — Effet lié aux sorts, suite (5 exemples de plus) (v0.6.101 → v0.6.102)
+
+Continuation du point 44 pendant qu'une recherche de fond tournait en arrière-plan (voir point
+suivant) : sur les 30 sorts restants avec un champ "Effet" textuel non encore mécanisé, 5
+nouveaux candidats propres au même mécanisme que Bénédiction des Titans/Danse du Serpent
+(bonus fixe unique sur un champ déjà existant) :
+- Résilience de l'Immortel (+3 Constitution), Eveil du Sage (+3 Intelligence), Méditation des
+  Ancêtres (+3 Astuce), Glamour Divin (+3 Charisme) : `system.abilities.<abr>.mod` ADD 3.
+- Souffle aux Pieds Legers (+4 Initiative) : `system.initiative` ADD 4 — vérifié que
+  `applyActiveEffects("final")` s'exécute bien après `prepareDerivedData()` (donc après le
+  calcul de `this.initiative = dexMod + vigilanceTotal`), pas avant, sans quoi l'ADD aurait été
+  écrasé silencieusement.
+
+2 sorts supplémentaires récupèrent leur bonus de CA via le mécanisme plus simple et déjà
+existant (`system.caBonus`, même patron que "Peau d'écorce") plutôt que le nouveau mécanisme
+généralisé, puisqu'un simple nombre suffit : Rage Incontrôlable (+1, le reste de son effet —
+dégâts en dé, condition de fin de rage — n'a pas d'équivalent automatisable) et Peau de Fer
+(+2, la réduction de dégâts de moitié reste à l'appréciation du MJ).
+
+Les 23 sorts restants (localisation, communication, divination, invocation, dégâts ponctuels,
+déclencheurs conditionnels sans hook existant) restent narratifs uniquement, comme la majorité
+des avantages/désavantages — aucun ActiveEffect à embarquer sans inventer un nouveau mécanisme
+de jeu non demandé.
+
+Nouveau correctif `PACK_UPDATES` dédié (`0.6.102-embed-more-spell-effects`, id neuf plutôt que
+modifier l'ancien `0.6.98` déjà potentiellement coché par l'utilisateur — un id une fois coché
+n'est jamais réappliqué même si sa table de données s'agrandit depuis).
+
+**Fichiers modifiés** : `packs/sorts.db`, `module/helpers/pack-updates.mjs`, `system.json`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 15) — Vraies images pour 60 armes/armures (v0.6.100 → v0.6.101)
 
 Demande : reprendre les images fournies par l'utilisateur dans `img/equipement/` (120 fichiers)

@@ -441,18 +441,20 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
-## 44. EN COURS — Effet lié à la description de chaque sort (2/32 faits, 15 septembre 2026, v0.6.98)
+## 44. EN COURS — Effet lié à la description de chaque sort (9/32 faits + 2 sorts à bonus CA, 16 septembre 2026, v0.6.102)
 
-Même ampleur que l'ancien chantier Effets (avantages/désavantages). Choix confirmé : 2-3
-exemples d'abord (Bénédiction des Titans +3 For, Danse du Serpent +3 Dex — tous deux avec
-bouton "Appliquer l'effet" au lancer, comme demandé : pas de bonus passif juste en connaissant
-le sort). Mécanisme généralisé et prêt (`AntiqueActor#applyEffectChanges()`, bouton
-`.apply-spell-effect`) pour les 30 sorts restants avec un champ "Effet" textuel non-encore
-mécanisé. **Reste à faire** : auditer et traiter les 30 autres, sort par sort (certains
-purement narratifs — localisation, communication, divination — n'auront qu'une description,
-pas d'ActiveEffect, comme la plupart des avantages). Voir `JOURNAL.md`, session du
-15 septembre 2026 (suite 12). **À confirmer par l'utilisateur en jeu** — nécessite de cocher
-le correctif dans l'écran de mise à jour (MJ).
+Même ampleur que l'ancien chantier Effets (avantages/désavantages). Traités jusqu'ici :
+Bénédiction des Titans (+3 For), Danse du Serpent (+3 Dex), Résilience de l'Immortel (+3 Con),
+Eveil du Sage (+3 Int), Méditation des Ancêtres (+3 Ast), Glamour Divin (+3 Cha), Souffle aux
+Pieds Legers (+4 Initiative) — tous avec bouton "Appliquer l'effet" au lancer — plus Rage
+Incontrôlable et Peau de Fer (bonus de CA seul, +1/+2, via le mécanisme plus simple de "Peau
+d'écorce"). **Reste à faire** : les ~21 sorts restants sont purement narratifs (localisation,
+communication, divination, dégâts ponctuels, déclencheurs sans hook existant — invocation,
+réduction de dégâts, régénération au toucher) — aucun bonus chiffré propre à embarquer sans
+inventer un nouveau mécanisme de jeu non demandé ; probablement rien de plus à coder ici, à
+confirmer avec l'utilisateur si ce point doit être considéré clos. Voir `JOURNAL.md`, sessions
+du 15 et 16 septembre 2026. **À confirmer par l'utilisateur en jeu** — nécessite de cocher les
+2 correctifs (`0.6.98` et `0.6.102`) dans l'écran de mise à jour (MJ).
 
 ## 45. ~~Reclasser un trait depuis sa propre fiche~~ — CORRIGÉ (15 septembre 2026, v0.6.99)
 

@@ -413,6 +413,21 @@ export const PACK_UPDATES = [
       "\"images d'équipement\"). Corrige le compendium et toute copie déjà possédée par un " +
       "acteur.",
     apply: applyWeaponArmorRealImages
+  },
+  {
+    id: "0.6.102-embed-more-spell-effects",
+    pack: "sorts",
+    version: "0.6.102",
+    label: "Effets liés aux sorts (5 exemples de plus + 2 sorts à bonus de CA)",
+    description:
+      "Suite du point précédent (Bénédiction des Titans/Danse du Serpent) : Résilience de " +
+      "l'Immortel (+3 Constitution), Eveil du Sage (+3 Intelligence), Méditation des Ancêtres " +
+      "(+3 Astuce), Glamour Divin (+3 Charisme) et Souffle aux Pieds Legers (+4 Initiative) " +
+      "embarquent maintenant un vrai effet (bouton \"Appliquer l'effet\" au lancer). Rage " +
+      "Incontrôlable et Peau de Fer récupèrent leur bonus de CA (+1 et +2) via le mécanisme " +
+      "plus simple déjà utilisé par Peau d'écorce — le reste de leur effet (dégâts en dé, " +
+      "réduction de dégâts) n'a pas d'équivalent automatisable et reste à l'appréciation du MJ.",
+    apply: applyEmbedMoreSpellEffects
   }
 ];
 
@@ -2096,8 +2111,48 @@ const SPELL_EFFECTS = {
     id: "eSrt000000000002",
     changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "3" }],
     description: "+3 Dextérité (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Résilience de l'Immortel": {
+    id: "eSrt000000000003",
+    changes: [{ key: "system.abilities.con.mod", mode: 2, value: "3" }],
+    description: "+3 Constitution (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Eveil du Sage": {
+    id: "eSrt000000000004",
+    changes: [{ key: "system.abilities.int.mod", mode: 2, value: "3" }],
+    description: "+3 Intelligence (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Méditation des Ancêtres": {
+    id: "eSrt000000000005",
+    changes: [{ key: "system.abilities.ast.mod", mode: 2, value: "3" }],
+    description: "+3 Astuce (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Glamour Divin": {
+    id: "eSrt000000000006",
+    changes: [{ key: "system.abilities.cha.mod", mode: 2, value: "3" }],
+    description: "+3 Charisme (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Souffle aux Pieds Legers": {
+    id: "eSrt000000000007",
+    changes: [{ key: "system.initiative", mode: 2, value: "4" }],
+    description: "+4 Initiative (version solo — pour le groupe, +2 à ajuster manuellement)."
   }
 };
+
+/** Spells whose bonus is CA-only — reuses the older, simpler caBonus/apply-effect
+ *  mechanism (same as "Peau d'écorce") instead of an embedded effect, since a plain
+ *  number is all that mechanism needs. */
+const SPELL_CA_BONUS = {
+  "Rage Incontrôlable": 1,
+  "Peau de Fer": 2
+};
+
+async function setSpellCaBonus(doc) {
+  const amount = SPELL_CA_BONUS[doc.name];
+  if (amount === undefined || doc.system.caBonus === amount) return false;
+  await doc.update({ "system.caBonus": amount });
+  return true;
+}
 
 async function embedSpellEffect(doc) {
   const cfg = SPELL_EFFECTS[doc.name];
@@ -2127,6 +2182,38 @@ async function applyEmbedSpellEffects() {
     for (const item of actor.items) {
       if (item.type !== "spell") continue;
       if (await embedSpellEffect(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same as applyEmbedSpellEffects(), but also covers SPELL_CA_BONUS — a single
+ *  combined "batch 2" fix (5 more embedded effects + 2 caBonus spells) so it can be
+ *  offered under a fresh id: the original "0.6.98-embed-spell-effects" id, once
+ *  checked off by a GM, is never re-run even after SPELL_EFFECTS grew new entries
+ *  (see pack-update-picker gotcha — an id is marked applied regardless of whether
+ *  re-running it would now do more work). */
+async function applyEmbedMoreSpellEffects() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedSpellEffect(doc)) fixed++;
+      if (await setSpellCaBonus(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await embedSpellEffect(item)) fixed++;
+      if (await setSpellCaBonus(item)) fixed++;
     }
   }
 
