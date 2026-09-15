@@ -354,6 +354,18 @@ export const PACK_UPDATES = [
     apply: applyCreateArbaleteMunitions
   },
   {
+    id: "0.6.95-fix-munition-consumable",
+    pack: "armes",
+    version: "0.6.95",
+    label: "Munitions liables aux armes à distance",
+    description:
+      "Les 3 munitions (Flèches, Carreaux d'arbalète, Pierres de fronde) avaient " +
+      "system.consumable à false — invisibles dans le menu \"Munition liée\" d'une arme " +
+      "(qui ne liste que les objets marqués consommables). Corrigé sur le compendium et " +
+      "toute copie déjà possédée par un acteur.",
+    apply: applyFixMunitionConsumable
+  },
+  {
     id: "0.6.93-create-tresors",
     pack: "tresors",
     version: "0.6.93",
@@ -1661,7 +1673,10 @@ function munitionDocData(entry) {
   return {
     _id: entry.id, name: entry.name, type: "equipment", img: entry.img,
     system: {
-      quantity: 1, consumable: false, caBonus: 0, healAmount: 0, linkedSkill: "", skillBonus: 0,
+      // Must be true: this is what makes the item selectable as "linked ammo" on a
+      // weapon's sheet (context.ammoOptions) and the Combat tab's quick-select
+      // (context.ammoCandidates) — both filter on system.consumable.
+      quantity: 1, consumable: true, caBonus: 0, healAmount: 0, linkedSkill: "", skillBonus: 0,
       slot: "", equipped: false, price: `${entry.price} po`, poids: entry.poids,
       apothCategory: "", apothType: "", isIngredientBag: false,
       description: `<p><strong>Prix :</strong> ${entry.price} po</p>`, gmNotes: ""
@@ -1706,6 +1721,41 @@ async function applyCreateArbaleteMunitions() {
 
   await pack.configure({ locked: true });
   return created;
+}
+
+const MUNITION_NAMES = new Set(MUNITION_ITEMS.map(m => m.name));
+
+/** Fixes system.consumable, wrongly false when the munitions were first created (see
+ *  "0.6.91-create-arbalete-munitions" above) — without it, a munition never appears in
+ *  a weapon's "Munition liée" dropdown (context.ammoOptions/ammoCandidates both filter
+ *  on this flag). Actor-owned copies are matched by name, not id: a compendium drop
+ *  (browser-shared.mjs's grantItemToActor) creates the embedded copy with a fresh
+ *  random id, not the compendium's own. */
+async function applyFixMunitionConsumable() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.armes");
+  if (pack) {
+    await pack.configure({ locked: false });
+    for (const entry of MUNITION_ITEMS) {
+      const doc = await pack.getDocument(entry.id);
+      if (doc && !doc.system.consumable) {
+        await doc.update({ "system.consumable": true });
+        fixed++;
+      }
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "equipment" || !MUNITION_NAMES.has(item.name) || item.system.consumable) continue;
+      await item.update({ "system.consumable": true });
+      fixed++;
+    }
+  }
+
+  return fixed;
 }
 
 /** Same 7 documents as packs/_build-tresors.js, same ids (keepId). */

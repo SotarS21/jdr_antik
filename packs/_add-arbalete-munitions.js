@@ -109,7 +109,12 @@ for (const munition of MUNITIONS) {
     img:   munition.img,
     system: {
       quantity:    1,
-      consumable:  false,
+      // Must be true: this is what makes the item selectable as "linked ammo" on a
+      // weapon's own sheet (context.ammoOptions, item-sheet.mjs) and in the Combat
+      // tab's quick-select dropdown (context.ammoCandidates, actor-sheet.mjs) —
+      // both filter on `system.consumable`, same flag a "Rations" item uses for its
+      // own unrelated heal-on-consume behavior.
+      consumable:  true,
       caBonus:     0,
       healAmount:  0,
       linkedSkill: "",

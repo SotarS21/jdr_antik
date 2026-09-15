@@ -410,6 +410,15 @@ Ordre demandé : Avantages, Désavantages, Malédictions, Bénédictions, puis E
 Simple déplacement de bloc dans `character-sheet.hbs`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 8). **À confirmer par l'utilisateur en jeu.**
 
+## 40. ~~Munitions pas liables aux armes à distance~~ — CORRIGÉ (15 septembre 2026, v0.6.95)
+
+Bug introduit dans cette même session (point 33) : `system.consumable` mis à `false` au lieu
+de `true` sur les 3 munitions — c'est ce flag qui rend un objet sélectionnable comme "Munition
+liée" sur une arme. Corrigé (compendium + copies déjà possédées, nouveau correctif dédié
+puisque l'ancien reste marqué "appliqué" même s'il a créé les mauvaises données). Voir
+`JOURNAL.md`, session du 15 septembre 2026 (suite 9). **À confirmer par l'utilisateur en jeu**
+— nécessite de cocher le nouveau correctif dans l'écran de mise à jour (MJ).
+
 ---
 
 ## Notes techniques générales

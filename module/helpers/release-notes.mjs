@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.95": {
+    title: "Version 0.6.95 — Correctif : munitions liables aux armes",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les munitions (Flèches, Carreaux d'arbalète, Pierres de fronde) n'apparaissaient pas dans le menu "Munition liée" d'une arme à distance.</li>
+      </ul>`
+  },
   "0.6.94": {
     title: "Version 0.6.94 — Section Effets repositionnée en dernier",
     html: `

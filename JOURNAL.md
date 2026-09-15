@@ -2,6 +2,30 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 9) — Munitions non liables aux armes (v0.6.94 → v0.6.95)
+
+Signalé : les munitions ajoutées en (suite 5) n'apparaissaient pas dans le menu "Munition liée"
+d'une arme à distance. **Cause : bug introduit par moi-même dans cette même session** —
+`system.consumable` avait été mis à `false` sur les 3 munitions (Flèches, Carreaux d'arbalète,
+Pierres de fronde) au lieu de `true`. Ce flag n'a rien à voir avec la notion "arme consommable"
+(qui vit sur l'arme elle-même) : côté objet d'équipement, c'est précisément ce qui rend un
+objet sélectionnable comme munition liée (`context.ammoOptions`/`ammoCandidates`, tous deux
+filtrent sur `system.consumable`), et je l'avais confondu avec le sens "consommable façon
+ration/potion à usage unique" (`AntiqueItem#consume()`), pas encore pertinent pour ces objets.
+
+Corrigé : `packs/armes.db` (les 3 lignes concernées), `packs/_add-arbalete-munitions.js`
+(le générateur, pour toute réutilisation future), et un nouveau correctif `PACK_UPDATES`
+(`0.6.95-fix-munition-consumable`) pour corriger le compendium déjà déployé **et** toute copie
+déjà récupérée par un joueur (l'ancien correctif `0.6.91-create-arbalete-munitions`, s'il a
+déjà été appliqué, reste marqué "appliqué" dans `appliedPackFixes` même s'il a créé des
+documents avec le mauvais flag — un nouvel id de correctif était nécessaire, pas une
+modification de l'ancien).
+
+**Fichiers modifiés** : `packs/armes.db`, `packs/_add-arbalete-munitions.js`,
+`module/helpers/pack-updates.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 8) — Section "Effets" déplacée en dernier dans l'onglet Traits (v0.6.93 → v0.6.94)
 
 Demandé : repositionner la section Effets de la fiche personnage en dernier. Ordre précédent
