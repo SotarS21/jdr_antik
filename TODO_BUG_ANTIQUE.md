@@ -301,8 +301,8 @@ l'utilisateur en jeu (10 septembre 2026)** : "ça marche bien".
 Le champ de recherche affichait « Rechercher un ingrédient... » alors qu'on peut y chercher
 n'importe quel type de contenu. Nouvelle clé dédiée `ANTIQUE.Browser.SearchPlaceholder`
 (« Rechercher... »), sans toucher aux usages légitimes de l'ancienne clé (boutique alchimie,
-onglet Ingrédients). Voir `JOURNAL.md`, session du 15 septembre 2026. **À confirmer par
-l'utilisateur en jeu.**
+onglet Ingrédients). Voir `JOURNAL.md`, session du 15 septembre 2026. **Confirmé par
+l'utilisateur en jeu (15 septembre 2026)** : "ça marche bien".
 
 ## 28. ~~Navigateur de Compendium — filtre "Bouclier" ne fonctionnait pas~~ — CORRIGÉ (15 septembre 2026, v0.6.87)
 
@@ -310,19 +310,21 @@ Les boucliers ressortaient classés comme "Arme". Cause : `doc.folder` renvoie l
 Folder lui-même (résolu automatiquement par Foundry), pas un id — la comparaison contre une
 `Map` indexée par id échouait toujours. Corrigé en lisant `doc.folder?.name` directement. Même
 correctif appliqué à l'onglet Historique (bug identique, jamais signalé). Voir `JOURNAL.md`,
-session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
+session du 15 septembre 2026 (suite). **Confirmé par l'utilisateur en jeu (15 septembre 2026)** :
+"ça marche bien".
 
 ## 29. ~~Navigateur de Compendium — Capacités de Combat visibles par les joueurs~~ — CORRIGÉ (15 septembre 2026, v0.6.87)
 
 Onglet PNJ réservé au MJ désormais, comme l'onglet Combat des fiches PNJ. Voir `JOURNAL.md`,
-session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
+session du 15 septembre 2026 (suite). **Confirmé par l'utilisateur en jeu (15 septembre 2026)** :
+"ça marche bien".
 
 ## 30. ~~Focus perdu au toggle "maîtrisé" d'une compétence~~ — CORRIGÉ (15 septembre 2026, v0.6.88)
 
 Même bug que le point 13b (toggle d'effet, Traits) : re-rendu forcé sans passer par
 `captureFocusState`/`restoreFocusState`, la fiche remontait en haut à chaque clic. Corrigé avec
-le même patron. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 2). **À confirmer par
-l'utilisateur en jeu.**
+le même patron. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 2). **Confirmé par
+l'utilisateur en jeu (15 septembre 2026)** : "ça marche bien".
 
 ---
 
