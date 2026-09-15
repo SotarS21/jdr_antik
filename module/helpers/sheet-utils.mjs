@@ -48,12 +48,16 @@ export function preventEnterSubmit(element) {
 }
 
 /**
- * Force a re-render of a document's already-open sheet after a mutation made from
- * elsewhere (a chat button, another document's roll/cast method, a document-lifecycle
- * hook) — Foundry doesn't do this automatically for a document that isn't the one
- * being edited through its own form submission (that path is handled separately by
- * _processSubmitData's own capture/render/restore sequence).
+ * Re-render a document's already-open sheet after a mutation made from elsewhere (a
+ * chat button, another document's roll/cast method, a document-lifecycle hook) —
+ * Foundry doesn't do this automatically for a document that isn't the one being
+ * edited through its own form submission (that path is handled separately by
+ * _processSubmitData's own capture/render/restore sequence). Deliberately no
+ * `force`: the sheet is already rendered (guarded below), so a plain render() still
+ * refreshes its contents, but skips the maximize()/bringToFront() that `force`
+ * triggers — this sheet isn't the one the user is actively working in, so it must
+ * not jump in front of whatever window they're actually looking at.
  */
 export function refreshSheet(doc) {
-  if (doc?.sheet?.rendered) doc.sheet.render({ force: true });
+  if (doc?.sheet?.rendered) doc.sheet.render();
 }

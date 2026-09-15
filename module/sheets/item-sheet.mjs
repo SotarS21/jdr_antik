@@ -39,10 +39,14 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
     restoreFocusState(this.element, focusState);
     // Editing an embedded item (e.g. a weapon's linked ammo, or the ammo's own
     // quantity) doesn't automatically refresh the parent actor's already-open
-    // sheet — force it too so tables referencing this item stay in sync.
-    // Only if that sheet is already open: otherwise this would pop it open.
+    // sheet — refresh it too so tables referencing this item stay in sync.
+    // Only if that sheet is already open (otherwise this would pop it open),
+    // and without `force` — the actor sheet is already rendered, so a plain
+    // render() re-renders its contents without also calling bringToFront(),
+    // which would otherwise steal window focus away from this item sheet on
+    // every single field change.
     const actorSheet = this.item.actor?.sheet;
-    if (actorSheet?.rendered) actorSheet.render({ force: true });
+    if (actorSheet?.rendered) actorSheet.render();
   }
 
   async _prepareContext(options) {

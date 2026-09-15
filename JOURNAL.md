@@ -2,6 +2,34 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 4) — La fiche perso passait devant la fiche d'objet à chaque champ modifié (v0.6.89 → v0.6.90)
+
+Signalé : éditer un objet (ex. changer la catégorie d'une arme) faisait systématiquement passer
+la fenêtre de la fiche de personnage devant celle de l'objet en cours d'édition, à chaque
+changement de champ.
+
+Cause, dans Foundry lui-même (vérifié dans le code source client,
+`client/applications/api/application.mjs`) : l'option `force: true` passée à `Application#render()`
+déclenche `this.maximize().then(() => this.bringToFront())` — y compris quand l'appli était déjà
+rendue. `AntiqueItemSheet#_processSubmitData()` (`item-sheet.mjs`) rafraîchissait la fiche
+acteur déjà ouverte après chaque soumission (`actorSheet.render({ force: true })`) pour garder
+ses tableaux à jour — mais ce `force` n'était pas nécessaire (la fiche acteur est déjà ouverte,
+un `render()` simple suffit à rafraîchir son contenu) et avait pour seul effet de la ramener au
+premier plan à chaque fois.
+
+Corrigé à deux endroits : `AntiqueItemSheet#_processSubmitData()` et l'utilitaire partagé
+`refreshSheet()` (`module/helpers/sheet-utils.mjs`, utilisé par de nombreux autres points —
+incantation de sort, tir d'une arme consommable, repos long, etc. — pour rafraîchir une fiche
+déjà ouverte ailleurs après une mutation faite depuis un autre document) — les deux ne passent
+plus `force` puisqu'ils ne rafraîchissent que des fiches déjà confirmées ouvertes (`?.rendered`).
+Les fiches ouvertes explicitement par un clic (ex. "éditer cet objet", "créer un effet") gardent
+`force: true`, volontairement — sur une fiche pas encore ouverte c'est ce qui l'ajoute au DOM, et
+le premier plan y est de toute façon l'effet attendu.
+
+**Fichiers modifiés** : `module/sheets/item-sheet.mjs`, `module/helpers/sheet-utils.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 3) — Filtres "Arme de jet" et "Arme à distance" (v0.6.88 → v0.6.89)
 
 Demandé : dans l'onglet Équipement du Navigateur de Compendium, les armes à distance (jets et

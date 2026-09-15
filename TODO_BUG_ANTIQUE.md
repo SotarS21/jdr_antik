@@ -334,6 +334,15 @@ dossiers déjà distincts du compendium (choix confirmé par l'utilisateur : fil
 pas un seul filtre combiné). Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 3). **À
 confirmer par l'utilisateur en jeu.**
 
+## 32. ~~Fiche perso passe devant la fiche d'objet à chaque champ modifié~~ — CORRIGÉ (15 septembre 2026, v0.6.90)
+
+Cause : `force: true` sur un `Application#render()` Foundry ramène toujours la fenêtre au
+premier plan, même déjà ouverte. `AntiqueItemSheet` et l'utilitaire partagé `refreshSheet()`
+rafraîchissaient une fiche déjà ouverte (acteur, autre document) avec `force: true` sans besoin
+— corrigé pour ne plus passer `force` sur ces rafraîchissements "en arrière-plan" (les
+ouvertures explicites par clic gardent `force: true`, volontairement). Voir `JOURNAL.md`,
+session du 15 septembre 2026 (suite 4). **À confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales
