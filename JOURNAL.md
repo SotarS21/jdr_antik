@@ -2,6 +2,19 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 2) — Focus perdu au toggle "maîtrisé" d'une compétence (v0.6.87 → v0.6.88)
+
+Même famille de bug que le point 13b du `TODO_BUG_ANTIQUE.md` (toggle actif/inactif d'un effet
+dans l'onglet Traits, v0.6.68) : le bouton "maîtrisé" d'une compétence (`.skill-trained`,
+`actor-sheet.mjs`) appelait `actor.update()` puis `this.render({ force: true })` sans passer par
+`captureFocusState`/`restoreFocusState` — le re-rendu forcé remontait donc la fiche en haut à
+chaque clic. Corrigé en appliquant le même patron que le toggle d'effet (capture avant l'update,
+restore après le render). Voir `JOURNAL.md`, cette session.
+
+**Fichiers modifiés** : `module/sheets/actor-sheet.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite) — Filtre Bouclier + onglet Capacités de Combat réservé au MJ (v0.6.86 → v0.6.87)
 
 Deux bugs signalés dans le Navigateur de Compendium :

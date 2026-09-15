@@ -317,6 +317,13 @@ session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
 Onglet PNJ réservé au MJ désormais, comme l'onglet Combat des fiches PNJ. Voir `JOURNAL.md`,
 session du 15 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
 
+## 30. ~~Focus perdu au toggle "maîtrisé" d'une compétence~~ — CORRIGÉ (15 septembre 2026, v0.6.88)
+
+Même bug que le point 13b (toggle d'effet, Traits) : re-rendu forcé sans passer par
+`captureFocusState`/`restoreFocusState`, la fiche remontait en haut à chaque clic. Corrigé avec
+le même patron. Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 2). **À confirmer par
+l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales

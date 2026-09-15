@@ -484,13 +484,15 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     });
 
     this.element.querySelectorAll(".skill-trained").forEach(el => {
-      el.addEventListener("click", ev => {
+      el.addEventListener("click", async ev => {
         const key = ev.currentTarget.dataset.skill;
         const current = this.actor.system.skills[key]?.trained ?? false;
         const newTrained = !current;
         ev.currentTarget.closest(".skill-row")?.classList.toggle("trained", newTrained);
-        this.actor.update({ [`system.skills.${key}.trained`]: newTrained })
-          .then(() => this.render({ force: true }));
+        const focusState = captureFocusState(this.element);
+        await this.actor.update({ [`system.skills.${key}.trained`]: newTrained });
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
       });
     });
 
