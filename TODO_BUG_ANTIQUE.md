@@ -404,6 +404,12 @@ introduit par ce système. **À reprendre si l'utilisateur peut préciser** : un
 particulier (fiche perso/PNJ, Navigateur de Compendium...) ou une action qui précède
 systématiquement le blocage.
 
+## 39. ~~Section Effets pas en dernière position (onglet Traits)~~ — CORRIGÉ (15 septembre 2026, v0.6.94)
+
+Ordre demandé : Avantages, Désavantages, Malédictions, Bénédictions, puis Effets en dernier.
+Simple déplacement de bloc dans `character-sheet.hbs`. Voir `JOURNAL.md`, session du
+15 septembre 2026 (suite 8). **À confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales

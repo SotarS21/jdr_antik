@@ -2,6 +2,15 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 8) — Section "Effets" déplacée en dernier dans l'onglet Traits (v0.6.93 → v0.6.94)
+
+Demandé : repositionner la section Effets de la fiche personnage en dernier. Ordre précédent
+dans l'onglet Traits : Avantages, Désavantages, Malédictions, **Effets**, Bénédictions. Nouvel
+ordre : Avantages, Désavantages, Malédictions, Bénédictions, **Effets**. Simple déplacement de
+bloc dans `templates/actor/character-sheet.hbs`, aucune logique changée.
+
+---
+
 ## Session du 15 septembre 2026 (suite 7) — Nouveau type d'objet "Trésor" (v0.6.92 → v0.6.93)
 
 Demande : objets de trésor (bijoux, parchemins, lettres, statuettes à l'effigie d'un dieu,

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.94": {
+    title: "Version 0.6.94 — Section Effets repositionnée en dernier",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : dans l'onglet Traits de la fiche personnage, la section "Effets" est désormais affichée en dernier (après les Bénédictions).</li>
+      </ul>`
+  },
   "0.6.93": {
     title: "Version 0.6.93 — Nouveau type d'objet \"Trésor\"",
     html: `
