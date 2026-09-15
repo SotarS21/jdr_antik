@@ -18,6 +18,16 @@
         <input type="number" name="system.cout" value="{{system.cout}}" />
         <span class="cout-hint">{{localize "ANTIQUE.Traits.CoutHintDisadvantage"}}</span>
       </div>
+      {{#if isEditable}}
+      <div class="form-group">
+        <label>{{localize "ANTIQUE.Traits.ConvertTo"}}</label>
+        <div class="trait-convert-buttons">
+          <button type="button" class="trait-convert-btn" data-target-type="blessing">{{localize "ANTIQUE.Traits.Blessings"}}</button>
+          <button type="button" class="trait-convert-btn" data-target-type="curse">{{localize "ANTIQUE.Traits.Curses"}}</button>
+        </div>
+        <span class="cout-hint">{{localize "ANTIQUE.Traits.ConvertToHint"}}</span>
+      </div>
+      {{/if}}
       <div class="form-group description">
         <label>{{localize "ANTIQUE.Description"}}</label>
         {{richEditor "system.description" system.description editable=isEditable}}

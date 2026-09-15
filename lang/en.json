@@ -274,6 +274,8 @@
   "ANTIQUE.Traits.Cout": "Cost",
   "ANTIQUE.Traits.CoutHintAdvantage": "(negative for advantages)",
   "ANTIQUE.Traits.CoutHintDisadvantage": "(positive for disadvantages)",
+  "ANTIQUE.Traits.ConvertTo": "Convert to",
+  "ANTIQUE.Traits.ConvertToHint": "Deletes this item and creates a Blessing/Curse instead (same name/description/effects, no cost).",
   "ANTIQUE.Traits.Balance": "Trait Balance",
   "ANTIQUE.Traits.Balanced": "Balanced",
   "ANTIQUE.Traits.Unbalanced": "Unbalanced",
@@ -438,6 +440,7 @@
 
   "ANTIQUE.Damage.Title": "Damage",
   "ANTIQUE.Effect.ApplyButton": "Apply effect (+{amount} CA)",
+  "ANTIQUE.Effect.ApplyGenericButton": "Apply effect",
   "ANTIQUE.Effect.ApplyHealButton": "Apply heal (+{amount} HP)",
   "ANTIQUE.Effect.HealApplied": "Heal applied",
   "ANTIQUE.Effect.Applied": "Effect applied",

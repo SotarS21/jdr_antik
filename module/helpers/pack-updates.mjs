@@ -387,6 +387,19 @@ export const PACK_UPDATES = [
       "lot : Bijou orné, Parchemin scellé, Lettre cachetée, Statuette à l'effigie d'un dieu, " +
       "Flacon de parfum, Pierre précieuse, Caillou.",
     apply: applyCreateTresors
+  },
+  {
+    id: "0.6.98-embed-spell-effects",
+    pack: "sorts",
+    version: "0.6.98",
+    label: "Effets liés aux sorts (2 premiers exemples)",
+    description:
+      "Bénédiction des Titans et Danse du Serpent embarquent maintenant un vrai effet " +
+      "(+3 Force / +3 Dextérité) au lieu d'un simple texte narratif — pas appliqué " +
+      "automatiquement du simple fait de connaître le sort (contrairement à un " +
+      "avantage), un bouton \"Appliquer l'effet\" sur la carte de lancer l'applique à la " +
+      "cible. Premiers exemples avant de généraliser aux 30 autres sorts.",
+    apply: applyEmbedSpellEffects
   }
 ];
 
@@ -2053,6 +2066,54 @@ async function applyEmbedEffetsDesavantages() {
       const entry = byName.get(cleanName(item.name));
       if (!entry) continue;
       if (await linkAndEmbedDesavantage(item, entry)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 2 spells/effects as the direct edit to packs/sorts.db — kept in sync by hand. */
+const SPELL_EFFECTS = {
+  "Bénédiction des Titans": {
+    id: "eSrt000000000001",
+    changes: [{ key: "system.abilities.for.mod", mode: 2, value: "3" }],
+    description: "+3 Force (version solo — pour le groupe, +1 à ajuster manuellement)."
+  },
+  "Danse du Serpent": {
+    id: "eSrt000000000002",
+    changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "3" }],
+    description: "+3 Dextérité (version solo — pour le groupe, +1 à ajuster manuellement)."
+  }
+};
+
+async function embedSpellEffect(doc) {
+  const cfg = SPELL_EFFECTS[doc.name];
+  if (!cfg || doc.effects.size) return false;
+  await doc.createEmbeddedDocuments("ActiveEffect", [{
+    _id: cfg.id, name: doc.name, img: doc.img, transfer: false, disabled: false,
+    changes: cfg.changes, description: cfg.description
+  }], { keepId: true });
+  return true;
+}
+
+async function applyEmbedSpellEffects() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedSpellEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await embedSpellEffect(item)) fixed++;
     }
   }
 

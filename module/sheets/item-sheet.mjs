@@ -171,6 +171,10 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
 
     if (!this.isEditable) return;
 
+    this.element.querySelectorAll(".trait-convert-btn").forEach(el => {
+      el.addEventListener("click", this._onTraitConvert.bind(this));
+    });
+
     this.element.querySelector(".effect-create")?.addEventListener("click", this._onEffectCreate.bind(this));
     this.element.querySelectorAll(".effect-edit").forEach(el => el.addEventListener("click", this._onEffectEdit.bind(this)));
     this.element.querySelectorAll(".effect-delete").forEach(el => el.addEventListener("click", this._onEffectDelete.bind(this)));
@@ -180,6 +184,23 @@ export class AntiqueItemSheet extends HandlebarsApplicationMixin(foundry.applica
     this.element.querySelectorAll(".ingredient-delete").forEach(el => el.addEventListener("click", this._onIngredientDelete.bind(this)));
     this.element.querySelectorAll(".ingredient-name-input, .ingredient-quantity-input, .ingredient-possede-checkbox")
       .forEach(el => el.addEventListener("change", this._onIngredientFieldChange.bind(this)));
+  }
+
+  /**
+   * "Convertir en Bénédiction/Malédiction" button (Description tab of an
+   * Avantage/Désavantage) — same conversion as dragging the trait onto the
+   * Bénédictions/Malédictions section of the Traits tab (see
+   * AntiqueItem#convertTraitType), just reachable from the item's own sheet too.
+   * This sheet's own document is deleted as part of the conversion, so it closes
+   * itself afterward rather than show a now-defunct document.
+   */
+  async _onTraitConvert(event) {
+    event.preventDefault();
+    const targetType = event.currentTarget.dataset.targetType;
+    const actorSheet = this.item.actor?.sheet;
+    await this.item.convertTraitType(targetType);
+    if (actorSheet?.rendered) actorSheet.render();
+    this.close();
   }
 
   async _onEffectCreate(event) {

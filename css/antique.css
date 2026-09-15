@@ -1951,6 +1951,27 @@
   font-weight: normal;
 }
 
+.antique .trait-convert-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.antique .trait-convert-btn {
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--antique-cream);
+  border: 1px solid var(--antique-border);
+  border-radius: 4px;
+  color: var(--antique-dark);
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.antique .trait-convert-btn:hover {
+  background: var(--antique-dark-gold);
+  color: var(--antique-cream);
+}
+
 /* ---- Spells Table ---- */
 .antique .spells-table .spell-effect {
   font-style: italic;

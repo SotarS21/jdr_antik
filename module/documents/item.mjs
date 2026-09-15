@@ -378,13 +378,23 @@ export class AntiqueItem extends Item {
     }
 
     // 6. Buff spells (ex. Peau d'écorce) offer a button to apply their CA bonus —
-    // same pattern as the "apply-damage" button on rollDamage()'s chat card.
+    // same pattern as the "apply-damage" button on rollDamage()'s chat card. A spell
+    // whose bonus isn't just CA (ex. Bénédiction des Titans, +3 Force) instead
+    // embeds a real ActiveEffect (transfer:false — see AntiqueActor#applyEffectChanges)
+    // directly on the spell item, offering a generic button that applies whatever
+    // changes it holds instead of a single hardcoded CA number.
     let applyEffectButton = "";
     if (this.system.caBonus) {
       const applyLabel = game.i18n.format("ANTIQUE.Effect.ApplyButton", { amount: this.system.caBonus });
       applyEffectButton = `
         <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}">
           <i class="fas fa-shield-halved"></i> ${applyLabel}
+        </button>`;
+    } else if (this.effects.size > 0) {
+      const applyLabel = game.i18n.localize("ANTIQUE.Effect.ApplyGenericButton");
+      applyEffectButton = `
+        <button type="button" class="apply-spell-effect" data-item-uuid="${this.uuid}">
+          <i class="fas fa-hat-wizard"></i> ${applyLabel}
         </button>`;
     }
 
@@ -403,6 +413,37 @@ export class AntiqueItem extends Item {
       speaker,
       content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}</div>`
     });
+  }
+
+  /**
+   * Reclassify this owned Avantage/Désavantage as a Bénédiction/Malédiction: creates
+   * the new item first (carrying over name/image/description/GM notes/embedded
+   * effects), only deleting the original once that succeeds, so a mid-flight error
+   * never loses data. The "coût" field doesn't exist on blessing/curse (see
+   * item-curse.mjs) and is deliberately not carried over — a Bénédiction/Malédiction
+   * never weighs into context.traitBalance. Shared by two entry points: dragging the
+   * trait onto the Bénédictions/Malédictions section of the Traits tab
+   * (actor-sheet.mjs), and the "Convertir en..." buttons on the item's own sheet
+   * (item-sheet.mjs).
+   * @param {"blessing"|"curse"} targetType
+   * @returns {Promise<Item|null>} the newly created item, or null if this item isn't
+   *   an Avantage/Désavantage or has no owning actor.
+   */
+  async convertTraitType(targetType) {
+    if (this.type !== "advantage" && this.type !== "disadvantage") return null;
+    if (!this.actor) return null;
+    const [created] = await this.actor.createEmbeddedDocuments("Item", [{
+      name: this.name,
+      type: targetType,
+      img: this.img,
+      system: {
+        description: this.system.description,
+        gmNotes: this.system.gmNotes
+      },
+      effects: this.effects.map(e => e.toObject())
+    }]);
+    await this.delete();
+    return created;
   }
 
   /**

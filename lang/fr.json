@@ -273,6 +273,8 @@
   "ANTIQUE.Traits.Cout": "Co\u00fbt",
   "ANTIQUE.Traits.CoutHintAdvantage": "(n\u00e9gatif pour les avantages)",
   "ANTIQUE.Traits.CoutHintDisadvantage": "(positif pour les d\u00e9savantages)",
+  "ANTIQUE.Traits.ConvertTo": "Convertir en",
+  "ANTIQUE.Traits.ConvertToHint": "Supprime cet objet et cr\u00e9e une B\u00e9n\u00e9diction/Mal\u00e9diction \u00e0 la place (m\u00eame nom/description/effets, sans co\u00fbt).",
   "ANTIQUE.Traits.Effect": "Effet",
   "ANTIQUE.Traits.Balance": "Balance des traits",
   "ANTIQUE.Traits.Balanced": "\u00c9quilibr\u00e9",
@@ -438,6 +440,7 @@
 
   "ANTIQUE.Damage.Title": "D\u00e9g\u00e2ts",
   "ANTIQUE.Effect.ApplyButton": "Appliquer l'effet (+{amount} CA)",
+  "ANTIQUE.Effect.ApplyGenericButton": "Appliquer l'effet",
   "ANTIQUE.Effect.Applied": "Effet appliqu\u00e9",
   "ANTIQUE.Effect.ApplyHealButton": "Appliquer le soin (+{amount} PV)",
   "ANTIQUE.Effect.HealApplied": "Soin appliqu\u00e9",

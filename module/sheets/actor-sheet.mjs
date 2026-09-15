@@ -1070,7 +1070,10 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
       const targetType = traitSectionEl.dataset.traitSection;
       if ((targetType === "blessing" || targetType === "curse")
         && (item.type === "advantage" || item.type === "disadvantage")) {
-        return this._convertTraitType(item, targetType, focusState);
+        const created = await item.convertTraitType(targetType);
+        await this.render({ force: true });
+        restoreFocusState(this.element, focusState);
+        return created;
       }
     }
 
@@ -1091,34 +1094,6 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     await this.render({ force: true });
     restoreFocusState(this.element, focusState);
     return result;
-  }
-
-  /**
-   * Reclassify an owned Avantage/Désavantage as a Bénédiction/Malédiction: creates the
-   * new item first (carrying over name/image/description/GM notes/embedded effects),
-   * only deleting the original once that succeeds, so a mid-flight error never loses
-   * data. The "coût" field doesn't exist on blessing/curse (see item-curse.mjs) and is
-   * deliberately not carried over — a Bénédiction/Malédiction never weighs into
-   * context.traitBalance.
-   * @param {Item} item
-   * @param {"blessing"|"curse"} targetType
-   * @param {object} [focusState] - Pre-captured by _onDropItem; captured here too if omitted.
-   */
-  async _convertTraitType(item, targetType, focusState = captureFocusState(this.element)) {
-    const [created] = await this.actor.createEmbeddedDocuments("Item", [{
-      name: item.name,
-      type: targetType,
-      img: item.img,
-      system: {
-        description: item.system.description,
-        gmNotes: item.system.gmNotes
-      },
-      effects: item.effects.map(e => e.toObject())
-    }]);
-    await item.delete();
-    await this.render({ force: true });
-    restoreFocusState(this.element, focusState);
-    return created;
   }
 
   async _onDropActor(event, data) {

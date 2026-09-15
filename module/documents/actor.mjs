@@ -272,6 +272,24 @@ export class AntiqueActor extends Actor {
   }
 
   /**
+   * Generalized counterpart to applyCaBonus(): applies an arbitrary set of
+   * ActiveEffect changes (any key, not just system.ca.temp) as a single named,
+   * always-on effect on this actor — for a spell's own embedded (transfer:false)
+   * effect, applied on cast rather than passively just for knowing the spell (see
+   * AntiqueItem#castSpell()'s ".apply-spell-effect" button). Same create-or-refresh
+   * idiom: re-applying the same `name` updates the existing effect's changes
+   * instead of stacking duplicates.
+   * @param {object[]} changes - Raw ActiveEffect change data ({key, mode, value}).
+   * @param {{name: string, icon?: string}} options
+   */
+  async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg" }) {
+    const existing = this.effects.find(e => e.name === name);
+    if (existing) await existing.update({ changes });
+    else await this.createEmbeddedDocuments("ActiveEffect", [{ name, icon, changes, transfer: true }]);
+    refreshSheet(this);
+  }
+
+  /**
    * Perform a long rest: restore HP, consume a ration, manage "Affamé" effect.
    */
   async longRest() {

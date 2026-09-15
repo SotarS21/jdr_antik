@@ -2,6 +2,63 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 13) — Deuxième point d'entrée pour reclasser un trait (v0.6.98 → v0.6.99)
+
+Demande : en plus du glisser-déposer (suite 10), pouvoir reclasser un Avantage/Désavantage en
+Bénédiction/Malédiction directement depuis la fiche de l'objet ("par exemple avec une
+checkbox"). Choisi : deux boutons ("Convertir en" Bénédiction / Malédiction) dans l'onglet
+Description — plus adapté qu'une case à cocher pour une action ponctuelle et destructrice
+(l'objet d'origine est supprimé) plutôt qu'un état à bascule.
+
+Refactor au passage : la logique de conversion (créer le nouvel objet avant de supprimer
+l'ancien, coût non repris) vivait uniquement dans `AntiqueActorSheet#_convertTraitType()` —
+déplacée vers `AntiqueItem#convertTraitType()` (document, pas fiche) pour être appelable
+depuis les deux points d'entrée sans dupliquer le code. La fiche d'objet se ferme après
+conversion (son propre document n'existe plus).
+
+**Fichiers modifiés** : `module/documents/item.mjs`, `module/sheets/actor-sheet.mjs`,
+`module/sheets/item-sheet.mjs`, `templates/item/advantage-sheet.hbs`,
+`templates/item/disadvantage-sheet.hbs`, `css/antique.css`, `lang/fr.json`, `lang/en.json`.
+
+---
+
+## Session du 15 septembre 2026 (suite 12) — Effet lié à la description d'un sort (2 premiers exemples) (v0.6.97 → v0.6.98)
+
+Demande : chaque sort devrait avoir un effet lié à sa description, comme les avantages/
+désavantages. 37 sorts existent, 32 ont déjà un champ "Effet" textuel — même ampleur que
+l'ancien chantier Effets (avantages/désavantages). Décision confirmée avec l'utilisateur :
+commencer par 2-3 exemples avant de généraliser, comme à l'époque.
+
+**Point de mécanique clarifié avant de coder** : contrairement à un avantage (trait permanent,
+effet actif tant qu'il est possédé), un sort à bonus chiffré (ex. Peau d'écorce, +2 CA pendant
+1h) ne doit bonifier que pendant sa durée, pas juste parce qu'on connaît le sort. Confirmé avec
+l'utilisateur : le bonus doit s'appliquer automatiquement au lancer (bouton "Appliquer l'effet"
+sur la carte de chat, comme le mécanisme CA existant), pas juste une référence descriptive.
+
+**Découverte en creusant** : "Peau d'écorce" avait déjà ce mécanisme — `system.caBonus` +
+bouton "Appliquer l'effet" (`AntiqueActor#applyCaBonus()`, existant depuis longtemps, jamais
+généralisé au-delà de la CA). Généralisé :
+- Nouveau `AntiqueActor#applyEffectChanges(changes, {name, icon})` (`actor.mjs`) : même
+  patron créer-ou-rafraîchir que `applyCaBonus()`, mais accepte n'importe quel tableau de
+  `changes` au lieu d'un seul montant de CA codé en dur.
+- `AntiqueItem#castSpell()` : un sort sans `caBonus` mais avec un effet embarqué
+  (`transfer:false`, comme les avantages/bénédictions) affiche désormais un bouton générique
+  "Appliquer l'effet" (`.apply-spell-effect`, `data-item-uuid`) au lieu du bouton CA-only.
+- Nouveau hook `renderChatMessageHTML` (`antique.mjs`) pour ce bouton générique — même
+  résolution de cible (ciblé → jeton sélectionné → lanceur) que le bouton CA existant.
+- **2 sorts traités** : Bénédiction des Titans (+3 Force) et Danse du Serpent (+3 Dextérité) —
+  effet embarqué directement sur le sort (`transfer:false`, sans document Effet autonome
+  séparé ni lien `@UUID` dans la description : contrairement aux avantages, les sorts ont déjà
+  leur propre champ "Effet" résumé, même convention que les bénédictions qui n'ont pas non
+  plus de document Effet séparé). Variante "+1 pour le groupe" laissée à l'ajustement manuel du
+  MJ (non modélisée).
+
+**Fichiers modifiés** : `module/documents/actor.mjs`, `module/documents/item.mjs`,
+`antique.mjs`, `packs/sorts.db`, `module/helpers/pack-updates.mjs`, `lang/fr.json`,
+`lang/en.json`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 11) — Focus perdu au glisser-déposer d'un objet (v0.6.96 → v0.6.97)
 
 Signalé : glisser un objet (ex. depuis Alchimie) dans le sac à ingrédient d'un PJ remonte la

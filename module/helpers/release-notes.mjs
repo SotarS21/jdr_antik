@@ -5,6 +5,20 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.99": {
+    title: "Version 0.6.99 — Reclasser un trait depuis sa propre fiche",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : boutons "Convertir en Bénédiction/Malédiction" dans l'onglet Description d'un Avantage/Désavantage — en plus du glisser-déposer déjà existant.</li>
+      </ul>`
+  },
+  "0.6.98": {
+    title: "Version 0.6.98 — Effet lié à un sort (2 premiers exemples)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Bénédiction des Titans (+3 Force) et Danse du Serpent (+3 Dextérité) embarquent maintenant un vrai effet, appliqué à la cible via un bouton "Appliquer l'effet" au lancer — même principe que les avantages/désavantages, généralisé au-delà du bonus de CA. Premiers exemples avant de généraliser aux 30 autres sorts.</li>
+      </ul>`
+  },
   "0.6.97": {
     title: "Version 0.6.97 — Correctif : focus perdu au glisser-déposer d'un objet",
     html: `

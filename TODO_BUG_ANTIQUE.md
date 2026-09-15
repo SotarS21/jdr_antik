@@ -441,6 +441,27 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
+## 44. EN COURS — Effet lié à la description de chaque sort (2/32 faits, 15 septembre 2026, v0.6.98)
+
+Même ampleur que l'ancien chantier Effets (avantages/désavantages). Choix confirmé : 2-3
+exemples d'abord (Bénédiction des Titans +3 For, Danse du Serpent +3 Dex — tous deux avec
+bouton "Appliquer l'effet" au lancer, comme demandé : pas de bonus passif juste en connaissant
+le sort). Mécanisme généralisé et prêt (`AntiqueActor#applyEffectChanges()`, bouton
+`.apply-spell-effect`) pour les 30 sorts restants avec un champ "Effet" textuel non-encore
+mécanisé. **Reste à faire** : auditer et traiter les 30 autres, sort par sort (certains
+purement narratifs — localisation, communication, divination — n'auront qu'une description,
+pas d'ActiveEffect, comme la plupart des avantages). Voir `JOURNAL.md`, session du
+15 septembre 2026 (suite 12). **À confirmer par l'utilisateur en jeu** — nécessite de cocher
+le correctif dans l'écran de mise à jour (MJ).
+
+## 45. ~~Reclasser un trait depuis sa propre fiche~~ — CORRIGÉ (15 septembre 2026, v0.6.99)
+
+Deuxième point d'entrée pour la conversion Avantage/Désavantage → Bénédiction/Malédiction
+(point 41) : deux boutons dans l'onglet Description de la fiche d'objet, en plus du
+glisser-déposer. Logique de conversion déplacée vers `AntiqueItem#convertTraitType()`
+(document) pour être partagée par les deux entrées. Voir `JOURNAL.md`, session du
+15 septembre 2026 (suite 13). **À confirmer par l'utilisateur en jeu.**
+
 ---
 
 ## Notes techniques générales

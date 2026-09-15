@@ -320,6 +320,49 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   });
 });
 
+// Buff spells whose bonus isn't just CA (ex. Bénédiction des Titans, +3 Force) —
+// generalized counterpart to the ".apply-effect" hook above: the spell embeds its
+// own ActiveEffect (transfer:false), and this applies whatever changes it holds
+// instead of a single hardcoded CA number. Same target-resolution fallback.
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const element = html;
+  if (!element) return;
+  const btn = element.querySelector(".apply-spell-effect");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const itemUuid = btn.dataset.itemUuid;
+    if (!itemUuid) return;
+    const item = await fromUuid(itemUuid);
+    const spellEffect = item?.effects.contents[0];
+    if (!spellEffect) return;
+
+    let tokens = [...game.user.targets];
+    if (!tokens.length) tokens = canvas.tokens?.controlled ?? [];
+    let actors = tokens.map(t => t.actor).filter(Boolean);
+    if (!actors.length && message.speakerActor) actors = [message.speakerActor];
+    if (!actors.length) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Damage.NoTarget"));
+      return;
+    }
+
+    const changeLabels = spellEffect.changes.map(c => CONFIG.ANTIQUE.getEffectChangeLabel(c)).join(", ");
+    const results = [];
+    for (const actor of actors) {
+      await actor.applyEffectChanges(spellEffect.changes, { name: item.name, icon: item.img });
+      results.push(`<b>${actor.name}</b> : ${changeLabels}`);
+    }
+
+    if (results.length) {
+      await ChatMessage.create({
+        speaker: { alias: game.i18n.localize("ANTIQUE.Effect.Applied") },
+        content: `<div class="antique damage-applied-message">${results.join("<br>")}</div>`
+      });
+    }
+  });
+});
+
 // Area spells (ex. Brouillard) — click the chat button to drag a circular template
 // onto the active scene: mousemove snaps a preview to the grid, left-click confirms
 // and creates the real MeasuredTemplate, right-click cancels. Same interactive
