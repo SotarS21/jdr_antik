@@ -326,6 +326,32 @@ export const PACK_UPDATES = [
       "inclus : Minotaure/Méduse eux-mêmes n'avaient jamais reçu Charge furieuse/Regard " +
       "pétrifiant sur leur propre fiche (seulement glissés sur une copie PNJ de test).",
     apply: applyEmbedCapacitesBestiaire
+  },
+  {
+    id: "0.6.91-fix-weapon-categories",
+    pack: "armes",
+    version: "0.6.91",
+    label: "Catégorie d'attaque des armes corrigée",
+    description:
+      "Aucune arme n'a jamais eu system.category/categoryDistance explicitement défini — " +
+      "toutes retombaient donc sur la valeur par défaut du schéma (\"Arme blanche\" en " +
+      "mêlée, \"Arme à distance\" à distance), correcte par coïncidence seulement pour les " +
+      "armes réellement \"Arme blanche\". Corrige les 100 armes du compendium et toute " +
+      "copie déjà possédée par un acteur pour qu'elles pointent vers leur vraie catégorie " +
+      "(Arme de jet/Arme exotique/Arme à deux mains/Arme à distance).",
+    apply: applyFixWeaponCategories
+  },
+  {
+    id: "0.6.91-create-arbalete-munitions",
+    pack: "armes",
+    version: "0.6.91",
+    label: "Arbalète + munitions (Flèches, Carreaux, Pierres de fronde)",
+    description:
+      "Crée la nouvelle Arbalète (3 paliers de qualité) et un nouveau dossier \"Munition\" " +
+      "avec 3 objets (Flèches, Carreaux d'arbalète, Pierres de fronde) — à lier depuis la " +
+      "fiche d'une arme à distance consommable (menu \"Munition liée\") pour un vrai suivi " +
+      "de stock, même mécanisme que les ingrédients d'alchimie.",
+    apply: applyCreateArbaleteMunitions
   }
 ];
 
@@ -1532,6 +1558,143 @@ async function applyItemWeightsArmes() {
   }
 
   return fixed;
+}
+
+/**
+ * Real category key (module/helpers/config.mjs ANTIQUE.weaponCategories) for every
+ * weapon base name — see the "0.6.91-fix-weapon-categories" PACK_UPDATES entry.
+ * No weapon has ever had system.category/categoryDistance explicitly set (neither
+ * packs/_build-armes.js nor packs/_add-arbalete-munitions.js sets them for the
+ * pre-Arbalète weapons), so every single one has silently been relying on the
+ * schema defaults ("armeBlanche" / "armeADistance") — right by coincidence only
+ * for actual "Arme blanche" weapons. Both fields are set to the same key: this
+ * system has no separate "melee fallback" skill for an inherently ranged/thrown
+ * weapon, so the melee-mode category may as well match the distance-mode one.
+ */
+const WEAPON_CATEGORIES = {
+  "Couteau": "armeBlanche", "Dague": "armeBlanche", "Glaive": "armeBlanche",
+  "Épée courte": "armeBlanche", "Lance": "armeBlanche", "Hache": "armeBlanche",
+  "Javeline": "armeDeJet", "Hache de lancer": "armeDeJet", "Bolas": "armeDeJet",
+  "Bouclier de lancer": "armeDeJet", "Filet": "armeDeJet", "Couteau de lancer": "armeDeJet",
+  "Chakram": "armeDeJet",
+  "Serpe": "armeExotique", "Bâton": "armeExotique", "Gourdin": "armeExotique",
+  "Marteau": "armeExotique", "Trident": "armeExotique", "Cimeterre": "armeExotique",
+  "Double hache": "combatDeuxMains", "Marteau de guerre": "combatDeuxMains", "Sarisse": "combatDeuxMains",
+  "Arc court": "armeADistance", "Arc long": "armeADistance", "Fronde": "armeADistance",
+  "Fouet": "armeADistance", "Arbalète": "armeADistance"
+};
+
+async function setWeaponCategory(doc) {
+  const key = WEAPON_CATEGORIES[baseWeaponName(doc.name)];
+  if (!key || (doc.system.category === key && doc.system.categoryDistance === key)) return false;
+  await doc.update({ "system.category": key, "system.categoryDistance": key });
+  return true;
+}
+
+async function applyFixWeaponCategories() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.armes");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      if (indexEntry.type !== "weapon") continue;
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setWeaponCategory(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "weapon") continue;
+      if (await setWeaponCategory(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 3 Arbalète tiers + Munition folder + 3 munition items as
+ *  packs/_add-arbalete-munitions.js, same ids (keepId) — kept in sync by hand,
+ *  see that script's header comment for why this isn't generated from shared data. */
+const ARME_A_DISTANCE_FOLDER_ID = "fArm000000000005";
+
+function arbaleteDocData(id, name, damage, critical, price) {
+  return {
+    _id: id, name, type: "weapon", img: "icons/svg/target.svg",
+    system: {
+      attBonus: 0, attBonusDistance: 0, category: "armeADistance", categoryDistance: "armeADistance",
+      damage, critical, typeDamage: "Perçant", portee: 24, hasPortee: true, consumable: true,
+      linkedAmmoId: "", slot: "", equipped: false, price: `${price} po`, poids: 2,
+      description: [
+        "<p><strong>Catégorie :</strong> Arme à distance</p>",
+        `<p><strong>Qualité :</strong> ${name.match(/\((.+)\)/)[1]}</p>`,
+        `<p><strong>Prix :</strong> ${price} po</p>`
+      ].join("\n"),
+      gmNotes: ""
+    },
+    effects: [], folder: ARME_A_DISTANCE_FOLDER_ID, sort: 0, ownership: { default: 0 }, flags: {}
+  };
+}
+
+const MUNITION_FOLDER_ID = "fArm000000000120";
+const MUNITION_ITEMS = [
+  { id: "aEqp000000000121", name: "Flèches", price: 0.1, poids: 0.02, img: "icons/weapons/ammunition/arrows-fletching.webp" },
+  { id: "aEqp000000000122", name: "Carreaux d'arbalète", price: 0.2, poids: 0.05, img: "icons/weapons/crossbows/crossbow-golden-bolt.webp" },
+  { id: "aEqp000000000123", name: "Pierres de fronde", price: 0.02, poids: 0.05, img: "icons/commodities/stone/stone-chunk-grey-white.webp" }
+];
+
+function munitionDocData(entry) {
+  return {
+    _id: entry.id, name: entry.name, type: "equipment", img: entry.img,
+    system: {
+      quantity: 1, consumable: false, caBonus: 0, healAmount: 0, linkedSkill: "", skillBonus: 0,
+      slot: "", equipped: false, price: `${entry.price} po`, poids: entry.poids,
+      apothCategory: "", apothType: "", isIngredientBag: false,
+      description: `<p><strong>Prix :</strong> ${entry.price} po</p>`, gmNotes: ""
+    },
+    effects: [], folder: MUNITION_FOLDER_ID, sort: 0, ownership: { default: 0 }, flags: {}
+  };
+}
+
+async function applyCreateArbaleteMunitions() {
+  const pack = game.packs.get("antique.armes");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  let created = 0;
+
+  await pack.configure({ locked: false });
+
+  const missingWeapons = [
+    arbaleteDocData("aWpn000000000117", "Arbalète (Simple facture)", "1d8", "x2", 12),
+    arbaleteDocData("aWpn000000000118", "Arbalète (Moyenne facture)", "1d8+2", "x2", 28),
+    arbaleteDocData("aWpn000000000119", "Arbalète (Bonne facture)", "1d10+2", "19/x2", 40)
+  ].filter(d => !existingIds.has(d._id));
+  if (missingWeapons.length) {
+    await pack.documentClass.createDocuments(missingWeapons, { pack: pack.collection, keepId: true });
+    created += missingWeapons.length;
+  }
+
+  if (!existingIds.has(MUNITION_FOLDER_ID)) {
+    await Folder.create({
+      _id: MUNITION_FOLDER_ID, name: "Munition", type: "Item", sort: 700000, sorting: "a",
+      color: "#8B0000", folder: null
+    }, { pack: pack.collection, keepId: true });
+    created++;
+  }
+
+  const missingMunitions = MUNITION_ITEMS.map(munitionDocData).filter(d => !existingIds.has(d._id));
+  if (missingMunitions.length) {
+    await pack.documentClass.createDocuments(missingMunitions, { pack: pack.collection, keepId: true });
+    created += missingMunitions.length;
+  }
+
+  await pack.configure({ locked: true });
+  return created;
 }
 
 async function applyItemWeightsEquipement() {

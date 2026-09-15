@@ -5,6 +5,50 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.91": {
+    title: "Version 0.6.91 — Arbalète, munitions, et catégorie d'arme corrigée",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouvelle arme "Arbalète" (3 paliers de qualité) et un dossier "Munition" (Flèches, Carreaux d'arbalète, Pierres de fronde) — à lier depuis la fiche d'une arme à distance (menu "Munition liée") pour un vrai suivi de stock, décompté à chaque tir.</li>
+        <li><strong>Corrigé</strong> : aucune arme n'avait jamais sa vraie catégorie d'attaque enregistrée (toutes retombaient sur "Arme blanche" par défaut) — les arcs, javelines, bâtons, etc. utilisaient donc le mauvais bonus d'attaque. Corrigé sur les 100 armes du compendium et toute copie déjà possédée par un personnage.</li>
+      </ul>`
+  },
+  "0.6.90": {
+    title: "Version 0.6.90 — Correctif : la fiche perso ne vole plus le focus fenêtre",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : éditer un objet (ex. changer la catégorie d'une arme) faisait systématiquement passer la fenêtre de la fiche de personnage devant celle de l'objet en cours d'édition, à chaque champ modifié.</li>
+      </ul>`
+  },
+  "0.6.89": {
+    title: "Version 0.6.89 — Filtres \"Arme de jet\" / \"Arme à distance\"",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : dans l'onglet Équipement du Navigateur de Compendium, deux nouveaux filtres séparés pour les armes à distance (jets et tir), au lieu d'être fondues dans le filtre générique "Arme".</li>
+      </ul>`
+  },
+  "0.6.88": {
+    title: "Version 0.6.88 — Correctif : focus perdu au toggle \"maîtrisé\" d'une compétence",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : cliquer sur "maîtrisé" pour une compétence remontait la fiche de personnage tout en haut à chaque clic.</li>
+      </ul>`
+  },
+  "0.6.87": {
+    title: "Version 0.6.87 — Correctifs : filtre Bouclier et Capacités de Combat cachées aux joueurs",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le filtre "Bouclier" du Navigateur de Compendium ne fonctionnait jamais, les boucliers ressortaient classés comme "Arme".</li>
+        <li><strong>Corrigé</strong> : l'onglet "Capacités de Combat" (PNJ) du Navigateur de Compendium, réservé au MJ, était visible par les joueurs.</li>
+      </ul>`
+  },
+  "0.6.86": {
+    title: "Version 0.6.86 — Correctif : placeholder de recherche du Navigateur de Compendium",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le champ de recherche du Navigateur de Compendium affichait "Rechercher un ingrédient..." alors qu'on peut y chercher n'importe quel type de contenu.</li>
+      </ul>`
+  },
   "0.6.85": {
     title: "Version 0.6.85 — Effets et Capacités de Combat dans le Navigateur de Compendium",
     html: `

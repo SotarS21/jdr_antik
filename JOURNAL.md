@@ -2,6 +2,67 @@
 
 ---
 
+## Session du 15 septembre 2026 (suite 5) — Munitions, Arbalète, et catégorie d'arme corrigée (v0.6.90 → v0.6.91)
+
+Demande : munitions réelles (flèches, carreaux d'arbalète, pierres de fronde) pour les armes à
+distance, avec un vrai suivi de stock (comme les ingrédients d'alchimie), pas juste des objets
+listés sans mécanique. Bug signalé en cours de route : "les arcs sont notés en catégorie Arme
+blanche, ils devraient être Arme à distance".
+
+**Découverte en creusant le mécanisme de munitions** : celui-ci existait déjà en entier depuis
+v0.6.28 (`AntiqueItem#_doRollAttack`/`#consume`, sélecteur `.munitions-select` dans l'onglet
+Combat, `system.linkedAmmoId` + `system.quantity` sur l'objet lié) — **seuls les objets de
+munition eux-mêmes n'avaient jamais été créés** (le filtre "Munition" du Navigateur de
+Compendium existait déjà, vide, en attente). Le travail de cette session est donc presque
+entièrement du contenu, pas un nouveau mécanisme.
+
+**Cause du bug de catégorie** (bien plus large que les arcs) : `system.category` /
+`system.categoryDistance` n'ont **jamais** été explicitement définis sur aucune des 100 armes
+du compendium (ni par `packs/_build-armes.js` à l'origine, ni par aucun correctif depuis) —
+toutes reposaient donc silencieusement sur la valeur par défaut du schéma
+(`item-weapon.mjs` : `"armeBlanche"`/`"armeADistance"`), correcte par coïncidence uniquement
+pour les armes réellement "Arme blanche". Toute arme de jet/exotique/à deux mains utilisait
+donc le mauvais bonus d'attaque au jet (pas seulement un problème d'affichage).
+
+**Piège évité** : `packs/_build-armes.js` s'est révélé **périmé par rapport aux données
+réellement déployées** — il ne génère ni `system.poids` ni `system.category` (ces champs n'ont
+été ajoutés au monde qu'via des correctifs `PACK_UPDATES` a posteriori, ex. `0.6.65-item-
+weights-armes`, jamais reportés dans le script générateur lui-même, même convention que
+`packs/_add-item-weights.js`). Une tentative de régénérer entièrement `armes.db` via ce script
+aurait donc silencieusement fait disparaître `poids` de tous les objets déjà déployés (vérifié
+et annulé avant tout dégât — voir `[[antique-current-todo-tracker]]`). Corrigé en travaillant
+**exclusivement en ajout** : nouveau script `packs/_add-arbalete-munitions.js`, qui lit
+`armes.db` existant et n'ajoute que 7 nouvelles lignes à la fin (ids continuant après le plus
+haut déjà utilisé, 116 → 117+), sans toucher aux 116 lignes déjà présentes.
+
+**Contenu ajouté** :
+- Nouvelle arme "Arbalète" (3 paliers, dossier "Arme à distance").
+- Nouveau dossier "Munition" + 3 objets (`equipment`, `quantity` = stock réel) : Flèches,
+  Carreaux d'arbalète, Pierres de fronde.
+- `classifyEquipmentItem()` (`compendium-browser.mjs`) reconnaît maintenant le dossier
+  "Munition" → filtre "munition" (jusqu'ici jamais atteint, faute d'objets).
+
+**Correctifs appliqués à TOUT ce qui est déjà déployé**, via deux nouvelles entrées
+`PACK_UPDATES` (`module/helpers/pack-updates.mjs`, cochables par le MJ) :
+- `0.6.91-fix-weapon-categories` : corrige `system.category`/`categoryDistance` sur les 100
+  armes du compendium + toute copie déjà possédée par un acteur, d'après une table de
+  correspondance nom→catégorie (`WEAPON_CATEGORIES`).
+- `0.6.91-create-arbalete-munitions` : crée l'Arbalète + le dossier Munition + les 3 munitions
+  directement dans le pack déployé (mêmes ids que le script ci-dessus, `keepId: true`) — une
+  simple copie du fichier `armes.db` mis à jour n'aurait pas suffi, un document tout neuf dans
+  un pack déjà déployé n'apparaît jamais tant qu'il n'est pas créé en direct (voir
+  `[[antique-system-overview]]`, cas n°3).
+
+**Rattrapage constaté au passage** : `module/helpers/release-notes.mjs` n'avait pas été mis à
+jour depuis la v0.6.85 (5 versions manquantes, 0.6.86→0.6.90, toutes de cette session) —
+entrées ajoutées rétroactivement.
+
+**Fichiers modifiés** : `packs/_add-arbalete-munitions.js` (nouveau), `packs/armes.db`,
+`module/apps/compendium-browser.mjs`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`.
+
+---
+
 ## Session du 15 septembre 2026 (suite 4) — La fiche perso passait devant la fiche d'objet à chaque champ modifié (v0.6.89 → v0.6.90)
 
 Signalé : éditer un objet (ex. changer la catégorie d'une arme) faisait systématiquement passer

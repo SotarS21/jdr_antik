@@ -71,9 +71,6 @@ const TABS = [
  *   packs/_build-armes.js).
  * - antique.equipement: its only priced items are the 9 named Greek armor pieces → "armure".
  * - antique.alchimie: ingredients/potions → "consommable".
- * "munition" has no matching items yet (no dedicated ammunition items exist in this system's
- * data) — the filter option still exists, ready for when some are added, same as a PF2e filter
- * that can legitimately return zero results.
  */
 function classifyEquipmentItem(doc, packId) {
   if (packId === "antique.alchimie") return "consommable";
@@ -88,6 +85,7 @@ function classifyEquipmentItem(doc, packId) {
   }
   if (folderName === "Armure") return "armure";
   if (folderName === "Bouclier") return "bouclier";
+  if (folderName === "Munition") return "munition";
   return "arme";
 }
 

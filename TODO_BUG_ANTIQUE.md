@@ -343,6 +343,26 @@ rafraîchissaient une fiche déjà ouverte (acteur, autre document) avec `force:
 ouvertures explicites par clic gardent `force: true`, volontairement). Voir `JOURNAL.md`,
 session du 15 septembre 2026 (suite 4). **À confirmer par l'utilisateur en jeu.**
 
+## 33. ~~Munitions réelles pour les armes à distance~~ — CORRIGÉ (15 septembre 2026, v0.6.91)
+
+Demandé : flèches, carreaux d'arbalète, pierres de fronde, avec vrai suivi de stock (choix
+confirmé : comme les ingrédients, pas de simples objets sans mécanique). Le mécanisme de liaison
+munition/décompte au tir existait déjà en entier depuis v0.6.28 — seuls les objets manquaient.
+Ajouté : Arbalète (nouvelle arme, 3 paliers) + dossier "Munition" (Flèches, Carreaux
+d'arbalète, Pierres de fronde), reconnus par le filtre "Munition" du Navigateur de Compendium.
+Voir `JOURNAL.md`, session du 15 septembre 2026 (suite 5). **À confirmer par l'utilisateur en
+jeu** — nécessite de cocher les 2 nouveaux correctifs dans l'écran de mise à jour (MJ).
+
+## 34. ~~Catégorie d'attaque des armes jamais définie (les arcs en "Arme blanche")~~ — CORRIGÉ (15 septembre 2026, v0.6.91)
+
+Bug trouvé en creusant le point 33 : aucune arme n'avait jamais `system.category`/
+`categoryDistance` explicitement défini, toutes retombaient sur la valeur par défaut du schéma
+("Arme blanche" en mêlée) — pas qu'un problème d'affichage, le mauvais bonus d'attaque
+s'appliquait pour toute arme qui n'était pas réellement "Arme blanche" (jets, exotiques, à deux
+mains, à distance). Corrigé sur les 100 armes du compendium + toute copie déjà possédée. Voir
+`JOURNAL.md`, session du 15 septembre 2026 (suite 5). **À confirmer par l'utilisateur en jeu**
+— nécessite de cocher le correctif correspondant dans l'écran de mise à jour (MJ).
+
 ---
 
 ## Notes techniques générales
