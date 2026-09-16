@@ -126,6 +126,8 @@
   "ANTIQUE.Combat.Temp": "Temporaire",
   "ANTIQUE.Combat.Initiative": "Initiative",
   "ANTIQUE.Combat.InitiativeFormula": "DEX + Vigilance",
+  "ANTIQUE.Combat.PointsChance": "Points de Chance",
+  "ANTIQUE.Combat.PointsChanceHint": "La Chance permet une réussite automatique (dépense 1 point). Se régénère lentement : 1 point par scénario, ou lors d'une action valorisée par Héra, Hécate ou Nike.",
   "ANTIQUE.Combat.AttackBonuses": "Bonus d'attaque",
   "ANTIQUE.Combat.Category": "Cat\u00e9gorie",
   "ANTIQUE.Combat.AbilityMod": "Mod Carac",

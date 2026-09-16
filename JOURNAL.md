@@ -2,6 +2,138 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 32) — Les gains de Points de Chance n'avaient aucun effet visible (v0.6.116 → v0.6.117)
+
+Retour de test sur le point précédent : les boutons de Grâce des Astres Alignés ne mettent pas
+à jour le compteur.
+
+Diagnostic : `AntiqueActor#applyEffectChanges()` (le mécanisme générique derrière tous les
+boutons "Appliquer l'effet") crée systématiquement un **ActiveEffect persistant nommé**,
+toujours actif tant qu'il n'est pas retiré manuellement — conçu pour des buffs temporaires
+(Force, Dextérité, Initiative, CA). Mais `system.pointsChance` (point 56) est un simple compteur
+librement éditable, pas un buff : son input affiche volontairement la valeur **brute**
+(`pointsChanceSource`, correctif préventif du point 59) pour éviter de reproduire le bug déjà vu
+sur la CA/les PV (point 1/35). Conséquence directe : le bonus s'appliquait bel et bien "sous le
+capot" (la valeur *dérivée* augmentait), mais ne s'affichait jamais puisque l'input ignore
+délibérément cette valeur dérivée — et une dépense manuelle (baisser le chiffre à la main)
+n'aurait servi à rien, l'effet persistant continuant à réappliquer son bonus à chaque calcul.
+Même défaut de conception repéré, en y repensant, sur le glisser-déposer des deux effets
+autonomes "Point de Chance +1"/"+2" du point 57 — jamais testé isolément par l'utilisateur, mais
+touché de la même façon (le comportement de dépôt par défaut de Foundry crée un ActiveEffect
+persistant classique).
+
+**Corrigé sur les deux chemins** :
+- `AntiqueActor#applyEffectChanges()` (`actor.mjs`) : sépare désormais les changements ciblant
+  `system.pointsChance` du reste — appliqués directement et définitivement via `actor.update()`
+  (`_source` + montant, pas de passage par un ActiveEffect) ; les autres changements (le cas
+  courant : Force/Dextérité/etc.) gardent le mécanisme d'effet persistant existant, inchangé.
+- Nouveau hook `preCreateActiveEffect` (`registerPointsChanceEffectHook()`,
+  `actor-utils.mjs`) : si l'effet sur le point d'être embarqué sur une fiche Personnage ne cible
+  que `system.pointsChance`, annule sa création (`return false`) et applique le même traitement
+  direct — couvre le glisser-déposer manuel des deux effets du point 57, notification chat au
+  passage pour que le geste reste visible malgré l'absence d'effet dans l'onglet Effets.
+
+**Fichiers modifiés** : `module/documents/actor.mjs`, `module/helpers/actor-utils.mjs`,
+`antique.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 31) — Grâce des Astres Alignés donne enfin des Points de Chance (v0.6.115 → v0.6.116)
+
+Signalé : pas d'effet visible sur "Grâce des Astres Alignés". Vérification dans
+`packs/_json-mirrors/sorts.json` : `effects: []` — jamais eu d'effet embarqué. Son propre texte
+("Offre 1 point de chance à l'équipe ou 2 à une personne") le prévoyait déjà, mais faisait
+partie des ~22 sorts narratifs du point 44 faute de champ mécanique existant à l'époque —
+`system.pointsChance` vient tout juste d'être créé (point 56).
+
+Ajouté avec le même système solo/groupe que les 7 sorts précédents : `eSrt000000000008` (+2
+Points de Chance, solo) et `eSrtG00000000008` (+1, groupe) — pas de `phase` spéciale nécessaire
+(`system.pointsChance` n'est jamais recalculé, même raisonnement que les Auras). Contrairement
+aux correctifs précédents (qui *réparaient* un effet déjà présent), celui-ci *crée* les deux
+effets à partir de rien : nouvelle fonction `applyEmbedGraceAstresEffects()` qui appelle
+`embedSpellEffect()` + `embedSpellGroupEffect()` (déjà génériques, aucune modification requise)
+sur les trois mêmes cibles habituelles (compendium, copies possédées, jetons non liés). 8e et
+dernier sort à effet embarqué désormais couvert.
+
+**Fichiers modifiés** : `packs/sorts.db`, `packs/_json-mirrors/sorts.json` (régénéré),
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 30) — Infobulle des règles de Chance + bug latent corrigé préventivement (v0.6.114 → v0.6.115)
+
+Clarification obtenue sur la mécanique de dépense/régénération (point 58) : entièrement
+manuelle, aucune automatisation par type de jet à coder — le joueur édite lui-même le compteur.
+Demande immédiate : afficher ces règles en infobulle au survol du bloc Points de Chance.
+
+En touchant à `character-sheet.hbs` pour ça, repéré un bug latent avant qu'il ne soit signalé :
+`system.pointsChance` est éditable ET cible valide des effets "+1"/"+2" (point 57) — exactement
+le patron déjà corrigé deux fois dans ce projet (CA au point 1, PV/PM au point 35). L'input
+affichait `{{system.pointsChance}}` (valeur dérivée, potentiellement déjà bonifiée par un effet
+actif) au lieu de la valeur brute — la soumission automatique du formulaire à chaque changement
+de champ ailleurs sur la fiche aurait fini par la persister comme nouvelle valeur de base, la
+regonflant à chaque fois qu'un effet restait actif. Corrigé avec le patron déjà établi :
+`context.pointsChanceSource = rawSystem.pointsChance` (`actor-sheet.mjs`), input désormais lié à
+`{{pointsChanceSource}}`.
+
+**Fichiers modifiés** : `module/sheets/actor-sheet.mjs`, `templates/actor/character-sheet.hbs`,
+`lang/fr.json`, `lang/en.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 29) — Effets autonomes "Point de Chance +1"/"+2" (v0.6.113 → v0.6.114)
+
+Suite immédiate du point précédent : demande d'ajouter deux effets qui augmentent
+définitivement le compteur de Points de Chance (+1 et +2). Clarifié avec l'utilisateur :
+effets autonomes du compendium Effets (pas d'Avantage/coût associé), octroyés manuellement par
+le MJ.
+
+Deux nouveaux documents `ActiveEffect` top-niveau dans `packs/effets.db`
+(`eEft000000000172`/`eEft000000000173`, prochains ids libres après `eEft000000000171`) —
+`system.pointsChance` ADD 1/2, phase par défaut ("initial") suffisante puisque `pointsChance`
+n'est jamais recalculé (même raisonnement que les Auras ciblant `.value`, voir suite 22).
+Icône `icons/svg/upgrade.svg` réutilisée — vérifié qu'aucune icône "trèfle" native
+n'existe dans la bibliothèque Foundry (`icons/svg/`) avant de choisir, contrairement à
+`fa-clover` (Font Awesome, utilisé pour l'icône de l'onglet Combat) qui, lui, existe bien dans
+la police fournie.
+
+Nouveau correctif `PACK_UPDATES` (`0.6.114-create-effets-points-chance`,
+`applyCreateEffetsPointsChance()`) — même patron que les fonctions `applyCreateEffetsBatch2/3`
+existantes (indexe le pack, filtre les ids manquants, `createDocuments` avec `keepId: true`).
+
+**Fichiers modifiés** : `packs/effets.db`, `packs/_json-mirrors/effets.json` (régénéré),
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+**Règles reçues juste après (à traiter dans une prochaine session)** : la Chance permet une
+réussite automatique (dépense d'un point) ; se régénère lentement — 1 point par scénario, ou
+via une action valorisée par certaines divinités (Héra, Hécate, Nike).
+
+---
+
+## Session du 16 septembre 2026 (suite 28) — Points de Chance (fiche Personnage) (v0.6.112 → v0.6.113)
+
+Demande : ajouter une mécanique de points de chance dans l'onglet Combat de la fiche Personnage
+— règles pas encore définies par l'utilisateur, donc pour l'instant une simple valeur modifiable
+en input, sans logique de jeu attachée.
+
+Nouveau champ `system.pointsChance` (`actor-character.mjs`, `identityFields`, même patron que
+`deplacement`/`capacitePort` : `NumberField` simple, jamais recalculé dans
+`prepareDerivedData()`). Nouveau bloc `.luck-section` dans `.combat-stats`
+(`character-sheet.hbs`), même gabarit visuel que les blocs CA/Initiative/Déplacement/Esquive/
+Parade mais avec un vrai `<input type="number">` au lieu d'une valeur calculée en lecture seule
+(icône trèfle `fa-clover`). CSS ajouté à la liste partagée des blocs `combat-stats` +
+`.luck-input` dédié (fond transparent, grande taille, centré, cohérent avec `.ca-total` etc.).
+
+Scope volontairement limité à la fiche **Personnage** (PJ uniquement) — la demande dit "fiche de
+personnage", à distinguer de "fiche PNJ" dans le vocabulaire habituel de ce projet ; pas ajouté à
+`npc-sheet.hbs`/`actor-npc.mjs`, à étendre si demandé.
+
+**Fichiers modifiés** : `module/data-models/actor-character.mjs`,
+`templates/actor/character-sheet.hbs`, `css/antique.css`, `lang/fr.json`, `lang/en.json`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 16 septembre 2026 (suite 27) — Version "groupe" de Souffle aux Pieds Legers (v0.6.111 → v0.6.112)
 
 Dernier des 7 sorts à effet embarqué à recevoir sa version groupe : +2 Initiative au lieu de +4.

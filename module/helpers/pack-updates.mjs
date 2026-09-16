@@ -498,6 +498,29 @@ export const PACK_UPDATES = [
       "deuxième effet (+2 Initiative au lieu de +4), avec son propre bouton sur la carte " +
       "de lancer.",
     apply: applyEmbedSpellGroupEffects
+  },
+  {
+    id: "0.6.114-create-effets-points-chance",
+    pack: "effets",
+    version: "0.6.114",
+    label: "Effets autonomes \"Point de Chance +1\"/\"+2\" (permanents)",
+    description:
+      "Crée deux nouveaux documents Effet autonomes dans le compendium Effets — pas " +
+      "d'Avantage ni de coût associé, à glisser manuellement par le MJ sur une fiche " +
+      "Personnage pour augmenter définitivement ses Points de Chance de 1 ou 2.",
+    apply: applyCreateEffetsPointsChance
+  },
+  {
+    id: "0.6.116-embed-grace-astres-effects",
+    pack: "sorts",
+    version: "0.6.116",
+    label: "Effets solo/groupe de Grâce des Astres Alignés (Points de Chance)",
+    description:
+      "Ce sort donnait déjà 1 Point de Chance à l'équipe ou 2 à une personne dans son " +
+      "texte, mais n'avait jamais eu d'effet mécanique (le champ Points de Chance " +
+      "n'existait pas encore). Ajoute les deux boutons, comme les 7 autres sorts à " +
+      "effet embarqué.",
+    apply: applyEmbedGraceAstresEffects
   }
 ];
 
@@ -2170,6 +2193,62 @@ async function applyEmbedEffetsDesavantages() {
   return fixed;
 }
 
+/** Same 2 entries as the direct edit to packs/effets.db — kept in sync by hand. Standalone
+ *  Effet documents (no advantage/cost attached, per the user's choice) — the GM grants one
+ *  manually (drag & drop onto a character sheet) to permanently raise system.pointsChance,
+ *  a plain counter (see actor-character.mjs) never touched by prepareDerivedData(), so a
+ *  straightforward ADD in the default "initial" phase is enough (same reasoning as the
+ *  Auras targeting system.abilities.*.value — no cascade dependency to worry about). */
+const POINTS_CHANCE_EFFETS = [
+  {
+    id: "eEft000000000172",
+    name: "Point de Chance +1",
+    changes: [{ key: "system.pointsChance", type: "add", value: "1" }],
+    description: "<p>+1 Point de Chance, de façon permanente.</p><p>Octroyé manuellement par le MJ (glisser-déposer sur la fiche).</p>"
+  },
+  {
+    id: "eEft000000000173",
+    name: "Point de Chance +2",
+    changes: [{ key: "system.pointsChance", type: "add", value: "2" }],
+    description: "<p>+2 Points de Chance, de façon permanente.</p><p>Octroyé manuellement par le MJ (glisser-déposer sur la fiche).</p>"
+  }
+];
+
+function effetDocDataPointsChance(entry) {
+  return {
+    _id: entry.id,
+    name: entry.name,
+    img: "icons/svg/upgrade.svg",
+    type: "base",
+    system: { changes: entry.changes },
+    disabled: false,
+    duration: { startTime: null, seconds: null, rounds: null, turns: null },
+    description: entry.description,
+    origin: null,
+    tint: "#ffffff",
+    transfer: true,
+    statuses: [],
+    folder: null,
+    sort: 0,
+    flags: {}
+  };
+}
+
+async function applyCreateEffetsPointsChance() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  const missing = POINTS_CHANCE_EFFETS.filter(e => !existingIds.has(e.id)).map(effetDocDataPointsChance);
+  if (!missing.length) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return missing.length;
+}
+
 /** Same 2 spells/effects as the direct edit to packs/sorts.db — kept in sync by hand. */
 const SPELL_EFFECTS = {
   "Bénédiction des Titans": {
@@ -2206,6 +2285,13 @@ const SPELL_EFFECTS = {
     id: "eSrt000000000007",
     changes: [{ key: "system.initiative", mode: 2, value: "4", phase: "final" }],
     description: "+4 Initiative (version solo)."
+  },
+  "Grâce des Astres Alignés": {
+    id: "eSrt000000000008",
+    // system.pointsChance is a plain counter, never recomputed — no cascade concern,
+    // unlike the ability-mod spells above, so no custom "abilities" phase needed here.
+    changes: [{ key: "system.pointsChance", mode: 2, value: "2" }],
+    description: "+2 Points de Chance (version solo)."
   }
 };
 
@@ -2273,6 +2359,11 @@ const SPELL_GROUP_EFFECTS = {
     id: "eSrtG00000000007",
     changes: [{ key: "system.initiative", mode: 2, value: "2", phase: "final" }],
     description: "+2 Initiative (version groupe)."
+  },
+  "Grâce des Astres Alignés": {
+    id: "eSrtG00000000008",
+    changes: [{ key: "system.pointsChance", mode: 2, value: "1" }],
+    description: "+1 Point de Chance (version groupe)."
   }
 };
 
@@ -2439,6 +2530,54 @@ async function applyEmbedSpellGroupEffects() {
       if (!actor) continue;
       for (const item of actor.items) {
         if (item.type !== "spell") continue;
+        if (await embedSpellGroupEffect(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+/**
+ * "Grâce des Astres Alignés" had zero embedded effects until now — its own dedicated
+ * text ("Offre 1 point de chance à l'équipe ou 2 à une personne") went unmechanized
+ * because system.pointsChance didn't exist yet. Embeds both the solo and group
+ * versions in one pass, reusing embedSpellEffect()/embedSpellGroupEffect() (both
+ * already no-op if the target effect exists) — same three-tier reach (compendium,
+ * copies already possessed by an actor, copies on an unlinked token) as every other
+ * spell-effect correctif.
+ */
+async function applyEmbedGraceAstresEffects() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedSpellEffect(doc)) fixed++;
+      if (await embedSpellGroupEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await embedSpellEffect(item)) fixed++;
+      if (await embedSpellGroupEffect(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await embedSpellEffect(item)) fixed++;
         if (await embedSpellGroupEffect(item)) fixed++;
       }
     }

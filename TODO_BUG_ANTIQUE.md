@@ -453,6 +453,89 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
+## 61. ~~Gains de Points de Chance sans effet réel~~ — CORRIGÉ (16 septembre 2026, v0.6.117)
+
+Signalé après test du point 60 : les boutons ne mettent pas à jour le compteur. Cause :
+`applyEffectChanges()` (mécanisme générique des boutons "Appliquer l'effet") crée un
+**ActiveEffect persistant classique**, pensé pour des buffs temporaires (Force, CA, Initiative)
+— mais `system.pointsChance` est un simple compteur librement éditable, et son input affiche
+volontairement la valeur **brute** (`pointsChanceSource`, point 59) pour éviter le bug CA/PV.
+Résultat : le bonus s'appliquait bien "sous le capot" (valeur dérivée) mais ne s'affichait
+jamais, et une dépense manuelle (baisser le chiffre) aurait été immédiatement contrée par
+l'effet qui aurait continué à ajouter son bonus. Même angle mort repéré côté glisser-déposer
+des effets "Point de Chance +1"/"+2" (point 57) — jamais testé isolément par l'utilisateur mais
+touché par le même défaut.
+
+Corrigé pour les deux chemins : `applyEffectChanges()` (`actor.mjs`) applique désormais un
+changement ciblant `system.pointsChance` directement et définitivement via `actor.update()` au
+lieu de créer un effet ; nouveau hook `preCreateActiveEffect`
+(`registerPointsChanceEffectHook()`, `actor-utils.mjs`) qui intercepte le glisser-déposer d'un
+effet ne ciblant que `system.pointsChance` sur une fiche Personnage, annule sa création et
+applique le même traitement direct. Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 32).
+**Confirmé par l'utilisateur en jeu (16 septembre 2026)** : "ça fonctionne nickel".
+
+## 60. ~~Grâce des Astres Alignés sans effet~~ — CORRIGÉ (16 septembre 2026, v0.6.116)
+
+Signalé : pas d'effet visible sur ce sort. Cause : son texte ("Offre 1 point de chance à
+l'équipe ou 2 à une personne") n'avait jamais pu être mécanisé — `system.pointsChance`
+n'existait pas encore au moment du chantier du point 44, c'était l'un des ~22 sorts restés
+purement narratifs faute de champ existant à cibler (voir point 44). Maintenant que le compteur
+existe (point 56), ajouté avec le même système solo (+2)/groupe (+1) que les 7 autres sorts à
+effet embarqué — 8e et dernier sort de ce type. Voir `JOURNAL.md`, session du 16 septembre 2026
+(suite 31). **À confirmer par l'utilisateur en jeu** — nécessite de cocher le nouveau correctif
+dans l'écran de mise à jour.
+
+## 59. ~~Infobulle des règles de Chance + bug latent des effets +1/+2~~ — CORRIGÉ (16 septembre 2026, v0.6.115)
+
+Demandé : afficher les règles de la Chance en infobulle au survol du bloc (onglet Combat).
+Texte ajouté (`ANTIQUE.Combat.PointsChanceHint`).
+
+**Bug trouvé en le faisant** : `system.pointsChance` est éditable ET une cible valide
+d'ActiveEffect (via les effets "+1"/"+2" du point 57) — exactement le même patron que les bugs
+CA (point 1) et PV/PM (point 35) : l'input affichait la valeur déjà bonifiée par un effet actif,
+et la soumission automatique du formulaire à chaque changement de champ ailleurs sur la fiche
+l'aurait persistée comme nouvelle valeur brute, gonflant le compteur à chaque sauvegarde tant
+qu'un effet restait actif. Corrigé préventivement avec le même patron
+(`pointsChanceSource` lisant `actor._source.system.pointsChance`, `actor-sheet.mjs`) avant même
+qu'un utilisateur ne le remarque en jeu. Voir `JOURNAL.md`, session du 16 septembre 2026
+(suite 30). **À confirmer par l'utilisateur en jeu** (poser un effet "+1", modifier un autre
+champ de la fiche, vérifier que la valeur ne gonfle pas).
+
+## 58. ~~Mécanique de dépense/régénération des Points de Chance~~ — DÉJÀ FAIT (confirmé 16 septembre 2026)
+
+Règles reçues : la Chance permet une réussite automatique (dépense d'un point) ; se régénère
+lentement — 1 point par scénario, ou via une action valorisée par certaines divinités (Héra,
+Hécate, Nike). Clarifié avec l'utilisateur : **entièrement manuel, aucun bouton/automatisation à
+coder** — le joueur dépense/gagne des points en éditant directement le compteur (input déjà
+livré au point 56) et l'annonce au MJ ; pas de logique spéciale par type de jet. La régénération
+via une divinité favorable s'appuie sur les effets "+1"/"+2" du point 57 (glissés manuellement
+par le MJ). Rien de plus à coder pour ce point.
+
+## 57. ~~Effets "Point de Chance +1"/"+2"~~ — CORRIGÉ (16 septembre 2026, v0.6.114)
+
+Suite du point 56 : deux effets permanents pour augmenter le compteur. Choix confirmé avec
+l'utilisateur : **effets autonomes** (compendium Effets), pas des Avantages achetables — pas de
+coût, octroyés manuellement par le MJ (glisser-déposer). Nouveaux documents `eEft...172`/`173`
+(`packs/effets.db`), `system.pointsChance` ADD 1/2, phase par défaut ("initial") suffisante —
+`pointsChance` n'est jamais recalculé par `prepareDerivedData()` (même raisonnement que les
+Auras ciblant `.value`, voir point 51). Nouveau correctif `PACK_UPDATES`
+(`0.6.114-create-effets-points-chance`) pour créer ces 2 documents dans le compendium déjà
+déployé. Icône `icons/svg/upgrade.svg` réutilisée (générique, déjà utilisée pour les effets
+similaires) — pas d'icône "trèfle"/"chance" native dans la bibliothèque Foundry. Voir
+`JOURNAL.md`, session du 16 septembre 2026 (suite 29). **Note (16 septembre 2026)** : le
+glisser-déposer de ces effets aurait souffert du même bug que le point 61 (jamais testé
+isolément) — corrigé en même temps, voir point 61. **À confirmer par l'utilisateur en jeu.**
+
+## 56. ~~Points de Chance (fiche Personnage, onglet Combat)~~ — CORRIGÉ (16 septembre 2026, v0.6.113)
+
+Demandé : mécanique de points de chance, règles pas encore définies — pour l'instant une simple
+valeur modifiable en input, dans l'onglet Combat. Nouveau champ `system.pointsChance`
+(`actor-character.mjs`, même patron que `deplacement` : jamais touché par
+`prepareDerivedData()`), nouveau bloc dans `combat-stats` (`character-sheet.hbs`, même style
+visuel que CA/Initiative/Déplacement/Esquive/Parade). **Scope volontairement limité à la fiche
+Personnage** (PJ) — la demande dit "fiche de personnage", pas PNJ ; à étendre si demandé. Voir
+`JOURNAL.md`, session du 16 septembre 2026 (suite 28). **À confirmer par l'utilisateur en jeu.**
+
 ## 55. ~~Version "groupe" de Souffle aux Pieds Legers~~ — CORRIGÉ (16 septembre 2026, v0.6.112)
 
 Dernier des 7 sorts à effet embarqué (point 44) à recevoir sa version groupe (+2 Initiative au

@@ -1002,7 +1002,8 @@
 .antique .ca-section,
 .antique .initiative-section,
 .antique .deplacement-section,
-.antique .dodge-section {
+.antique .dodge-section,
+.antique .luck-section {
   background: var(--antique-parchment);
   border: 2px solid var(--antique-gold);
   border-radius: 6px;
@@ -1019,6 +1020,7 @@
 .antique .initiative-section h2,
 .antique .deplacement-section h2,
 .antique .dodge-section h2,
+.antique .luck-section h2,
 .antique .attack-bonuses h2 {
   margin: 0 0 8px;
   font-size: 0.95em;
@@ -1034,6 +1036,16 @@
   font-size: 2em;
   font-weight: bold;
   color: var(--antique-dark-gold);
+}
+
+.antique .luck-input {
+  width: 60px;
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--antique-dark-gold);
+  background: transparent;
+  border: none;
+  text-align: center;
 }
 
 .antique .initiative-formula-hint {

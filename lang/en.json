@@ -126,6 +126,8 @@
   "ANTIQUE.Combat.Temp": "Temporary",
   "ANTIQUE.Combat.Initiative": "Initiative",
   "ANTIQUE.Combat.InitiativeFormula": "DEX + Vigilance",
+  "ANTIQUE.Combat.PointsChance": "Luck Points",
+  "ANTIQUE.Combat.PointsChanceHint": "Luck grants an automatic success (spend 1 point). Regenerates slowly: 1 point per scenario, or after an action favored by Hera, Hecate, or Nike.",
   "ANTIQUE.Combat.AttackBonuses": "Attack Bonuses",
   "ANTIQUE.Combat.Category": "Category",
   "ANTIQUE.Combat.AbilityMod": "Ability Mod",

@@ -85,6 +85,10 @@ export class AntiqueActorSheet extends HandlebarsApplicationMixin(foundry.applic
     context.pvSource = rawSystem.pv;
     context.pmSource = rawSystem.pm;
 
+    // Same reasoning again: system.pointsChance is a plain editable counter but also
+    // a valid ActiveEffect ADD target (see the "Point de Chance +1/+2" effets).
+    context.pointsChanceSource = rawSystem.pointsChance;
+
     context.caTooltip = `${game.i18n.localize("ANTIQUE.Combat.CABase")} ${system.ca.base} `
       + `${sign(system.ca.armure)} ${game.i18n.localize("ANTIQUE.Combat.Armure")} `
       + `${sign(system.ca.bouclier)} ${game.i18n.localize("ANTIQUE.Combat.Bouclier")} `

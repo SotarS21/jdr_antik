@@ -84,3 +84,27 @@ export function registerIngredientStockSyncHook() {
     syncSpellIngredientPossession(actor);
   });
 }
+
+/**
+ * Dropping the "Point de Chance +1"/"+2" library effets (compendium Effets) directly
+ * onto a character sheet would otherwise embed them as an ordinary persistent
+ * ActiveEffect — same problem as AntiqueActor#applyEffectChanges() for system.pointsChance
+ * (a plain freely-editable counter, not a buff: the bonus would never even show, since
+ * the sheet's input reads the raw value on purpose). Intercepts any ActiveEffect about
+ * to be embedded on a character whose changes exclusively target system.pointsChance,
+ * applies it directly and permanently instead, and cancels the effect's own creation.
+ */
+export function registerPointsChanceEffectHook() {
+  Hooks.on("preCreateActiveEffect", (effect, data, options, userId) => {
+    const actor = effect.parent;
+    if (!actor || actor.documentName !== "Actor" || actor.type !== "character") return;
+    const changes = effect.system.changes;
+    if (!changes.length || !changes.every(c => c.key === "system.pointsChance")) return;
+
+    const amount = changes.reduce((sum, c) => sum + Number(c.value), 0);
+    const before = actor._source.system.pointsChance ?? 0;
+    actor.update({ "system.pointsChance": before + amount });
+    ui.notifications.info(`${actor.name} : ${amount >= 0 ? "+" : ""}${amount} Points de Chance (${before} → ${before + amount}).`);
+    return false;
+  });
+}

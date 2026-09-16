@@ -292,13 +292,28 @@ export class AntiqueActor extends Actor {
    * @param {{name: string, icon?: string}} options
    */
   async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg" }) {
-    // showIcon: ALWAYS on both branches — see the identical comment in
-    // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
-    const existing = this.effects.find(e => e.name === name);
-    if (existing) await existing.update({ changes, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
-    else await this.createEmbeddedDocuments("ActiveEffect", [{
-      name, icon, changes, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
-    }]);
+    // system.pointsChance is a plain, freely-editable counter, not a temporary buff —
+    // a persistent ActiveEffect would defeat manually spending it (editing the number
+    // down would do nothing, since the effect keeps re-adding its bonus every render),
+    // and the sheet's input deliberately shows the raw, unbuffed value (actor-sheet.mjs,
+    // same fix as CA/PV) so the increase would never even be visible. Apply directly
+    // and permanently instead of going through the usual named-effect mechanism below.
+    const pointsChanceChanges = changes.filter(c => c.key === "system.pointsChance");
+    const otherChanges = changes.filter(c => c.key !== "system.pointsChance");
+    if (pointsChanceChanges.length) {
+      const amount = pointsChanceChanges.reduce((sum, c) => sum + Number(c.value), 0);
+      await this.update({ "system.pointsChance": (this._source.system.pointsChance ?? 0) + amount });
+    }
+
+    if (otherChanges.length) {
+      // showIcon: ALWAYS on both branches — see the identical comment in
+      // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
+      const existing = this.effects.find(e => e.name === name);
+      if (existing) await existing.update({ changes: otherChanges, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+      else await this.createEmbeddedDocuments("ActiveEffect", [{
+        name, icon, changes: otherChanges, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+      }]);
+    }
     refreshSheet(this);
   }
 

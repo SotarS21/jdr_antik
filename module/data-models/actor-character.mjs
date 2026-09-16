@@ -21,6 +21,9 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       historique: new fields.StringField({ initial: "" }),
       avantageTemporaire: new fields.BooleanField({ initial: false }),
       deplacement: new fields.NumberField({ initial: 9, integer: true }),
+      // No rules attached yet (user hasn't settled on them) — plain editable counter,
+      // same pattern as deplacement: never touched by prepareDerivedData().
+      pointsChance: new fields.NumberField({ initial: 0, integer: true }),
       // Directly editable, like deplacement — never overwritten in prepareDerivedData(),
       // so Mule's MULTIPLY ActiveEffect can double it the same way Athlète doubles
       // deplacement. Default 70 (plausible human weight) rather than 0.

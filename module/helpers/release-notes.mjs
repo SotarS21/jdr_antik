@@ -5,6 +5,42 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.117": {
+    title: "Version 0.6.117 — Les gains de Points de Chance s'appliquent enfin",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les boutons "Appliquer l'effet"/"Appliquer sur un allié" de Grâce des Astres Alignés, et le glisser-déposer des effets "Point de Chance +1"/"+2", ne mettaient jamais à jour le compteur — ils créaient un effet actif classique, alors que les Points de Chance sont un simple compteur affiché en valeur brute (pour éviter le bug déjà vu sur la CA/les PV). Ces gains modifient désormais directement et définitivement le compteur.</li>
+      </ul>`
+  },
+  "0.6.116": {
+    title: "Version 0.6.116 — Grâce des Astres Alignés donne enfin des Points de Chance",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Grâce des Astres Alignés a maintenant ses deux boutons "Appliquer l'effet"/"Appliquer sur un allié" (+2 / +1 Point de Chance) — son texte le promettait déjà, mais rien n'était mécanisé avant l'ajout du compteur de Points de Chance.</li>
+      </ul>`
+  },
+  "0.6.115": {
+    title: "Version 0.6.115 — Règles de la Chance en infobulle + correctif",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : survoler le bloc "Points de Chance" (onglet Combat) affiche maintenant la règle (réussite automatique, régénération).</li>
+        <li><strong>Corrigé</strong> : un effet "Point de Chance +1/+2" actif aurait fini par gonfler la valeur affichée à chaque sauvegarde de la fiche (même bug que la CA/les PV par le passé) — l'input affiche désormais la valeur brute, pas la valeur bonifiée.</li>
+      </ul>`
+  },
+  "0.6.114": {
+    title: "Version 0.6.114 — Effets \"Point de Chance +1\"/\"+2\"",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : deux nouveaux Effets autonomes (compendium Effets) — "Point de Chance +1" et "Point de Chance +2" — à glisser manuellement par le MJ sur une fiche Personnage pour augmenter définitivement ses Points de Chance.</li>
+      </ul>`
+  },
+  "0.6.113": {
+    title: "Version 0.6.113 — Points de Chance (fiche Personnage)",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : un nouveau champ "Points de Chance" dans l'onglet Combat de la fiche Personnage — une simple valeur modifiable, sans règle mécanique pour l'instant.</li>
+      </ul>`
+  },
   "0.6.112": {
     title: "Version 0.6.112 — Version \"groupe\" de Souffle aux Pieds Legers",
     html: `
