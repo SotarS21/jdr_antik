@@ -462,28 +462,6 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
   });
 });
 
-// Purely narrative spells that still name a concrete die (ex. Assistance: +1d4,
-// Malédiction: -1d6) — no game field to hook a real ActiveEffect to, but the die
-// itself can be rolled and posted for the table to apply by hand.
-Hooks.on("renderChatMessageHTML", (message, html) => {
-  const element = html;
-  if (!element) return;
-  const btn = element.querySelector(".roll-spell-formula");
-  if (!btn) return;
-
-  btn.addEventListener("click", async (event) => {
-    event.preventDefault();
-    const formula = btn.dataset.formula;
-    if (!formula) return;
-
-    const roll = await new Roll(formula).evaluate();
-    await roll.toMessage({
-      speaker: message.speaker,
-      flavor: `<b>${btn.dataset.spellName}</b> — ${btn.dataset.rollLabel}`
-    });
-  });
-});
-
 // Capacité de combat PNJ avec un jet de sauvegarde (ex. Regard pétrifiant, "Robustesse DC
 // 18") — le joueur visé clique lui-même ce bouton, sur son propre client, pour lancer le
 // jet avec les stats de SON personnage assigné (game.user.character), pas celles de qui a

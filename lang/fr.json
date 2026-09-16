@@ -327,7 +327,6 @@
   "ANTIQUE.Spell.TemplateTextureHint": "Chemin d'une image (ex. icons/magic/air/fog-gas-smoke-green.webp) utilisée comme remplissage du gabarit.",
   "ANTIQUE.Spell.TemplateColor": "Couleur du gabarit",
   "ANTIQUE.Spell.PlaceTemplate": "Placer un gabarit",
-  "ANTIQUE.Spell.RollFormula": "Lancer {label}",
   "ANTIQUE.Spell.NoActiveScene": "Aucune scène active sur laquelle placer le gabarit.",
   "ANTIQUE.Description": "Description",
 

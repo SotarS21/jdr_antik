@@ -453,6 +453,46 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
+## 68. ~~Assistance/Malédiction — retour au narratif pur~~ — CORRIGÉ (16 septembre 2026, v0.6.124)
+
+Décision finale de l'utilisateur après le point 67 : "il faut vraiment que l'effet soit
+applicable sur les PJ, on va garder ça narratif si on ne peut pas ajouter à la description le
+lanceur de dés." Ni le bouton de carte de chat (point 62) ni l'effet informatif (point 67)
+n'étaient un vrai effet applicable — retour en arrière complet : suppression du bouton "Lancer
+le dé", de l'effet informatif dans l'onglet Effets, des champs `rollFormula`/`rollLabel`
+(schéma), et de tout le code associé (`item.mjs`, `antique.mjs`, `lang/*.json`). Nouveau
+correctif `PACK_UPDATES` (`0.6.124-revert-spells-to-narrative`) pour nettoyer les copies qui
+auraient déjà reçu les points 62/67. Assistance et Malédiction sont maintenant identiques aux 6
+autres sorts narratifs du dossier Druide — texte seul, aucun bouton, aucun effet. Voir
+`JOURNAL.md`, session du 16 septembre 2026 (suite 39). **À confirmer par l'utilisateur en jeu.**
+
+## 69. EN ATTENTE — Auditer et finir tous les sorts (toutes écoles), via workflow ultracode (17 septembre 2026)
+
+Demande de l'utilisateur en fin de session du 16 septembre 2026 : "fini tout les sorts" +
+mot-clé "ultracode" (autorise l'orchestration multi-agents). Reporté à la prochaine session à sa
+demande ("on reprendra demain"). Portée : auditer systématiquement les sorts des dossiers
+**Berserk** (7) et **Morrigan** (7), plus reconfirmer les 6 sorts Druide encore narratifs
+(Baie nourricière, les 2 Localisation, Sens animal, Gland des quatre chemins, Langue de frêne),
+avec la même discipline que les points 44/62/68 : ne mécaniser **que** si un champ système réel
+existe déjà à cibler (comme Grâce des Astres Alignés/point 60, oublié la première fois) — sinon
+laisser purement narratif, **sans** inventer de bouton "Lancer le dé" ou d'effet informatif
+factice (rejeté au point 68, l'utilisateur veut un vrai effet applicable ou rien). **À reprendre
+en priorité à la prochaine session.**
+
+## 67. ~~Assistance/Malédiction invisibles dans l'onglet Effets~~ — CORRIGÉ (16 septembre 2026, v0.6.123)
+
+Signalé après le point 62 : "les sorts de Druide n'ont toujours pas d'effet". Clarifié avec
+l'utilisateur (2 questions) : le bouton "Lancer le dé" existait déjà sur la carte de chat, mais
+il voulait aussi que le sort apparaisse dans son propre **onglet Effets** (comme tous les autres
+sorts), et pas seulement un bouton posté au moment du lancer. Contrainte technique expliquée et
+acceptée : impossible d'insérer un bouton cliquable dans la fenêtre native Foundry de
+configuration d'un ActiveEffect — solution retenue : effet **informatif** (`changes: []`,
+`eSrt000000000009`/`010`) visible dans l'onglet Effets, décrivant le dé en texte ; le bouton
+cliquable pour lancer reste sur la carte de chat. `item.mjs` filtré pour ne plus générer de
+bouton "Appliquer l'effet" pour un effet sans changement réel (aurait été un bouton qui ne fait
+rien). Nouveau correctif `PACK_UPDATES` (`0.6.123-embed-spell-info-effects`). Voir `JOURNAL.md`,
+session du 16 septembre 2026 (suite 38). **À confirmer par l'utilisateur en jeu.**
+
 ## 66. ~~Suppression d'un effet depuis le panneau — fiche pas rafraîchie~~ — CORRIGÉ (16 septembre 2026, v0.6.122)
 
 Signalé : supprimer un effet via le panneau flottant ne met pas à jour visuellement la liste
@@ -491,7 +531,7 @@ déplacer en haut à droite, près du chat. `right: calc(var(--sidebar-width, 30
 (variable CSS native de Foundry, reste juste à côté de la barre latérale même si l'utilisateur
 la redimensionne/replie), `top: 6px`, `flex-direction: column` (au lieu de `column-reverse`,
 cohérent avec un ancrage en haut plutôt qu'en bas). Voir `JOURNAL.md`, session du 16 septembre
-2026 (suite 34). **À confirmer par l'utilisateur en jeu.**
+2026 (suite 34). **Confirmé par l'utilisateur en jeu (16 septembre 2026)**.
 
 ## 62. ~~Effets pour tous les sorts de Druide~~ — CORRIGÉ (16 septembre 2026, v0.6.118)
 
@@ -505,8 +545,9 @@ deux sorts qui nomment un dé précis dans leur texte. Le résultat est manuel (
 l'applique lui-même), pas une ActiveEffect. Description narrative retravaillée pour les deux.
 Les 6 autres (Baie nourricière, Localisation ×2, Sens animal, Gland des quatre chemins, Langue
 de frêne) restent tels quels — pas de dé unique et précis à automatiser (formule variable ou
-absente). Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 33). **À confirmer par
-l'utilisateur en jeu** — nécessite de cocher le nouveau correctif dans l'écran de mise à jour.
+absente). Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 33). **Note (16 septembre
+2026)** : manquait la visibilité dans l'onglet Effets — corrigé, voir point 67. **À confirmer
+par l'utilisateur en jeu.**
 
 ## 61. ~~Gains de Points de Chance sans effet réel~~ — CORRIGÉ (16 septembre 2026, v0.6.117)
 

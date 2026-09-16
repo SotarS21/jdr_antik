@@ -390,11 +390,14 @@ export class AntiqueItem extends Item {
         <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}">
           <i class="fas fa-shield-halved"></i> ${applyLabel}
         </button>`;
-    } else if (this.effects.size > 0) {
+    } else if (this.effects.some(e => e.changes.length > 0)) {
       // A spell can embed more than one effect (ex. Bénédiction des Titans: a strong
       // solo version + a weaker one meant for an ally) — one button per effect, so
       // any player can self-serve whichever version applies to their own token.
-      applyEffectButton = this.effects.contents.map(effect => {
+      // Purely narrative effects with no changes (ex. Assistance, kept in the Effets
+      // tab for visibility only — see item-spell.mjs's rollFormula) get no button
+      // here, since there is nothing for it to apply.
+      applyEffectButton = this.effects.filter(e => e.changes.length > 0).map(effect => {
         const isGroup = effect.getFlag("antique", "spellScope") === "group";
         const label = isGroup
           ? game.i18n.format("ANTIQUE.Effect.ApplyGroupButton", {
@@ -419,21 +422,9 @@ export class AntiqueItem extends Item {
         </button>`;
     }
 
-    // 8. Purely narrative spells that still name a concrete die (ex. Assistance: +1d4,
-    // Malédiction: -1d6) offer a "Lancer le dé" button — no game field to automate, but
-    // the roll itself doesn't need to be manual.
-    let rollFormulaButton = "";
-    if (this.system.rollFormula) {
-      const label = this.system.rollLabel || this.system.rollFormula;
-      rollFormulaButton = `
-        <button type="button" class="roll-spell-formula" data-formula="${this.system.rollFormula}" data-roll-label="${label}" data-spell-name="${this.name}">
-          <i class="fas fa-dice"></i> ${game.i18n.format("ANTIQUE.Spell.RollFormula", { label })}
-        </button>`;
-    }
-
     await ChatMessage.create({
       speaker,
-      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}${rollFormulaButton}</div>`
+      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}</div>`
     });
   }
 

@@ -5,6 +5,20 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.124": {
+    title: "Version 0.6.124 — Assistance et Malédiction redeviennent narratifs",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : retour en arrière sur Assistance et Malédiction — le bouton "Lancer le dé" et l'effet informatif dans l'onglet Effets sont retirés, ces deux sorts redeviennent purement narratifs comme les autres sorts sans équivalent mécanique.</li>
+      </ul>`
+  },
+  "0.6.123": {
+    title: "Version 0.6.123 — Assistance et Malédiction visibles dans l'onglet Effets",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Assistance et Malédiction apparaissent maintenant dans leur propre onglet Effets, comme tous les autres sorts — le bouton pour lancer le dé (+1d4 / -1d6) reste sur la carte de lancer.</li>
+      </ul>`
+  },
   "0.6.122": {
     title: "Version 0.6.122 — La fiche ne se rafraîchissait pas après suppression d'un effet",
     html: `

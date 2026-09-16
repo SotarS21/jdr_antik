@@ -2,6 +2,98 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 39) — Retour en arrière : Assistance/Malédiction narratifs (v0.6.123 → v0.6.124)
+
+Décision finale de l'utilisateur, après avoir testé le point 67 en jeu : "ça fonctionne mais ça
+ne va pas, il faut vraiment que l'effet soit applicable sur les PJ, on va garder ça narratif si
+on ne peut pas ajouter à la description le lanceur de dés." Confirmé explicitement (question
+posée avant d'agir, vu qu'il s'agissait de retirer du travail déjà livré) : retrait complet.
+
+Retiré : bouton "Lancer le dé" (`item.mjs`, `antique.mjs`, clés `ANTIQUE.Spell.RollFormula`),
+champs `rollFormula`/`rollLabel` (schéma `item-spell.mjs`), effet informatif dans l'onglet Effets
+(`eSrt000000000009`/`010`). `packs/sorts.db` : descriptions revenues au texte narratif simple
+("Permet à un allié de jeter un d4..."/"Force un malus d'un d6..."). Nouveau correctif
+`PACK_UPDATES` (`0.6.124-revert-spells-to-narrative`, `revertSpellToNarrative()`) qui supprime
+l'effet s'il a été créé (compendium/copies possédées/jetons non liés) et réécrit la description,
+plus `"system.-=rollFormula": null` pour nettoyer une donnée orpheline si le champ avait été
+enregistré avant son retrait du schéma (même patron que la migration `bonusSexe`).
+
+Les deux anciens correctifs (`0.6.118`, `0.6.123`) retirés du tableau `PACK_UPDATES` — leurs
+fonctions `apply` n'existent plus, un monde qui les avait déjà cochés ne les reverra simplement
+plus proposés (l'id orphelin dans `appliedPackFixes` est inoffensif).
+
+**Fichiers modifiés** : `module/data-models/items/item-spell.mjs`, `module/documents/item.mjs`,
+`antique.mjs`, `packs/sorts.db`, `packs/_json-mirrors/sorts.json` (régénéré),
+`module/helpers/pack-updates.mjs`, `lang/fr.json`, `lang/en.json`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Résumé de la journée — 16 septembre 2026 (v0.6.103 → v0.6.124)
+
+Journée dense, presque entièrement portée par des retours de test en direct avec l'utilisateur
+(cycle correctif → test → confirmation ou nouveau bug trouvé, très serré). Points marquants :
+
+- **Erreur de manifest GitHub** (repo privé) diagnostiquée, cause distincte du déploiement local
+  — remis en place proprement (`manifest`/`download` vides en dev, vrais releases GitHub créés
+  pour v0.6.103 → v0.6.124, repo resté privé pour l'usage prévu par l'utilisateur).
+- **Jetons de Personnage non liés à leur fiche** (point 37, en attente depuis le 15 septembre) :
+  diagnostiqué en direct via la console, migration + valeur par défaut pour les futurs PJ.
+- **Bestiaire (point 20) et sorts liés (point 44) déclarés définitivement clos** après
+  confirmation en jeu de toutes leurs étapes.
+- **Chantier des 7 sorts à effet embarqué** : le bonus de caractéristique ne s'appliquait en
+  fait *jamais* (bug de `phase` ActiveEffect, jamais détecté avant faute de test rigoureux) ;
+  une fois corrigé, découverte d'un second bug (le bonus ne se répercutait pas sur les
+  compétences liées) nécessitant une phase `ActiveEffect` personnalisée. Étendu ensuite à une
+  version "groupe" pour les 7 sorts, à la demande de l'utilisateur sort par sort.
+- **Nouvelle mécanique de Points de Chance** (fiche Personnage, règles reçues en cours de route :
+  réussite automatique, régénération liée à Héra/Hécate/Nike) — a nécessité un correctif
+  similaire au bug historique CA/PV (effet vs. compteur librement éditable).
+- **Panneau d'effets flottant** (Pathfinder-like) repositionné, agrandi, infobulle enrichie,
+  rafraîchissement de fiche corrigé après suppression.
+- **Sorts de Druide** : audit complet des 10 sorts, tentative de bouton "Lancer le dé" pour
+  Assistance/Malédiction essayée puis explicitement abandonnée par l'utilisateur (retour au
+  narratif pur) — **point 69 laissé en attente pour demain** : auditer Berserk/Morrigan et finir
+  les Druide restants avec la même discipline, potentiellement via un workflow multi-agents
+  ("ultracode").
+- Sous-filtres Berserk/Druide/Morrigan ajoutés au Navigateur de Compendium.
+
+Tout le travail confirmé par l'utilisateur en jeu a été committé et poussé sur GitHub au fil de
+la journée (voir l'historique git pour le détail commit par commit) ; le dernier lot (points
+67-68, v0.6.123 → v0.6.124) reste à committer à la prochaine session.
+
+---
+
+## Session du 16 septembre 2026 (suite 38) — Assistance/Malédiction rendus visibles dans l'onglet Effets (v0.6.122 → v0.6.123)
+
+Retour sur le point 62 : "les sorts de Druide n'ont toujours pas d'effet". Deux questions de
+clarification pour comprendre ce qui manquait vraiment :
+1. Comment l'utilisateur teste (lancé le sort ? juste regardé la fiche ?) → réponse ambiguë
+   ("il faut que le lancer de dé soit présent dans la description de l'effet du sort, mais pas
+   du sort lui-même").
+2. Où exactement il veut voir le bouton → "sur la fiche de l'effet" : il pensait à la fenêtre
+   native de configuration d'un ActiveEffect (celle qui s'ouvre en double-cliquant une ligne
+   d'effet dans l'onglet Effets), pas seulement une carte de chat au moment du lancer.
+
+Contrainte technique expliquée (impossible d'insérer un bouton cliquable dans cette fenêtre
+native de Foundry sans la remplacer entièrement) et acceptée : la version retenue combine un
+effet **informatif** (visible dans l'onglet Effets de l'objet, comme tous les autres sorts) avec
+le bouton de lancer déjà existant sur la carte de chat.
+
+Ajouté `eSrt000000000009`/`eSrt000000000010` sur Assistance/Malédiction — `changes: []` (aucune
+mécanique, juste pour apparaître dans l'onglet Effets), description textuelle du dé. Puisque ces
+deux sorts ont maintenant `effects.size > 0`, `item.mjs` aurait sinon généré un bouton
+"Appliquer l'effet" inutile (rien à appliquer, changes vide) — filtré : le bouton solo/groupe ne
+se génère plus que pour les effets qui ont un vrai changement (`e.changes.length > 0`). Nouveau
+correctif `PACK_UPDATES` (`0.6.123-embed-spell-info-effects`), même patron en 3 temps (compendium,
+copies possédées, jetons non liés) que tous les précédents.
+
+**Fichiers modifiés** : `module/documents/item.mjs`, `packs/sorts.db`,
+`packs/_json-mirrors/sorts.json` (régénéré), `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 16 septembre 2026 (suite 37) — La fiche ne se rafraîchissait pas après suppression via le panneau (v0.6.121 → v0.6.122)
 
 Signalé : supprimer un effet depuis le panneau flottant ne met pas à jour l'onglet Traits de la
