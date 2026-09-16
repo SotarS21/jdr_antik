@@ -391,11 +391,21 @@ export class AntiqueItem extends Item {
           <i class="fas fa-shield-halved"></i> ${applyLabel}
         </button>`;
     } else if (this.effects.size > 0) {
-      const applyLabel = game.i18n.localize("ANTIQUE.Effect.ApplyGenericButton");
-      applyEffectButton = `
-        <button type="button" class="apply-spell-effect" data-item-uuid="${this.uuid}">
-          <i class="fas fa-hat-wizard"></i> ${applyLabel}
-        </button>`;
+      // A spell can embed more than one effect (ex. Bénédiction des Titans: a strong
+      // solo version + a weaker one meant for an ally) — one button per effect, so
+      // any player can self-serve whichever version applies to their own token.
+      applyEffectButton = this.effects.contents.map(effect => {
+        const isGroup = effect.getFlag("antique", "spellScope") === "group";
+        const label = isGroup
+          ? game.i18n.format("ANTIQUE.Effect.ApplyGroupButton", {
+              changes: effect.changes.map(c => CONFIG.ANTIQUE.getEffectChangeLabel(c)).join(", ")
+            })
+          : game.i18n.localize("ANTIQUE.Effect.ApplyGenericButton");
+        return `
+          <button type="button" class="apply-spell-effect" data-item-uuid="${this.uuid}" data-effect-id="${effect.id}">
+            <i class="fas fa-hat-wizard"></i> ${label}
+          </button>`;
+      }).join("");
     }
 
     // 7. Area spells (ex. Brouillard) offer a button to drag a circular template

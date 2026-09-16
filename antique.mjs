@@ -47,6 +47,16 @@ Hooks.once("init", function () {
   // Store config on the global CONFIG object
   CONFIG.ANTIQUE = ANTIQUE;
 
+  // Custom ActiveEffect application phase, applied mid-way through prepareDerivedData()
+  // (see actor-character.mjs/actor-npc.mjs) — Foundry's own built-in "final" phase runs
+  // only after prepareDerivedData() completes entirely, too late for a change targeting
+  // system.abilities.*.mod: skills/saves/CA/attack bonuses read that same mod earlier in
+  // the same pass and would otherwise never see the bonus.
+  CONFIG.ActiveEffect.phases.abilities = {
+    label: "Antique — Modificateurs de caractéristique",
+    hint: "Appliqué après leur recalcul automatique, mais avant tout ce qui en dépend (compétences, sauvegardes, CA, initiative, bonus d'attaque)."
+  };
+
   // Define custom Document classes
   CONFIG.Actor.documentClass = AntiqueActor;
   CONFIG.Item.documentClass = AntiqueItem;
@@ -326,19 +336,21 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 // Buff spells whose bonus isn't just CA (ex. Bénédiction des Titans, +3 Force) —
 // generalized counterpart to the ".apply-effect" hook above: the spell embeds its
 // own ActiveEffect (transfer:false), and this applies whatever changes it holds
-// instead of a single hardcoded CA number. Same target-resolution fallback.
+// instead of a single hardcoded CA number. Same target-resolution fallback. A card
+// can have more than one such button (ex. solo + group version) — querySelectorAll,
+// not querySelector, or every button past the first one silently does nothing.
 Hooks.on("renderChatMessageHTML", (message, html) => {
   const element = html;
   if (!element) return;
-  const btn = element.querySelector(".apply-spell-effect");
-  if (!btn) return;
+  const buttons = element.querySelectorAll(".apply-spell-effect");
+  if (!buttons.length) return;
 
-  btn.addEventListener("click", async (event) => {
+  buttons.forEach(btn => btn.addEventListener("click", async (event) => {
     event.preventDefault();
     const itemUuid = btn.dataset.itemUuid;
     if (!itemUuid) return;
     const item = await fromUuid(itemUuid);
-    const spellEffect = item?.effects.contents[0];
+    const spellEffect = btn.dataset.effectId ? item?.effects.get(btn.dataset.effectId) : item?.effects.contents[0];
     if (!spellEffect) return;
 
     let tokens = [...game.user.targets];
@@ -363,7 +375,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
         content: `<div class="antique damage-applied-message">${results.join("<br>")}</div>`
       });
     }
-  });
+  }));
 });
 
 // Area spells (ex. Brouillard) — click the chat button to drag a circular template

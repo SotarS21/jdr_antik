@@ -2,6 +2,181 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 24) — Deuxième bouton de carte de sort inerte (v0.6.108 → v0.6.109)
+
+Retour de test immédiat sur le point précédent : le bouton "Appliquer sur un allié" s'affiche
+mais ne répond pas au clic. Cause : le hook `renderChatMessageHTML` qui attache l'écouteur de
+clic aux boutons `.apply-spell-effect` utilisait `element.querySelector(...)` (singulier) —
+ne trouve que le **premier** bouton de la carte. Depuis le point précédent, une carte de sort
+comme "Bénédiction des Titans" en a désormais deux (solo + groupe) : le second n'a jamais son
+écouteur attaché. Corrigé en `querySelectorAll` + `forEach`. Aucun changement côté données —
+uniquement `antique.mjs`. Pas de nouveau correctif `PACK_UPDATES` (pas de contenu de compendium
+concerné).
+
+**Fichiers modifiés** : `antique.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 23) — Version "groupe" de Bénédiction des Titans et Danse du Serpent (v0.6.107 → v0.6.108)
+
+Demande de l'utilisateur, une fois le bonus solo (+3) confirmé fonctionnel sur les deux sorts :
+ajouter la version "groupe" (+1) déjà mentionnée dans le texte du sort ("Permet d'augmenter la
+Force de +3 d'une personne ou +1 pour le groupe") mais jusqu'ici purement manuelle
+(`description` de l'effet : "à ajuster manuellement"), sous forme d'un vrai effet que
+n'importe quel joueur peut s'appliquer lui-même sur son propre jeton.
+
+**Conception** : plutôt qu'un patch ponctuel pour ces 2 seuls sorts, généralisation du mécanisme
+existant (`item.mjs` ne gérait qu'un seul effet par sort, `effects.contents[0]`) pour supporter
+plusieurs effets embarqués, chacun avec son propre bouton sur la carte de lancer — le bouton
+solo existant reste inchangé, un nouveau bouton "Appliquer sur un allié" apparaît pour tout effet
+flaggé `flags.antique.spellScope === "group"`. Le label du bouton groupe est généré
+dynamiquement à partir des `changes` de l'effet (réutilise `CONFIG.ANTIQUE.getEffectChangeLabel`,
+déjà utilisé pour le message de résultat), donc affiche "+1 Force"/"+1 Dextérité" sans texte en
+dur. Le handler de clic (`antique.mjs`, `.apply-spell-effect`) lit `data-effect-id` sur le bouton
+au lieu de toujours prendre `effects.contents[0]`.
+
+Nouvel effet embarqué par sort (`eSrtG00000000001`/`eSrtG00000000002`, id neuf pour ne pas
+collisionner avec l'effet solo existant), même mécanique que l'effet solo (`phase: "abilities"`,
+profite donc automatiquement du correctif du point précédent — les compétences liées suivent
+aussi le bonus de groupe). Description de l'effet solo nettoyée au passage ("à ajuster
+manuellement" n'a plus lieu d'être).
+
+**PACK_UPDATES** : nouveau correctif `0.6.108-embed-spell-group-effects` (`SPELL_GROUP_EFFECTS`,
+`embedSpellGroupEffect()`, `applyEmbedSpellGroupEffects()`) — même patron de propagation que les
+correctifs précédents (compendium, copies déjà possédées, copies sur jeton non lié).
+
+Mécanisme volontairement générique : ajouter la version groupe des 4 autres sorts similaires
+(Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin) ne demanderait
+qu'une entrée de données dans `SPELL_GROUP_EFFECTS` + `packs/sorts.db`, aucun changement de code —
+pas fait ici, l'utilisateur n'a demandé que Bénédiction des Titans et Danse du Serpent.
+
+**Fichiers modifiés** : `module/documents/item.mjs`, `antique.mjs`,
+`module/helpers/pack-updates.mjs`, `packs/sorts.db`, `packs/_json-mirrors/sorts.json`
+(régénéré), `lang/fr.json`, `lang/en.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 22) — Bonus de caractéristique des sorts pas répercuté sur les compétences (v0.6.106 → v0.6.107)
+
+Signalé juste après confirmation du point 49 : la Force affichée augmente bien avec "Bénédiction
+des Titans" (le correctif de phase "final" fonctionne pour le champ lui-même), mais les
+compétences liées à la Force ne suivent pas.
+
+Analyse : `actor-character.mjs#prepareDerivedData()` calcule `abilities.*.mod`, PUIS (toujours
+dans la même fonction) les compétences/sauvegardes/CA/initiative/bonus d'attaque, chacun lisant
+`abilities[x].mod` au passage. La phase `"final"` de Foundry (`Actor#applyActiveEffects("final")`,
+appelée par le cœur juste après que `prepareDerivedData()` se termine entièrement) arrive donc
+beaucoup trop tard : le bonus est appliqué sur `abilities.for.mod` seulement après que toutes les
+compétences ont déjà lu l'ancienne valeur non-bonifiée.
+
+Comparaison utile : les 15 "Auras" des avantages divins (bonus de caractéristique similaires)
+ciblent `system.abilities.*.value` (le score brut), pas `.mod` — un champ qui n'est ensuite plus
+recalculé par rien, donc jamais affecté par ce bug, quelle que soit sa phase. Mais les sorts
+ciblent volontairement `.mod` directement pour un bonus plus fort (+3 au modificateur, pas +3 au
+score, cohérent avec le texte du sort) — changer leur clé pour `.value` aurait changé le sens du
+bonus, pas acceptable.
+
+**Solution** : Foundry documente explicitement (`common/constants.mjs`,
+`ACTIVE_EFFECT_CHANGE_PHASES`) qu'un système peut enregistrer ses propres phases
+d'application au-delà de "initial"/"final", à condition d'appeler lui-même
+`Actor#applyActiveEffects(maPhase)` au bon moment. Nouvelle phase `"abilities"` enregistrée dans
+`antique.mjs` (`CONFIG.ActiveEffect.phases.abilities = {...}`), appelée via
+`this.parent?.applyActiveEffects("abilities")` immédiatement après le calcul de base des
+modificateurs de caractéristique, dans `actor-character.mjs` **et** `actor-npc.mjs` (ajouté par
+cohérence/prévention, bien que rien dans le PNJ actuel ne dépende encore d'un modificateur de
+caractéristique dans la même fonction) — avant tout calcul qui en dépend.
+
+Les 6 sorts ciblant `system.abilities.*.mod` (tous sauf Souffle aux Pieds Legers/Initiative, qui
+n'a aucun dépendant plus loin dans la fonction et reste donc en phase `"final"`) passent à
+`phase: "abilities"` dans `packs/sorts.db` et `SPELL_EFFECTS` (`pack-updates.mjs`).
+`fixSpellEffectPhase()` généralisé pour lire la phase voulue par clé depuis `SPELL_EFFECTS` au
+lieu de forcer `"final"` en dur. Nouveau correctif `0.6.107-fix-spell-ability-mod-cascade` (id
+neuf : `0.6.105` déjà coché par l'utilisateur ne serait jamais réappliqué même si sa logique a
+changé).
+
+**Fichiers modifiés** : `antique.mjs`, `module/data-models/actor-character.mjs`,
+`module/data-models/actor-npc.mjs`, `packs/sorts.db`, `packs/_json-mirrors/sorts.json`
+(régénéré), `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 21) — Sous-filtres des sorts instantanés (v0.6.105 → v0.6.106)
+
+Demande : dans le Navigateur de Compendium (onglet Sorts & Rituels), remplacer le filtre unique
+"Sort Instantané" par des sous-filtres par école — Berserk, Druide, Morrigan. Vérifié dans
+`packs/_json-mirrors/sorts.json` : ces 3 catégories existent déjà comme dossiers du compendium
+("Sorts de Druide", "Sorts de Berserk — Camulos", "Sorts de Morrigan") et couvrent *exactement*
+les 24 sorts non-rituels (10 + 7 + 7), aucun sort instantané ne tombe en dehors — pas besoin d'un
+filtre générique "instant" de repli.
+
+`compendium-browser.mjs` (onglet `sorts`) : `classify()` lit désormais `doc.folder?.name` (même
+patron que `classifyEquipmentItem`, point 28) pour renvoyer `instant-berserk`/`instant-druide`/
+`instant-morrigan`, ou `ritual` (toujours basé sur `system.ritual`, indépendant du dossier —
+"Rituels"/"Rituels d'Hécate" ne sont qu'un rangement, pas une école à part). Nouvelles clés de
+langue `ANTIQUE.Browser.FilterSortBerserk/Druide/Morrigan` (fr + en), ancienne clé
+`FilterSortInstant` retirée (plus utilisée nulle part ailleurs, vérifié).
+
+**Fichiers modifiés** : `module/apps/compendium-browser.mjs`, `lang/fr.json`, `lang/en.json`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 20) — Les effets de sort (+3 caractéristique/+4 initiative) ne s'appliquaient jamais (v0.6.104 → v0.6.105)
+
+Signalé : "Bénédiction des Titans" (+3 Force) n'augmente pas la Force affichée après avoir cliqué
+"Appliquer l'effet". Lecture du code source de Foundry v14.368 installé localement
+(`common/data/active-effect.mjs`, `client/documents/actor.mjs`) pour comprendre le pipeline
+exact d'application des ActiveEffects :
+- Chaque `EffectChangeData` a un champ `phase` (schéma Foundry, défaut `"initial"`).
+- `Actor#prepareData()` : `super.prepareData()` (→ `prepareBaseData` → `prepareEmbeddedDocuments`
+  qui applique la phase `"initial"` → `prepareDerivedData()`, propre au système) puis
+  `this.applyActiveEffects("final")`, une deuxième passe native de Foundry, après coup.
+- `actor-character.mjs#prepareDerivedData()` recalcule `ab.mod = Math.floor((ab.value-10)/2)`
+  pour chaque caractéristique et `this.initiative = dexMod + vigilanceTotal` sans condition —
+  donc après la phase `"initial"` mais avant la phase `"final"`.
+
+Les 7 sorts à effet embarqué (point 44) ciblent tous `system.abilities.*.mod` ou
+`system.initiative` — des champs recalculés par `prepareDerivedData()` — mais aucun de leurs
+changements n'avait `phase: "final"` (silencieusement resté sur le défaut `"initial"`). Résultat :
+le bonus s'appliquait bien un instant, puis était systématiquement écrasé par le recalcul avant
+même le premier rendu de la fiche. Aucun des 7 n'a donc jamais réellement fonctionné, y compris
+Souffle aux Pieds Legers (Initiative) dont la note du 15 septembre affirmait avoir "vérifié" le
+bon fonctionnement — la vérification portait sur l'ordre théorique des étapes, pas sur la
+configuration réelle du champ `phase`.
+
+**Corrigé** : `phase: "final"` ajouté aux 7 changements, dans `packs/sorts.db` (source) et dans
+`SPELL_EFFECTS` (`module/helpers/pack-updates.mjs`, la même table utilisée par le mécanisme de
+correctif live). Nouvelle fonction `fixSpellEffectPhase()` + correctif `PACK_UPDATES` dédié
+(`0.6.105-fix-spell-effect-phase`, id neuf — l'ancien `embedSpellEffect()` ne fait que créer
+l'effet s'il est absent, il ne corrige pas un effet déjà embarqué avec la mauvaise `phase`).
+Périmètre du correctif étendu au-delà du patron habituel à la demande explicite de
+l'utilisateur : en plus du compendium et des copies déjà possédées par un acteur (`game.actors`),
+il parcourt aussi `game.scenes`/`scene.tokens` pour réparer les copies embarquées sur un **jeton
+non lié** — même angle mort que le point 37 (un jeton non lié porte sa propre copie des objets,
+invisible depuis `game.actors`).
+
+**Fichiers modifiés** : `packs/sorts.db`, `packs/_json-mirrors/sorts.json` (régénéré),
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 19) — Redimensionnement de fenêtre bloqué : confirmé bug cœur Foundry (point 38)
+
+Reprise du point 38 avec les précisions de l'utilisateur (touche la fiche Personnage, aucune
+action précise ne précède le blocage). Lecture du code source de Foundry v14.368 installé
+localement (`D:\FoundryVTT\...\resources\app\client\applications\api\application.mjs`) pour
+comprendre le mécanisme réel de redimensionnement `ApplicationV2` : repose sur
+`setPointerCapture` + un unique écouteur `pointerup` (`{once: true}`) pour nettoyer. Si le geste
+se termine autrement (souris hors fenêtre, alt-tab, menu contextuel), le navigateur émet
+`pointercancel`/`lostpointercapture` au lieu de `pointerup` — jamais écoutés ici — le nettoyage
+ne s'exécute jamais et le prochain mouvement de souris continue à redimensionner. Mécanisme
+entièrement interne à des champs/méthodes privés (`#element`, `#onWindowResizeMove`,
+`#endPointerCapture`), aucun point d'extension exploitable depuis le code du système pour un
+correctif propre. Confirmé par l'utilisateur comme un problème du cœur Foundry. Aucun fichier
+modifié — recherche uniquement, point classé "ne s'applique pas" côté Antique.
+
+---
+
 ## Session du 16 septembre 2026 (suite 18) — Jetons de Personnage pas liés à leur fiche (v0.6.103 → v0.6.104)
 
 Reprise du point 37 (signalé le 15 septembre, resté bloqué faute d'exemple concret). Diagnostic

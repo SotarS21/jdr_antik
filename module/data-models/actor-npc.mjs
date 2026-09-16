@@ -103,6 +103,8 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
     for (const ab of Object.values(this.abilities)) {
       ab.mod = Math.floor((ab.value - 10) / 2);
     }
+    // See actor-character.mjs for why this can't just use Foundry's built-in "final" phase.
+    this.parent?.applyActiveEffects("abilities");
     this.esquive.total = this.esquive.value + this.esquive.tempPenalty;
     this.parade.total = this.parade.value + this.parade.tempPenalty;
   }

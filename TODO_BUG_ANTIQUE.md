@@ -166,7 +166,7 @@ resource ... 404 ... potion.svg ») ne forment qu'un seul signalement — exacte
 corrigé en v0.6.39 (point 2 ci-dessus : icône `potion.svg` inexistante dans la bibliothèque
 Foundry). Doublon, aucun code à ajouter.
 
-## 20. Compendium de compétences de combat PNJ façon bestiaire mythologique — EN COURS (architecture livrée, v0.6.71)
+## 20. ~~Compendium de compétences de combat PNJ façon bestiaire mythologique~~ — CORRIGÉ (16 septembre 2026, toutes étapes confirmées)
 
 Demande d'origine : ajouter aux PNJ des compétences de combat avec un compendium associé, en
 s'inspirant des descriptions de créatures mythologiques. Seul un simple tableau de bonus d'attaque
@@ -216,7 +216,7 @@ texte précise une difficulté (Réflexes/Robustesse/Volonté), narratif sinon. 
 aussi embarquée directement sur sa créature dans le compendium (glisser une créature sur une
 scène l'amène déjà équipée) — y compris un retrofit de Minotaure/Méduse, qui n'avaient jamais eu
 leur propre capacité embarquée sur eux-mêmes jusqu'ici. Voir `JOURNAL.md`, session du
-10 septembre 2026 (suite 7). **À confirmer par l'utilisateur en jeu.**
+10 septembre 2026 (suite 7). **Confirmé par l'utilisateur en jeu (16 septembre 2026)**.
 
 ## 22. ~~Effets désactivés — grisés, plus éditables ni réactivables~~ — CORRIGÉ (10 septembre 2026, v0.6.82)
 
@@ -399,16 +399,22 @@ les Personnages existants (prototype + jetons déjà placés sur toute scène) ;
 naisse déjà lié par défaut. Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 18).
 **Confirmé par l'utilisateur en jeu (16 septembre 2026)** : "ça marche bien".
 
-## 38. Redimensionnement de fenêtre parfois bloqué — EN ATTENTE D'INFO (15 septembre 2026)
+## 38. Redimensionnement de fenêtre parfois bloqué — NE S'APPLIQUE PAS (16 septembre 2026)
 
 Signalé : après avoir cliqué sur la poignée de redimensionnement d'une fenêtre, il arrive de
-rester bloqué en mode redimensionnement même après avoir relâché le clic. Recherche dans
-`antique.css`/le code JS du système : rien ne touche `.window-resize-handle`,
-`pointer-events`/`touch-action` autour, ni de hook qui forcerait un re-rendu en boucle —
-ressemble à un comportement natif Foundry/navigateur (capture de pointeur), pas un bug
-introduit par ce système. **À reprendre si l'utilisateur peut préciser** : une fenêtre en
-particulier (fiche perso/PNJ, Navigateur de Compendium...) ou une action qui précède
-systématiquement le blocage.
+rester bloqué en mode redimensionnement même après avoir relâché le clic. Confirmé comme bug du
+**cœur Foundry**, pas de ce système : lecture du code source de Foundry v14.368 installé
+localement (`applications/api/application.mjs`) — le redimensionnement (`ApplicationV2`) repose
+sur `setPointerCapture`/un unique écouteur `pointerup` pour nettoyer proprement ; si le geste se
+termine autrement (souris qui quitte la fenêtre, alt-tab, menu contextuel), le navigateur émet
+`pointercancel`/`lostpointercapture` à la place, jamais écoutés par Foundry — le nettoyage ne se
+fait jamais et tout mouvement de souris continue à redimensionner. Mécanisme interne (champs/
+méthodes privés `#element`/`#onWindowResizeMove`/`#endPointerCapture`), aucun moyen propre de
+corriger depuis le code du système. Concerne toutes les fenêtres redimensionnables (Personnage,
+PNJ, Objet, Divinité), pas seulement la fiche Personnage où l'utilisateur l'a remarqué en
+premier. **Confirmé par l'utilisateur** : effectivement un problème du cœur Foundry, pas du
+système Antique — à signaler à Foundry directement si besoin d'une vraie correction, rien à
+faire ici.
 
 ## 39. ~~Section Effets pas en dernière position (onglet Traits)~~ — CORRIGÉ (15 septembre 2026, v0.6.94)
 
@@ -446,6 +452,73 @@ l'écran de mise à jour (MJ).
 Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ) n'avait jamais
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
+
+## 52. ~~Version "groupe" de Bénédiction des Titans et Danse du Serpent~~ — CORRIGÉ (16 septembre 2026, v0.6.108)
+
+Demande : le texte de ces 2 sorts (et 4 autres similaires) prévoyait déjà une version plus
+faible pour le groupe (+1 au lieu de +3), jusqu'ici laissée "à ajuster manuellement" faute de
+mécanisme dédié. Ajouté un **deuxième effet embarqué** sur chacun (`SPELL_GROUP_EFFECTS`,
+flag `spellScope: "group"`), avec son propre bouton sur la carte de lancer ("Appliquer sur un
+allié") — n'importe quel joueur peut se l'appliquer lui-même à son propre jeton, sans passer par
+le lanceur du sort (même patron de résolution de cible que le bouton solo existant :
+`game.user.targets` puis jeton contrôlé). `item.mjs` génère désormais un bouton par effet
+embarqué au lieu d'un seul (`effects.contents[0]`) ; le handler de clic (`antique.mjs`) lit
+`data-effect-id` pour appliquer le bon effet. Mécanisme générique, réutilisable tel quel pour les
+4 autres sorts similaires (Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres,
+Glamour Divin) si demandé plus tard — pas fait ici, seuls les 2 sorts explicitement demandés
+traités. Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 23). **Bug trouvé au premier
+test** : le bouton "Appliquer sur un allié" ne répondait pas au clic (seul le premier bouton
+`.apply-spell-effect` de la carte recevait son écouteur — corrigé en v0.6.109, voir suite 24).
+**Confirmé par l'utilisateur en jeu (16 septembre 2026)** sur les deux sorts (Bénédiction des
+Titans et Danse du Serpent).
+
+## 51. ~~Bonus de caractéristique des sorts pas répercuté sur les compétences liées~~ — CORRIGÉ (16 septembre 2026, v0.6.107)
+
+Signalé juste après le correctif du point 49 : la Force augmente bien avec "Bénédiction des
+Titans", mais les compétences liées à la Force ne suivent pas. Cause : `phase: "final"`
+(Foundry) s'applique après la fin complète de `prepareDerivedData()` — trop tard, puisque les
+compétences/sauvegardes/CA/bonus d'attaque lisent `abilities.*.mod` *dans* cette même fonction,
+avant que la phase "final" n'ait eu lieu. Comparé aux "Auras" des avantages divins (qui ciblent
+`system.abilities.*.value`, un champ non recalculé plus loin, jamais touchées par ce bug) : les
+sorts ciblent volontairement `.mod` directement (bonus plus fort, cohérent avec le texte "+3" du
+sort), donc pas d'équivalent simple en changeant juste la clé visée.
+
+Corrigé en enregistrant une **phase personnalisée** `"abilities"` (`CONFIG.ActiveEffect.phases`,
+`antique.mjs`) et en appelant `this.parent.applyActiveEffects("abilities")` juste après le calcul
+de base des modificateurs dans `prepareDerivedData()` (`actor-character.mjs` **et**
+`actor-npc.mjs`, par cohérence) — juste avant tout ce qui en dépend dans la même fonction. Les 6
+sorts concernés (pas Souffle aux Pieds Legers/Initiative, qui n'a aucun dépendant plus loin dans
+la fonction) passent de `phase: "final"` à `phase: "abilities"`. Nouveau correctif
+`0.6.107-fix-spell-ability-mod-cascade` (id neuf, l'ancien `0.6.105` déjà coché ne serait pas
+réappliqué). Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 22). **Confirmé par
+l'utilisateur en jeu (16 septembre 2026)**.
+
+## 50. ~~Sous-filtres des sorts instantanés (Berserk/Druide/Morrigan)~~ — CORRIGÉ (16 septembre 2026, v0.6.106)
+
+Demande : dans l'onglet Sorts & Rituels du Navigateur de Compendium, remplacer le filtre unique
+"Sort Instantané" par un filtre dédié par école. Les 3 catégories existaient déjà comme dossiers
+du compendium et couvrent l'intégralité des 24 sorts non-rituels. Voir `JOURNAL.md`, session du
+16 septembre 2026 (suite 21). **À confirmer par l'utilisateur en jeu.**
+
+## 49. ~~Effet du sort "Bénédiction des Titans" (et 6 autres) sans effet réel~~ — CORRIGÉ (16 septembre 2026, v0.6.105)
+
+Signalé : l'effet de "Bénédiction des Titans" (+3 Force) ne modifiait pas la Force affichée sur
+la fiche, malgré l'effet embarqué et le bouton "Appliquer l'effet" fonctionnels en apparence.
+Vérifié dans le code source de Foundry (`ActiveEffectTypeDataModel`, `Actor#applyActiveEffects`)
+: chaque changement d'effet a une `phase` (`"initial"` par défaut) — `prepareDerivedData()`
+(`actor-character.mjs`) recalcule `system.abilities.*.mod` et `system.initiative` à partir de
+zéro, et ce calcul s'exécute *après* la phase `"initial"` mais *avant* la phase `"final"`. Les 7
+sorts à effet embarqué (Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel,
+Eveil du Sage, Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds Legers) ciblaient tous
+un de ces deux champs recalculés sans jamais préciser `phase: "final"` — leur bonus était donc
+systématiquement appliqué puis immédiatement écrasé, sans jamais atteindre l'affichage. Aucun des
+7 n'a jamais réellement fonctionné, malgré une note du 15 septembre affirmant l'inverse pour
+l'initiative (vérification de l'ordre théorique, mais le champ `phase` n'avait en fait jamais été
+positionné). Corrigé : `phase: "final"` ajouté aux 7 changements (`packs/sorts.db`,
+`SPELL_EFFECTS` dans `pack-updates.mjs`) + nouveau correctif `0.6.105-fix-spell-effect-phase` qui
+répare aussi les copies déjà embarquées sur un acteur **et sur un jeton non lié** (demande
+explicite de l'utilisateur, même angle mort que le point 37). Voir `JOURNAL.md`, session du
+16 septembre 2026 (suite 20). **Confirmé par l'utilisateur en jeu (16 septembre 2026)**.
 
 ## 44. EN COURS — Effet lié à la description de chaque sort (9/32 faits + 2 sorts à bonus CA, 16 septembre 2026, v0.6.102)
 

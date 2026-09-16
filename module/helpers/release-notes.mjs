@@ -5,6 +5,41 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.109": {
+    title: "Version 0.6.109 — Le bouton \"Appliquer sur un allié\" ne répondait pas",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : sur une carte de sort à deux boutons (solo + groupe), seul le premier bouton réagissait au clic — le second (souvent "Appliquer sur un allié") ne faisait rien.</li>
+      </ul>`
+  },
+  "0.6.108": {
+    title: "Version 0.6.108 — Version \"groupe\" de Bénédiction des Titans et Danse du Serpent",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Bénédiction des Titans et Danse du Serpent ont maintenant un deuxième bouton sur leur carte de lancer, "Appliquer sur un allié" (+1 au lieu de +3) — n'importe quel joueur peut se l'appliquer à lui-même sans passer par le lanceur du sort.</li>
+      </ul>`
+  },
+  "0.6.107": {
+    title: "Version 0.6.107 — Le bonus des sorts se répercute enfin sur les compétences",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le bonus de caractéristique de 6 sorts (Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin) s'affichait bien sur la caractéristique elle-même mais ne se répercutait pas sur les compétences/sauvegardes/CA/bonus d'attaque qui en dépendent. Un correctif à cocher dans l'écran de mise à jour répare les copies déjà en jeu.</li>
+      </ul>`
+  },
+  "0.6.106": {
+    title: "Version 0.6.106 — Sous-filtres des sorts instantanés",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : dans l'onglet Sorts & Rituels du Navigateur de Compendium, le filtre "Sort Instantané" est remplacé par trois filtres dédiés — Berserk, Druide, Morrigan — reflétant les dossiers déjà existants du compendium.</li>
+      </ul>`
+  },
+  "0.6.105": {
+    title: "Version 0.6.105 — Les bonus des sorts à effet s'appliquent enfin",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les 7 sorts avec un effet embarqué (Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds Legers) n'appliquaient en fait jamais leur bonus — la fiche recalculait le modificateur/l'initiative juste après, écrasant systématiquement l'effet. Un correctif à cocher dans l'écran de mise à jour répare les copies déjà en jeu (acteurs et jetons).</li>
+      </ul>`
+  },
   "0.6.104": {
     title: "Version 0.6.104 — Fiche de personnage toujours liée au jeton",
     html: `

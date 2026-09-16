@@ -200,6 +200,11 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       ab.mod = Math.floor((ab.value - 10) / 2);
     }
 
+    // Apply any effect targeting an ability modifier directly (ex. "Bénédiction des
+    // Titans") now, before anything below reads it — see the "abilities" phase
+    // registration in antique.mjs for why this can't just use Foundry's built-in "final".
+    this.parent?.applyActiveEffects("abilities");
+
     // --- Equipment-granted bonuses (CA and/or a linked skill) ---
     // Only items actually equipped (worn in a body slot) contribute — gear sitting
     // unequipped in the inventory should not affect totals. An equipped item's CA

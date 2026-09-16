@@ -428,6 +428,45 @@ export const PACK_UPDATES = [
       "plus simple déjà utilisé par Peau d'écorce — le reste de leur effet (dégâts en dé, " +
       "réduction de dégâts) n'a pas d'équivalent automatisable et reste à l'appréciation du MJ.",
     apply: applyEmbedMoreSpellEffects
+  },
+  {
+    id: "0.6.105-fix-spell-effect-phase",
+    pack: "sorts",
+    version: "0.6.105",
+    label: "Bonus des 7 sorts à effet embarqué sans effet réel (Force, Dextérité, etc.)",
+    description:
+      "Les 7 sorts avec un effet embarqué (Bénédiction des Titans, Danse du Serpent, " +
+      "Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin, " +
+      "Souffle aux Pieds Legers) n'appliquaient en fait jamais leur bonus : la fiche " +
+      "recalcule le modificateur de caractéristique/l'initiative après l'effet, qui se " +
+      "faisait donc systématiquement écraser. Corrige le compendium, toute copie déjà " +
+      "possédée par un acteur, et toute copie sur un jeton non lié à sa fiche.",
+    apply: applyFixSpellEffectPhase
+  },
+  {
+    id: "0.6.107-fix-spell-ability-mod-cascade",
+    pack: "sorts",
+    version: "0.6.107",
+    label: "Bonus de caractéristique des sorts pas répercuté sur les compétences liées",
+    description:
+      "Suite du correctif précédent : le bonus de caractéristique de 6 sorts (Bénédiction " +
+      "des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation " +
+      "des Ancêtres, Glamour Divin) s'affichait bien sur la caractéristique elle-même, " +
+      "mais pas sur les compétences/sauvegardes/CA/bonus d'attaque qui en dépendent — " +
+      "recalculés par la fiche avant que le bonus ne soit appliqué. Corrige le compendium, " +
+      "toute copie déjà possédée par un acteur, et toute copie sur un jeton non lié.",
+    apply: applyFixSpellEffectPhase
+  },
+  {
+    id: "0.6.108-embed-spell-group-effects",
+    pack: "sorts",
+    version: "0.6.108",
+    label: "Version \"groupe\" (+1) de Bénédiction des Titans et Danse du Serpent",
+    description:
+      "Ajoute un deuxième effet, plus faible (+1 au lieu de +3), avec son propre bouton " +
+      "sur la carte de lancer — n'importe quel joueur peut se l'appliquer à lui-même " +
+      "(ou l'appliquer à un allié ciblé) sans passer par le lanceur du sort.",
+    apply: applyEmbedSpellGroupEffects
   }
 ];
 
@@ -2104,37 +2143,37 @@ async function applyEmbedEffetsDesavantages() {
 const SPELL_EFFECTS = {
   "Bénédiction des Titans": {
     id: "eSrt000000000001",
-    changes: [{ key: "system.abilities.for.mod", mode: 2, value: "3" }],
-    description: "+3 Force (version solo — pour le groupe, +1 à ajuster manuellement)."
+    changes: [{ key: "system.abilities.for.mod", mode: 2, value: "3", phase: "abilities" }],
+    description: "+3 Force (version solo)."
   },
   "Danse du Serpent": {
     id: "eSrt000000000002",
-    changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "3" }],
-    description: "+3 Dextérité (version solo — pour le groupe, +1 à ajuster manuellement)."
+    changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "3", phase: "abilities" }],
+    description: "+3 Dextérité (version solo)."
   },
   "Résilience de l'Immortel": {
     id: "eSrt000000000003",
-    changes: [{ key: "system.abilities.con.mod", mode: 2, value: "3" }],
+    changes: [{ key: "system.abilities.con.mod", mode: 2, value: "3", phase: "abilities" }],
     description: "+3 Constitution (version solo — pour le groupe, +1 à ajuster manuellement)."
   },
   "Eveil du Sage": {
     id: "eSrt000000000004",
-    changes: [{ key: "system.abilities.int.mod", mode: 2, value: "3" }],
+    changes: [{ key: "system.abilities.int.mod", mode: 2, value: "3", phase: "abilities" }],
     description: "+3 Intelligence (version solo — pour le groupe, +1 à ajuster manuellement)."
   },
   "Méditation des Ancêtres": {
     id: "eSrt000000000005",
-    changes: [{ key: "system.abilities.ast.mod", mode: 2, value: "3" }],
+    changes: [{ key: "system.abilities.ast.mod", mode: 2, value: "3", phase: "abilities" }],
     description: "+3 Astuce (version solo — pour le groupe, +1 à ajuster manuellement)."
   },
   "Glamour Divin": {
     id: "eSrt000000000006",
-    changes: [{ key: "system.abilities.cha.mod", mode: 2, value: "3" }],
+    changes: [{ key: "system.abilities.cha.mod", mode: 2, value: "3", phase: "abilities" }],
     description: "+3 Charisme (version solo — pour le groupe, +1 à ajuster manuellement)."
   },
   "Souffle aux Pieds Legers": {
     id: "eSrt000000000007",
-    changes: [{ key: "system.initiative", mode: 2, value: "4" }],
+    changes: [{ key: "system.initiative", mode: 2, value: "4", phase: "final" }],
     description: "+4 Initiative (version solo — pour le groupe, +2 à ajuster manuellement)."
   }
 };
@@ -2161,6 +2200,62 @@ async function embedSpellEffect(doc) {
     _id: cfg.id, name: doc.name, img: doc.img, transfer: false, disabled: false,
     changes: cfg.changes, description: cfg.description
   }], { keepId: true });
+  return true;
+}
+
+/** A weaker version of a spell's effect, meant for an ally rather than the caster —
+ *  a separate embedded ActiveEffect (its own button on the chat card, see item.mjs)
+ *  so any player can self-serve applying it to their own token. Flagged
+ *  "spellScope": "group" purely for the chat card to pick the right button label. */
+const SPELL_GROUP_EFFECTS = {
+  "Bénédiction des Titans": {
+    id: "eSrtG00000000001",
+    changes: [{ key: "system.abilities.for.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Force (version groupe)."
+  },
+  "Danse du Serpent": {
+    id: "eSrtG00000000002",
+    changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Dextérité (version groupe)."
+  }
+};
+
+async function embedSpellGroupEffect(doc) {
+  const cfg = SPELL_GROUP_EFFECTS[doc.name];
+  if (!cfg || doc.effects.get(cfg.id)) return false;
+  await doc.createEmbeddedDocuments("ActiveEffect", [{
+    _id: cfg.id, name: `${doc.name} (Groupe)`, img: doc.img, transfer: false, disabled: false,
+    changes: cfg.changes, description: cfg.description,
+    flags: { antique: { spellScope: "group" } }
+  }], { keepId: true });
+  return true;
+}
+
+/**
+ * `system.abilities.*.mod` and `system.initiative` are both recomputed from scratch in
+ * prepareDerivedData() (actor-character.mjs) — a change applied during the default
+ * "initial" ActiveEffect phase (before prepareDerivedData runs) is silently overwritten
+ * by that recompute and never reaches the sheet. Any of the 7 embedded spell effects
+ * created before this fix (compendium, or already cast on an actor/token) is missing
+ * "phase": "final" on its change and needs patching in place — embedSpellEffect() above
+ * only creates the effect when it's entirely absent, it won't fix one that already exists.
+ */
+async function fixSpellEffectPhase(doc) {
+  const cfg = SPELL_EFFECTS[doc.name];
+  if (!cfg) return false;
+  const effect = doc.effects.get(cfg.id);
+  if (!effect) return false;
+
+  let changed = false;
+  const changes = effect.changes.map(c => {
+    const wanted = cfg.changes.find(cc => cc.key === c.key)?.phase;
+    if (!wanted || c.phase === wanted) return c;
+    changed = true;
+    return { ...c, phase: wanted };
+  });
+  if (!changed) return false;
+
+  await effect.update({ changes });
   return true;
 }
 
@@ -2214,6 +2309,82 @@ async function applyEmbedMoreSpellEffects() {
       if (item.type !== "spell") continue;
       if (await embedSpellEffect(item)) fixed++;
       if (await setSpellCaBonus(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+async function applyFixSpellEffectPhase() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixSpellEffectPhase(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await fixSpellEffectPhase(item)) fixed++;
+    }
+  }
+
+  // Unlinked tokens hold their own independent copy of their actor's items —
+  // not reachable through game.actors (see TODO_BUG_ANTIQUE.md point 37).
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await fixSpellEffectPhase(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+async function applyEmbedSpellGroupEffects() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await embedSpellGroupEffect(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await embedSpellGroupEffect(item)) fixed++;
+    }
+  }
+
+  // Unlinked tokens hold their own independent copy of their actor's items —
+  // not reachable through game.actors (see TODO_BUG_ANTIQUE.md point 37).
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await embedSpellGroupEffect(item)) fixed++;
+      }
     }
   }
 

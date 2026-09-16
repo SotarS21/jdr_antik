@@ -10,7 +10,7 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
  *
  * Each tab optionally declares how to build its filter checkboxes:
  * - `filters` + `classify(doc, packId, ctx)`: static filter list (Équipement's inventory
- *   types, Sorts' Instantané/Rituel), classify returns the matching filter key.
+ *   types, Sorts' Berserk/Druide/Morrigan/Rituel), classify returns the matching filter key.
  * - `filterByPack: true`: filter list is derived at render time from the tab's own packs
  *   (one checkbox per source pack, labelled from `pack.metadata.label`) — used by Traits and
  *   Bestiaire, where "which compendium this came from" IS the meaningful category.
@@ -48,10 +48,22 @@ const TABS = [
     key: "sorts", label: "ANTIQUE.Browser.TabSorts",
     packs: ["antique.sorts"],
     filters: [
-      { key: "instant", label: "ANTIQUE.Browser.FilterSortInstant" },
+      { key: "instant-berserk", label: "ANTIQUE.Browser.FilterSortBerserk" },
+      { key: "instant-druide", label: "ANTIQUE.Browser.FilterSortDruide" },
+      { key: "instant-morrigan", label: "ANTIQUE.Browser.FilterSortMorrigan" },
       { key: "ritual", label: "ANTIQUE.Browser.FilterRituel" }
     ],
-    classify: doc => doc.system?.ritual ? "ritual" : "instant"
+    // Every non-ritual spell currently lives in exactly one of these 3 folders (see
+    // packs/_build-sorts.js) — a ritual is classified by system.ritual, not by folder,
+    // since "Rituels"/"Rituels d'Hécate" are just how they're organized, not sub-schools.
+    classify: doc => {
+      if (doc.system?.ritual) return "ritual";
+      const folderName = doc.folder?.name;
+      if (folderName === "Sorts de Berserk — Camulos") return "instant-berserk";
+      if (folderName === "Sorts de Druide") return "instant-druide";
+      if (folderName === "Sorts de Morrigan") return "instant-morrigan";
+      return null;
+    }
   },
   {
     key: "bestiaire", label: "ANTIQUE.Browser.TabBestiaire",
