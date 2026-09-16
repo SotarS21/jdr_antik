@@ -30,6 +30,12 @@ export class AntiqueSpell extends foundry.abstract.TypeDataModel {
       templateRadius: new fields.NumberField({ initial: 25, integer: true, min: 1 }),
       templateTexture: new fields.StringField({ initial: "icons/magic/air/fog-gas-smoke-green.webp", blank: true }),
       templateColor: new fields.StringField({ initial: "#808080", blank: true }),
+      // Purely narrative spells whose effect still names a concrete die (ex. Assistance:
+      // "+1d4 sur un jet au choix", Malédiction: "-1d6") offer a "Lancer le dé" button in
+      // the chat card instead of a real ActiveEffect — no game field to hook a bonus to,
+      // but the die itself can still be rolled and posted for the table to apply by hand.
+      rollFormula: new fields.StringField({ initial: "", blank: true }),
+      rollLabel: new fields.StringField({ initial: "", blank: true }),
       // Liste déclarative des ingrédients requis pour lancer le sort (checklist +
       // décompte réel via findIngredientItems). Pour un personnage-joueur, dès que
       // ce tableau est rempli, il devient la seule source de vérité sur ce qui est

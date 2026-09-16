@@ -2,6 +2,109 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 37) — La fiche ne se rafraîchissait pas après suppression via le panneau (v0.6.121 → v0.6.122)
+
+Signalé : supprimer un effet depuis le panneau flottant ne met pas à jour l'onglet Traits de la
+fiche Personnage restée ouverte. La suppression fonctionne bien (l'effet disparaît réellement),
+seul l'affichage de la fiche ne suit pas.
+
+Cause, cohérente avec tout le reste du système : ce projet ne compte jamais sur le re-rendu
+automatique de Foundry pour un changement de document embarqué — chaque bouton qui mute un
+effet appelle explicitement `refreshSheet()` (voir tous les points "focus perdu" 13b/30/43/46,
+et `applyCaBonus()`/`applyEffectChanges()` dans `actor.mjs`). Le clic de suppression du panneau
+d'effets (`effects-panel.mjs`, point 48) n'avait jamais reçu cet appel.
+
+Corrigé : `effect.delete().then(() => refreshSheet(effect.parent)).catch(() => {})` — `refreshSheet()`
+importé depuis `sheet-utils.mjs`.
+
+**Fichiers modifiés** : `module/apps/effects-panel.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 36) — Description manquante dans le panneau d'effets (v0.6.120 → v0.6.121)
+
+Retour de test : le nom et le rappel de suppression s'affichent, jamais la description. Cause :
+`AntiqueActor#applyCaBonus()`/`applyEffectChanges()` — le mécanisme générique derrière tous les
+boutons "Appliquer l'effet" — créent un ActiveEffect entièrement neuf sur l'acteur cible avec
+seulement `{name, icon, changes, transfer, showIcon}` ; la description du sort/de l'effet
+d'origine (celle qu'on lit très bien sur l'objet Sort lui-même) n'était simplement jamais copiée
+vers ce nouvel effet.
+
+Corrigé : les deux méthodes acceptent un paramètre `description` optionnel désormais transmis à
+la création ET à la mise à jour de l'effet. `applyCaBonus()` (pas de texte riche disponible côté
+bouton, seulement un montant) synthétise une description de repli (`+2 CA`, etc.) si aucune
+n'est fournie. Le site d'appel de `applyEffectChanges()` (`antique.mjs`, bouton
+`.apply-spell-effect`) transmet `spellEffect.description` — la description déjà écrite sur
+l'effet embarqué du sort (ex. "+3 Force (version solo).").
+
+**Fichiers modifiés** : `module/documents/actor.mjs`, `antique.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 35) — Panneau d'effets : icônes agrandies + infobulle complète (v0.6.119 → v0.6.120)
+
+Retour immédiat sur le repositionnement : icônes trop petites, infobulle limitée au nom.
+Icônes doublées (32px → 64px, `#antique-effects-panel .antique-effects-panel-icon`).
+Infobulle native (`icon.title`) enrichie : nom + description (convertie de HTML en texte brut
+via un `<div>` temporaire, `stripHtml()`) + rappel "Clic gauche pour retirer l'effet." (nouvelle
+clé `ANTIQUE.EffectsPanel.RemoveHint`, fr + en), les trois lignes jointes par `\n` (le `title`
+natif du navigateur affiche les retours à la ligne).
+
+**Fichiers modifiés** : `css/antique.css`, `module/apps/effects-panel.mjs`, `lang/fr.json`,
+`lang/en.json`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 34) — Panneau d'effets déplacé en haut à droite (v0.6.118 → v0.6.119)
+
+Demande : le panneau d'effets flottant (point 48) était en bas à gauche — le repositionner en
+haut à droite, près du chat. Pur CSS (`#antique-effects-panel`) : `right: calc(var(--sidebar-width,
+300px) + 10px)` (variable native de Foundry pour la largeur de la barre latérale — reste
+adjacent même si l'utilisateur la redimensionne ou la replie), `top: 6px` au lieu de
+`bottom: 66px`, `flex-direction: column` au lieu de `column-reverse` (les icônes s'empilent
+maintenant vers le bas depuis le haut, cohérent avec l'ancrage). Aucun changement JS —
+`effects-panel.mjs` n'avait aucune logique de positionnement en dur.
+
+**Fichiers modifiés** : `css/antique.css`, `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 33) — Bouton "Lancer le dé" pour Assistance/Malédiction (v0.6.117 → v0.6.118)
+
+Demande : ajouter des effets à tous les sorts de Druide. Audit des 10 sorts du dossier :
+Peau d'écorce (`caBonus`) et Brouillard (`hasTemplate`) déjà mécanisés ; les 8 restants sont
+purement narratifs — aucun champ système existant ne correspond à leur effet (bonus/malus de dé
+variable à une action au choix, création d'objet + soin en dé, localisation, communication, sens
+emprunté), même discipline que les ~22 sorts déjà exclus au point 44.
+
+Question posée à l'utilisateur : inventer un nouveau mécanisme de bonus/malus de dé pour
+Assistance/Malédiction (les deux avec un dé précis dans leur texte), ou les laisser narratifs ?
+Réponse : pas un nouveau mécanisme de jeu, mais un bouton qui lance directement le dé nommé
+dans la description, à appliquer manuellement — plus simple, ne prétend pas automatiser un
+système qui n'existe pas encore.
+
+**Ajouté** : `system.rollFormula`/`system.rollLabel` (`item-spell.mjs`) — un sort avec une
+formule définie affiche un bouton "Lancer {label}" sur sa carte (`item.mjs`, même position que
+les boutons d'effet/gabarit existants). Handler de clic (`antique.mjs`, `.roll-spell-formula`) :
+`new Roll(formula).evaluate()` + `toMessage()`, résultat posté au chat, appliqué à la main par
+la table — pas d'ActiveEffect, cohérent avec la nature purement narrative de ces sorts.
+Appliqué à Assistance (+1d4) et Malédiction (-1d6), descriptions retravaillées pour un peu plus
+de texture narrative en gardant le texte mécanique. Nouveau correctif `PACK_UPDATES`
+(`0.6.118-spell-roll-formulas`).
+
+Les 6 autres sorts narratifs du dossier (Baie nourricière, les 2 Localisation, Sens animal,
+Gland des quatre chemins, Langue de frêne) restent inchangés — pas de dé unique et précis à
+automatiser sans sortir du cadre de la demande.
+
+**Fichiers modifiés** : `module/data-models/items/item-spell.mjs`, `module/documents/item.mjs`,
+`antique.mjs`, `packs/sorts.db`, `packs/_json-mirrors/sorts.json` (régénéré),
+`module/helpers/pack-updates.mjs`, `lang/fr.json`, `lang/en.json`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 16 septembre 2026 (suite 32) — Les gains de Points de Chance n'avaient aucun effet visible (v0.6.116 → v0.6.117)
 
 Retour de test sur le point précédent : les boutons de Grâce des Astres Alignés ne mettent pas

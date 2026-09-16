@@ -419,9 +419,21 @@ export class AntiqueItem extends Item {
         </button>`;
     }
 
+    // 8. Purely narrative spells that still name a concrete die (ex. Assistance: +1d4,
+    // Malédiction: -1d6) offer a "Lancer le dé" button — no game field to automate, but
+    // the roll itself doesn't need to be manual.
+    let rollFormulaButton = "";
+    if (this.system.rollFormula) {
+      const label = this.system.rollLabel || this.system.rollFormula;
+      rollFormulaButton = `
+        <button type="button" class="roll-spell-formula" data-formula="${this.system.rollFormula}" data-roll-label="${label}" data-spell-name="${this.name}">
+          <i class="fas fa-dice"></i> ${game.i18n.format("ANTIQUE.Spell.RollFormula", { label })}
+        </button>`;
+    }
+
     await ChatMessage.create({
       speaker,
-      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}</div>`
+      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}${rollFormulaButton}</div>`
     });
   }
 

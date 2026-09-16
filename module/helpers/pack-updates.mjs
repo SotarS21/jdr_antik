@@ -521,6 +521,17 @@ export const PACK_UPDATES = [
       "n'existait pas encore). Ajoute les deux boutons, comme les 7 autres sorts à " +
       "effet embarqué.",
     apply: applyEmbedGraceAstresEffects
+  },
+  {
+    id: "0.6.118-spell-roll-formulas",
+    pack: "sorts",
+    version: "0.6.118",
+    label: "Bouton \"Lancer le dé\" pour Assistance et Malédiction",
+    description:
+      "Ces deux sorts restent purement narratifs (aucun champ système ne correspond à " +
+      "leur effet) mais nomment un dé précis (+1d4 / -1d6) — ajoute un bouton sur la " +
+      "carte de lancer pour le lancer directement, à appliquer manuellement.",
+    apply: applySpellRollFormulas
   }
 ];
 
@@ -2187,6 +2198,70 @@ async function applyEmbedEffetsDesavantages() {
       const entry = byName.get(cleanName(item.name));
       if (!entry) continue;
       if (await linkAndEmbedDesavantage(item, entry)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 2 entries as the direct edit to packs/sorts.db — kept in sync by hand. Purely
+ *  narrative spells that still name a concrete die (no game field to hook a real
+ *  ActiveEffect to) get a "Lancer le dé" button instead (see item.mjs's
+ *  ".roll-spell-formula" button / antique.mjs's matching click hook). */
+const SPELL_ROLL_FORMULAS = {
+  "Assistance": {
+    rollFormula: "1d4",
+    rollLabel: "Bonus d'Assistance (+1d4)",
+    description: "<p>La faveur du druide effleure un allié, aiguisant son geste au moment décisif.</p><p><em>Effet :</em> permet à un allié de jeter un d4 supplémentaire lors de l'action de son choix.</p>"
+  },
+  "Malédiction": {
+    rollFormula: "1d6",
+    rollLabel: "Malus de Malédiction (-1d6)",
+    description: "<p>Le druide murmure une formule ancienne, jetant l'infortune sur sa cible.</p><p><em>Effet :</em> force un malus d'un d6 à la cible de son choix.</p>"
+  }
+};
+
+async function setSpellRollFormula(doc) {
+  const cfg = SPELL_ROLL_FORMULAS[doc.name];
+  if (!cfg || doc.system.rollFormula === cfg.rollFormula) return false;
+  await doc.update({
+    "system.rollFormula": cfg.rollFormula,
+    "system.rollLabel": cfg.rollLabel,
+    "system.description": cfg.description
+  });
+  return true;
+}
+
+async function applySpellRollFormulas() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setSpellRollFormula(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await setSpellRollFormula(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await setSpellRollFormula(item)) fixed++;
+      }
     }
   }
 

@@ -254,9 +254,12 @@ export class AntiqueActor extends Actor {
    * @param {{name: string, icon?: string}} options
    * @returns {Promise<{before: number, after: number, amount: number}>}
    */
-  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg" }) {
+  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg", description }) {
     const before = this.system.ca.total;
     const changes = [{ key: "system.ca.temp", mode: 2, value: String(amount) }];
+    // Falls back to a synthesized label (no rich text available at the CA-bonus call
+    // sites) so the effects panel's tooltip always has something beyond just the name.
+    const effectDescription = description || `${amount >= 0 ? "+" : ""}${amount} CA`;
 
     // showIcon: ALWAYS — without it, Foundry's default (CONDITIONAL) only draws a
     // token badge for effects with a real duration (see Token#_drawEffects), which
@@ -266,9 +269,9 @@ export class AntiqueActor extends Actor {
     // otherwise keep its stale CONDITIONAL default forever, only ever hitting the
     // update branch from here on.
     const existing = this.effects.find(e => e.name === name);
-    if (existing) await existing.update({ changes, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+    if (existing) await existing.update({ changes, description: effectDescription, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
     else await this.createEmbeddedDocuments("ActiveEffect", [{
-      name, icon, changes, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+      name, icon, changes, description: effectDescription, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
     }]);
 
     const after = this.system.ca.total;
@@ -291,7 +294,7 @@ export class AntiqueActor extends Actor {
    * @param {object[]} changes - Raw ActiveEffect change data ({key, mode, value}).
    * @param {{name: string, icon?: string}} options
    */
-  async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg" }) {
+  async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg", description }) {
     // system.pointsChance is a plain, freely-editable counter, not a temporary buff —
     // a persistent ActiveEffect would defeat manually spending it (editing the number
     // down would do nothing, since the effect keeps re-adding its bonus every render),
@@ -309,9 +312,9 @@ export class AntiqueActor extends Actor {
       // showIcon: ALWAYS on both branches — see the identical comment in
       // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
       const existing = this.effects.find(e => e.name === name);
-      if (existing) await existing.update({ changes: otherChanges, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+      if (existing) await existing.update({ changes: otherChanges, description, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
       else await this.createEmbeddedDocuments("ActiveEffect", [{
-        name, icon, changes: otherChanges, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+        name, icon, changes: otherChanges, description, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
       }]);
     }
     refreshSheet(this);

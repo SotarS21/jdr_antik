@@ -5,6 +5,42 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.122": {
+    title: "Version 0.6.122 — La fiche ne se rafraîchissait pas après suppression d'un effet",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : supprimer un effet depuis le panneau flottant ne mettait pas à jour visuellement la liste des effets dans l'onglet Traits de la fiche restée ouverte (la suppression elle-même fonctionnait bien).</li>
+      </ul>`
+  },
+  "0.6.121": {
+    title: "Version 0.6.121 — Description manquante dans le panneau d'effets",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : un effet appliqué depuis un bouton de sort (Bénédiction des Titans, Peau d'écorce, etc.) n'avait pas de description — l'effet créé sur l'acteur ne récupérait jamais le texte de l'effet d'origine. L'infobulle du panneau d'effets affiche maintenant la description.</li>
+      </ul>`
+  },
+  "0.6.120": {
+    title: "Version 0.6.120 — Panneau d'effets : icônes agrandies + infobulle complète",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : les icônes du panneau d'effets flottant sont deux fois plus grandes.</li>
+        <li><strong>Ajouté</strong> : survoler une icône affiche maintenant son nom, sa description, et le rappel "Clic gauche pour retirer l'effet."</li>
+      </ul>`
+  },
+  "0.6.119": {
+    title: "Version 0.6.119 — Panneau d'effets déplacé en haut à droite",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : le panneau d'effets flottant (jeton sélectionné) est déplacé en haut à droite de l'écran, juste à côté de la barre latérale (chat), au lieu d'en bas à gauche.</li>
+      </ul>`
+  },
+  "0.6.118": {
+    title: "Version 0.6.118 — Bouton \"Lancer le dé\" pour les sorts purement narratifs",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Assistance (+1d4) et Malédiction (-1d6) — sorts sans équivalent mécanique existant — affichent désormais un bouton pour lancer directement le dé nommé dans leur effet, à appliquer manuellement.</li>
+      </ul>`
+  },
   "0.6.117": {
     title: "Version 0.6.117 — Les gains de Points de Chance s'appliquent enfin",
     html: `

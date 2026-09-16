@@ -453,6 +453,61 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
+## 66. ~~Suppression d'un effet depuis le panneau — fiche pas rafraîchie~~ — CORRIGÉ (16 septembre 2026, v0.6.122)
+
+Signalé : supprimer un effet via le panneau flottant ne met pas à jour visuellement la liste
+des effets dans l'onglet Traits de la fiche restée ouverte. Cause : ce système ne s'appuie
+jamais sur le re-rendu automatique de Foundry pour les changements de document embarqué —
+chaque point de mutation appelle explicitement `refreshSheet()` (voir `actor.mjs`,
+`sheet-utils.mjs`) ; le clic de suppression du panneau (`effects-panel.mjs`, ajouté au point 48)
+avait été oublié à ce moment-là. Corrigé : `effect.delete().then(() => refreshSheet(effect.parent))`.
+Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 37). **Confirmé par l'utilisateur en jeu
+(16 septembre 2026)**.
+
+## 65. ~~Panneau d'effets — description toujours vide~~ — CORRIGÉ (16 septembre 2026, v0.6.121)
+
+Signalé après le point 64 : la description ne s'affiche jamais dans l'infobulle. Cause :
+`AntiqueActor#applyCaBonus()`/`applyEffectChanges()` (le mécanisme derrière tous les boutons
+"Appliquer l'effet") créent un **nouvel** ActiveEffect sur l'acteur avec seulement `name`/`icon`/
+`changes` — la description du sort d'origine n'a jamais été transmise. Corrigé : les deux
+méthodes acceptent désormais un paramètre `description` optionnel, transmis à l'effet créé/
+mis à jour ; `applyCaBonus()` synthétise une description de repli (`+N CA`) si aucune n'est
+fournie (les boutons CA-bonus n'ont pas de texte riche disponible côté DOM) ; le site d'appel de
+`applyEffectChanges()` (`antique.mjs`) transmet `spellEffect.description`. Voir `JOURNAL.md`,
+session du 16 septembre 2026 (suite 36). **À confirmer par l'utilisateur en jeu.**
+
+## 64. ~~Panneau d'effets — icônes trop petites + infobulle incomplète~~ — CORRIGÉ (16 septembre 2026, v0.6.120)
+
+Suite du point 63 : icônes doublées de taille (32px → 64px), et l'infobulle native (déjà
+présente, juste le nom) enrichie avec la description de l'effet et le rappel "Clic gauche pour
+retirer l'effet." (nouvelle clé `ANTIQUE.EffectsPanel.RemoveHint`). Description HTML convertie
+en texte brut pour l'infobulle (`stripHtml()`, `effects-panel.mjs`). Voir `JOURNAL.md`, session
+du 16 septembre 2026 (suite 35). **À confirmer par l'utilisateur en jeu.**
+
+## 63. ~~Repositionner le panneau d'effets~~ — CORRIGÉ (16 septembre 2026, v0.6.119)
+
+Le panneau d'effets flottant du point 48 était positionné en bas à gauche — demandé : le
+déplacer en haut à droite, près du chat. `right: calc(var(--sidebar-width, 300px) + 10px)`
+(variable CSS native de Foundry, reste juste à côté de la barre latérale même si l'utilisateur
+la redimensionne/replie), `top: 6px`, `flex-direction: column` (au lieu de `column-reverse`,
+cohérent avec un ancrage en haut plutôt qu'en bas). Voir `JOURNAL.md`, session du 16 septembre
+2026 (suite 34). **À confirmer par l'utilisateur en jeu.**
+
+## 62. ~~Effets pour tous les sorts de Druide~~ — CORRIGÉ (16 septembre 2026, v0.6.118)
+
+Audit des 10 sorts du dossier "Sorts de Druide" : Peau d'écorce (déjà mécanisé, `caBonus`) et
+Brouillard (déjà mécanisé, gabarit de zone) n'avaient rien à ajouter. Les 8 autres sont
+purement narratifs, aucun champ système existant ne correspond à leur effet (même discipline
+que le point 44). Décision avec l'utilisateur : pas de nouveau mécanisme de bonus/malus de
+caractéristique pour ça, mais nouveau **bouton "Lancer le dé"** générique (`system.rollFormula`/
+`rollLabel`, `item-spell.mjs`) — appliqué à **Assistance** (+1d4) et **Malédiction** (-1d6), les
+deux sorts qui nomment un dé précis dans leur texte. Le résultat est manuel (le joueur/MJ
+l'applique lui-même), pas une ActiveEffect. Description narrative retravaillée pour les deux.
+Les 6 autres (Baie nourricière, Localisation ×2, Sens animal, Gland des quatre chemins, Langue
+de frêne) restent tels quels — pas de dé unique et précis à automatiser (formule variable ou
+absente). Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 33). **À confirmer par
+l'utilisateur en jeu** — nécessite de cocher le nouveau correctif dans l'écran de mise à jour.
+
 ## 61. ~~Gains de Points de Chance sans effet réel~~ — CORRIGÉ (16 septembre 2026, v0.6.117)
 
 Signalé après test du point 60 : les boutons ne mettent pas à jour le compteur. Cause :

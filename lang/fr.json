@@ -327,6 +327,7 @@
   "ANTIQUE.Spell.TemplateTextureHint": "Chemin d'une image (ex. icons/magic/air/fog-gas-smoke-green.webp) utilisée comme remplissage du gabarit.",
   "ANTIQUE.Spell.TemplateColor": "Couleur du gabarit",
   "ANTIQUE.Spell.PlaceTemplate": "Placer un gabarit",
+  "ANTIQUE.Spell.RollFormula": "Lancer {label}",
   "ANTIQUE.Spell.NoActiveScene": "Aucune scène active sur laquelle placer le gabarit.",
   "ANTIQUE.Description": "Description",
 
@@ -449,6 +450,7 @@
   "ANTIQUE.Effect.Applied": "Effet appliqu\u00e9",
   "ANTIQUE.Effect.ApplyHealButton": "Appliquer le soin (+{amount} PV)",
   "ANTIQUE.Effect.HealApplied": "Soin appliqu\u00e9",
+  "ANTIQUE.EffectsPanel.RemoveHint": "Clic gauche pour retirer l'effet.",
   "ANTIQUE.Damage.ApplyButton": "Appliquer les d\u00e9g\u00e2ts ({amount})",
   "ANTIQUE.Damage.Applied": "D\u00e9g\u00e2ts appliqu\u00e9s",
   "ANTIQUE.Damage.NoTarget": "Aucune cible ! Ciblez ou s\u00e9lectionnez un ou plusieurs tokens.",

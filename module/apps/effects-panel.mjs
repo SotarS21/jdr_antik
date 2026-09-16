@@ -16,7 +16,17 @@
  * actually think of as "a temporary status currently affecting me".
  */
 
+import { refreshSheet } from "../helpers/sheet-utils.mjs";
+
 let panelEl = null;
+
+/** Plain-text rendering of an effect's (HTML) description, for the icon's native tooltip. */
+function stripHtml(html) {
+  if (!html) return "";
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return (el.textContent ?? "").trim();
+}
 
 function ensurePanel() {
   if (panelEl) return panelEl;
@@ -52,7 +62,11 @@ function refreshEffectsPanel() {
     const icon = document.createElement("div");
     icon.className = "antique-effects-panel-icon";
     if (effect.disabled) icon.classList.add("disabled");
-    icon.title = effect.name;
+    icon.title = [
+      effect.name,
+      stripHtml(effect.description),
+      game.i18n.localize("ANTIQUE.EffectsPanel.RemoveHint")
+    ].filter(Boolean).join("\n");
     const img = document.createElement("img");
     img.src = effect.img;
     icon.appendChild(img);
@@ -60,8 +74,11 @@ function refreshEffectsPanel() {
     // existing .actor-effect-delete pattern on the character sheet's own Traits tab.
     // .catch(): a denied delete (e.g. no permission) rejects the promise — Foundry's
     // own document layer already shows a ui.notifications.error for that, so nothing
-    // more to do here, just avoid an unhandled-rejection console error.
-    icon.addEventListener("click", () => effect.delete().catch(() => {}));
+    // more to do here, just avoid an unhandled-rejection console error. This sheet
+    // never auto-refreshes on its own actor's embedded-document changes (every mutation
+    // path in this system calls refreshSheet() explicitly, see actor.mjs) — without it,
+    // deleting from here leaves the Traits tab's own Effets list visually stale.
+    icon.addEventListener("click", () => effect.delete().then(() => refreshSheet(effect.parent)).catch(() => {}));
     el.appendChild(icon);
   }
 }

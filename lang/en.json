@@ -327,6 +327,7 @@
   "ANTIQUE.Spell.TemplateTextureHint": "Path to an image (e.g. icons/magic/air/fog-gas-smoke-green.webp) used to fill the template.",
   "ANTIQUE.Spell.TemplateColor": "Template color",
   "ANTIQUE.Spell.PlaceTemplate": "Place template",
+  "ANTIQUE.Spell.RollFormula": "Roll {label}",
   "ANTIQUE.Spell.NoActiveScene": "No active scene to place the template on.",
   "ANTIQUE.Description": "Description",
 
@@ -448,6 +449,7 @@
   "ANTIQUE.Effect.ApplyGroupButton": "Apply to an ally ({changes})",
   "ANTIQUE.Effect.ApplyHealButton": "Apply heal (+{amount} HP)",
   "ANTIQUE.Effect.HealApplied": "Heal applied",
+  "ANTIQUE.EffectsPanel.RemoveHint": "Left-click to remove the effect.",
   "ANTIQUE.Effect.Applied": "Effect applied",
   "ANTIQUE.Damage.ApplyButton": "Apply damage ({amount})",
   "ANTIQUE.Damage.Applied": "Damage applied",
