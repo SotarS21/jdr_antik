@@ -467,6 +467,37 @@ export const PACK_UPDATES = [
       "sur la carte de lancer — n'importe quel joueur peut se l'appliquer à lui-même " +
       "(ou l'appliquer à un allié ciblé) sans passer par le lanceur du sort.",
     apply: applyEmbedSpellGroupEffects
+  },
+  {
+    id: "0.6.110-embed-spell-group-effect-eveil-du-sage",
+    pack: "sorts",
+    version: "0.6.110",
+    label: "Version \"groupe\" (+1) d'Eveil du Sage",
+    description:
+      "Suite du correctif précédent : Eveil du Sage reçoit lui aussi un deuxième effet " +
+      "(+1 Intelligence au lieu de +3), avec son propre bouton sur la carte de lancer.",
+    apply: applyEmbedSpellGroupEffects
+  },
+  {
+    id: "0.6.111-embed-spell-group-effects-batch2",
+    pack: "sorts",
+    version: "0.6.111",
+    label: "Version \"groupe\" (+1) de Résilience de l'Immortel, Méditation des Ancêtres, Glamour Divin",
+    description:
+      "Suite des correctifs précédents : ces 3 sorts reçoivent eux aussi un deuxième " +
+      "effet (+1 au lieu de +3), avec son propre bouton sur la carte de lancer.",
+    apply: applyEmbedSpellGroupEffects
+  },
+  {
+    id: "0.6.112-embed-spell-group-effect-souffle",
+    pack: "sorts",
+    version: "0.6.112",
+    label: "Version \"groupe\" (+2) de Souffle aux Pieds Legers",
+    description:
+      "Suite des correctifs précédents : Souffle aux Pieds Legers reçoit lui aussi un " +
+      "deuxième effet (+2 Initiative au lieu de +4), avec son propre bouton sur la carte " +
+      "de lancer.",
+    apply: applyEmbedSpellGroupEffects
   }
 ];
 
@@ -2154,27 +2185,27 @@ const SPELL_EFFECTS = {
   "Résilience de l'Immortel": {
     id: "eSrt000000000003",
     changes: [{ key: "system.abilities.con.mod", mode: 2, value: "3", phase: "abilities" }],
-    description: "+3 Constitution (version solo — pour le groupe, +1 à ajuster manuellement)."
+    description: "+3 Constitution (version solo)."
   },
   "Eveil du Sage": {
     id: "eSrt000000000004",
     changes: [{ key: "system.abilities.int.mod", mode: 2, value: "3", phase: "abilities" }],
-    description: "+3 Intelligence (version solo — pour le groupe, +1 à ajuster manuellement)."
+    description: "+3 Intelligence (version solo)."
   },
   "Méditation des Ancêtres": {
     id: "eSrt000000000005",
     changes: [{ key: "system.abilities.ast.mod", mode: 2, value: "3", phase: "abilities" }],
-    description: "+3 Astuce (version solo — pour le groupe, +1 à ajuster manuellement)."
+    description: "+3 Astuce (version solo)."
   },
   "Glamour Divin": {
     id: "eSrt000000000006",
     changes: [{ key: "system.abilities.cha.mod", mode: 2, value: "3", phase: "abilities" }],
-    description: "+3 Charisme (version solo — pour le groupe, +1 à ajuster manuellement)."
+    description: "+3 Charisme (version solo)."
   },
   "Souffle aux Pieds Legers": {
     id: "eSrt000000000007",
     changes: [{ key: "system.initiative", mode: 2, value: "4", phase: "final" }],
-    description: "+4 Initiative (version solo — pour le groupe, +2 à ajuster manuellement)."
+    description: "+4 Initiative (version solo)."
   }
 };
 
@@ -2217,6 +2248,31 @@ const SPELL_GROUP_EFFECTS = {
     id: "eSrtG00000000002",
     changes: [{ key: "system.abilities.dex.mod", mode: 2, value: "1", phase: "abilities" }],
     description: "+1 Dextérité (version groupe)."
+  },
+  "Eveil du Sage": {
+    id: "eSrtG00000000003",
+    changes: [{ key: "system.abilities.int.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Intelligence (version groupe)."
+  },
+  "Résilience de l'Immortel": {
+    id: "eSrtG00000000004",
+    changes: [{ key: "system.abilities.con.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Constitution (version groupe)."
+  },
+  "Méditation des Ancêtres": {
+    id: "eSrtG00000000005",
+    changes: [{ key: "system.abilities.ast.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Astuce (version groupe)."
+  },
+  "Glamour Divin": {
+    id: "eSrtG00000000006",
+    changes: [{ key: "system.abilities.cha.mod", mode: 2, value: "1", phase: "abilities" }],
+    description: "+1 Charisme (version groupe)."
+  },
+  "Souffle aux Pieds Legers": {
+    id: "eSrtG00000000007",
+    changes: [{ key: "system.initiative", mode: 2, value: "2", phase: "final" }],
+    description: "+2 Initiative (version groupe)."
   }
 };
 

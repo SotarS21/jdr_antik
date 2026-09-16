@@ -2,6 +2,48 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 27) — Version "groupe" de Souffle aux Pieds Legers (v0.6.111 → v0.6.112)
+
+Dernier des 7 sorts à effet embarqué à recevoir sa version groupe : +2 Initiative au lieu de +4.
+Seul cas des 7 à rester en `phase: "final"` (pas `"abilities"`) pour son effet, groupe compris —
+`system.initiative` n'a aucune dépendance en cascade dans `prepareDerivedData()` (rien ne le lit
+plus loin dans la fonction), donc la phase native "final" suffit, contrairement aux 6 sorts de
+caractéristique. Nouveau correctif `0.6.112-embed-spell-group-effect-souffle`.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `packs/sorts.db`,
+`packs/_json-mirrors/sorts.json` (régénéré), `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 26) — Version "groupe" des 3 derniers sorts de caractéristique (v0.6.110 → v0.6.111)
+
+Suite des points précédents : Résilience de l'Immortel (+1 Constitution), Méditation des
+Ancêtres (+1 Astuce), Glamour Divin (+1 Charisme) — même mécanisme générique, aucun changement
+de code, juste 3 nouvelles entrées `SPELL_GROUP_EFFECTS` + effets ajoutés dans `packs/sorts.db`
++ nouveau correctif `0.6.111-embed-spell-group-effects-batch2`. Les 6 sorts à bonus de
+caractéristique du point 44 ont désormais tous leur version groupe. Reste "Souffle aux Pieds
+Legers" (Initiative, +4/+2), pas encore demandé — sa description mentionne toujours "à ajuster
+manuellement", même mécanisme applicable si demandé (mais phase `"final"`, pas `"abilities"`,
+puisque `system.initiative` n'a pas la même dépendance en cascade — voir suite 22).
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `packs/sorts.db`,
+`packs/_json-mirrors/sorts.json` (régénéré), `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
+## Session du 16 septembre 2026 (suite 25) — Version "groupe" d'Eveil du Sage (v0.6.109 → v0.6.110)
+
+Extension demandée du point précédent : même traitement pour Eveil du Sage (+1 Intelligence).
+Mécanisme déjà générique (voir suite 23) — pure entrée de données, aucun changement de code :
+`SPELL_GROUP_EFFECTS["Eveil du Sage"]` (`pack-updates.mjs`), deuxième effet ajouté dans
+`packs/sorts.db`, nouveau correctif `0.6.110-embed-spell-group-effect-eveil-du-sage` (id neuf,
+réutilise `applyEmbedSpellGroupEffects()` sans modification).
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `packs/sorts.db`,
+`packs/_json-mirrors/sorts.json` (régénéré), `module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 16 septembre 2026 (suite 24) — Deuxième bouton de carte de sort inerte (v0.6.108 → v0.6.109)
 
 Retour de test immédiat sur le point précédent : le bouton "Appliquer sur un allié" s'affiche

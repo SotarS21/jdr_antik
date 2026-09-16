@@ -5,6 +5,27 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.112": {
+    title: "Version 0.6.112 — Version \"groupe\" de Souffle aux Pieds Legers",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Souffle aux Pieds Legers a maintenant lui aussi un bouton "Appliquer sur un allié" (+2 Initiative au lieu de +4) sur sa carte de lancer — les 7 sorts à effet embarqué ont désormais tous leur version groupe.</li>
+      </ul>`
+  },
+  "0.6.111": {
+    title: "Version 0.6.111 — Version \"groupe\" pour les 3 derniers sorts de caractéristique",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Résilience de l'Immortel, Méditation des Ancêtres et Glamour Divin ont maintenant eux aussi un bouton "Appliquer sur un allié" (+1 au lieu de +3) sur leur carte de lancer.</li>
+      </ul>`
+  },
+  "0.6.110": {
+    title: "Version 0.6.110 — Version \"groupe\" d'Eveil du Sage",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Eveil du Sage a maintenant lui aussi un deuxième bouton sur sa carte de lancer, "Appliquer sur un allié" (+1 Intelligence au lieu de +3).</li>
+      </ul>`
+  },
   "0.6.109": {
     title: "Version 0.6.109 — Le bouton \"Appliquer sur un allié\" ne répondait pas",
     html: `

@@ -453,6 +453,34 @@ Même famille que les points 13b/30 : `_onDropItem()` (fiches Personnage et PNJ)
 été mis à jour avec `captureFocusState`/`restoreFocusState`. Voir `JOURNAL.md`, session du
 15 septembre 2026 (suite 11). **À confirmer par l'utilisateur en jeu.**
 
+## 55. ~~Version "groupe" de Souffle aux Pieds Legers~~ — CORRIGÉ (16 septembre 2026, v0.6.112)
+
+Dernier des 7 sorts à effet embarqué (point 44) à recevoir sa version groupe (+2 Initiative au
+lieu de +4) — `system.initiative`, `phase: "final"` (pas `"abilities"`, aucune dépendance en
+cascade pour l'Initiative, voir suite 22). Les 7 sorts ont désormais tous leur bouton "Appliquer
+sur un allié". Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 27). **Confirmé par
+l'utilisateur en jeu (16 septembre 2026)**.
+
+## 54. ~~Version "groupe" de Résilience de l'Immortel, Méditation des Ancêtres, Glamour Divin~~ — CORRIGÉ (16 septembre 2026, v0.6.111)
+
+Suite des points 52/53 : les 3 derniers sorts à bonus de caractéristique reçoivent le même
+traitement (+1 au lieu de +3, bouton dédié). Toujours aucun nouveau code — entrées de données
+dans `SPELL_GROUP_EFFECTS` + `packs/sorts.db` + nouveau correctif `0.6.111`. Les 6 sorts à
+bonus de caractéristique (voir point 44) ont désormais tous leur version groupe. Reste
+**Souffle aux Pieds Legers** (Initiative, +4 solo / +2 groupe selon sa description) — pas encore
+demandé par l'utilisateur, description encore au texte "à ajuster manuellement" ; à traiter si
+demandé (même mécanisme, cible `system.initiative` en phase `"final"` au lieu de `"abilities"`).
+Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 26). **À confirmer par l'utilisateur en
+jeu** — nécessite de cocher le nouveau correctif dans l'écran de mise à jour.
+
+## 53. ~~Version "groupe" d'Eveil du Sage~~ — CORRIGÉ (16 septembre 2026, v0.6.110)
+
+Suite du point 52, à la demande de l'utilisateur : même traitement pour Eveil du Sage (+1
+Intelligence au lieu de +3). Aucun nouveau code — juste une entrée de données dans
+`SPELL_GROUP_EFFECTS` + `packs/sorts.db` + nouveau correctif `0.6.110` (réutilise
+`applyEmbedSpellGroupEffects()`, déjà générique). Voir `JOURNAL.md`, session du 16 septembre
+2026 (suite 25). **Confirmé par l'utilisateur en jeu (16 septembre 2026)**.
+
 ## 52. ~~Version "groupe" de Bénédiction des Titans et Danse du Serpent~~ — CORRIGÉ (16 septembre 2026, v0.6.108)
 
 Demande : le texte de ces 2 sorts (et 4 autres similaires) prévoyait déjà une version plus
