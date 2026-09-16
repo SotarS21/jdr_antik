@@ -27,7 +27,7 @@ import { AntiqueItemSheet } from "./module/sheets/item-sheet.mjs";
 
 // Import helpers
 import { registerCompendiumContextMenu } from "./module/helpers/random-tables.mjs";
-import { registerMigrationSettings, migrateWorld } from "./module/helpers/migration.mjs";
+import { registerMigrationSettings, migrateWorld, registerCharacterTokenLinkDefault } from "./module/helpers/migration.mjs";
 import { registerVersionCheckSettings, checkSystemVersionUpdate } from "./module/helpers/version-check.mjs";
 import { registerPackUpdateSettings, checkPendingPackUpdates } from "./module/helpers/pack-updates.mjs";
 import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-browser.mjs";
@@ -115,6 +115,7 @@ Hooks.once("init", function () {
   registerDodgeResetHook();
   registerIngredientStockSyncHook();
   registerEffectsPanel();
+  registerCharacterTokenLinkDefault();
 
   // Preload Handlebars templates
   return preloadHandlebarsTemplates();

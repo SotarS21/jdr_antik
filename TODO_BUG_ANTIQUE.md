@@ -384,14 +384,20 @@ par l'utilisateur en jeu** — nécessite de cocher le correctif "7 premiers obj
 dans l'écran de mise à jour (MJ), le nouveau compendium étant vide tant qu'il n'est pas
 appliqué.
 
-## 37. Fiches PNJ (via jeton) et fiche perso pas synchronisées — EN ATTENTE D'INFO (15 septembre 2026)
+## 37. ~~Fiches PNJ (via jeton) et fiche perso pas synchronisées~~ — CORRIGÉ (16 septembre 2026, v0.6.104)
 
-Signalé : les valeurs divergent entre la fiche ouverte via un jeton et celle ouverte depuis
-l'onglet Acteurs, pour un jeton confirmé "lié" (Actor Link coché) — ce qui, par conception de
-Foundry, devrait rendre les deux fiches strictement identiques (même document). Aucune cause
-trouvée dans le code (aucun override suspect autour de `token.actor`/mise en cache de fiche).
-**Bloqué en attente d'un exemple concret** : quel champ précis diverge, et confirmation qu'il
-s'agit bien du même acteur (pas deux acteurs distincts portant le même nom).
+Diagnostiqué en jeu avec l'utilisateur (personnage "Antalios") : `token.document.actorLink`
+valait `false` — le jeton n'était en fait **pas lié** à sa fiche Acteur, contrairement à ce qui
+avait été supposé au premier signalement (15 septembre). Comportement Foundry par conception (un
+jeton non lié porte sa propre copie de données), pas un bug du système — mais confirmé que
+l'utilisateur veut que le jeton fasse toujours autorité. Choix confirmé : uniquement les
+Personnages (PJ) sont concernés, pas les PNJ/créatures (souvent placés plusieurs fois sur une
+scène depuis le même acteur, où le non-lié est voulu pour des PV indépendants). Nouvelle
+migration `0.6.104` (`migrateLinkCharacterTokens`, `module/helpers/migration.mjs`) : relie tous
+les Personnages existants (prototype + jetons déjà placés sur toute scène) ; nouveau hook
+`preCreateActor` (`registerCharacterTokenLinkDefault`) pour que tout futur Personnage créé
+naisse déjà lié par défaut. Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 18).
+**Confirmé par l'utilisateur en jeu (16 septembre 2026)** : "ça marche bien".
 
 ## 38. Redimensionnement de fenêtre parfois bloqué — EN ATTENTE D'INFO (15 septembre 2026)
 

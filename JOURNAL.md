@@ -2,6 +2,39 @@
 
 ---
 
+## Session du 16 septembre 2026 (suite 18) — Jetons de Personnage pas liés à leur fiche (v0.6.103 → v0.6.104)
+
+Reprise du point 37 (signalé le 15 septembre, resté bloqué faute d'exemple concret). Diagnostic
+fait en direct avec l'utilisateur via la console du navigateur (`canvas.tokens.controlled[0]`,
+comparaison `token.actor` vs `game.actors.get(id)`) sur le personnage "Antalios" :
+`token.document.actorLink` valait `false`. Le jeton n'était donc pas lié à sa fiche Acteur —
+comportement natif de Foundry (un jeton non lié porte sa propre copie de données, un document
+distinct), pas un bug de code. Les deux copies étaient égales au moment du test
+(`diffObject` vide), donc rien à perdre en les reliant.
+
+Demande de l'utilisateur : que ça ne se reproduise plus, sur tous les jetons créés depuis un
+acteur — et uniquement pour les Personnages (PJ), pas les PNJ/créatures (souvent placés plusieurs
+fois sur une même scène depuis le même acteur, où des jetons non liés sont voulus pour des PV
+indépendants par instance — confirmé via question explicite avant de coder).
+
+**Ajouté** :
+- Migration `0.6.104` (`migrateLinkCharacterTokens`, `module/helpers/migration.mjs`) : relie le
+  prototype de jeton de tout acteur de type `character` existant, puis tout jeton déjà placé sur
+  une scène référençant un tel acteur — même patron que les migrations existantes (parcours
+  `game.actors` + `game.scenes`/`scene.tokens`, filtrées `token.actorLink` pour ne pas toucher un
+  jeton déjà lié).
+- Hook `preCreateActor` (`registerCharacterTokenLinkDefault`, même fichier) : tout nouvel acteur
+  de type `character` reçoit `prototypeToken.actorLink: true` par défaut à la création — un jeton
+  glissé depuis cet acteur hérite ensuite automatiquement de ce réglage, donc rien d'autre à faire
+  côté jeton.
+- Entrée `RELEASE_NOTES["0.6.104"]` ajoutée pour que le dialogue de mise à jour du GM explique le
+  changement au lieu d'afficher "Aucune note de version disponible".
+
+**Fichiers modifiés** : `module/helpers/migration.mjs`, `antique.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`.
+
+---
+
 ## Session du 16 septembre 2026 (suite 17) — Icône d'effet sur jeton + panneau d'effets flottant (v0.6.102 → v0.6.103)
 
 Demande explicite : quand un effet de sort est appliqué sur un token, l'afficher comme icône

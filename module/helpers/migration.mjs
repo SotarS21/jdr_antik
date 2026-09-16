@@ -16,7 +16,8 @@
 const MIGRATIONS = [
   { version: "0.5.1", migrate: migrateBonusSexeToAvantageTemporaire },
   { version: "0.6.2", migrate: migrateWeaponHasPortee },
-  { version: "0.6.3", migrate: migrateColereZeusEffect }
+  { version: "0.6.3", migrate: migrateColereZeusEffect },
+  { version: "0.6.104", migrate: migrateLinkCharacterTokens }
 ];
 
 /* ------------------------------------------------------------------ */
@@ -196,4 +197,52 @@ async function _migrateActorColereZeusEffect(actor) {
     );
     await effect.update({ changes });
   }
+}
+
+/* ------------------------------------------------------------------ */
+/*  0.6.104 — Link every player-character actor/token                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Player-character tokens left unlinked ("Link Actor Data" unchecked) end up
+ * as an independent data copy from the fiche in the Actors sidebar — the two
+ * silently diverge over time even though they're meant to be the same
+ * character. Only "character" actors are touched: NPCs/creatures are
+ * deliberately left alone, since the same NPC actor is often placed multiple
+ * times on a scene and each instance needs its own HP/effects.
+ */
+async function migrateLinkCharacterTokens() {
+  for (const actor of game.actors) {
+    if (actor.type !== "character") continue;
+    if (actor.prototypeToken.actorLink) continue;
+    await actor.update({ "prototypeToken.actorLink": true });
+  }
+
+  for (const scene of game.scenes) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      if (token.actor?.type !== "character") continue;
+      await token.update({ actorLink: true });
+    }
+  }
+
+  ui.notifications.info("Antique – migration « liaison des jetons de personnage » terminée.");
+}
+
+/* ------------------------------------------------------------------ */
+/*  Default new player-character actors to a linked prototype token    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The retroactive fix above (migration 0.6.104) only covers actors that
+ * already existed. Without this, a "character" actor created afterwards
+ * would still default to Foundry's own core setting for a fresh actor
+ * (unlinked), reintroducing the same fiche/jeton divergence.
+ */
+export function registerCharacterTokenLinkDefault() {
+  Hooks.on("preCreateActor", (actor, data) => {
+    if (data.type !== "character") return;
+    if (data.prototypeToken?.actorLink) return;
+    actor.updateSource({ "prototypeToken.actorLink": true });
+  });
 }

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.104": {
+    title: "Version 0.6.104 — Fiche de personnage toujours liée au jeton",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : un jeton de Personnage non lié à sa fiche affichait des valeurs différentes de celle ouverte depuis l'onglet Acteurs. Tous les Personnages existants sont désormais liés automatiquement (jetons déjà placés compris), et tout nouveau Personnage créé le sera aussi par défaut.</li>
+      </ul>`
+  },
   "0.6.103": {
     title: "Version 0.6.103 — Icône d'effet sur le jeton + panneau d'effets flottant",
     html: `
