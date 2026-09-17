@@ -2,6 +2,65 @@
 
 ---
 
+## Session du 17 septembre 2026 — Audit des sorts restants, point 69 clos (v0.6.124 → v0.6.125)
+
+Reprise du point 69 laissé en attente la veille ("fini tout les sorts"). Pas de mot-clé
+"ultracode" dans la demande de reprise ("reprend les travaux") : audit fait directement, sans
+workflow multi-agents — la tâche s'est avérée être une simple relecture, pas un chantier de
+volume.
+
+Relu `system` de chaque document dans `packs/sorts.db` (description, `caBonus`, `effects`) pour
+les 14 sorts restants + reconfirmation des 6 Druide narratifs, avec la même grille que les
+points 44/49/60/62/68 (mécaniser seulement si le sort cible un champ système réel déjà branché
+sur un mécanisme existant) :
+
+- **Berserk (Camulos)** — Rage Incontrôlable et Peau de Fer restent les 2 seuls déjà mécanisés
+  (`caBonus`, point 44). Les 5 autres n'ont rien à cibler : Force Déchainée (dégâts + jet de
+  sauvegarde constitution — pas de mécanisme de dégâts/DC automatisé pour les sorts, voir plus
+  bas), Sang de Guerre (régénération au toucher reçu — déclencheur réactif sans hook existant),
+  Hurlement de Bataille (peur + malus d'attaque ciblé sur le lanceur — pas de champ pour un malus
+  d'attaque adverse), Ignorance de la Douleur (ignore un malus de PV bas — **vérifié qu'aucun
+  malus de ce type n'existe dans `prepareDerivedData()`**, rien à ignorer mécaniquement),
+  Résilience du Sauvage (relève automatique à 0 PV — déclencheur sans hook existant).
+- **Morrigan** — les 7 sorts (Lien de la Corneille, Appel de la Corneille, Oeil de Corneille,
+  Prophétie du Sang, Bain de Sang, Nuée de Corneilles, Chant des Âmes Perdues) sont tous du
+  narratif pur (rituel, vision, invocation d'esprit) ou des dégâts/soins chiffrés sans
+  équivalent système — même verdict.
+- **Druide (reconfirmation)** — Baie nourricière, les 2 Localisation, Sens animal, Gland des
+  quatre chemins, Langue de frêne : toujours rien à cibler (déjà vérifié le 16 septembre, point
+  44), confirmé de nouveau.
+
+**Dégâts/soins chiffrés délibérément non automatisés** : `item-spell.mjs` n'a ni `saveAbility`/
+`saveDC` (contrairement à `npcability`, point 20 étape 6) ni de mécanisme de jet de dégâts —
+en ajouter un serait inventer un nouveau système de jeu, exactement ce que l'utilisateur a
+rejeté au point 68 pour le bouton "Lancer le dé". Laissé purement narratif pour Force Déchainée,
+Sang de Guerre, Nuée de Corneilles, Bain de Sang.
+
+**Un seul candidat à discipline "champ déjà existant" trouvé, soumis à l'utilisateur avant
+d'agir** (hors périmètre explicite du point 69, qui ne visait que le mécanisme d'effet embarqué
+façon Grâce des Astres) : Force Déchainée (rayon 5m) et Hurlement de Bataille (rayon 10m) sont
+les seuls sorts du lot à préciser un rayon d'effet — `hasTemplate`/`templateRadius` (déjà utilisé
+pour Brouillard) est un mécanisme réel existant pour ça, `templateRadius` en mètres réels
+(`system.json` : grille `distance: 1.5`, `units: "m"`), conversion directe et sans ambiguïté
+(5 → 5, 10 → 10). **Confirmé par l'utilisateur** : ajouté aux deux sorts.
+
+**Fait (v0.6.125)** : `packs/sorts.db` — `hasTemplate: true`, `templateRadius`/`templateTexture`
+sur les deux documents (textures vérifiées dans l'installation Foundry locale
+`D:\FoundryVTT\Foundry Virtual Tabletop\resources\app\public\icons\magic\` avant utilisation,
+même prudence que le bug historique `potion.svg`/point 2 : `earth/barrier-stone-explosion-debris.webp`
+pour Force Déchainée, `sonic/scream-wail-shout-teal.webp` pour Hurlement de Bataille). Compilé
+via `packs/_build-sorts-leveldb.js` + `packs/_sync-json-mirrors.js`. Nouveau correctif
+`PACK_UPDATES` (`0.6.125-add-spell-templates`, `module/helpers/pack-updates.mjs`) pour les copies
+déjà déployées (compendium, objets possédés par un acteur, jetons non liés). Version bump
+`system.json` + entrée `release-notes.mjs`. **À confirmer par l'utilisateur en jeu** — nécessite
+de cocher le correctif dans l'écran de mise à jour (MJ) puis de redéployer.
+
+**Fichiers modifiés** : `packs/sorts.db`, `packs/sorts/` (leveldb compilé),
+`packs/_json-mirrors/sorts.json`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 16 septembre 2026 (suite 39) — Retour en arrière : Assistance/Malédiction narratifs (v0.6.123 → v0.6.124)
 
 Décision finale de l'utilisateur, après avoir testé le point 67 en jeu : "ça fonctionne mais ça

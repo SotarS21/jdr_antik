@@ -532,6 +532,17 @@ export const PACK_UPDATES = [
       "ces deux sorts — décision finale : rester purement narratif plutôt qu'un mécanisme " +
       "qui n'était ni un vrai effet applicable, ni un simple texte.",
     apply: applyRevertSpellsToNarrative
+  },
+  {
+    id: "0.6.125-add-spell-templates",
+    pack: "sorts",
+    version: "0.6.125",
+    label: "Gabarit de zone pour Force Déchainée et Hurlement de Bataille",
+    description:
+      "Ajoute le bouton \"Placer un gabarit\" (déjà utilisé pour Brouillard) à ces deux " +
+      "sorts à rayon d'effet (5m et 10m) — aucun nouveau mécanisme, juste la même " +
+      "fonctionnalité de gabarit de zone appliquée aux sorts qui précisent un rayon.",
+    apply: applyAddSpellTemplates
   }
 ];
 
@@ -2755,6 +2766,63 @@ async function applyWeaponArmorRealImages() {
     for (const item of actor.items) {
       if (item.type !== "weapon" && item.type !== "equipment") continue;
       if (await setItemImage(item)) fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 2 spells as the direct edit to packs/sorts.db — kept in sync by hand. Reuses the
+ *  existing area-template mechanism (hasTemplate/templateRadius/templateTexture, already
+ *  used by "Brouillard") rather than inventing anything new — these are the only 2 sorts
+ *  in the Berserk audit (point 69) that specify an actual radius in their text.
+ *  templateRadius is in real meters (system.json grid: distance 1.5, units "m"). */
+const SPELL_TEMPLATES = {
+  "Force Déchainée": { radius: 5, texture: "icons/magic/earth/barrier-stone-explosion-debris.webp" },
+  "Hurlement de Bataille": { radius: 10, texture: "icons/magic/sonic/scream-wail-shout-teal.webp" }
+};
+
+async function setSpellTemplate(doc) {
+  const cfg = SPELL_TEMPLATES[doc.name];
+  if (!cfg || doc.system.hasTemplate) return false;
+  await doc.update({
+    "system.hasTemplate": true,
+    "system.templateRadius": cfg.radius,
+    "system.templateTexture": cfg.texture
+  });
+  return true;
+}
+
+async function applyAddSpellTemplates() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setSpellTemplate(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await setSpellTemplate(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await setSpellTemplate(item)) fixed++;
+      }
     }
   }
 

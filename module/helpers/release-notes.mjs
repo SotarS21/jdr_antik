@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.125": {
+    title: "Version 0.6.125 — Gabarit de zone pour 2 sorts de Berserk",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : Force Déchainée et Hurlement de Bataille proposent désormais un bouton "Placer un gabarit" (rayon 5m / 10m), comme Brouillard — reste de l'audit des sorts (point 69) : les 12 autres sorts audités (Berserk/Morrigan) restent purement narratifs, aucun champ système à cibler.</li>
+      </ul>`
+  },
   "0.6.124": {
     title: "Version 0.6.124 — Assistance et Malédiction redeviennent narratifs",
     html: `

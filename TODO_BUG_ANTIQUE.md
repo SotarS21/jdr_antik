@@ -466,7 +466,7 @@ auraient déjà reçu les points 62/67. Assistance et Malédiction sont maintena
 autres sorts narratifs du dossier Druide — texte seul, aucun bouton, aucun effet. Voir
 `JOURNAL.md`, session du 16 septembre 2026 (suite 39). **À confirmer par l'utilisateur en jeu.**
 
-## 69. EN ATTENTE — Auditer et finir tous les sorts (toutes écoles), via workflow ultracode (17 septembre 2026)
+## 69. ~~Auditer et finir tous les sorts (toutes écoles)~~ — CORRIGÉ (17 septembre 2026, v0.6.125)
 
 Demande de l'utilisateur en fin de session du 16 septembre 2026 : "fini tout les sorts" +
 mot-clé "ultracode" (autorise l'orchestration multi-agents). Reporté à la prochaine session à sa
@@ -476,8 +476,26 @@ demande ("on reprendra demain"). Portée : auditer systématiquement les sorts d
 avec la même discipline que les points 44/62/68 : ne mécaniser **que** si un champ système réel
 existe déjà à cibler (comme Grâce des Astres Alignés/point 60, oublié la première fois) — sinon
 laisser purement narratif, **sans** inventer de bouton "Lancer le dé" ou d'effet informatif
-factice (rejeté au point 68, l'utilisateur veut un vrai effet applicable ou rien). **À reprendre
-en priorité à la prochaine session.**
+factice (rejeté au point 68, l'utilisateur veut un vrai effet applicable ou rien).
+
+**Audit fait le 17 septembre 2026** (lecture directe, sans workflow multi-agents — pas de
+mot-clé "ultracode" dans la demande de reprise) : aucun des 14 sorts Berserk/Morrigan ni des 6
+Druide restants ne cible un champ système réel au sens des mécanismes déjà en place
+(`system.abilities.*.mod`, `system.initiative`, `system.pointsChance`, `caBonus`) — voir
+`JOURNAL.md`, session du 17 septembre 2026, pour le détail sort par sort. Rage Incontrôlable et
+Peau de Fer restent les 2 seuls du dossier Berserk déjà mécanisés (`caBonus`, point 44). Les
+autres (dégâts, régénération au toucher, peur, résurrection rituelle, vision prophétique, etc.)
+n'ont pas d'équivalent existant — dégâts/soins chiffrés explicitement écartés (même refus que le
+bouton "Lancer le dé", point 68).
+
+**Point ouvert soumis à l'utilisateur, tranché le jour même** : *Force Déchainée* (rayon 5m) et
+*Hurlement de Bataille* (rayon 10m) sont les deux seuls sorts du lot à préciser un rayon —
+confirmé d'ajouter `hasTemplate`/`templateRadius` (mécanisme de gabarit de zone déjà utilisé
+pour Brouillard, `templateRadius` en mètres réels d'après `system.json`), sans rien inventer de
+nouveau. Fait : `packs/sorts.db` + nouveau correctif `PACK_UPDATES`
+(`0.6.125-add-spell-templates`) pour les copies déjà déployées (compendium/acteurs/jetons non
+liés). Voir `JOURNAL.md`, session du 17 septembre 2026. **À exécuter par l'utilisateur** : cocher
+le correctif dans l'écran de mise à jour (MJ), puis confirmer en jeu.
 
 ## 67. ~~Assistance/Malédiction invisibles dans l'onglet Effets~~ — CORRIGÉ (16 septembre 2026, v0.6.123)
 
