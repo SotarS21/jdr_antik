@@ -745,7 +745,7 @@ répare aussi les copies déjà embarquées sur un acteur **et sur un jeton non 
 explicite de l'utilisateur, même angle mort que le point 37). Voir `JOURNAL.md`, session du
 16 septembre 2026 (suite 20). **Confirmé par l'utilisateur en jeu (16 septembre 2026)**.
 
-## 44. EN COURS — Effet lié à la description de chaque sort (9/32 faits + 2 sorts à bonus CA, 16 septembre 2026, v0.6.102)
+## 44. ~~Effet lié à la description de chaque sort~~ — CORRIGÉ (17 septembre 2026, clos via le point 69)
 
 Même ampleur que l'ancien chantier Effets (avantages/désavantages). Traités jusqu'ici :
 Bénédiction des Titans (+3 For), Danse du Serpent (+3 Dex), Résilience de l'Immortel (+3 Con),
@@ -755,10 +755,12 @@ Incontrôlable et Peau de Fer (bonus de CA seul, +1/+2, via le mécanisme plus s
 d'écorce"). **Reste à faire** : les ~21 sorts restants sont purement narratifs (localisation,
 communication, divination, dégâts ponctuels, déclencheurs sans hook existant — invocation,
 réduction de dégâts, régénération au toucher) — aucun bonus chiffré propre à embarquer sans
-inventer un nouveau mécanisme de jeu non demandé ; probablement rien de plus à coder ici, à
-confirmer avec l'utilisateur si ce point doit être considéré clos. Voir `JOURNAL.md`, sessions
-du 15 et 16 septembre 2026. **À confirmer par l'utilisateur en jeu** — nécessite de cocher les
-2 correctifs (`0.6.98` et `0.6.102`) dans l'écran de mise à jour (MJ).
+inventer un nouveau mécanisme de jeu non demandé. **Confirmé clos le 17 septembre 2026** :
+l'audit du point 69 a couvert systématiquement ces sorts restants (plus Berserk/Morrigan) et n'a
+trouvé aucun cas de plus à mécaniser (sauf Force Déchainée/Hurlement de Bataille, gabarit de
+zone, voir point 69). Voir `JOURNAL.md`, sessions du 15, 16 et 17 septembre 2026. **À confirmer
+par l'utilisateur en jeu** — nécessite de cocher les correctifs (`0.6.98`, `0.6.102`, `0.6.125`)
+dans l'écran de mise à jour (MJ).
 
 ## 45. ~~Reclasser un trait depuis sa propre fiche~~ — CORRIGÉ (15 septembre 2026, v0.6.99)
 
