@@ -386,8 +386,15 @@ export class AntiqueItem extends Item {
     let applyEffectButton = "";
     if (this.system.caBonus) {
       const applyLabel = game.i18n.format("ANTIQUE.Effect.ApplyButton", { amount: this.system.caBonus });
+      // "N tours"/"N Tour" in the spell's own duration text (ex. Rage Incontrôlable, "10
+      // tours") — parsed so the applied effect can auto-expire after that many combat
+      // rounds instead of staying on the actor forever (see applyCaBonus()'s
+      // durationRounds). Anything else (blank, "1h", ...) has no round count to key off
+      // and is left untouched — stays permanent until removed by hand, as before.
+      const durationRoundsMatch = /^(\d+)\s*tours?$/i.exec(this.system.duration?.trim() ?? "");
+      const durationAttr = durationRoundsMatch ? ` data-duration-rounds="${durationRoundsMatch[1]}"` : "";
       applyEffectButton = `
-        <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}">
+        <button type="button" class="apply-effect" data-ca-bonus="${this.system.caBonus}" data-spell-name="${this.name}" data-item-uuid="${this.uuid}"${durationAttr}>
           <i class="fas fa-shield-halved"></i> ${applyLabel}
         </button>`;
     } else if (this.effects.some(e => e.changes.length > 0)) {
@@ -422,9 +429,25 @@ export class AntiqueItem extends Item {
         </button>`;
     }
 
+    // 8. Saving throw button — a single button, open to anyone (not GM-only), unlike
+    // npcability's two-button pair above (postToChat(), kept as-is: that one targets a
+    // single monster ability against a single player). A spell like Force Déchainée can
+    // hit several targets at once, owned by different people (players and/or the GM), so
+    // whoever clicks rolls for whichever token(s) they currently have selected/controlled
+    // on the canvas — any number — falling back to their own assigned character if none
+    // is selected. See the ".spell-save-button" hook in antique.mjs.
+    let saveButton = "";
+    if (this.system.saveAbility && this.system.saveDC > 0) {
+      const saveLabel = game.i18n.localize(CONFIG.ANTIQUE.saves[this.system.saveAbility]?.label ?? this.system.saveAbility);
+      saveButton = `
+        <button type="button" class="spell-save-button" data-save-ability="${this.system.saveAbility}" data-save-dc="${this.system.saveDC}">
+          <i class="fas fa-dice-d20"></i> ${game.i18n.localize("ANTIQUE.Save.RollButton")} (${saveLabel} DC ${this.system.saveDC})
+        </button>`;
+    }
+
     await ChatMessage.create({
       speaker,
-      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}</div>`
+      content: `<div class="antique spell-chat-card">${parts.join("<br>")}${applyEffectButton}${placeTemplateButton}${saveButton}</div>`
     });
   }
 

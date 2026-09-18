@@ -38,6 +38,9 @@ export class AntiquePackUpdatePicker extends HandlebarsApplicationMixin(Applicat
 
     const pending = getPendingPackUpdates();
     const packLabels = new Map(game.system.packs.map(p => [p.name, p.label]));
+    // "acteurs" is a pseudo-pack for correctifs that iterate game.actors directly instead
+    // of a real compendium — see the header comment in pack-updates.mjs.
+    packLabels.set("acteurs", "Personnages (monde)");
 
     const groups = new Map();
     for (const update of pending) {

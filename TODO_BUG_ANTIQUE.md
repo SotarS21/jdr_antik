@@ -4,6 +4,106 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 71. ~~Audit complet du code (cohérence + fonctionnement)~~ — CORRIGÉ (18 septembre 2026, v0.6.131)
+
+Demande : "fait un audit de tout le code pour verrifier que tout est cohérent et fonctionel",
+avec mot-clé "ultracode" (autorise l'orchestration multi-agents). Workflow à 12 agents (un par
+sous-système : documents, data-models, sheets, apps, antique.mjs, migration/PACK_UPDATES,
+autres helpers, templates Acteur, templates Objet/Apps, traductions, manifeste, données de
+compendium) + vérification adversariale (3 réfutateurs indépendants par anomalie trouvée).
+19 constats remontés, tous confirmés, réduits à **16 anomalies distinctes** après fusion des
+doublons détectés sous deux angles différents. Toutes corrigées le jour même (choix de
+l'utilisateur : "Tout corriger maintenant").
+
+**Critique** : `registerPointsChanceEffectHook()` (`module/helpers/actor-utils.mjs`) lisait
+`effect.system.changes` — `ActiveEffect` n'a pas de sous-objet `system`, `changes` est un champ
+racine. L'exception levée empêchait le `return false` d'être atteint : glisser un effet "Point
+de Chance +1/+2" du compendium créait un ActiveEffect ordinaire invisible au lieu d'incrémenter
+`system.pointsChance`. Corrigé (`effect.changes`).
+
+**Majeur** :
+- Les objets de type "treasure" (Trésors) n'apparaissaient dans aucun onglet des fiches
+  Personnage/PNJ une fois possédés — invisibles, inéditables. Ajoutés à la liste unifiée
+  d'inventaire (Personnage) et à une nouvelle section dédiée (PNJ), avec bouton de création sur
+  les deux. Leur poids (`system.poids`) compte désormais dans `poidsPorteTotal` (Personnage).
+- Navigateur de Compendium : la recherche texte et les filtres par catégorie s'annulaient
+  mutuellement (chacun écrasait `row.style.display` sans tenir compte de l'autre) au lieu de se
+  cumuler. Unifié dans `refreshBrowserRowVisibility()` (`browser-shared.mjs`), appelée par les
+  deux.
+- `system.json → documentTypes.Item` n'avait que 7 types sur les 10 réels (treasure/curse/
+  npcability manquants) — désynchronisé de `template.json`/`antique.mjs`. Aligné.
+- 8 potions (`equipement.db`) et 2 documents du bestiaire (`capacites-combat.db`/`creatures.db`)
+  référençaient une icône inexistante dans la bibliothèque Foundry (`flask.svg`/`water.svg`,
+  même famille que le bug historique `potion.svg`/point 2) — 404 en jeu. Corrigées à la source
+  + nouveau correctif `PACK_UPDATES` (`0.6.131-fix-flask-icon`/`0.6.131-fix-water-icon`) pour
+  les copies déjà déployées (compendium, objets du monde, copies sur un acteur/jeton non lié).
+
+**Moyen** :
+- `AntiqueActor#applyCaBonus()` lit `system.ca.total`, qui n'existe que sur le schéma
+  Personnage (PNJ n'a que `system.ca.value`, pas de `.total`/`.temp`) — un PNJ qui se lance un
+  sort à bonus de CA affichait "undefined → undefined CA" sans aucun effet réel. Exclu du
+  chemin `applyCaBonus` (`antique.mjs`), même filtre que Divinité.
+- Fiche PNJ : aucun moyen de lier une munition à une arme consommable depuis l'onglet Combat
+  (existait déjà côté Personnage). Ajouté (`ammoCandidates` + `.munitions-select`).
+- `TYPES.Item.npcability` absent des fichiers de langue malgré 53 documents utilisant ce type.
+  Ajouté (fr/en).
+- Type Item "effect" déclaré dans les 3 manifestes (`system.json`/`template.json`/lang) sans
+  DataModel ni sheet enregistrés — résidu de l'ancien chantier Effets (voir mémoire
+  `antique-effets-compendium-status`, remplacé depuis par les vrais ActiveEffect). Retiré des
+  3 manifestes.
+
+**Mineur** : section morte dans `actor-ref-section.hbs` (jamais alimentée par ses appelants) —
+retirée ; libellé "acteurs" peu clair dans l'écran de mise à jour MJ pour le correctif
+`0.6.70-backfill-ingredient-bag` — libellé dédié ajouté ; `rollD20()` (`rolls.mjs`) jamais
+importée nulle part — supprimée ; clé de traduction `ANTIQUE.Traits.Effects` dupliquée (fr/en) —
+dédupliquée ; champ résiduel `system.bonusSexe` sur le PNJ Éphise (mécanique abandonnée,
+absente du schéma actuel) — retiré à la source + correctif `PACK_UPDATES`
+(`0.6.131-remove-ephise-bonus-sexe`).
+
+Voir `JOURNAL.md`, session du 18 septembre 2026, pour le détail complet (rapport d'audit +
+fichiers modifiés). **Confirmés par l'utilisateur en jeu (18 septembre 2026)** : Trésors ("les
+trésaur sont ok"), l'apparition d'un Point de Chance ("l'apparaition d'un point de chance est
+foncitonel", le bug critique de ce lot), et la recherche + filtres du Navigateur de Compendium
+("la recherche du compendium + filtre fonctione en se combiant"). Reste à confirmer :
+nécessite de cocher les 3 nouveaux correctifs dans l'écran de mise à jour (MJ) pour les icônes/
+champ résiduel déjà déployés ; le reste (code) prend effet immédiatement au rechargement.
+
+**Bug trouvé en testant "Combattant aquatique" (18 septembre 2026, v0.6.132)** : "combatant
+aquatique ne semble pas donné + 3 à l'attaque, mais donne bien +2 à la CA" — pas un défaut de
+l'effet lui-même (les deux changements sont dans le même ActiveEffect, donc s'appliquent
+ensemble), mais un vrai bug distinct trouvé en creusant : le tableau d'armes de la fiche PNJ
+(`npc-sheet.hbs`/`.mjs`) affichait `weapon.system.attBonus` brut, jamais combiné avec
+`system.attackBonuses[category].total` (le tableau de bonus par catégorie, cible de cette
+capacité) — contrairement à la fiche Personnage qui affiche déjà `attTotal` (les deux combinés).
+Le jet réel (`AntiqueItem#_executeAttackRoll()`, `item.mjs`) lisait déjà correctement le total
+combiné (`this.actor?.system.attackBonuses?.[category]?.total`), donc le jet posté au chat
+était probablement déjà juste — seul le nombre affiché dans le tableau était trompeur. Corrigé :
+`attTotal`/`attTotalDistance` ajoutés au contexte PNJ (même calcul que la fiche Personnage), le
+template affiche désormais le total.
+
+**Retour de test (18 septembre 2026) — TOUJOURS PAS BON, rouvert** : "ça ne va toujours pas sur
+combatant aquatique, j'ai la CA qui augmente de + 4 au lieux de +2 et je n'ais toujours pas de
+bonus d'attaque de base de +3 (ce n'est pas spécifique à l'arme blanche, mais à toute les
+attaques)". Deux infos nouvelles, pas encore expliquées :
+- CA +4 au lieu de +2 (suggère l'effet appliqué deux fois, ou un deuxième mécanisme redondant).
+- Le bonus d'attaque manque **pour toutes les attaques**, pas seulement "armes blanches" —
+  suggère que le bonus devrait viser un champ plus générique que
+  `system.attackBonuses.armeBlanche.total` (à confirmer : quelle règle veut l'utilisateur pour
+  une capacité "combattant aquatique" — bonus sur toutes les catégories d'attaque, ou juste
+  celle utilisée en combat au corps à corps dans l'eau ?).
+
+Vérifié statiquement (source `packs/capacites-combat.db` et `packs/creatures.db`, les deux
+copies de l'effet) : **un seul effet embarqué**, un seul jeu de `changes`
+(`system.attackBonuses.armeBlanche.total` ADD 3, `system.ca.value` ADD 2) — pas de duplication
+dans les données source. Le doublement de CA (+4 au lieu de +2) et l'absence totale du bonus
+d'attaque viennent donc soit de l'état déjà déployé dans le monde de l'utilisateur (ex. une
+deuxième copie de l'effet/capacité déjà présente sur son PNJ avant ce chantier, ou un
+mécanisme séparé qui touche aussi CA), soit d'un problème plus profond pas encore identifié.
+**Pas encore corrigé — à reprendre lundi.** Prochaines étapes : demander à l'utilisateur
+d'ouvrir l'onglet Effets de son Triton (ou du PNJ concerné) et de compter combien de fois
+"Combattant aquatique" apparaît, et clarifier la portée voulue du bonus d'attaque (toutes
+catégories vs armes blanches seulement).
+
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 
 Cause : les inputs "Temp" (CA + Sauvegardes) affichaient la valeur déjà modifiée par un ActiveEffect
@@ -494,8 +594,82 @@ confirmé d'ajouter `hasTemplate`/`templateRadius` (mécanisme de gabarit de zon
 pour Brouillard, `templateRadius` en mètres réels d'après `system.json`), sans rien inventer de
 nouveau. Fait : `packs/sorts.db` + nouveau correctif `PACK_UPDATES`
 (`0.6.125-add-spell-templates`) pour les copies déjà déployées (compendium/acteurs/jetons non
-liés). Voir `JOURNAL.md`, session du 17 septembre 2026. **À exécuter par l'utilisateur** : cocher
-le correctif dans l'écran de mise à jour (MJ), puis confirmer en jeu.
+liés). Voir `JOURNAL.md`, session du 17 septembre 2026. **Testé en jeu, confirmé** ("ça marche
+bien") — deux retours dans la foulée, corrigés en v0.6.126 :
+- La texture du gabarit (empruntée à Brouillard, pensée pour boucler) se répétait de façon
+  disgracieuse sur un petit gabarit — remplacée par une couleur unie pour les deux sorts.
+- Ajout demandé : bouton de jet de sauvegarde sur la carte de lancer de Force Déchainée
+  (Robustesse DC 15, d'après le "diff 15" de sa description — pas de save "Constitution" pur
+  dans ce système, `robustesse` = con+for, même convention que les capacités de combat PNJ).
+  Nouveaux champs `saveAbility`/`saveDC` sur `item-spell.mjs` (mêmes que `npcability`), bouton
+  branché dans `castSpell()` (`item.mjs`). **Retour utilisateur immédiat** : ne pas dupliquer le
+  bouton en 2 (joueur / MJ-sélection) comme sur `npcability` — un seul bouton, ouvert à tout le
+  monde, qui lance le jet pour le(s) jeton(s) actuellement sélectionné(s) (n'importe quel
+  nombre), ou pour le personnage assigné du joueur à défaut de sélection. Nouveau hook dédié
+  `.spell-save-button` (`antique.mjs`), distinct des deux hooks `.roll-save-button`/
+  `.roll-save-selected-button` qui restent inchangés pour `npcability` (postToChat(), patron
+  différent : une capacité de PNJ visant un seul joueur, déjà confirmé au point 20).
+  **Vérification demandée par l'utilisateur** : Hurlement de Bataille a le même besoin (sa
+  description dit "jet de sauvegarde pour ne pas fuir diff 15") — ajouté aussi (Volonté DC 15,
+  même convention que les capacités de peur du bestiaire, ex. Gémissement/Rugissement). Audit
+  des 5 autres sorts Berserk : aucun autre jet de sauvegarde à cibler — Rage Incontrôlable
+  mentionne un "jet de volonté" mais c'est une sauvegarde du **lanceur lui-même**, à un moment
+  narratif conditionnel ("si tous les ennemis sont tombés avant la fin de la rage"), pas un jet
+  immédiat déclenché au lancer comme les deux autres — **à confirmer avec l'utilisateur si un
+  bouton est aussi voulu pour ce cas différent avant d'y toucher**. **À exécuter par
+  l'utilisateur** : cocher le correctif (`0.6.126-fix-spell-template-visual-and-save`) dans
+  l'écran de mise à jour (MJ), puis confirmer en jeu.
+
+**Icônes des 32 sorts (demandé le 17 septembre 2026)** : les 32 sorts partageaient seulement 4
+icônes génériques par école (chêne/Druide, feu/Hécate, épée/Berserk, crâne/Morrigan) — remplacées
+par une icône distincte par sort, chaque chemin vérifié dans l'installation Foundry locale avant
+usage (même prudence que le bug historique `potion.svg`/point 2). Fait : `packs/sorts.db` +
+nouveau correctif `PACK_UPDATES` (`0.6.127-spell-real-icons`). **À exécuter par l'utilisateur** :
+cocher le correctif dans l'écran de mise à jour (MJ), puis confirmer en jeu.
+
+**Peau de Fer ne réduisait pas vraiment les dégâts (trouvé le 17 septembre 2026, v0.6.128)** :
+son texte dit "réduit les dégâts reçus de moitié et +2 à la CA", mais seul le `caBonus` (+2 CA)
+était mécanisé (point 44) — la réduction de moitié n'existait nulle part, le bouton "Appliquer
+les dégâts" (`actor.applyDamage()`) infligeait toujours les dégâts pleins. Corrigé :
+`applyDamage()` (`actor.mjs`) divise par deux (arrondi à l'inférieur) si la cible porte un effet
+actif nommé "Peau de Fer" (même détection par nom que `applyCaBonus()`, pas de nouveau champ).
+Le message de chat affiche désormais le montant réellement appliqué (pas le montant brut du jet
+de dégâts) avec une mention "réduit de moitié par Peau de Fer" quand c'est le cas. Aucun
+correctif `PACK_UPDATES` nécessaire — pur changement de code, prend effet immédiatement.
+Premier test négatif ("je ne vois aucune différence"), cause jamais identifiée avec certitude
+(probablement le monde pas encore complètement rechargé à ce moment-là) — **confirmé fonctionnel
+par l'utilisateur après rechargement complet du monde (17 septembre 2026)**.
+
+## 68b. ~~Rage Incontrôlable — description tronquée + expiration automatique~~ — CORRIGÉ (17 septembre 2026, v0.6.129)
+
+Signalé : dans le panneau d'effets, la description de "Rage Incontrôlable" n'affiche pas le
+texte complet du sort. Cause : `applyCaBonus()` (mécanisme partagé par tous les buffs à
+`caBonus` — Peau d'écorce, Rage Incontrôlable, Peau de Fer) synthétise un texte de repli
+générique ("+N CA") quand aucune description n'est fournie — et le bouton "Appliquer l'effet"
+(carte de lancer, `item.mjs`) n'en fournissait justement aucune (contrairement au mécanisme plus
+général `applyEffectChanges()`, corrigé pour ça au point 65). Corrigé en ajoutant
+`data-item-uuid` au bouton et en résolvant l'item pour lire sa vraie description
+(`sourceItem.system.description`) avant l'appel à `applyCaBonus()` (`antique.mjs`) — bénéficie
+aux 3 sorts `caBonus`, pas seulement Rage Incontrôlable.
+
+**Investigation demandée** : possibilité de décrémenter un compteur sur l'effet pour le
+supprimer automatiquement au bout de 10 tours (durée de Rage Incontrôlable). Confirmé possible
+et fait, sans rien inventer : Foundry (v14 installée localement) a un vrai mécanisme de durée
+de combat natif (`duration.units: "rounds"`/`value`, migration automatique depuis l'ancien
+`duration.rounds`) déjà pisté par `ActiveEffectRegistry` — par défaut `CONFIG.ActiveEffect.
+expiryAction` vaut `"update"` (marque juste l'effet expiré, ne le supprime pas), changé en
+`"delete"` dans `antique.mjs` (aucun autre effet du système n'utilisait de durée basée sur les
+tours jusqu'ici, sans risque). `applyCaBonus()` accepte désormais un `durationRounds` optionnel
+(nouveau paramètre) ; `castSpell()` (`item.mjs`) le déduit automatiquement du texte de durée du
+sort via une regex `/^(\d+)\s*tours?$/i` — s'applique donc aussi à Peau de Fer ("3 Tours"), pas
+seulement à Rage Incontrôlable, sans code supplémentaire. Peau d'écorce ("1h") ne matche pas,
+reste permanent comme avant.
+
+Description de Rage Incontrôlable reformulée au passage ("jet de sauvegarde de Volonté" au lieu
+de "jet de volonté", terminologie cohérente) — nouveau correctif `PACK_UPDATES`
+(`0.6.129-rage-incontrolable-volonte-wording`). Voir `JOURNAL.md`, session du 17 septembre 2026.
+**Confirmé par l'utilisateur en jeu (17 septembre 2026)** : "les effets disparaissent bien après
+10 tours."
 
 ## 67. ~~Assistance/Malédiction invisibles dans l'onglet Effets~~ — CORRIGÉ (16 septembre 2026, v0.6.123)
 
@@ -804,6 +978,33 @@ géré sur `effect.delete()` et l'absence d'un hook `deleteActor` (panneau qui r
 avec les anciens effets si l'acteur était supprimé pendant que son jeton restait sélectionné).
 Voir `JOURNAL.md`, session du 16 septembre 2026 (suite 17). **À confirmer par l'utilisateur en
 jeu.**
+
+## 70. ~~Les effets doivent afficher partout la même icône que le sort qui les a créés~~ — CORRIGÉ (18 septembre 2026, v0.6.130)
+
+Demande : "il faudrait que les effets affichent partout le même icône que les sorts." Diagnostic
+posé le 17 septembre 2026, codé le 18 septembre 2026.
+
+Cause confirmée : `AntiqueActor#applyCaBonus()` (`actor.mjs`) acceptait un paramètre `icon`
+optionnel avec un repli générique (`icons/svg/upgrade.svg`), mais son unique site d'appel
+(`.apply-effect`, `antique.mjs`) ne le fournissait **jamais** — l'effet créé sur l'acteur (Peau
+d'écorce, Rage Incontrôlable, Peau de Fer) affichait donc toujours l'icône générique "upgrade".
+`AntiqueActor#applyEffectChanges()` (mécanisme jumeau pour les 8 sorts à bonus de
+caractéristique, `.apply-spell-effect`) passait déjà correctement `icon: item.img` — confirmé
+déjà correct pour ces 8-là, comme supposé. `grantEffectToActor()` (Navigateur de Compendium,
+onglet Traits → Effets) copie l'objet effet complet depuis le compendium, donc porte déjà sa
+propre icône de longue date — reconfirmé, rien à corriger là.
+
+**Corrigé** : le site d'appel `.apply-effect` (`antique.mjs`) résout désormais `sourceItem.img`
+(le `sourceItem` était déjà résolu via `data-item-uuid` depuis le point 68b) et le transmet à
+`applyCaBonus()`. **Bug latent trouvé au passage** : les deux méthodes (`applyCaBonus()` et
+`applyEffectChanges()`) ne réappliquaient l'icône que sur la branche *création* d'un effet, pas
+sur la branche *mise à jour* (effet déjà présent, recast d'un buff déjà actif) — même angle mort
+déjà corrigé pour `showIcon` par le passé (point 48/64). Corrigé sur les deux branches des deux
+méthodes. Pas de correctif `PACK_UPDATES` nécessaire : ces effets sont créés dynamiquement sur
+l'acteur au moment du lancer (pas des documents de compendium à migrer) — la prochaine fois
+qu'un buff déjà actif est ré-appliqué (recast), il rafraîchit son icône tout seul via la branche
+mise à jour désormais corrigée. Voir `JOURNAL.md`, session du 18 septembre 2026. **À confirmer
+par l'utilisateur en jeu.**
 
 ---
 

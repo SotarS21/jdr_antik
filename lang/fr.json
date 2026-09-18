@@ -261,6 +261,7 @@
   "ANTIQUE.Currency.Or": "Or",
 
   "ANTIQUE.Inventory.Equipment": "\u00c9quipement",
+  "ANTIQUE.Inventory.Treasures": "Tr\u00e9sors",
 
   "ANTIQUE.Traits.Advantages": "Avantages",
   "ANTIQUE.Traits.Disadvantages": "D\u00e9savantages",
@@ -270,7 +271,6 @@
   "ANTIQUE.Traits.Spells": "Sorts",
   "ANTIQUE.Traits.SpellsInstant": "Sorts instantanés",
   "ANTIQUE.Traits.SpellsRitual": "Rituels",
-  "ANTIQUE.Traits.Effects": "Effets",
   "ANTIQUE.Traits.AvantageTemporaire": "Avantage",
   "ANTIQUE.Traits.AvantageTemporaireInfo": "Bonus ponctuel : permet de relancer un jet de dés raté une fois par session.",
   "ANTIQUE.Traits.TraitName": "Trait",
@@ -344,6 +344,7 @@
   "ANTIQUE.ItemType.Effect": "Effet",
   "ANTIQUE.ItemType.Curse": "Malédiction",
   "ANTIQUE.ItemType.Npcability": "Capacité de combat",
+  "ANTIQUE.ItemType.Treasure": "Trésor",
   "ANTIQUE.NpcAbility.SaveAbility": "Jet de sauvegarde",
   "ANTIQUE.NpcAbility.NoSave": "Aucun",
   "ANTIQUE.NpcAbility.SaveDC": "Difficulté (DC)",
@@ -374,8 +375,8 @@
   "TYPES.Item.disadvantage": "D\u00e9savantage",
   "TYPES.Item.blessing": "B\u00e9n\u00e9diction",
   "TYPES.Item.spell": "Sort",
-  "TYPES.Item.effect": "Effet",
   "TYPES.Item.curse": "Malédiction",
+  "TYPES.Item.npcability": "Capacité de Combat (PNJ)",
 
   "ANTIQUE.Tab.Description": "Description",
   "ANTIQUE.Tab.Details": "Détails",
@@ -453,6 +454,7 @@
   "ANTIQUE.Damage.ApplyButton": "Appliquer les d\u00e9g\u00e2ts ({amount})",
   "ANTIQUE.Damage.Applied": "D\u00e9g\u00e2ts appliqu\u00e9s",
   "ANTIQUE.Damage.NoTarget": "Aucune cible ! Ciblez ou s\u00e9lectionnez un ou plusieurs tokens.",
+  "ANTIQUE.Damage.HalvedByIronSkin": "r\u00e9duit de moiti\u00e9 par Peau de Fer",
 
   "ANTIQUE.Compendium.CreateTable": "Cr\u00e9er une table al\u00e9atoire",
   "ANTIQUE.Compendium.DrawRandom": "Tirage al\u00e9atoire",

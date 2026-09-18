@@ -8,9 +8,12 @@
  * ciblées — même patron que les anciens scripts (game.packs.get, getIndex/getDocument,
  * createDocuments/createEmbeddedDocuments, verrouillage/déverrouillage du pack).
  *
- * `pack` doit correspondre à un `name` de `system.json` → `packs[]`. Les anciens scripts
- * déjà exécutés et confirmés ne sont pas rétro-portés ici — seuls les correctifs écrits
- * à partir de ce mécanisme y figurent.
+ * `pack` doit correspondre à un `name` de `system.json` → `packs[]`, à une exception près :
+ * la valeur pseudo-pack "acteurs" regroupe les correctifs dont `apply()` itère directement
+ * sur `game.actors` (le monde, pas un compendium) — module/apps/pack-update-picker.mjs lui
+ * donne un libellé dédié puisqu'aucun pack réel ne porte ce nom. Les anciens scripts déjà
+ * exécutés et confirmés ne sont pas rétro-portés ici — seuls les correctifs écrits à partir
+ * de ce mécanisme y figurent.
  */
 export const PACK_UPDATES = [
   {
@@ -543,6 +546,75 @@ export const PACK_UPDATES = [
       "sorts à rayon d'effet (5m et 10m) — aucun nouveau mécanisme, juste la même " +
       "fonctionnalité de gabarit de zone appliquée aux sorts qui précisent un rayon.",
     apply: applyAddSpellTemplates
+  },
+  {
+    id: "0.6.126-fix-spell-template-visual-and-save",
+    pack: "sorts",
+    version: "0.6.126",
+    label: "Gabarit simplifié + jet de sauvegarde pour Force Déchainée/Hurlement de Bataille",
+    description:
+      "Corrige le gabarit de zone de Force Déchainée/Hurlement de Bataille : la texture " +
+      "(pensée pour Brouillard, une image qui se répète en boucle) se dupliquait de façon " +
+      "disgracieuse sur un petit gabarit — remplacée par une simple couleur unie. Ajoute " +
+      "aussi un bouton de jet de sauvegarde sur leur carte de lancer (Robustesse DC 15 pour " +
+      "Force Déchainée, Volonté DC 15 pour Hurlement de Bataille), demandé par l'utilisateur " +
+      "après test.",
+    apply: applyFixSpellTemplateAndSave
+  },
+  {
+    id: "0.6.127-spell-real-icons",
+    pack: "sorts",
+    version: "0.6.127",
+    label: "Icônes propres pour les 32 sorts",
+    description:
+      "Remplace les 4 icônes génériques partagées par école (chêne/feu/épée/crâne) par une " +
+      "icône distincte par sort, vérifiée dans la bibliothèque Foundry locale avant usage.",
+    apply: applySpellRealIcons
+  },
+  {
+    id: "0.6.129-rage-incontrolable-volonte-wording",
+    pack: "sorts",
+    version: "0.6.129",
+    label: "Rage Incontrôlable — jet de sauvegarde de Volonté reformulé",
+    description:
+      "Reformule la dernière phrase de la description (\"jet de volonté\" → \"jet de " +
+      "sauvegarde de Volonté\", terminologie cohérente avec le reste du système). Purement " +
+      "textuel — le déclencheur reste conditionnel (tous les ennemis à terre avant la fin " +
+      "de la rage), pas un bouton automatique.",
+    apply: applyRageIncontrolableWording
+  },
+  {
+    id: "0.6.131-fix-flask-icon",
+    pack: "equipement",
+    version: "0.6.131",
+    label: "8 potions — icône cassée icons/svg/flask.svg",
+    description:
+      "flask.svg n'existe pas dans la bibliothèque Foundry (404 en jeu, même bug que " +
+      "l'historique potion.svg) — remplacée par une vraie icône de potion distincte pour " +
+      "chacune des 8 potions concernées.",
+    apply: applyFixFlaskIcons
+  },
+  {
+    id: "0.6.131-fix-water-icon",
+    pack: "acteurs",
+    version: "0.6.131",
+    label: "Combattant aquatique / Triton — icône cassée icons/svg/water.svg",
+    description:
+      "water.svg n'existe pas dans la bibliothèque Foundry (404 en jeu) — remplacée par " +
+      "waterfall.svg (existante), sur la capacité \"Combattant aquatique\" (son icône propre " +
+      "et celle de son effet embarqué) et sur le portrait du Triton.",
+    apply: applyFixWaterIcons
+  },
+  {
+    id: "0.6.131-remove-ephise-bonus-sexe",
+    pack: "acteurs",
+    version: "0.6.131",
+    label: "Éphise — champ résiduel system.bonusSexe",
+    description:
+      "Retire un champ system.bonusSexe resté sur le PNJ \"Éphise - fils d'Eros\", résidu " +
+      "d'une mécanique abandonnée absente du schéma actuel (sans effet, Foundry l'ignore " +
+      "déjà silencieusement — pur nettoyage de données).",
+    apply: applyRemoveEphiseBonusSexe
   }
 ];
 
@@ -2823,6 +2895,392 @@ async function applyAddSpellTemplates() {
         if (item.type !== "spell") continue;
         if (await setSpellTemplate(item)) fixed++;
       }
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 2 spells as the direct edit to packs/sorts.db — kept in sync by hand. Fixes a copy
+ *  already created by applyAddSpellTemplates() above (0.6.125): its texture (borrowed from
+ *  Brouillard, a single icon rather than a seamless tileable pattern) repeated visibly across
+ *  the gabarit — replaced with a plain fillColor, no texture. Unlike setSpellTemplate() this
+ *  overwrites unconditionally rather than skipping an already-configured template, since the
+ *  point is precisely to correct what 0.6.125 already set. */
+const SPELL_TEMPLATE_VISUAL_FIX = {
+  "Force Déchainée": { color: "#c0392b" },
+  "Hurlement de Bataille": { color: "#4a4e69" }
+};
+
+async function fixSpellTemplateVisual(doc) {
+  const cfg = SPELL_TEMPLATE_VISUAL_FIX[doc.name];
+  if (!cfg) return false;
+  if (doc.system.templateTexture === "" && doc.system.templateColor === cfg.color) return false;
+  await doc.update({ "system.templateTexture": "", "system.templateColor": cfg.color });
+  return true;
+}
+
+/** Both spells name a difficulty in their own text. Force Déchainée ("jet de sauvegarde
+ *  constitution diff 15") maps to "robustesse" (con+for), the closest existing save category
+ *  — this system has no standalone Constitution save, same convention already used for
+ *  npcability's saveAbility (ex. Regard pétrifiant/Robustesse DC 18). Hurlement de Bataille
+ *  ("jet de sauvegarde pour ne pas fuir diff 15", a fear effect) maps to "volonte", same
+ *  convention as the bestiary's fear abilities (ex. Gémissement/Rugissement, both
+ *  saveAbility "volonte" in packs/capacites-combat.db). */
+const SPELL_SAVE_CONFIG = {
+  "Force Déchainée": { saveAbility: "robustesse", saveDC: 15 },
+  "Hurlement de Bataille": { saveAbility: "volonte", saveDC: 15 }
+};
+
+async function setSpellSave(doc) {
+  const cfg = SPELL_SAVE_CONFIG[doc.name];
+  if (!cfg || doc.system.saveAbility === cfg.saveAbility) return false;
+  await doc.update({ "system.saveAbility": cfg.saveAbility, "system.saveDC": cfg.saveDC });
+  return true;
+}
+
+async function applyFixSpellTemplateAndSave() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixSpellTemplateVisual(doc)) fixed++;
+      if (await setSpellSave(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await fixSpellTemplateVisual(item)) fixed++;
+      if (await setSpellSave(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await fixSpellTemplateVisual(item)) fixed++;
+        if (await setSpellSave(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+/** Same 32 icons as the direct edit to packs/sorts.db — kept in sync by hand. Each of the
+ *  32 spells shared just 4 generic placeholder icons (one per school: oak/fire/sword/skull)
+ *  — replaced with a distinct icon per spell, every path checked against the local Foundry
+ *  install before use (same care as the potion.svg 404, point 2). */
+const SPELL_ICONS = {
+  "Assistance": "icons/magic/control/buff-luck-fortune-clover-green.webp",
+  "Baie nourriciere": "icons/consumables/food/berries-ration-round-red.webp",
+  "Brouillard": "icons/magic/air/fog-gas-smoke-green.webp",
+  "Malédiction": "icons/magic/control/voodoo-doll-pain-damage-purple.webp",
+  "Localisation d'animaux ou plantes": "icons/magic/perception/orb-eye-scrying.webp",
+  "Localisation d'objets": "icons/tools/scribal/magnifying-glass.webp",
+  "Peau d'écorce": "icons/commodities/wood/bark-brown.webp",
+  "Sens animal": "icons/creatures/abilities/paw-glowing-yellow.webp",
+  "Gland des quatres chemins": "icons/consumables/nuts/acorn-glowing-brown.webp",
+  "Langue de frêne": "icons/magic/nature/leaf-glow-green.webp",
+  "Bénédiction des Titans": "icons/magic/control/buff-strength-muscle-damage-red.webp",
+  "Danse du Serpent": "icons/creatures/reptiles/snake-poised-white.webp",
+  "Résilience de l'Immortel": "icons/magic/defensive/armor-stone-skin.webp",
+  "Eveil du Sage": "icons/sundries/books/book-open-purple.webp",
+  "Méditation des Ancêtres": "icons/magic/holy/meditation-chi-focus-blue.webp",
+  "Glamour Divin": "icons/magic/life/heart-pink.webp",
+  "Souffle aux Pieds Legers": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "Grâce des Astres Alignés": "icons/magic/nature/symbol-moon-stars-white.webp",
+  "Rage Incontrôlable": "icons/weapons/axes/axe-battle-eyes-red.webp",
+  "Force Déchainée": "icons/magic/earth/barrier-stone-explosion-debris.webp",
+  "Sang de Guerre": "icons/skills/wounds/blood-drip-droplet-red.webp",
+  "Hurlement de Bataille": "icons/magic/sonic/scream-wail-shout-teal.webp",
+  "Peau de Fer": "icons/magic/defensive/armor-shield-barrier-steel.webp",
+  "Ignorance de la Douleur": "icons/skills/wounds/injury-body-pain-gray.webp",
+  "Résilience du Sauvage": "icons/creatures/abilities/wolf-heads-swirl-purple.webp",
+  "Lien de la Corneille": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "Appel de la Corneille": "icons/creatures/birds/corvid-call-sound-blue.webp",
+  "Oeil de Corneille": "icons/magic/perception/third-eye-blue-red.webp",
+  "Prophétie du Sang": "icons/magic/perception/orb-crystal-ball-scrying-blue.webp",
+  "Bain de Sang": "icons/skills/wounds/blood-spurt-spray-red.webp",
+  "Nuée de Corneilles": "icons/creatures/birds/birds-flock-fly-yellow.webp",
+  "Chant des Âmes Perdues": "icons/magic/death/undead-ghosts-trio-blue.webp"
+};
+
+async function setSpellIcon(doc) {
+  const icon = SPELL_ICONS[doc.name];
+  if (!icon || doc.img === icon) return false;
+  await doc.update({ img: icon });
+  return true;
+}
+
+async function applySpellRealIcons() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await setSpellIcon(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await setSpellIcon(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await setSpellIcon(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+const RAGE_INCONTROLABLE_DESCRIPTION = "<p>Le berserk entre dans un état de rage, augmentant " +
+  "temporairement sa force et sa résistance. Pendant la durée de la rage, il inflige des " +
+  "dégâts supplémentaires, ignore la douleur, mais perd toute capacité à différencier allié " +
+  "et ennemi</p>\n<p><strong>Durée :</strong> 10 tours</p>\n<p><strong>Effet :</strong> " +
+  "Modificateur de dégâts: +1d6/ coup/ CA +1/ Si tous les ennemis sont tombés avant la fin " +
+  "de la rage, un jet de sauvegarde de Volonté est nécessaire pour ne pas attaquer un allié</p>";
+
+async function fixRageIncontrolableWording(doc) {
+  if (doc.name !== "Rage Incontrôlable" || doc.system.description === RAGE_INCONTROLABLE_DESCRIPTION) return false;
+  await doc.update({ "system.description": RAGE_INCONTROLABLE_DESCRIPTION });
+  return true;
+}
+
+async function applyRageIncontrolableWording() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.sorts");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixRageIncontrolableWording(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (item.type !== "spell") continue;
+      if (await fixRageIncontrolableWording(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "spell") continue;
+        if (await fixRageIncontrolableWording(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+// --- 2026-09-18 full-codebase audit fixes -----------------------------------------
+
+const FLASK_BROKEN_ICON = "icons/svg/flask.svg";
+const FLASK_ICON_BY_NAME = {
+  "Breuvage du Colosse": "icons/consumables/potions/bottle-bulb-empty-glass.webp",
+  "Essence d'Acrobate": "icons/consumables/potions/potion-vial-tube-yellow.webp",
+  "Philtre de l'Ours": "icons/consumables/potions/vial-cork-red.webp",
+  "Liqueur du Vent": "icons/consumables/potions/potion-flash-open-blue.webp",
+  "Elixir de l'Orateur": "icons/consumables/potions/vial-ornet-silver-black.webp",
+  "Breuvage de l'Astre": "icons/consumables/potions/round-decorated-snake-green.webp",
+  "Potion Simple": "icons/consumables/potions/potion-vial-corked-labeled-purple.webp",
+  "Antidouleur": "icons/consumables/potions/vial-cork-green.webp"
+};
+
+async function fixFlaskIcon(item) {
+  if (item.img !== FLASK_BROKEN_ICON) return false;
+  const fixedIcon = FLASK_ICON_BY_NAME[item.name];
+  if (!fixedIcon) return false;
+  await item.update({ img: fixedIcon });
+  return true;
+}
+
+async function applyFixFlaskIcons() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.equipement");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixFlaskIcon(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    if (await fixFlaskIcon(item)) fixed++;
+  }
+
+  for (const actor of game.actors ?? []) {
+    for (const item of actor.items) {
+      if (await fixFlaskIcon(item)) fixed++;
+    }
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (await fixFlaskIcon(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
+const WATER_BROKEN_ICON = "icons/svg/water.svg";
+const WATERFALL_ICON = "icons/svg/waterfall.svg";
+
+// "Combattant aquatique" is embedded (as an item, with its own embedded effect) on every
+// bestiary creature that has it — same 3-level nesting the icon fix must reach.
+async function fixWaterIconsOnItem(item) {
+  let fixed = 0;
+  if (item.name === "Combattant aquatique" && item.img === WATER_BROKEN_ICON) {
+    await item.update({ img: WATERFALL_ICON });
+    fixed++;
+  }
+  for (const effect of item.effects ?? []) {
+    if (effect.img === WATER_BROKEN_ICON) {
+      await effect.update({ img: WATERFALL_ICON });
+      fixed++;
+    }
+  }
+  return fixed;
+}
+
+async function fixWaterIconsOnActor(actor) {
+  let fixed = 0;
+  if (actor.name === "Triton" && actor.img === WATER_BROKEN_ICON) {
+    await actor.update({ img: WATERFALL_ICON });
+    fixed++;
+  }
+  for (const item of actor.items ?? []) {
+    fixed += await fixWaterIconsOnItem(item);
+  }
+  return fixed;
+}
+
+async function applyFixWaterIcons() {
+  let fixed = 0;
+
+  const abilityPack = game.packs.get("antique.capacites-combat");
+  if (abilityPack) {
+    await abilityPack.configure({ locked: false });
+    const index = await abilityPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await abilityPack.getDocument(indexEntry._id);
+      fixed += await fixWaterIconsOnItem(doc);
+    }
+    await abilityPack.configure({ locked: true });
+  }
+
+  const creaturesPack = game.packs.get("antique.creatures");
+  if (creaturesPack) {
+    await creaturesPack.configure({ locked: false });
+    const index = await creaturesPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await creaturesPack.getDocument(indexEntry._id);
+      fixed += await fixWaterIconsOnActor(doc);
+    }
+    await creaturesPack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await fixWaterIconsOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixWaterIconsOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixWaterIconsOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+const EPHISE_NAME = "Éphise - fils d'Eros";
+
+// bonusSexe is absent from AntiqueCharacter's current schema, so the TypeDataModel
+// already strips it silently at read time — actor.system.bonusSexe is never visible
+// even when the raw stored data still has it. Check/clear via _source, not system.
+async function fixEphiseBonusSexe(doc) {
+  if (doc.name !== EPHISE_NAME || doc._source.system.bonusSexe === undefined) return false;
+  await doc.update({ "system.-=bonusSexe": null });
+  return true;
+}
+
+async function applyRemoveEphiseBonusSexe() {
+  let fixed = 0;
+
+  const pack = game.packs.get("antique.pnj");
+  if (pack) {
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      if (await fixEphiseBonusSexe(doc)) fixed++;
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    if (await fixEphiseBonusSexe(actor)) fixed++;
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      if (await fixEphiseBonusSexe(actor)) fixed++;
     }
   }
 

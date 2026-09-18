@@ -102,12 +102,28 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         name: w.name,
         img: w.img,
         system: w.system,
+        // Same combined total as actor-sheet.mjs — the weapon's own attBonus plus the
+        // per-category bonus table (system.attackBonuses, GM-set for NPCs, ActiveEffect
+        // target for abilities like "Combattant aquatique"). Without this, the table
+        // showed the weapon's raw attBonus only — the roll itself (item.mjs
+        // _executeAttackRoll()) already read the combined total correctly, but the
+        // number displayed here never reflected an active category bonus.
+        attTotal: w.system.attBonus + (system.attackBonuses[w.system.category]?.total ?? 0),
+        attTotalDistance: w.system.attBonusDistance + (system.attackBonuses[w.system.categoryDistance]?.total ?? 0),
         linkedAmmoName: linkedAmmo?.name ?? null,
         linkedAmmoQty: linkedAmmo?.system.quantity ?? null
       };
     });
     context.npcAbilities = this._prepareNpcAbilityItems();
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
+    context.treasures = this.actor.items.filter(i => i.type === "treasure");
+
+    // Ammunition candidates for the "no munition linked yet" dropdown in the Combat
+    // tab's weapon table (.munitions-cell) — same convention as actor-sheet.mjs.
+    context.ammoCandidates = this.actor.items
+      .filter(i => i.type === "equipment" && i.system.consumable)
+      .map(i => ({ id: i.id, name: i.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
     context.spells = this._prepareSpellItems();
     context.instantSpells = context.spells.filter(s => !s.ritual);
     context.ritualSpells = context.spells.filter(s => s.ritual);
@@ -250,6 +266,15 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         const focusState = captureFocusState(this.element);
         await item.consume();
         restoreFocusState(this.element, focusState);
+      });
+    });
+
+    this.element.querySelectorAll(".munitions-select").forEach(el => {
+      el.addEventListener("change", ev => {
+        const li = ev.currentTarget.closest(".item");
+        const weapon = this.actor.items.get(li.dataset.itemId);
+        if (!weapon || !ev.currentTarget.value) return;
+        weapon.update({ "system.linkedAmmoId": ev.currentTarget.value }).then(() => this.render({ force: true }));
       });
     });
 

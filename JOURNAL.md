@@ -2,6 +2,226 @@
 
 ---
 
+## Session du 18 septembre 2026 (suite 2) — Bonus d'attaque par catégorie invisible sur la fiche PNJ (v0.6.131 → v0.6.132)
+
+Retour de test immédiat sur "Combattant aquatique" (point 71) : "combatant aquatique ne semble
+pas donné + 3 à l'attaque, mais donne bien +2 à la CA". Les deux changements (`system.
+attackBonuses.armeBlanche.total` ADD 3, `system.ca.value` ADD 2) sont dans le **même**
+ActiveEffect — s'il s'applique (ce que le +2 CA confirme), les deux changements s'appliquent
+ensemble, donc ce n'était pas un défaut de l'effet lui-même.
+
+Relecture de `module/documents/item.mjs` : `_executeAttackRoll()` lit déjà correctement
+`this.actor?.system.attackBonuses?.[category]?.total` (générique Personnage/PNJ, pas de branche
+spécifique par type d'acteur) — le jet réel posté au chat était donc probablement déjà juste.
+
+Cause trouvée dans `module/sheets/npc-sheet.mjs` : `context.weapons` ne calculait jamais de
+total combiné, contrairement à `actor-sheet.mjs` (`attTotal: w.system.attBonus +
+(system.attackBonuses[w.system.category]?.total ?? 0)`) — le tableau d'armes de la fiche PNJ
+(`npc-sheet.hbs`) affichait donc `weapon.system.attBonus` brut, jamais combiné avec le tableau
+de bonus par catégorie juste au-dessus (celui que "Combattant aquatique" cible). Un décalage
+pré-existant entre les deux fiches, pas introduit par ce chantier — l'audit du 18 septembre
+(point 71) avait pourtant revu `npc-sheet.mjs` dans sa dimension "sheets" sans le repérer
+(cherché des incohérences structurelles, pas un calcul manquant côté affichage).
+
+Corrigé à l'identique du patron Personnage : `attTotal`/`attTotalDistance` ajoutés au contexte
+PNJ, `npc-sheet.hbs` affiche désormais ces totaux au lieu du bonus brut. Aucun changement côté
+jet (`item.mjs`), qui n'avait probablement jamais été faux — seul l'affichage induisait en
+erreur. **À confirmer par l'utilisateur en jeu** (nombre affiché ET résultat du jet posté au
+chat).
+
+**Fichiers modifiés** : `module/sheets/npc-sheet.mjs`, `templates/actor/npc-sheet.hbs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+**Retour de test immédiat — toujours cassé, rouvert** : "ça ne va toujours pas sur combatant
+aquatique, j'ai la CA qui augmente de + 4 au lieux de +2 et je n'ais toujours pas de bonus
+d'attaque de base de +3 (ce n'est pas spécifique à l'arme blanche, mais à toute les attaques)".
+Deux symptômes distincts, ni l'un ni l'autre expliqué par le fix ci-dessus (qui ne touchait que
+l'affichage du tableau d'armes, pas l'effet ni son calcul) :
+
+- **CA +4 au lieu de +2** — vérifié dans `packs/capacites-combat.db`/`creatures.db` (les deux
+  copies de l'effet embarqué) : un seul effet, un seul `changes` avec `system.ca.value` ADD 2,
+  pas de duplication dans les données source. Le doublement observé en jeu vient donc soit
+  d'un état déjà présent dans le monde de l'utilisateur avant ce chantier (deuxième copie de
+  la capacité/effet sur son PNJ), soit d'un mécanisme non identifié qui recalcule `ca.value`
+  une deuxième fois quelque part.
+- **Bonus d'attaque totalement absent, "pas spécifique à l'arme blanche, mais à toute les
+  attaques"** — le texte de l'utilisateur suggère que la règle voulue n'est peut-être pas
+  "armes blanches uniquement" (ce que cible actuellement `system.attackBonuses.armeBlanche.
+  total`) mais un bonus sur toute catégorie d'attaque — pas encore clarifié.
+
+Investigation interrompue à la demande de l'utilisateur ("on retravaillera le reste lundi") —
+**pas corrigé, laissé en l'état, rouvert dans TODO_BUG_ANTIQUE.md**. Prochaines étapes à la
+reprise : demander combien de fois "Combattant aquatique" apparaît dans l'onglet Effets du PNJ
+concerné (compendium vs copie déjà sur un acteur du monde peuvent différer), et clarifier la
+portée voulue du bonus d'attaque avant de retoucher `system.attackBonuses.*`.
+
+---
+
+## Session du 18 septembre 2026 (suite) — Audit complet du code, point 71 clos (v0.6.130 → v0.6.131)
+
+Demande : "fait un audit de tout le code pour verrifier que tout est cohérent et fonctionel",
+puis "utilise l'ultracode" (autorise l'orchestration multi-agents pour cette session).
+
+**Workflow d'audit** (`antique-full-audit`, 3 phases) : 12 agents en parallèle (`pipeline`), un
+par sous-système (documents actor/item, data-models, sheets, apps, antique.mjs, migration/
+PACK_UPDATES, autres helpers, templates Acteur, templates Objet/Apps, traductions fr/en,
+manifeste system.json/template.json, données de compendium via les miroirs JSON) — chacun avec
+un rappel des conventions délibérées du projet à ne pas signaler comme bug (refreshSheet()
+explicite, captureFocusState/restoreFocusState, lecture de `_source.system` pour contourner les
+ActiveEffects, PACK_UPDATES jamais réutilisé, scripts `packs/_*.js` historiques hors périmètre).
+Chaque anomalie trouvée passait ensuite par un panel de 3 réfutateurs indépendants (sceptiques
+par défaut) ; survit si au moins 1/3 ne réfute pas. 19 constats remontés, tous confirmés — 3
+paires étaient le même défaut trouvé sous deux angles, fusionnées en **16 anomalies
+distinctes** (1 critique, 6 majeures, 4 moyennes, 5 mineures). 70 agents au total, ~3,8M tokens.
+
+L'utilisateur a choisi de tout corriger dans la foulée ("Tout corriger maintenant").
+
+**Critique — Points de Chance cassés silencieusement** : `registerPointsChanceEffectHook()`
+(`module/helpers/actor-utils.mjs`) lisait `effect.system.changes` au lieu de `effect.changes`
+(`ActiveEffect` n'a pas de sous-objet `system`, contrairement à `Actor`/`Item`) — l'exception
+levée empêchait le hook d'atteindre son propre `return false`, donc glisser un effet "Point de
+Chance +1/+2" du compendium Effets créait un ActiveEffect ordinaire invisible au lieu
+d'incrémenter `system.pointsChance` (le comportement exact que ce hook existait pour empêcher).
+Effet de bord découvert au passage : la ligne plantait pour TOUT ActiveEffect créé sur TOUT
+personnage (le filtre sur `system.pointsChance` n'était jamais atteint), d'où une erreur
+console parasite systématique jamais reliée à ce bug précis jusqu'ici. Corrigé en une ligne.
+
+**Trésors invisibles sur les fiches** : le type d'objet "treasure" (point 36, v0.6.93) avait son
+DataModel, sa fiche dédiée et son compendium, mais n'était filtré nulle part dans
+`_prepareContext()` des fiches Personnage/PNJ — un trésor glissé sur une fiche était bien créé
+comme Item embarqué mais totalement invisible, impossible à consulter/éditer/supprimer depuis
+l'interface. Corrigé :
+- Personnage (`actor-sheet.mjs`) : ajouté à `context.inventoryItems` (même table unifiée que
+  armes/équipement) comme 3e "kind" — nouveaux flags `hasQuantity` (true pour equipment/
+  treasure, false pour weapon) et `showEquipControls` (false pour treasure, pas de notion de
+  slot/équipé) pour que le template affiche "—" proprement au lieu d'un bouton d'assignation de
+  slot vide (aucune valeur de `equipmentSlots.*.types` n'inclut "treasure", donc le menu contextuel
+  se serait ouvert vide). Icône dédiée (`fa-gem`) + bouton de création "+ Trésors" dans l'en-tête.
+- PNJ (`npc-sheet.mjs`/`.hbs`) : nouvelle section "Trésors" dédiée dans l'onglet Inventaire,
+  même patron que la section Équipement existante (table simple nom/quantité/contrôles, pas de
+  colonne prix/poids/équipé — cohérent avec le style plus sobre de la fiche PNJ).
+- `actor-character.mjs` : `poidsPorteTotal` excluait explicitement "treasure" de la boucle de
+  calcul (`item.type !== "equipment" && item.type !== "weapon"`) — un trésor ne pesait jamais
+  rien dans la charge portée alors que son schéma a bien un champ `poids` prévu pour ça. Ajouté
+  à la boucle, `qty` généralisé à `item.system.quantity ?? 1` pour tout sauf "weapon" (qui n'a
+  pas de champ quantity).
+- Nouvelles clés de langue `ANTIQUE.Inventory.Treasures`/`ANTIQUE.ItemType.Treasure` (fr/en) —
+  cette dernière manquait déjà avant ce chantier (nécessaire au bouton "+ Trésor(s)" qui
+  synthétise le nom par défaut via `ANTIQUE.Item.New` + `ANTIQUE.ItemType.<Type>`).
+
+**Recherche + filtres du Navigateur de Compendium qui s'annulaient** : `applyFilters()`
+(`compendium-browser.mjs`, cases à cocher par onglet) et le handler de recherche texte
+(`attachBrowserRowInteractions()`, `browser-shared.mjs`, partagé avec la Boutique d'Alchimie)
+manipulaient chacun `row.style.display` sur les mêmes lignes sans jamais consulter l'état de
+l'autre — cocher un filtre puis taper (ou même juste effacer) du texte dans la recherche faisait
+réapparaître des lignes qui auraient dû rester masquées, et inversement. Unifié dans
+`refreshBrowserRowVisibility()` (nouvelle fonction partagée, `browser-shared.mjs`) : calcule la
+visibilité de chaque ligne comme `searchMatch && filterMatch` (le filtre d'une ligne se
+détermine via `row.closest(".tab[data-tab]")`, robuste au fait que la Boutique d'Alchimie n'a
+pas de filtres du tout — `closest()` renvoie `null`, tableau de cases vide, `filterMatch` toujours
+vrai). Les deux handlers appellent désormais cette même fonction.
+
+**Manifeste désynchronisé** : `system.json → documentTypes.Item` ne listait que 7 types
+(weapon/equipment/advantage/disadvantage/blessing/spell/effect) contre 10 dans
+`template.json`/`antique.mjs` — treasure/curse/npcability manquaient, alors que les 3 sont
+pleinement implémentés et utilisés en production (packs Trésors/Capacités de Combat, Traits
+onglet Malédictions). Aligné : les 3 ajoutés à `system.json`. Découvert en même temps : "effect"
+était déclaré dans les 3 manifestes (avec même une clé de traduction) mais sans DataModel ni
+sheet enregistrés dans `antique.mjs` — résidu de l'ancien chantier Effets-comme-Item (voir
+mémoire `antique-effets-compendium-status`, remplacé depuis par de vrais ActiveEffect, voir
+point 24/v0.6.85). Type mort, retiré des 3 manifestes (`system.json`, `template.json`, `lang/
+fr.json` + `en.json`).
+
+**Icônes cassées (404 en jeu)** : 8 potions de `equipement.db` (Breuvage du Colosse, Essence
+d'Acrobate, Philtre de l'Ours, Liqueur du Vent, Elixir de l'Orateur, Breuvage de l'Astre, Potion
+Simple, Antidouleur) référençaient `icons/svg/flask.svg`, inexistant dans la bibliothèque
+Foundry locale (même classe de bug que l'historique `potion.svg`, point 2) — chacune réassignée
+à une vraie icône de potion déjà utilisée ailleurs dans le système (`icons/consumables/
+potions/*.webp`, vérifiées présentes localement). "Combattant aquatique" (`capacites-combat.db`,
++ embarquée sur son propre effet ET embarquée sur le Triton dans `creatures.db`) et le portrait
+du Triton lui-même référençaient `icons/svg/water.svg`, également inexistant (seul
+`waterfall.svg` existe) — 3 occurrences imbriquées corrigées (remplacement de chaîne littérale
+sur le fichier `.db` entier, plus sûr qu'un walk JSON arbitraire vu l'imbrication effet-dans-
+item-dans-actor). Corrigé à la source (`packs/*.db`, script one-off
+`packs/_fix-audit-2026-09-18.js`) + 2 nouveaux correctifs `PACK_UPDATES`
+(`0.6.131-fix-flask-icon`/`0.6.131-fix-water-icon`) pour les copies déjà déployées (compendium,
+objets/acteurs du monde, copies sur un jeton non lié) — même portée à 3 niveaux que tout
+correctif d'icône précédent.
+
+**PNJ et bonus de CA** : `AntiqueActor#applyCaBonus()` lit/écrit `system.ca.total`/`.temp`, des
+champs qui n'existent que sur le schéma Personnage (`actor-npc.mjs` n'a que `system.ca.value`,
+flat, GM-set, sans mécanisme de buff temporaire). Le filtre du hook `.apply-effect`
+(`antique.mjs`) excluait déjà Divinité (`system.ca === undefined`) mais pas PNJ (qui a bien un
+objet `system.ca`, juste sans `.total`) — un PNJ avec un sort à `caBonus` (ex. copie de Peau
+d'écorce) lancé sur lui-même affichait "NomDuPNJ : undefined → undefined CA" sans aucun effet
+réel sur la fiche. Corrigé en changeant le filtre pour `actor.system.ca?.total === undefined`
+(exclut Divinité ET PNJ d'un coup, sans étendre le schéma PNJ ni dupliquer un chemin séparé).
+
+**Munitions manquantes côté PNJ** : la fiche PNJ n'avait que la moitié du patron munitions —
+le badge "munition déjà liée" existait, mais pas le `<select>` "aucune munition liée" (branche
+`{{else}}` absente du template, contrairement à la fiche Personnage). Ajouté à l'identique
+(`ammoCandidates` dans `_prepareContext()`, `.munitions-select` change handler dans `_onRender()`
+de `npc-sheet.mjs`, branche manquante ajoutée à `npc-sheet.hbs`).
+
+**Nettoyages mineurs** : section `{{#if showFreeText}}` de `actor-ref-section.hbs` jamais
+alimentée par ses 2 appelants (`character-sheet.hbs`, sections Alliés/Ennemis) — code mort
+retiré ; label du correctif `0.6.70-backfill-ingredient-bag` ("acteurs") confus dans l'écran de
+mise à jour MJ car ne correspond à aucun vrai pack — libellé dédié ajouté dans
+`pack-update-picker.mjs`, en-tête de `pack-updates.mjs` mis à jour pour documenter ce
+pseudo-pack ; `rollD20()` (`rolls.mjs`) jamais importée nulle part dans le dépôt — supprimée ;
+`ANTIQUE.Traits.Effects` dupliqué (lignes 268 et 273, fr ET en) — dédupliqué ; champ résiduel
+`system.bonusSexe` sur le PNJ "Éphise - fils d'Eros" (mécanique abandonnée, absente du schéma
+`AntiqueCharacter` actuel) — retiré à la source + nouveau correctif `PACK_UPDATES`
+(`0.6.131-remove-ephise-bonus-sexe`, détection via `_source.system` puisque le TypeDataModel
+masque déjà silencieusement ce champ hors-schéma à la lecture normale).
+
+**Fichiers modifiés** : `module/helpers/actor-utils.mjs`, `antique.mjs`, `module/sheets/
+actor-sheet.mjs`, `module/sheets/npc-sheet.mjs`, `module/data-models/actor-character.mjs`,
+`module/apps/browser-shared.mjs`, `module/apps/compendium-browser.mjs`, `module/apps/
+pack-update-picker.mjs`, `module/helpers/pack-updates.mjs`, `module/helpers/rolls.mjs`,
+`templates/actor/character-sheet.hbs`, `templates/actor/npc-sheet.hbs`, `templates/actor/parts/
+actor-ref-section.hbs`, `lang/fr.json`, `lang/en.json`, `system.json`, `template.json`,
+`packs/equipement.db`, `packs/capacites-combat.db`, `packs/creatures.db`, `packs/pnj.db`,
+`packs/_json-mirrors/*.json`, `packs/_fix-audit-2026-09-18.js` (nouveau, one-off), `module/
+helpers/release-notes.mjs`, `TODO_BUG_ANTIQUE.md`, ce journal. **À confirmer par l'utilisateur
+en jeu** — nécessite de cocher les 3 nouveaux correctifs `PACK_UPDATES` dans l'écran de mise à
+jour (MJ) ; le reste (code) prend effet immédiatement au rechargement (Ctrl+Shift+F5).
+
+---
+
+## Session du 18 septembre 2026 — Icône du sort sur l'effet appliqué, point 70 clos (v0.6.129 → v0.6.130)
+
+Reprise du point 70 laissé en diagnostic la veille ("note tout ça on reprendra ça demain").
+
+Confirmé le diagnostic déjà posé : `AntiqueActor#applyCaBonus()` (`actor.mjs`) acceptait un
+paramètre `icon` optionnel (repli générique `icons/svg/upgrade.svg`), mais son seul site
+d'appel (`.apply-effect`, `antique.mjs`) ne le fournissait jamais — Peau d'écorce, Rage
+Incontrôlable et Peau de Fer gardaient donc toujours l'icône générique sur l'effet créé sur
+l'acteur, malgré chaque sort ayant désormais sa propre icône réelle (point 69).
+`AntiqueActor#applyEffectChanges()` (mécanisme jumeau des 8 sorts à bonus de caractéristique,
+`.apply-spell-effect`) passait déjà `icon: item.img` — reconfirmé correct. `grantEffectToActor()`
+(Navigateur de Compendium → onglet Traits → Effets) copie l'objet effet complet du compendium,
+icône incluse — reconfirmé correct aussi, rien à toucher.
+
+**Corrigé** : `.apply-effect` (`antique.mjs`) résout désormais l'icône du sort lanceur via
+`sourceItem.img` (le `sourceItem` était déjà résolu par `data-item-uuid`, ajouté au point 68b
+pour la description) et la transmet à `applyCaBonus()`.
+
+**Bug latent trouvé en creusant** : les deux méthodes (`applyCaBonus()`/`applyEffectChanges()`,
+`actor.mjs`) n'appliquaient l'icône que sur leur branche *création* — un buff déjà actif
+(effet déjà présent, retrouvé par nom) gardait son ancienne icône pour toujours à chaque recast,
+la branche *mise à jour* ne la transmettant jamais. Même angle mort déjà rencontré et corrigé
+pour `showIcon` (points 48/64) — corrigé de la même façon sur les deux branches des deux
+méthodes. Conséquence pratique : pas de correctif `PACK_UPDATES` nécessaire pour ce point — ces
+effets ne sont pas des documents de compendium à migrer, ils sont recréés dynamiquement à chaque
+lancer ; un simple recast d'un buff déjà actif suffit désormais à rafraîchir son icône via la
+branche mise à jour, maintenant corrigée.
+
+**Fichiers modifiés** : `antique.mjs`, `module/documents/actor.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 17 septembre 2026 — Audit des sorts restants, point 69 clos (v0.6.124 → v0.6.125)
 
 Reprise du point 69 laissé en attente la veille ("fini tout les sorts"). Pas de mot-clé
@@ -54,6 +274,188 @@ via `packs/_build-sorts-leveldb.js` + `packs/_sync-json-mirrors.js`. Nouveau cor
 déjà déployées (compendium, objets possédés par un acteur, jetons non liés). Version bump
 `system.json` + entrée `release-notes.mjs`. **À confirmer par l'utilisateur en jeu** — nécessite
 de cocher le correctif dans l'écran de mise à jour (MJ) puis de redéployer.
+
+**Fichiers modifiés** : `packs/sorts.db`, `packs/sorts/` (leveldb compilé),
+`packs/_json-mirrors/sorts.json`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
+## Session du 17 septembre 2026 (suite) — Retours de test : gabarit + jet de sauvegarde (v0.6.125 → v0.6.126)
+
+Testé en jeu par l'utilisateur juste après le déploiement de v0.6.125 : "ça marche bien", avec
+deux retours dans la foulée.
+
+**Gabarit qui "multiplie" la texture** : `templateTexture` (Force Déchainée/Hurlement de
+Bataille) réutilisait le mécanisme de Brouillard tel quel, mais avec une icône ponctuelle
+(`barrier-stone-explosion-debris.webp`/`scream-wail-shout-teal.webp`) au lieu d'une texture
+pensée pour boucler en continu (le fog de Brouillard) — Foundry répète l'image sur toute la
+surface du gabarit, disgracieux sur un petit rayon. Corrigé en repassant `templateTexture` à
+`""` pour les deux (couleur unie via `templateColor` seul, `#c0392b` rouge-brique pour Force
+Déchainée, `#4a4e69` gris-violet pour Hurlement de Bataille) — même mécanisme, juste sans
+texture.
+
+**Jet de sauvegarde pour Force Déchainée** : demandé explicitement par l'utilisateur ("ajoute la
+possibilité depuis le chat de lancer un test de sauvegarde de constitution avec la difficulté
+préciser dans la description") — sa description dit "jet de sauvegarde constitution diff 15".
+Ce système n'a pas de save "Constitution" isolé, seulement 3 catégories composites
+(`reflexes`/`robustesse`/`volonte`, voir `config.mjs`) ; `robustesse` (con+for) est la même
+catégorie déjà utilisée pour les capacités de combat PNJ à save "physique" (ex. Regard
+pétrifiant/Robustesse DC 18) — mappé en conséquence (DC 15, comme précisé dans le texte).
+
+Nouveaux champs `saveAbility`/`saveDC` ajoutés à `item-spell.mjs` (identiques à ceux déjà
+existants sur `item-npcability.mjs`) — jusqu'ici ce bouton n'existait que pour les capacités de
+combat PNJ (`postToChat()`), jamais pour un sort lancé (`castSpell()`).
+
+**Un seul bouton, pas deux** : premier essai copié tel quel du patron `npcability` (2 boutons —
+un pour le personnage assigné du joueur, un réservé au MJ pour la sélection de canevas) —
+retour immédiat de l'utilisateur : un sort de zone comme Force Déchainée peut toucher plusieurs
+cibles à la fois, possédées par des personnes différentes (joueurs et/ou MJ), donc il faut
+**un seul bouton, ouvert à tout le monde**, qui lance le jet pour le(s) jeton(s) que le clique
+a lui-même sélectionné(s)/contrôlé(s) sur le canevas (n'importe quel nombre), avec repli sur son
+propre personnage assigné si rien n'est sélectionné. Nouveau hook dédié `.spell-save-button`
+(`antique.mjs`), distinct des deux hooks `.roll-save-button`/`.roll-save-selected-button` —
+ceux-ci restent inchangés pour `npcability` (`postToChat()`), un patron différent déjà confirmé
+(point 20) et pas concerné par ce retour.
+
+**Même besoin trouvé sur Hurlement de Bataille** (bug signalé par l'utilisateur : "ajoute un jet
+de sauvegarde sur Hurlement de Bataille également") — sa description dit "jet de sauvegarde pour
+ne pas fuir diff 15", un effet de peur. Mappé sur `volonte` (pas `robustesse`, cette fois),
+même convention que les capacités de peur du bestiaire (`Gémissement`/`Rugissement`, toutes deux
+`saveAbility: "volonte"` dans `packs/capacites-combat.db`).
+
+**Vérification demandée des 5 autres sorts Berserk** : aucun autre jet de sauvegarde à ajouter.
+Rage Incontrôlable mentionne bien un "jet de volonté" dans son texte, mais c'est une sauvegarde
+du **lanceur lui-même**, à un moment narratif conditionnel ("si tous les ennemis sont tombés
+avant la fin de la rage") — pas un jet immédiat déclenché au lancer comme les deux autres, donc
+pas ajouté sans clarification préalable (voir `TODO_BUG_ANTIQUE.md`, point 69).
+
+Nouveau correctif `PACK_UPDATES` (`0.6.126-fix-spell-template-visual-and-save`) pour les copies
+déjà déployées par le correctif précédent (compendium, objets possédés, jetons non liés) —
+écrase sans condition la texture/couleur déjà posées par `0.6.125` (contrairement à
+`setSpellTemplate()`, qui ne touche jamais un gabarit déjà configuré) — couvre maintenant les
+deux sorts pour le save comme pour la texture.
+
+**Fichiers modifiés** : `packs/sorts.db`, `packs/sorts/` (leveldb compilé),
+`packs/_json-mirrors/sorts.json`, `module/data-models/items/item-spell.mjs`,
+`module/documents/item.mjs`, `antique.mjs`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
+## Session du 17 septembre 2026 (suite 4) — Description des buffs + expiration automatique par tours (v0.6.128 → v0.6.129)
+
+**Peau de Fer testé sans succès** ("je ne vois aucune différence") — relecture du code
+(`applyDamage()`, `actor.mjs`) sans rien trouvé d'anormal : détection par nom cohérente avec le
+reste du fichier (`applyCaBonus()` fait pareil), fichier déployé vérifié identique à la source
+octet pour octet. Diagnostic bloqué faute d'accès navigateur — questions posées à l'utilisateur
+(effet actif visible sur la cible avant le test ? bouton exact utilisé ? monde rechargé après le
+dernier déploiement ?). **Confirmé fonctionnel par l'utilisateur ("1 fonctionne") après
+rechargement complet du monde** — cause du premier échec jamais identifiée avec certitude,
+probablement un monde pas encore rechargé à ce moment-là.
+
+**Bug signalé en parallèle** : "pour rage incontrôlable je ne vois pas la description complète
+dans l'ui de l'effet." Cause trouvée : `applyCaBonus()` (mécanisme partagé par les 3 sorts à
+`caBonus` — Peau d'écorce, Rage Incontrôlable, Peau de Fer) accepte déjà un paramètre
+`description` optionnel (ajouté au point 65 pour l'autre mécanisme, `applyEffectChanges()`),
+mais le bouton "Appliquer l'effet" des buffs CA (`item.mjs`, carte de lancer) n'en fournissait
+jamais — repli systématique sur un texte générique "+N CA" synthétisé. Corrigé en donnant au
+bouton un `data-item-uuid` (comme le bouton `apply-spell-effect` déjà existant) et en résolvant
+l'item pour lire sa vraie description avant l'appel (`antique.mjs`) — bénéficie aux 3 sorts, pas
+seulement à celui signalé.
+
+**Investigation demandée** : "regarde si c'est également possible de décrémenter le un chiffre
+sur l'effet pour le supprimer au bout de 10 tours ?" (durée de Rage Incontrôlable). Recherche
+dans le code source du client Foundry v14 installé localement
+(`D:\FoundryVTT\Foundry Virtual Tabletop\resources\app\client\`) :
+- `client/documents/active-effect.mjs` : v14 a un vrai système de durée basée sur le combat
+  (`duration.units: "rounds"`/`value`), avec migration automatique depuis l'ancien schéma
+  (`duration.rounds` legacy toujours accepté, converti tout seul) — pas besoin de connaître la
+  nouvelle syntaxe pour l'utiliser. `start` (round/tour/combat de départ) est calculé et posé
+  automatiquement à la création d'un effet sur un Acteur (`_preCreate()`), tant qu'un combat est
+  actif.
+- `client/helpers/active-effect-registry.mjs` : un singleton central rafraîchit et expire ces
+  effets à chaque évènement de combat pertinent (déjà câblé par le cœur de Foundry, rien à
+  ajouter côté hooks) — mais `CONFIG.ActiveEffect.expiryAction` vaut `"update"` par défaut
+  (marque juste l'effet comme expiré/grisé, ne le supprime jamais). Passé à `"delete"` dans
+  `antique.mjs` (init) : sans risque, aucun autre effet du système n'utilisait de durée basée
+  sur les tours jusqu'ici.
+
+Implémenté : `applyCaBonus()` (`actor.mjs`) accepte un `durationRounds` optionnel — s'il est
+fourni, pose `duration: { rounds: N }` (+ `start` recalculé via `CONFIG.ActiveEffect.
+documentClass.getEffectStart()`, y compris en cas de réapplication pour relancer le décompte).
+`castSpell()` (`item.mjs`) le déduit tout seul du texte de durée déjà existant du sort
+(`system.duration`, ex. "10 tours") via `/^(\d+)\s*tours?$/i` — se généralise donc aussi à Peau
+de Fer ("3 Tours") sans code supplémentaire ; Peau d'écorce ("1h") ne matche pas ce format et
+reste permanent comme avant, aucune régression. Construit uniquement à partir de lecture de code
+source (pas d'accès navigateur) — **confirmé par l'utilisateur en jeu (17 septembre 2026)** :
+"les effets disparaissent bien après 10 tours."
+
+Description de Rage Incontrôlable reformulée au passage ("jet de sauvegarde de Volonté" au lieu
+de "jet de volonté", cohérent avec la terminologie utilisée ailleurs — Force Déchainée/Hurlement
+de Bataille). Nouveau correctif `PACK_UPDATES` (`0.6.129-rage-incontrolable-volonte-wording`).
+
+**Fichiers modifiés** : `antique.mjs`, `module/documents/actor.mjs`, `module/documents/item.mjs`,
+`packs/sorts.db`, `packs/sorts/` (leveldb compilé), `packs/_json-mirrors/sorts.json`,
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
+## Session du 17 septembre 2026 (suite 3) — Peau de Fer réduit vraiment les dégâts reçus (v0.6.127 → v0.6.128)
+
+Demandé : "pour peau de fer, cherche s'il est possible de faire réduire les dégâts pris de
+moitié lorsqu'ils sont appliqués via une attaque portée (bouton appliquer les dégâts depuis le
+tchat)". Son texte dit bien "réduit les dégâts reçus de moitié et +2 à la CA" — seul le `+2 CA`
+avait été mécanisé au point 44 (`SPELL_CA_BONUS`, patron "Peau d'écorce"), la réduction de
+dégâts n'existait nulle part : le bouton "Appliquer les dégâts" (`rollDamage()`) infligeait
+toujours les dégâts pleins, quel que soit l'état de la cible.
+
+Point de passage unique trouvé : `AntiqueActor#applyDamage()` (`actor.mjs:210`), seul et unique
+appelant de tout retrait de PV déclenché par ce bouton (vérifié qu'aucun autre chemin de code ne
+l'appelle). Corrigé à cet endroit : si la cible porte un effet actif nommé "Peau de Fer" — même
+détection par nom que `applyCaBonus()`'s create-or-refresh (`this.effects.find(e => e.name ===
+name)`), pas de nouveau champ à ajouter — le montant est divisé par deux, arrondi à l'inférieur
+(`Math.floor`, aucune convention d'arrondi existante ailleurs dans le code à réutiliser, choix
+par défaut le plus courant).
+
+`applyDamage()` retournait déjà `{before, after, amount}` mais le hook chat (`antique.mjs`)
+affichait le montant **brut** du jet de dégâts (`damage`, capturé avant l'appel), pas le montant
+réellement retiré — invisible tant que personne n'avait Peau de Fer actif, mais serait devenu
+trompeur ("-12" affiché alors que seuls 6 PV sont partis). Corrigé pour afficher `result.amount`
+(le montant réellement appliqué, post-réduction) + une mention "réduit de moitié par Peau de
+Fer" quand c'est le cas (nouvelle clé `ANTIQUE.Damage.HalvedByIronSkin`, `lang/fr.json` +
+`lang/en.json`).
+
+Aucun correctif `PACK_UPDATES` nécessaire : pur changement de code (`actor.mjs`/`antique.mjs`),
+aucune donnée de compendium à faire évoluer — prend effet dès le rechargement du monde.
+
+**Fichiers modifiés** : `module/documents/actor.mjs`, `antique.mjs`, `lang/fr.json`,
+`lang/en.json`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce
+journal.
+
+---
+
+## Session du 17 septembre 2026 (suite 2) — Icônes propres pour les 32 sorts (v0.6.126 → v0.6.127)
+
+Demandé après le chantier du point 69 : "est-ce que tu en as profité pour ajouter les images
+dans les compendiums ?" — non, pas fait jusque-là. Vérifié : les 32 sorts partageaient seulement
+4 icônes génériques par école (`icons/svg/oak.svg` pour Druide, `fire.svg` pour Hécate,
+`sword.svg` pour Berserk, `skull.svg` pour Morrigan), aucune icône dédiée par sort — même lacune
+que les armes/armures avant le point 47.
+
+Une icône distincte choisie par sort (thème du texte : bark/bark-skin pour Peau d'écorce,
+acorn pour Gland des quatre chemins, corvid-* pour les sorts de Morrigan, etc.), chaque chemin
+vérifié dans l'installation Foundry locale (`D:\FoundryVTT\Foundry Virtual Tabletop\resources\
+app\public\icons\`) avant utilisation — même prudence que le bug historique `potion.svg`/point 2
+(un premier essai de vérification avait raté à cause d'un chemin `/d/...` façon bash non résolu
+par le node.exe Windows utilisé pour lancer le script, corrigé en repassant en notation `D:/...`).
+Force Déchainée et Hurlement de Bataille réutilisent l'icône déjà choisie pour leur texture de
+gabarit (cohérent, pas une vraie duplication).
+
+Nouveau correctif `PACK_UPDATES` (`0.6.127-spell-real-icons`) pour les copies déjà déployées
+(compendium, objets possédés, jetons non liés), même patron que `applyWeaponArmorRealImages()`
+(point 47).
 
 **Fichiers modifiés** : `packs/sorts.db`, `packs/sorts/` (leveldb compilé),
 `packs/_json-mirrors/sorts.json`, `module/helpers/pack-updates.mjs`,

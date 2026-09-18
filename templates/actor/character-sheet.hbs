@@ -371,6 +371,7 @@
           <h2>{{localize "ANTIQUE.Inventory.Equipment"}}
             <a class="item-create" data-type="equipment" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Inventory.Equipment"}}</a>
             <a class="item-create" data-type="weapon" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Combat.Weapons"}}</a>
+            <a class="item-create" data-type="treasure" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i> {{localize "ANTIQUE.Inventory.Treasures"}}</a>
           </h2>
           <table class="item-list">
             <thead>
@@ -391,22 +392,24 @@
               <td class="equip-name-cell">
                 <a class="equip-toggle"><i class="fas fa-caret-right equip-toggle-icon"></i></a>
                 {{#ifEquals equip.kind "weapon"}}<i class="fas fa-khanda inventory-kind-icon" title="{{localize 'ANTIQUE.Combat.Weapons'}}"></i>{{/ifEquals}}
+                {{#ifEquals equip.kind "treasure"}}<i class="fas fa-gem inventory-kind-icon" title="{{localize 'TYPES.Item.treasure'}}"></i>{{/ifEquals}}
                 {{#if equip.isIngredientBag}}<i class="fas fa-mortar-pestle inventory-kind-icon" title="{{localize 'ANTIQUE.Equipment.IsIngredientBag'}}"></i>{{/if}}
                 <span class="equip-name">{{equip.name}}</span>
               </td>
               <td class="quantity-cell">
-                {{#ifEquals equip.kind "equipment"}}
+                {{#if equip.hasQuantity}}
                 <span class="quantity-value {{#if (lt equip.system.quantity 1)}}empty{{/if}}">{{equip.system.quantity}}</span>
                 {{#if equip.system.consumable}}
                 <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Use'}}"><i class="fas fa-flask"></i></a>
                 {{/if}}
                 {{else}}
                 —
-                {{/ifEquals}}
+                {{/if}}
               </td>
               <td class="price-cell">{{#if equip.system.price}}{{equip.system.price}}{{else}}—{{/if}}</td>
               <td class="poids-cell">{{#if equip.system.poids}}{{equip.system.poids}} kg{{else}}—{{/if}}</td>
               <td class="equip-btn-cell">
+                {{#if equip.showEquipControls}}
                 {{#if equip.hasSlot}}
                 <a class="item-equip-btn {{#if equip.system.equipped}}active{{/if}}" title="{{equip.slotLabel}}">
                   <i class="fas {{#if equip.system.equipped}}fa-check-square{{else}}fa-square{{/if}}"></i>
@@ -415,6 +418,9 @@
                 <a class="item-equip-picker" data-item-id="{{equip.id}}" data-kind="{{equip.kind}}" title="{{localize 'ANTIQUE.Equipment.ChooseSlot'}}">
                   <i class="fas fa-plus-circle"></i>
                 </a>
+                {{/if}}
+                {{else}}
+                —
                 {{/if}}
               </td>
               <td class="item-controls">

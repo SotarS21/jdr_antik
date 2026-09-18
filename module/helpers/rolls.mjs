@@ -1,23 +1,4 @@
 /**
- * Generic d20 roll helper.
- * @param {object} options
- * @param {string} options.formula - Roll formula (e.g. "1d20 + @mod")
- * @param {object} options.data - Roll data context
- * @param {string} options.flavor - Chat message flavor text
- * @param {Actor} options.actor - The actor performing the roll
- * @returns {Promise<Roll>}
- */
-export async function rollD20({ formula = "1d20", data = {}, flavor = "", actor = null } = {}) {
-  const roll = new Roll(formula, data);
-  await roll.evaluate();
-  await roll.toMessage({
-    speaker: actor ? ChatMessage.getSpeaker({ actor }) : ChatMessage.getSpeaker(),
-    flavor
-  });
-  return roll;
-}
-
-/**
  * Retrieve the CA (armor class) of an actor regardless of type.
  * Characters store it in system.ca.total, NPCs in system.ca.value.
  * @param {Actor} actor

@@ -191,8 +191,8 @@
             <tr class="item" data-item-id="{{weapon.id}}">
               <td class="weapon-img item-chat" title="{{localize 'ANTIQUE.Item.PostToChat'}}"><img src="{{weapon.img}}" width="24" height="24" /></td>
               <td class="weapon-name clickable weapon-attack">{{weapon.name}}</td>
-              <td class="clickable weapon-attack">{{weapon.system.attBonus}}</td>
-              <td class="clickable weapon-attack">{{#if weapon.system.hasPortee}}{{weapon.system.attBonusDistance}}{{else}}—{{/if}}</td>
+              <td class="clickable weapon-attack">{{weapon.attTotal}}</td>
+              <td class="clickable weapon-attack">{{#if weapon.system.hasPortee}}{{weapon.attTotalDistance}}{{else}}—{{/if}}</td>
               <td class="clickable weapon-damage">{{weapon.system.damage}}</td>
               <td>{{weapon.system.critical}}</td>
               <td>{{weapon.system.typeDamage}}</td>
@@ -205,6 +205,13 @@
                     <span class="munitions-value {{#if (lt weapon.linkedAmmoQty 1)}}empty{{/if}}">{{weapon.linkedAmmoQty}}</span>
                     <span class="linked-ammo-name">{{weapon.linkedAmmoName}}</span>
                   </span>
+                  {{else}}
+                  <select class="munitions-select">
+                    <option value="">{{localize "ANTIQUE.Munitions.Choose"}}</option>
+                    {{#each ../ammoCandidates as |ammo|}}
+                    <option value="{{ammo.id}}">{{ammo.name}}</option>
+                    {{/each}}
+                  </select>
                   {{/if}}
                   <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Munition'}}"><i class="fas fa-arrow-down"></i></a>
                 {{else}}
@@ -290,6 +297,35 @@
                 {{#if equip.system.consumable}}
                 <a class="item-consume" title="{{localize 'ANTIQUE.Consume.Use'}}"><i class="fas fa-flask"></i></a>
                 {{/if}}
+              </td>
+              <td class="item-controls">
+                <a class="item-edit"><i class="fas fa-edit"></i></a>
+                <a class="item-delete"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="equipment-section">
+        <h2>{{localize "ANTIQUE.Inventory.Treasures"}}
+          <a class="item-create" data-type="treasure" title="{{localize 'ANTIQUE.Item.Create'}}"><i class="fas fa-plus"></i></a>
+        </h2>
+        <table class="item-list">
+          <thead>
+            <tr>
+              <th>{{localize "ANTIQUE.Equipment.Name"}}</th>
+              <th>{{localize "ANTIQUE.Equipment.Quantity"}}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each treasures as |treasure|}}
+            <tr class="item" data-item-id="{{treasure.id}}">
+              <td>{{treasure.name}}</td>
+              <td class="quantity-cell">
+                <span class="quantity-value {{#if (lt treasure.system.quantity 1)}}empty{{/if}}">{{treasure.system.quantity}}</span>
               </td>
               <td class="item-controls">
                 <a class="item-edit"><i class="fas fa-edit"></i></a>

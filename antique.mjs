@@ -57,6 +57,13 @@ Hooks.once("init", function () {
     hint: "Appliqué après leur recalcul automatique, mais avant tout ce qui en dépend (compétences, sauvegardes, CA, initiative, bonus d'attaque)."
   };
 
+  // Foundry's own default ("update") only flags an expired temporary effect as
+  // duration.expired = true — it stays on the actor, greyed out, until someone removes
+  // it by hand. This system had no time-based effect at all until Rage Incontrôlable
+  // (see AntiqueActor#applyCaBonus's optional durationRounds) — safe to switch the
+  // whole system over to real auto-deletion now, nothing relies on the "update" default.
+  CONFIG.ActiveEffect.expiryAction = "delete";
+
   // Define custom Document classes
   CONFIG.Actor.documentClass = AntiqueActor;
   CONFIG.Item.documentClass = AntiqueItem;
@@ -243,7 +250,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       const actor = token.actor;
       if (!actor || actor.system.pv === undefined) continue;
       const result = await actor.applyDamage(damage);
-      results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} (-${damage})`);
+      const halvedNote = result.halved ? ` (${game.i18n.localize("ANTIQUE.Damage.HalvedByIronSkin")})` : "";
+      results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} (-${result.amount})${halvedNote}`);
     }
 
     if (results.length) {
@@ -309,6 +317,14 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     const spellName = btn.dataset.spellName;
     if (!amount || !spellName) return;
 
+    // Full rich-text description, so the created effect's tooltip shows the spell's own
+    // text instead of applyCaBonus()'s generic "+N CA" fallback (used only when this can't
+    // be resolved) — the button carries the item's UUID precisely so this lookup works.
+    const sourceItem = btn.dataset.itemUuid ? await fromUuid(btn.dataset.itemUuid) : null;
+    const description = sourceItem?.system.description || undefined;
+    const icon = sourceItem?.img || undefined;
+    const durationRounds = btn.dataset.durationRounds ? Number(btn.dataset.durationRounds) : undefined;
+
     let tokens = [...game.user.targets];
     if (!tokens.length) tokens = canvas.tokens?.controlled ?? [];
     let actors = tokens.map(t => t.actor).filter(Boolean);
@@ -320,8 +336,12 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 
     const results = [];
     for (const actor of actors) {
-      if (actor.system.ca === undefined) continue;
-      const result = await actor.applyCaBonus(amount, { name: spellName });
+      // system.ca.total only exists (as a derived number) on Personnage — Divinité has no
+      // ca field at all, and PNJ has only a flat system.ca.value (GM-set, no temp/total
+      // buff mechanism) — applyCaBonus() targets system.ca.temp/.total, so both must be
+      // excluded here rather than crash into "undefined → undefined CA" on the chat card.
+      if (actor.system.ca?.total === undefined) continue;
+      const result = await actor.applyCaBonus(amount, { name: spellName, icon, description, durationRounds });
       results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} CA`);
     }
 
@@ -513,5 +533,36 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     for (const token of tokens) {
       if (token.actor) await token.actor.rollSave(saveAbility, dc);
     }
+  });
+});
+
+// Sort à jet de sauvegarde (ex. Force Déchainée, AntiqueItem#castSpell) — un seul bouton,
+// ouvert à tout le monde (pas réservé au MJ, contrairement à la paire ci-dessus, pensée pour
+// une capacité de PNJ visant un seul joueur) : celui qui clique lance le jet pour le(s) jeton(s)
+// qu'il a actuellement sélectionné(s)/contrôlé(s) sur le canevas, quel que soit leur nombre —
+// à défaut, pour son propre personnage assigné.
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  const element = html;
+  if (!element) return;
+  const btn = element.querySelector(".spell-save-button");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    const saveAbility = btn.dataset.saveAbility;
+    const dc = Number(btn.dataset.saveDc) || 0;
+    const tokens = canvas.tokens?.controlled ?? [];
+    if (tokens.length) {
+      for (const token of tokens) {
+        if (token.actor) await token.actor.rollSave(saveAbility, dc);
+      }
+      return;
+    }
+    const actor = game.user.character;
+    if (!actor) {
+      ui.notifications.warn(game.i18n.localize("ANTIQUE.Errors.NoAssignedCharacter"));
+      return;
+    }
+    await actor.rollSave(saveAbility, dc);
   });
 });

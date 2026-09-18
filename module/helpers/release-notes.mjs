@@ -5,6 +5,65 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.132": {
+    title: "Version 0.6.132 — Bonus d'attaque par catégorie invisible sur la fiche PNJ",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le tableau d'armes de la fiche PNJ (onglet Combat) affichait le bonus d'attaque propre à l'arme seul, sans y ajouter le bonus de catégorie (celui du tableau juste au-dessus, modifiable par le MJ, et ciblé par des capacités comme "Combattant aquatique") — le jet lui-même l'incluait déjà correctement, mais le nombre affiché dans le tableau induisait en erreur. Affiche désormais le total combiné, comme sur la fiche Personnage.</li>
+      </ul>`
+  },
+  "0.6.131": {
+    title: "Version 0.6.131 — Audit complet du code, 16 anomalies corrigées",
+    html: `
+      <ul>
+        <li><strong>Corrigé (critique)</strong> : le glisser-déposer des effets "Point de Chance +1/+2" du compendium Effets était cassé (erreur silencieuse) — le bonus ne s'appliquait jamais.</li>
+        <li><strong>Ajouté</strong> : les Trésors (bijoux, parchemins, statuettes...) sont désormais visibles, éditables et créables depuis l'onglet Inventaire des fiches Personnage et PNJ — ils étaient invisibles après avoir été glissés sur une fiche. Leur poids compte maintenant dans la charge portée du Personnage.</li>
+        <li><strong>Corrigé</strong> : dans le Navigateur de Compendium, la recherche texte et les filtres par catégorie s'annulaient mutuellement au lieu de se cumuler.</li>
+        <li><strong>Corrigé</strong> : 8 potions (Breuvage du Colosse, Essence d'Acrobate...) et 2 documents du bestiaire (Combattant aquatique, Triton) avaient une icône cassée (404 en jeu).</li>
+        <li><strong>Corrigé</strong> : un sort à bonus de CA lancé par un PNJ sur lui-même affichait "undefined → undefined CA" au lieu d'un vrai résultat.</li>
+        <li><strong>Ajouté</strong> : la fiche PNJ permet désormais de lier une munition à une arme consommable depuis l'onglet Combat (déjà possible côté Personnage).</li>
+        <li><strong>Corrigé</strong> : désynchronisation entre les fichiers de manifeste sur la liste des types d'objet valides (Trésor/Malédiction/Capacité de Combat manquaient de l'un des deux) ; type "Effet" orphelin retiré (résidu de l'ancien système, remplacé depuis par les vrais effets actifs) ; libellé manquant pour "Capacité de Combat (PNJ)".</li>
+        <li><strong>Nettoyage</strong> : code mort retiré (fonction de jet générique jamais utilisée, section de fiche jamais alimentée), clé de traduction dupliquée, libellé de correctif MJ peu clair, champ résiduel sur le PNJ Éphise.</li>
+      </ul>`
+  },
+  "0.6.130": {
+    title: "Version 0.6.130 — Icône du bon sort sur l'effet appliqué",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les buffs de sort (Peau d'écorce, Rage Incontrôlable, Peau de Fer, Bénédiction des Titans et les 6 autres bonus de caractéristique) créaient toujours un effet avec l'icône générique "amélioration", jamais celle du sort lanceur. Le bouton "Appliquer l'effet"/"Appliquer sur un allié" (carte de lancer) transmet désormais l'icône du sort — reprend effet dès la prochaine application (recast) d'un buff déjà actif, sans nécessiter de correctif de compendium.</li>
+      </ul>`
+  },
+  "0.6.129": {
+    title: "Version 0.6.129 — Description complète des buffs + expiration automatique",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les buffs à bonus de CA (Peau d'écorce, Rage Incontrôlable, Peau de Fer) n'affichaient jamais leur vraie description dans le panneau d'effets — juste un texte de repli ("+N CA"). Affichent désormais la description complète du sort.</li>
+        <li><strong>Ajouté</strong> : un buff dont la durée est un nombre de tours (ex. Rage Incontrôlable, "10 tours") s'auto-supprime maintenant après ce nombre de tours de combat, au lieu de rester indéfiniment tant que personne ne le retire à la main.</li>
+        <li><strong>Modifié</strong> : description de Rage Incontrôlable reformulée ("jet de sauvegarde de Volonté" au lieu de "jet de volonté").</li>
+      </ul>`
+  },
+  "0.6.128": {
+    title: "Version 0.6.128 — Peau de Fer réduit vraiment les dégâts reçus",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : "Peau de Fer" ne faisait que remonter la CA — sa réduction de moitié des dégâts reçus, décrite dans son texte, n'était jamais appliquée. Le bouton "Appliquer les dégâts" (carte de chat d'une attaque) réduit désormais de moitié (arrondi à l'inférieur) les dégâts encaissés par une cible sous l'effet de Peau de Fer.</li>
+      </ul>`
+  },
+  "0.6.127": {
+    title: "Version 0.6.127 — Icônes propres pour les 32 sorts",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : chaque sort a désormais sa propre icône (au lieu des 4 icônes génériques partagées par école — chêne, feu, épée, crâne).</li>
+      </ul>`
+  },
+  "0.6.126": {
+    title: "Version 0.6.126 — Gabarit simplifié + jets de sauvegarde (Berserk)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le gabarit de zone de Force Déchainée/Hurlement de Bataille utilisait une texture pensée pour Brouillard (une image qui se répète) — remplacée par une couleur unie, plus lisible sur un petit gabarit.</li>
+        <li><strong>Ajouté</strong> : bouton de jet de sauvegarde sur la carte de lancer de Force Déchainée (Robustesse DC 15) et Hurlement de Bataille (Volonté DC 15) — un seul bouton, ouvert à tout joueur ou MJ, qui lance le jet pour le(s) jeton(s) actuellement sélectionné(s) (n'importe quel nombre), ou pour son propre personnage assigné à défaut.</li>
+      </ul>`
+  },
   "0.6.125": {
     title: "Version 0.6.125 — Gabarit de zone pour 2 sorts de Berserk",
     html: `

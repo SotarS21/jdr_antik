@@ -220,11 +220,12 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
     const equipmentSkillBonuses = {};
     const equippedSlots = {};
     // Poids porté : la totalité de l'inventaire (pas seulement l'équipé), unité × quantité
-    // (les armes n'ont pas de quantity — toujours comptées comme 1 exemplaire).
+    // (les armes n'ont pas de quantity — toujours comptées comme 1 exemplaire ; equipment
+    // et treasure en ont une).
     let poidsPorteTotal = 0;
     for (const item of this.parent?.items ?? []) {
-      if (item.type !== "equipment" && item.type !== "weapon") continue;
-      const qty = item.type === "equipment" ? (item.system.quantity ?? 1) : 1;
+      if (item.type !== "equipment" && item.type !== "weapon" && item.type !== "treasure") continue;
+      const qty = item.type === "weapon" ? 1 : (item.system.quantity ?? 1);
       poidsPorteTotal += (item.system.poids ?? 0) * qty;
       if (item.system.slot && item.system.equipped) {
         equippedSlots[item.system.slot] = item;

@@ -82,6 +82,42 @@ export async function stackOrCreateDroppedItem(actor, item) {
 }
 
 /**
+ * A row is visible only if it matches BOTH the text search AND the category filter
+ * checkboxes of its own tab panel (if that panel has any) — combined with AND, not two
+ * independent overwrites of the same `row.style.display` (that used to make search and
+ * filter cancel each other out: typing/clearing the search box ignored any checked
+ * filter, and toggling a filter ignored the current search text).
+ */
+function isRowVisible(row, query) {
+  const name = row.querySelector(".equip-name")?.textContent.toLowerCase() ?? "";
+  const searchMatch = !query || name.includes(query);
+  const filterBoxes = row.closest(".tab[data-tab]")?.querySelectorAll(".browser-filter-checkbox") ?? [];
+  const checked = [...filterBoxes].filter(b => b.checked).map(b => b.value);
+  const filterMatch = !checked.length || !row.dataset.filterKind || checked.includes(row.dataset.filterKind);
+  return searchMatch && filterMatch;
+}
+
+/**
+ * Recompute every row's visibility (search + filter combined) and collapse any
+ * .apoth-section left with nothing visible. Called after either the search text or a
+ * filter checkbox changes, so the other criterion already in effect is never dropped.
+ */
+export function refreshBrowserRowVisibility(root) {
+  const query = root.querySelector(".ingredient-search")?.value.trim().toLowerCase() ?? "";
+  root.querySelectorAll(".apoth-section").forEach(section => {
+    let visibleCount = 0;
+    section.querySelectorAll(".shop-row").forEach(row => {
+      const visible = isRowVisible(row, query);
+      row.style.display = visible ? "" : "none";
+      const descRow = row.nextElementSibling;
+      if (descRow?.classList.contains("equip-desc-row") && !visible) descRow.style.display = "none";
+      if (visible) visibleCount++;
+    });
+    section.style.display = visibleCount > 0 ? "" : "none";
+  });
+}
+
+/**
  * Wire the search box + sort dropdown + description-toggle caret + drag-and-drop + click-image
  * -to-chat interactions shared by both browser apps. `app` just needs `.element` and (for sort)
  * a `_sortMode` field to persist across renders.
@@ -91,21 +127,7 @@ export function attachBrowserRowInteractions(app) {
 
   const search = root.querySelector(".ingredient-search");
   if (search) {
-    search.addEventListener("input", ev => {
-      const query = ev.currentTarget.value.trim().toLowerCase();
-      root.querySelectorAll(".apoth-section").forEach(section => {
-        let visibleCount = 0;
-        section.querySelectorAll(".shop-row").forEach(row => {
-          const name = row.querySelector(".equip-name")?.textContent.toLowerCase() ?? "";
-          const isMatch = !query || name.includes(query);
-          row.style.display = isMatch ? "" : "none";
-          const descRow = row.nextElementSibling;
-          if (descRow?.classList.contains("equip-desc-row") && !isMatch) descRow.style.display = "none";
-          if (isMatch) visibleCount++;
-        });
-        section.style.display = (!query || visibleCount > 0) ? "" : "none";
-      });
-    });
+    search.addEventListener("input", () => refreshBrowserRowVisibility(root));
   }
 
   const sortSelect = root.querySelector(".shop-sort");

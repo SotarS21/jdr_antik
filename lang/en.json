@@ -261,6 +261,7 @@
   "ANTIQUE.Currency.Or": "Gold",
 
   "ANTIQUE.Inventory.Equipment": "Equipment",
+  "ANTIQUE.Inventory.Treasures": "Treasures",
 
   "ANTIQUE.Traits.Advantages": "Advantages",
   "ANTIQUE.Traits.Disadvantages": "Disadvantages",
@@ -270,7 +271,6 @@
   "ANTIQUE.Traits.Spells": "Spells",
   "ANTIQUE.Traits.SpellsInstant": "Instant Spells",
   "ANTIQUE.Traits.SpellsRitual": "Rituals",
-  "ANTIQUE.Traits.Effects": "Effects",
   "ANTIQUE.Traits.Effect": "Effect",
   "ANTIQUE.Traits.AvantageTemporaire": "Advantage",
   "ANTIQUE.Traits.AvantageTemporaireInfo": "One-time bonus: allows re-rolling a failed dice roll once per session.",
@@ -344,6 +344,7 @@
   "ANTIQUE.ItemType.Effect": "Effect",
   "ANTIQUE.ItemType.Curse": "Curse",
   "ANTIQUE.ItemType.Npcability": "Combat ability",
+  "ANTIQUE.ItemType.Treasure": "Treasure",
   "ANTIQUE.NpcAbility.SaveAbility": "Saving throw",
   "ANTIQUE.NpcAbility.NoSave": "None",
   "ANTIQUE.NpcAbility.SaveDC": "Difficulty (DC)",
@@ -374,8 +375,8 @@
   "TYPES.Item.disadvantage": "Disadvantage",
   "TYPES.Item.blessing": "Blessing",
   "TYPES.Item.spell": "Spell",
-  "TYPES.Item.effect": "Effect",
   "TYPES.Item.curse": "Curse",
+  "TYPES.Item.npcability": "NPC Combat Ability",
 
   "ANTIQUE.Tab.Description": "Description",
   "ANTIQUE.Tab.Details": "Details",
@@ -453,6 +454,7 @@
   "ANTIQUE.Damage.ApplyButton": "Apply damage ({amount})",
   "ANTIQUE.Damage.Applied": "Damage applied",
   "ANTIQUE.Damage.NoTarget": "No target! Target or select one or more tokens.",
+  "ANTIQUE.Damage.HalvedByIronSkin": "halved by Peau de Fer",
 
   "ANTIQUE.Compendium.CreateTable": "Create a random table",
   "ANTIQUE.Compendium.DrawRandom": "Random draw",

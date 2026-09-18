@@ -1,4 +1,4 @@
-import { resolveShopTargetActors, grantItemToActor, grantEffectToActor, attachBrowserRowInteractions, withRowLock } from "./browser-shared.mjs";
+import { resolveShopTargetActors, grantItemToActor, grantEffectToActor, attachBrowserRowInteractions, refreshBrowserRowVisibility, withRowLock } from "./browser-shared.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -310,15 +310,7 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
     this.element.querySelectorAll(".compendium-browser-body .tab[data-tab]").forEach(panel => {
       const filterBoxes = panel.querySelectorAll(".browser-filter-checkbox");
       if (!filterBoxes.length) return;
-      const applyFilters = () => {
-        const checked = [...filterBoxes].filter(b => b.checked).map(b => b.value);
-        panel.querySelectorAll(".shop-row[data-filter-kind]").forEach(row => {
-          const match = !checked.length || checked.includes(row.dataset.filterKind);
-          row.style.display = match ? "" : "none";
-          const descRow = row.nextElementSibling;
-          if (descRow?.classList.contains("equip-desc-row") && !match) descRow.style.display = "none";
-        });
-      };
+      const applyFilters = () => refreshBrowserRowVisibility(this.element);
       filterBoxes.forEach(box => box.addEventListener("change", applyFilters));
       panel.querySelector(".browser-clear-filters")?.addEventListener("click", () => {
         filterBoxes.forEach(box => { box.checked = false; });

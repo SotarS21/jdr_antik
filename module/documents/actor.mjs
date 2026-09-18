@@ -203,13 +203,20 @@ export class AntiqueActor extends Actor {
   }
 
   /**
-   * Apply damage to this actor, reducing PV (minimum 0).
-   * @param {number} amount - The amount of damage to apply
-   * @returns {Promise<{before: number, after: number, amount: number}>}
+   * Apply damage to this actor, reducing PV (minimum 0). Halved (rounded down) while
+   * "Peau de Fer" is active — its text says "réduit les dégâts reçus de moitié", but that
+   * half only ever applied to caBonus's own CA bump, never to the actual damage taken via
+   * the "Appliquer les dégâts" chat button. Detected by effect name (same idiom as
+   * applyCaBonus()'s create-or-refresh lookup) rather than a dedicated flag — there's
+   * nothing else on the actor to key off, this spell has no other mechanical trace.
+   * @param {number} amount - The amount of damage to apply, before any reduction
+   * @returns {Promise<{before: number, after: number, amount: number, halved: boolean}>}
    */
   async applyDamage(amount) {
+    const halved = this.effects.some(e => e.name === "Peau de Fer" && !e.disabled);
+    const applied = halved ? Math.floor(amount / 2) : amount;
     const current = this.system.pv.value;
-    const newPv = Math.max(0, current - amount);
+    const newPv = Math.max(0, current - applied);
     await this.update({ "system.pv.value": newPv });
 
     // Native Foundry status, not a homemade schema field (see the "Avantage Temporaire"
@@ -222,7 +229,7 @@ export class AntiqueActor extends Actor {
     // form — nothing else refreshes an already-open sheet for the damaged actor.
     refreshSheet(this);
 
-    return { before: current, after: newPv, amount };
+    return { before: current, after: newPv, amount: applied, halved };
   }
 
   /**
@@ -251,15 +258,25 @@ export class AntiqueActor extends Actor {
    * Re-applying the same `name` refreshes the existing effect instead of stacking
    * duplicates (same idiom as the "Affamé" effect in longRest()).
    * @param {number} amount
-   * @param {{name: string, icon?: string}} options
+   * @param {{name: string, icon?: string, durationRounds?: number}} options - durationRounds,
+   *   when given (parsed from the spell's own "N tours" duration text, see castSpell()),
+   *   auto-expires the effect after that many combat rounds — real Foundry combat-based
+   *   duration (CONFIG.ActiveEffect.expiryAction = "delete", set in antique.mjs, actually
+   *   removes it once expired instead of just greying it out). Silently stays permanent
+   *   outside combat (no round count to track against) or when omitted, same as before.
    * @returns {Promise<{before: number, after: number, amount: number}>}
    */
-  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg", description }) {
+  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg", description, durationRounds }) {
     const before = this.system.ca.total;
     const changes = [{ key: "system.ca.temp", mode: 2, value: String(amount) }];
     // Falls back to a synthesized label (no rich text available at the CA-bonus call
     // sites) so the effects panel's tooltip always has something beyond just the name.
     const effectDescription = description || `${amount >= 0 ? "+" : ""}${amount} CA`;
+    // Legacy shorthand (auto-migrated by Foundry into duration.units/value) — re-set on
+    // refresh too, along with a fresh "start", so recasting an already-active buff
+    // restarts its countdown instead of expiring on the original cast's timer.
+    const duration = durationRounds ? { rounds: durationRounds } : undefined;
+    const start = durationRounds ? CONFIG.ActiveEffect.documentClass.getEffectStart() : undefined;
 
     // showIcon: ALWAYS — without it, Foundry's default (CONDITIONAL) only draws a
     // token badge for effects with a real duration (see Token#_drawEffects), which
@@ -268,10 +285,16 @@ export class AntiqueActor extends Actor {
     // Set on both branches: an effect created before this fix existed would
     // otherwise keep its stale CONDITIONAL default forever, only ever hitting the
     // update branch from here on.
+    // icon included on both branches too — same staleness risk as showIcon above: a
+    // recast should pick up the caster item's current icon, not freeze whatever icon
+    // was set the first time this named effect was created (e.g. before point 69 gave
+    // every spell its own icon instead of a shared generic one).
     const existing = this.effects.find(e => e.name === name);
-    if (existing) await existing.update({ changes, description: effectDescription, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+    const effectData = { changes, icon, description: effectDescription, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS };
+    if (duration) Object.assign(effectData, { duration, start });
+    if (existing) await existing.update(effectData);
     else await this.createEmbeddedDocuments("ActiveEffect", [{
-      name, icon, changes, description: effectDescription, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+      name, icon, transfer: true, ...effectData
     }]);
 
     const after = this.system.ca.total;
@@ -312,7 +335,7 @@ export class AntiqueActor extends Actor {
       // showIcon: ALWAYS on both branches — see the identical comment in
       // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
       const existing = this.effects.find(e => e.name === name);
-      if (existing) await existing.update({ changes: otherChanges, description, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+      if (existing) await existing.update({ changes: otherChanges, icon, description, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
       else await this.createEmbeddedDocuments("ActiveEffect", [{
         name, icon, changes: otherChanges, description, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
       }]);

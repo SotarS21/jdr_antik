@@ -98,7 +98,7 @@ export function registerPointsChanceEffectHook() {
   Hooks.on("preCreateActiveEffect", (effect, data, options, userId) => {
     const actor = effect.parent;
     if (!actor || actor.documentName !== "Actor" || actor.type !== "character") return;
-    const changes = effect.system.changes;
+    const changes = effect.changes;
     if (!changes.length || !changes.every(c => c.key === "system.pointsChance")) return;
 
     const amount = changes.reduce((sum, c) => sum + Number(c.value), 0);

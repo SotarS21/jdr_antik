@@ -37,7 +37,11 @@ export class AntiqueSpell extends foundry.abstract.TypeDataModel {
       // mécanisme de rituel, toujours utilisé tel quel côté PNJ).
       ingredients: new fields.ArrayField(ingredientSchema(), { initial: [] }),
       description: new fields.HTMLField({ initial: "" }),
-      gmNotes: new fields.HTMLField({ initial: "" })
+      gmNotes: new fields.HTMLField({ initial: "" }),
+      // Optional saving throw button on the cast chat card (see AntiqueItem#castSpell) —
+      // same mechanism as npcability's saveAbility/saveDC. Blank saveAbility = no button.
+      saveAbility: new fields.StringField({ initial: "", blank: true }),
+      saveDC: new fields.NumberField({ initial: 0, integer: true, min: 0 })
     };
   }
 }
