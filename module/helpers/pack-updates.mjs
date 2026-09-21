@@ -730,6 +730,27 @@ export const PACK_UPDATES = [
       "avec ces 65 nouveaux chemins) — un seul mécanisme pour toute icône de trait, qu'elle " +
       "vienne de la bibliothèque Foundry ou d'une image fournie par l'utilisateur.",
     apply: applyFixTraitIcons
+  },
+  {
+    id: "0.6.141-legacy-effect-shape",
+    pack: "acteurs",
+    version: "0.6.141",
+    label: "CRITIQUE — 64 effets embarqués dans un format hérité, sans effet réel",
+    description:
+      "Signalé par l'utilisateur : \"Bénédiction des Titans n'a plus d'effet applicable\", " +
+      "puis confirmé sur \"Danse du Serpent\". Cause trouvée : 64 effets embarqués (les 8 " +
+      "sorts à bonus de caractéristique/16 effets, 9 armures, 26 avantages/désavantages, " +
+      "12 bénédictions, 7 objets embarqués sur Éphise) utilisaient un format hérité — champ " +
+      "\"icon\" au lieu de \"img\" (le vrai champ du schéma ActiveEffect), et \"changes\" à " +
+      "la racine au lieu de \"system.changes\" (le vrai emplacement, un TypeDataField). " +
+      "Résultat concret : le bouton \"Appliquer l'effet\" de ces 8 sorts ne s'affichait " +
+      "plus du tout (item.mjs teste effects.some(e => e.changes.length > 0), qui ne " +
+      "trouvait rien dans ce format). Les 9 armures étaient probablement affectées de la " +
+      "même façon (bonus de CA jamais appliqué). Corrigé à la source sur les 6 packs " +
+      "concernés + ce correctif qui réaligne toute copie déjà déployée (compendium, objets/" +
+      "acteurs du monde, jetons non liés) — supprime explicitement les deux champs hérités " +
+      "pour empêcher toute réintroduction future via la migration native de Foundry.",
+    apply: applyFixLegacyEffectShape
   }
 ];
 
@@ -4119,6 +4140,161 @@ async function applyFixTraitIcons() {
       const actor = token.actor;
       if (!actor) continue;
       fixed += await applyTraitIconOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+
+// Found 2026-09-21 following a user report ("Bénédiction des Titans n'a plus d'effet
+// applicable", then confirmed on "Danse du Serpent" too): 64 embedded effects across
+// avantages/benedictions/desavantages/equipement/pnj/sorts were stored in a legacy shape —
+// a root-level "icon" field (ActiveEffect's real field is "img" — see
+// resources/app/common/documents/active-effect.mjs's defineSchema, no "icon" field exists)
+// and a root-level "changes" array instead of the schema's "system.changes" (ActiveEffect
+// DOES have a "system" TypeDataField; Foundry's own migrateData() shims a root "changes"
+// getter/setter for legacy documents, but empirically this shim did not reliably survive a
+// compendium index read/render in this Foundry version — the 8 mechanized spells (16
+// effects, Bénédiction des Titans/Danse du Serpent/etc.) all used exactly this legacy shape,
+// which is why item.mjs's ".effects.some(e => e.changes.length > 0)" check (governing
+// whether the "Appliquer l'effet" button renders at all) silently found nothing). Source
+// data corrected directly; this fix reaches every already-deployed copy the same way. Both
+// legacy keys are explicitly deleted (-=changes/-=icon) — leaving a stale root "changes"
+// behind would let Foundry's own migration re-clobber the corrected system.changes on a
+// future load.
+const LEGACY_EFFECT_SHAPE_FIXES = [
+  { itemName: "(-1) Sens aiguisé", effectName: "Sens aiguisé", data: {"img":"icons/magic/perception/eye-ringed-green.webp","type":"base","system.changes":[{"key":"system.skills.perception.bonus","type":"add","value":"2"}],"description":"Choisir un sens qui sera aiguisé (+2 bonus perception sens)","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Sens artistique", effectName: "Sens artistique", data: {"img":"systems/antique/img/aventage/sens_artistique.png","type":"base","system.changes":[{"key":"system.skills.representation.bonus","type":"add","value":"2"}],"description":"Vous maitrisez un art ce qui vous donne +2 en representation/ art","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Athléte", effectName: "Athléte", data: {"img":"systems/antique/img/aventage/athlète.png","type":"base","system.changes":[{"key":"system.deplacement","type":"multiply","value":"2"}],"description":"Capacité de deplacement x2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Sang froid", effectName: "Sang froid", data: {"img":"systems/antique/img/aventage/sang_froid.png","type":"base","system.changes":[{"key":"system.saves.volonte.bonus","type":"add","value":"2"}],"description":"Vous resistez à la peur +2 en volonté","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Peau dense", effectName: "Peau dense", data: {"img":"systems/antique/img/aventage/peau_dense.png","type":"base","system.changes":[{"key":"system.ca.base","type":"add","value":"2"}],"description":"Augmente la CA de Base de 2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Vif", effectName: "Vif", data: {"img":"systems/antique/img/aventage/vif.png","type":"base","system.changes":[{"key":"system.saves.reflexes.bonus","type":"add","value":"2"}],"description":"Réflexe base+2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Cuir de Hero", effectName: "Cuir de Hero", data: {"img":"systems/antique/img/aventage/cuir_de_hero.png","type":"base","system.changes":[{"key":"system.saves.robustesse.bonus","type":"add","value":"2"}],"description":"Robustesse base+2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Pisteur", effectName: "Pisteur", data: {"img":"systems/antique/img/aventage/pisteur.png","type":"base","system.changes":[{"key":"system.skills.vigueur.bonus","type":"add","value":"2"},{"key":"system.skills.nature.bonus","type":"add","value":"2"}],"description":"La chasse n'as pas de secret pour vous +2 vig et nature/ dans la nature","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Colère de Zeus", effectName: "Colère de Zeus (+3 dégâts)", data: {"img":"icons/svg/lightning.svg","type":"base","system.changes":[{"key":"system.attackBonuses.armeBlanche.damageBonus","type":"add","value":"3","priority":20}],"description":"Dégats aux corps à corps +3","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-1) Protection d'Athéna", effectName: "Protection d'Athéna", data: {"img":"systems/antique/img/aventage/protection_d'athéna.jpg","type":"base","system.changes":[{"key":"system.ca.base","type":"add","value":"2"}],"description":"Augmente la CA de +2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-2) Voix enchanteresse", effectName: "Voix enchanteresse", data: {"img":"icons/skills/trades/music-singing-voice-blue.webp","type":"base","system.changes":[{"key":"system.skills.seduction.bonus","type":"add","value":"2"},{"key":"system.skills.baratin.bonus","type":"add","value":"2"}],"description":"Auriez vous du sang de sirène, car votre voix est hypnotique (+2 certaines comp Char)","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-2) Force de Poséidon", effectName: "Force de Poséidon", data: {"img":"icons/magic/water/wave-water-blue.webp","type":"base","system.changes":[{"key":"system.ca.base","type":"add","value":"1"}],"description":"Augmente la CA de +1 de l'équipe (+2 si proche de la mer)","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-2) Corps d'Arès", effectName: "Corps d'Arès", data: {"img":"systems/antique/img/aventage/corps_d'arès.jpg","type":"base","system.changes":[{"key":"system.ca.base","type":"add","value":"2"}],"description":"Renforce la CA de +2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-2) Visée d'Apollon", effectName: "Visée d'Apollon", data: {"img":"icons/magic/light/beam-rays-yellow.webp","type":"base","system.changes":[{"key":"system.attackBonuses.armeADistance.bonus","type":"add","value":"2"}],"description":"Permet d'ajouter un bonus de 2 au arme a distance","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(-3) Taille imposante", effectName: "Taille imposante", data: {"img":"icons/svg/statue.svg","type":"base","system.changes":[{"key":"system.pv.max","type":"add","value":"10"}],"description":"Mesure dans les 2M, point de vie augmenter de 10","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Faveur d'Athéna", effectName: "Faveur d'Athéna", data: {"img":"icons/svg/eye.svg","type":"base","system.changes":[{"key":"system.abilities.int.mod","mode":2,"value":"2"},{"key":"system.skills.tactique.bonus","mode":2,"value":"1"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Force d'Héraclès", effectName: "Force d'Héraclès", data: {"img":"icons/svg/combat.svg","type":"base","system.changes":[{"key":"system.abilities.for.mod","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Vitesse d'Hermès", effectName: "Vitesse d'Hermès", data: {"img":"icons/svg/lightning.svg","type":"base","system.changes":[{"key":"system.abilities.dex.mod","mode":2,"value":"2"},{"key":"system.skills.acrobatie.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Regard d'Apollon", effectName: "Regard d'Apollon", data: {"img":"icons/svg/sun.svg","type":"base","system.changes":[{"key":"system.skills.perception.bonus","mode":2,"value":"2"},{"key":"system.skills.premierSoin.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Protection de Poséidon", effectName: "Protection de Poséidon", data: {"img":"icons/svg/frozen.svg","type":"base","system.changes":[{"key":"system.ca.temp","mode":2,"value":"1"},{"key":"system.skills.natation.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Ruse d'Ulysse", effectName: "Ruse d'Ulysse", data: {"img":"icons/svg/cowled.svg","type":"base","system.changes":[{"key":"system.skills.baratin.bonus","mode":2,"value":"2"},{"key":"system.skills.dissimulation.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Grâce d'Artémis", effectName: "Grâce d'Artémis", data: {"img":"icons/svg/target.svg","type":"base","system.changes":[{"key":"system.skills.armeADistance.bonus","mode":2,"value":"2"},{"key":"system.skills.survie.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Forge d'Héphaïstos", effectName: "Forge d'Héphaïstos", data: {"img":"icons/svg/clockwork.svg","type":"base","system.changes":[{"key":"system.skills.artisanatFor.bonus","mode":2,"value":"2"},{"key":"system.skills.artisanatDex.bonus","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Terreur d'Arès", effectName: "Terreur d'Arès", data: {"img":"icons/svg/terror.svg","type":"base","system.changes":[{"key":"system.skills.intimidation.bonus","mode":2,"value":"3"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Sagesse de Chiron", effectName: "Sagesse de Chiron", data: {"img":"icons/svg/book.svg","type":"base","system.changes":[{"key":"system.skills.premierSoin.bonus","mode":2,"value":"2"},{"key":"system.skills.nature.bonus","mode":2,"value":"2"},{"key":"system.skills.mythologie.bonus","mode":2,"value":"1"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Beauté divine", effectName: "Beauté divine", data: {"img":"icons/magic/life/heart-glowing-red.webp","type":"base","system.changes":[{"key":"system.abilities.cha.mod","mode":2,"value":"1"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Corps d'Arès", effectName: "Corps d'Arès", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.temp","mode":2,"value":"2"}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(1) Sens défaïllant", effectName: "Sens défaïllant", data: {"img":"icons/magic/perception/eye-slit-red-orange.webp","type":"base","system.changes":[{"key":"system.skills.perception.bonus","mode":2,"value":"-2"}],"description":"Choisir un sens qui sera défaïllant (-2 bonus perception sens)","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(1) Frêle", effectName: "Frêle", data: {"img":"icons/skills/wounds/bone-broken-marrow-yellow.webp","type":"base","system.changes":[{"key":"system.saves.robustesse.base","mode":2,"value":"-1"}],"description":"Robustesse de base -1","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(1) Distrait", effectName: "Distrait", data: {"img":"icons/magic/perception/eye-slit-pink.webp","type":"base","system.changes":[{"key":"system.skills.vigilance.bonus","mode":2,"value":"-2"}],"description":"Vous avez un désavantage en vigilance -2","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(1) Dépressif", effectName: "Dépressif", data: {"img":"icons/svg/daze.svg","type":"base","system.changes":[{"key":"system.saves.volonte.base","mode":2,"value":"-1"}],"description":"Volonté de base -1","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "(1) Maladroit", effectName: "Maladroit", data: {"img":"icons/svg/falling.svg","type":"base","system.changes":[{"key":"system.saves.reflexes.base","mode":2,"value":"-1"}],"description":"Reflexe de base -1","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Linothorax", effectName: "Linothorax", data: {"img":"icons/svg/holy-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Thorax de cuir", effectName: "Thorax de cuir", data: {"img":"icons/svg/holy-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Cuirasse de bronze", effectName: "Cuirasse de bronze", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"4","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Armure d'hoplite complète", effectName: "Armure d'hoplite complète", data: {"img":"icons/svg/mage-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"6","priority":null},{"key":"system.skills.esquive.bonus","mode":2,"value":"-2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Casque corinthien", effectName: "Casque corinthien", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"1","priority":null},{"key":"system.skills.perception.bonus","mode":2,"value":"-1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Casque chalcidien", effectName: "Casque chalcidien", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Cnémides de bronze", effectName: "Cnémides de bronze", data: {"img":"icons/svg/holy-shield.svg","type":"base","system.changes":[{"key":"system.ca.armure","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Aspis (bouclier rond)", effectName: "Aspis", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.bouclier","mode":2,"value":"2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Peltè (bouclier léger)", effectName: "Peltè", data: {"img":"icons/svg/holy-shield.svg","type":"base","system.changes":[{"key":"system.ca.bouclier","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Bénédiction des Titans", effectName: "Bénédiction des Titans", data: {"img":"icons/magic/control/buff-strength-muscle-damage-red.webp","type":"base","system.changes":[{"key":"system.abilities.for.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Force (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Bénédiction des Titans", effectName: "Bénédiction des Titans (Groupe)", data: {"img":"icons/magic/control/buff-strength-muscle-damage-red.webp","type":"base","system.changes":[{"key":"system.abilities.for.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Force (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Danse du Serpent", effectName: "Danse du Serpent", data: {"img":"icons/creatures/reptiles/snake-poised-white.webp","type":"base","system.changes":[{"key":"system.abilities.dex.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Dextérité (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Danse du Serpent", effectName: "Danse du Serpent (Groupe)", data: {"img":"icons/creatures/reptiles/snake-poised-white.webp","type":"base","system.changes":[{"key":"system.abilities.dex.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Dextérité (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Résilience de l'Immortel", effectName: "Résilience de l'Immortel", data: {"img":"icons/magic/defensive/armor-stone-skin.webp","type":"base","system.changes":[{"key":"system.abilities.con.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Constitution (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Résilience de l'Immortel", effectName: "Résilience de l'Immortel (Groupe)", data: {"img":"icons/magic/defensive/armor-stone-skin.webp","type":"base","system.changes":[{"key":"system.abilities.con.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Constitution (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Eveil du Sage", effectName: "Eveil du Sage", data: {"img":"icons/sundries/books/book-open-purple.webp","type":"base","system.changes":[{"key":"system.abilities.int.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Intelligence (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Eveil du Sage", effectName: "Eveil du Sage (Groupe)", data: {"img":"icons/sundries/books/book-open-purple.webp","type":"base","system.changes":[{"key":"system.abilities.int.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Intelligence (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Méditation des Ancêtres", effectName: "Méditation des Ancêtres", data: {"img":"icons/magic/holy/meditation-chi-focus-blue.webp","type":"base","system.changes":[{"key":"system.abilities.ast.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Astuce (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Méditation des Ancêtres", effectName: "Méditation des Ancêtres (Groupe)", data: {"img":"icons/magic/holy/meditation-chi-focus-blue.webp","type":"base","system.changes":[{"key":"system.abilities.ast.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Astuce (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Glamour Divin", effectName: "Glamour Divin", data: {"img":"icons/magic/life/heart-pink.webp","type":"base","system.changes":[{"key":"system.abilities.cha.mod","mode":2,"value":"3","phase":"abilities"}],"description":"+3 Charisme (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Glamour Divin", effectName: "Glamour Divin (Groupe)", data: {"img":"icons/magic/life/heart-pink.webp","type":"base","system.changes":[{"key":"system.abilities.cha.mod","mode":2,"value":"1","phase":"abilities"}],"description":"+1 Charisme (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Souffle aux Pieds Legers", effectName: "Souffle aux Pieds Legers", data: {"img":"icons/skills/movement/feet-winged-boots-blue.webp","type":"base","system.changes":[{"key":"system.initiative","mode":2,"value":"4","phase":"final"}],"description":"+4 Initiative (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Souffle aux Pieds Legers", effectName: "Souffle aux Pieds Legers (Groupe)", data: {"img":"icons/skills/movement/feet-winged-boots-blue.webp","type":"base","system.changes":[{"key":"system.initiative","mode":2,"value":"2","phase":"final"}],"description":"+2 Initiative (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Grâce des Astres Alignés", effectName: "Grâce des Astres Alignés", data: {"img":"icons/magic/nature/symbol-moon-stars-white.webp","type":"base","system.changes":[{"key":"system.pointsChance","mode":2,"value":"2"}],"description":"+2 Points de Chance (version solo).","transfer":false,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Grâce des Astres Alignés", effectName: "Grâce des Astres Alignés (Groupe)", data: {"img":"icons/magic/nature/symbol-moon-stars-white.webp","type":"base","system.changes":[{"key":"system.pointsChance","mode":2,"value":"1"}],"description":"+1 Point de Chance (version groupe).","transfer":false,"disabled":false,"flags":{"antique":{"spellScope":"group"}},"-=changes":null,"-=icon":null} },
+  { itemName: "Aura d'Aphrodite", effectName: "Aura d'Aphrodite", data: {"img":"icons/svg/aura.svg","type":"base","system.changes":[{"key":"system.skills.seduction.bonus","mode":2,"value":"3","priority":null},{"key":"system.skills.baratin.bonus","mode":2,"value":"2","priority":null},{"key":"system.skills.empathie.bonus","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Beauté d'Aphrodite", effectName: "Beauté d'Aphrodite", data: {"img":"icons/svg/angel.svg","type":"base","system.changes":[{"key":"system.skills.representation.bonus","mode":2,"value":"2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Rage d'Arès", effectName: "Rage d'Arès", data: {"img":"icons/svg/combat.svg","type":"base","system.changes":[{"key":"system.skills.combatMainNue.bonus","mode":2,"value":"2","priority":null},{"key":"system.skills.intimidation.bonus","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Présence d'Aphrodite", effectName: "Présence d'Aphrodite", data: {"img":"icons/svg/eye.svg","type":"base","system.changes":[{"key":"system.skills.discretion.bonus","mode":2,"value":"-3","priority":null},{"key":"system.skills.dissimulation.bonus","mode":2,"value":"-2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Dette ++", effectName: "Dette ++", data: {"img":"icons/svg/downgrade.svg","type":"base","system.changes":[{"key":"system.skills.marchandage.bonus","mode":2,"value":"-2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Beauté divine", effectName: "Beauté divine", data: {"img":"icons/svg/sun.svg","type":"base","system.changes":[{"key":"system.abilities.cha.mod","mode":2,"value":"1","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+  { itemName: "Corps d'Arès", effectName: "Corps d'Arès", data: {"img":"icons/svg/fire-shield.svg","type":"base","system.changes":[{"key":"system.ca.temp","mode":2,"value":"2","priority":null}],"description":"","transfer":true,"disabled":false,"flags":{},"-=changes":null,"-=icon":null} },
+];
+
+function findLegacyEffectShapeFix(itemName, effectName) {
+  return LEGACY_EFFECT_SHAPE_FIXES.find(f => f.itemName === itemName && f.effectName === effectName);
+}
+
+async function fixLegacyEffectShapeOnItem(item) {
+  let fixed = 0;
+  for (const effect of item.effects ?? []) {
+    const fix = findLegacyEffectShapeFix(item.name, effect.name);
+    if (!fix) continue;
+    await effect.update(fix.data);
+    fixed++;
+  }
+  return fixed;
+}
+
+async function fixLegacyEffectShapeOnActor(actor) {
+  let fixed = 0;
+  for (const item of actor.items ?? []) {
+    fixed += await fixLegacyEffectShapeOnItem(item);
+  }
+  return fixed;
+}
+
+const LEGACY_EFFECT_SHAPE_ITEM_PACKS = ["avantages", "benedictions", "desavantages", "equipement", "sorts"];
+
+async function applyFixLegacyEffectShape() {
+  let fixed = 0;
+
+  for (const packName of LEGACY_EFFECT_SHAPE_ITEM_PACKS) {
+    const pack = game.packs.get(`antique.${packName}`);
+    if (!pack) continue;
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      fixed += await fixLegacyEffectShapeOnItem(doc);
+    }
+    await pack.configure({ locked: true });
+  }
+
+  const pnjPack = game.packs.get("antique.pnj");
+  if (pnjPack) {
+    await pnjPack.configure({ locked: false });
+    const index = await pnjPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pnjPack.getDocument(indexEntry._id);
+      fixed += await fixLegacyEffectShapeOnActor(doc);
+    }
+    await pnjPack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await fixLegacyEffectShapeOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixLegacyEffectShapeOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixLegacyEffectShapeOnActor(actor);
     }
   }
 

@@ -4,6 +4,42 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 75. ~~CRITIQUE — 64 effets embarqués dans un format hérité, sans effet réel~~ — CORRIGÉ (21 septembre 2026, v0.6.141)
+
+Signalé : "Bénédiction des Titans n'a plus d'effet applicable", puis "danse du serpent non
+plus", puis "check les autres".
+
+**Cause trouvée** : 64 effets embarqués, répartis sur 6 packs, utilisaient un format hérité —
+`"icon"` au lieu de `"img"` (le vrai champ du schéma `ActiveEffect`, vérifié dans le code
+source Foundry local, `common/documents/active-effect.mjs`) et `"changes"` à la racine de
+l'effet au lieu de `"system.changes"` (`ActiveEffect` a bien un `TypeDataField "system"` —
+contrairement à ce qui avait été conclu au point 71, qui n'était vrai que pour un getter
+runtime de compatibilité, pas pour le format de stockage réel). Concrètement :
+`item.mjs` teste `effects.some(e => e.changes.length > 0)` pour savoir s'il faut afficher le
+bouton "Appliquer l'effet" — ce test ne trouvait rien dans l'ancien format, donc **aucun
+bouton ne s'affichait du tout** pour les 8 sorts concernés :
+- Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage,
+  Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés
+  (16 effets, solo + groupe).
+- 9 armures (Linothorax, Thorax de cuir, Cuirasse de bronze, Armure d'hoplite complète,
+  Casque corinthien, Casque chalcidien, Cnémides de bronze, Aspis, Peltè) — leur bonus de CA
+  était probablement silencieusement inopérant depuis le début.
+- 26 avantages/désavantages, 12 bénédictions, 7 objets embarqués sur Éphise.
+- Mon propre audit du point 72 (icône = icône du parent) n'avait **jamais détecté** ces 64
+  effets : son test `if (effect.img === undefined) continue` les ignorait silencieusement,
+  puisqu'ils n'avaient justement pas de champ `img` du tout — angle mort découvert en creusant
+  ce signalement.
+
+Corrigé à la source (`packs/avantages.db`, `packs/benedictions.db`,
+`packs/desavantages.db`, `packs/equipement.db`, `packs/pnj.db`, `packs/sorts.db`) + nouveau
+correctif `PACK_UPDATES` (`0.6.141-legacy-effect-shape`) qui réaligne toute copie déjà
+déployée — supprime explicitement les deux champs hérités (`-=changes`/`-=icon`) pour ne pas
+laisser la migration native de Foundry les réappliquer au prochain chargement. Voir
+`JOURNAL.md`, session du 21 septembre 2026, pour le détail technique complet. **À exécuter
+par l'utilisateur** : cocher le correctif (marqué critique) dans l'écran de mise à jour (MJ),
+recharger le monde, re-tester Bénédiction des Titans/Danse du Serpent (bouton "Appliquer
+l'effet" doit réapparaître) et vérifier que le bonus de CA d'une armure s'applique bien.
+
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 
 Signalé avec capture d'écran du compendium natif "Armes, Armures & Boucliers" : dossiers

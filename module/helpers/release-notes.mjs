@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.141": {
+    title: "Version 0.6.141 — CRITIQUE : 64 effets embarqués sans effet réel",
+    html: `
+      <ul>
+        <li><strong>Corrigé (critique)</strong> : 64 effets embarqués — les 8 sorts à bonus de caractéristique (Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés), 9 armures, 26 avantages/désavantages, 12 bénédictions et 7 objets sur Éphise — utilisaient un format hérité (champ "icon" au lieu de "img", "changes" à la racine au lieu de "system.changes") qui empêchait le bouton "Appliquer l'effet" de s'afficher, et probablement l'application réelle du bonus. Corrigés.</li>
+      </ul>`
+  },
   "0.6.140": {
     title: "Version 0.6.140 — Vraies images pour 65 avantages",
     html: `

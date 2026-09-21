@@ -2,6 +2,91 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 9) — CRITIQUE : format hérité sur 64 effets embarqués (point 75, v0.6.140 → v0.6.141)
+
+Signalé après la question initiale sur les icônes des sorts ("est-ce que tu peux ajouter les
+images au effet actif pour qu'il colle au sort parent ?") : "les sorts n'ont plus d'effet" →
+précisé "Bénédiction des Titans n'a plus d'effet applicable" → "danse du serpent non plus" →
+"check les autres".
+
+**Diagnostic**. Vérifié `packs/sorts.db` : donnée source inchangée depuis vendredi
+(18 septembre), toujours 8 sorts mécanisés / 29 narratifs comme prévu et confirmé — donc pas
+une régression de session. En creusant la structure exacte de l'effet embarqué de
+"Bénédiction des Titans" :
+
+```json
+{"_id":"eSrt000000000001","name":"Bénédiction des Titans","icon":"icons/svg/fire.svg",
+ "transfer":false,"disabled":false,"changes":[{"key":"system.abilities.for.mod","mode":2,
+ "value":"3","phase":"abilities"}],"description":"+3 Force (version solo)."}
+```
+
+contre un effet qui fonctionne ailleurs dans le même fichier système (ex. "Combattant
+aquatique") :
+
+```json
+{"_id":"6cf986ae33ec8971","name":"Combattant aquatique","img":"icons/svg/waterfall.svg",
+ "type":"base","system":{"changes":[...]},...}
+```
+
+Deux différences : `"icon"` au lieu de `"img"`, et `"changes"` à la racine au lieu de dans
+`"system"`. Vérifié dans le code source Foundry v14 installé localement
+(`D:\FoundryVTT\Foundry Virtual Tabletop\resources\app\common\documents\active-effect.mjs`,
+`BaseActiveEffect.defineSchema()`) : le schéma réel a bien `img` (pas `icon`) et un vrai champ
+`system: new fields.TypeDataField(this)` — **corrige au passage une conclusion erronée du
+point 71** ("ActiveEffect n'a pas de sous-objet system, changes est un champ racine") : ce
+n'était vrai que pour un getter/setter de compatibilité ajouté par `migrateData()` pour
+lire d'anciens documents avec un `changes` racine, pas pour le format de stockage réel — et
+ce getter ne semble pas survivre de façon fiable à une lecture d'index de compendium dans
+cette version de Foundry (sinon `item.mjs` aurait dû fonctionner malgré tout).
+
+`item.mjs` (`castSpell()`/génération de la carte de chat) décide d'afficher le bouton
+"Appliquer l'effet" via `this.effects.some(e => e.changes.length > 0)` — sur un effet au
+format hérité, ce test échoue silencieusement, d'où l'absence totale du bouton.
+
+**Ampleur, trouvée par un audit systématique du même défaut sur tous les packs** (64 effets
+au total, pas seulement les sorts) :
+- `sorts.db` : les 8 sorts mécanisés (16 effets, solo+groupe) — exactement le signalement.
+- `equipement.db` : 9 armures (Linothorax, Thorax de cuir, Cuirasse de bronze, Armure
+  d'hoplite complète, Casque corinthien, Casque chalcidien, Cnémides de bronze, Aspis,
+  Peltè) — leur bonus de CA était très probablement silencieusement inopérant depuis
+  toujours, jamais remarqué faute de comparaison directe avant/après équipement.
+- `avantages.db` (15) + `desavantages.db` (5) : coïncidence avec les items dont l'icône avait
+  déjà été corrigée au point 72/74 cette session (ces items avaient un `img` correct — d'où
+  aucune alerte de mon audit d'icônes — mais gardaient quand même `changes` à la racine).
+- `benedictions.db` : les 12 items.
+- `pnj.db` : 7 objets embarqués sur Éphise (Aura d'Aphrodite, Beauté d'Aphrodite, Rage
+  d'Arès, Présence d'Aphrodite, Dette ++, Beauté divine, Corps d'Arès).
+
+**Angle mort de mon propre audit du point 72** (identifié en creusant ce signalement) : son
+test `if (effect.img === undefined) continue` ignorait silencieusement tout effet n'ayant
+justement pas de champ `img` — exactement le cas de ces 64 effets, donc invisibles à cet
+audit malgré son passage sur tous les packs.
+
+**Corrigé** (script one-off, réutilisant les mêmes conventions round-trip JSON déjà
+éprouvées cette session) : `icon`→`img`, ajout de `"type":"base"` explicite,
+`changes`→`system.changes`, sur les 64 effets, dans les 6 fichiers `.db` concernés. Une fois
+`img` réellement exposé, l'audit du point 72 a enfin pu voir ces 16 effets de sorts et a
+trouvé (sans surprise) qu'ils partageaient tous une icône générique `fire.svg` — réalignés
+sur l'icône de leur sort dans la foulée, complétant la demande initiale de ce fil.
+
+Nouveau correctif `PACK_UPDATES` (`0.6.141-legacy-effect-shape`, marqué critique dans son
+libellé) qui réapplique la même correction à toute copie déjà déployée (compendium, objets/
+acteurs du monde, jetons non liés) — supprime explicitement `-=changes`/`-=icon` du document
+stocké, pour empêcher que la migration native de Foundry (qui ne fait que déplacer un
+`changes` racine s'il en trouve un, sans jamais le supprimer de la source) ne réintroduise le
+même défaut au prochain chargement si on n'avait fait qu'ajouter `system.changes` à côté.
+
+**À exécuter par l'utilisateur** : cocher le correctif dans l'écran de mise à jour (MJ),
+recharger le monde, re-tester "Bénédiction des Titans"/"Danse du Serpent" (le bouton
+"Appliquer l'effet" doit réapparaître) et le bonus de CA d'une armure équipée.
+
+**Fichiers modifiés** : `packs/avantages.db`, `packs/benedictions.db`,
+`packs/desavantages.db`, `packs/equipement.db`, `packs/pnj.db`, `packs/sorts.db`,
+`packs/_json-mirrors/*.json`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 8) — Vraies images fournies par l'utilisateur pour 65 avantages (v0.6.139 → v0.6.140)
 
 Suite immédiate du point 74 : "j'ai ajouté des icônes pour les avantages, peux-tu les
