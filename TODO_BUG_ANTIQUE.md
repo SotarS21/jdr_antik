@@ -4,6 +4,30 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — EN ATTENTE, reporté (21 septembre 2026)
+
+Demande explicite de l'utilisateur, à traiter plus tard (pas maintenant) : "il faut ajouter
+le traitement pour mettre à jour traits et les objets dans chaque personnage PJ de la base
+de données."
+
+Contexte (voir point 77) : les 7 personnages importés (Adresthea, Antalios, Eosyne, Hydriss,
+Kallisto, Lyra, Xeno) viennent d'un export Foundry ancien (`systemVersion` très antérieure à
+l'actuelle) — leurs avantages/désavantages/sorts/équipement embarqués sont des **copies
+figées à l'instant de l'export**, pas des références vivantes vers les compendiums actuels.
+Ils n'ont donc bénéficié d'aucun des correctifs de cette session (icônes distinctes par
+trait, point 74 ; format d'effet corrigé, point 75 ; etc.) — ils gardent par exemple
+l'ancienne icône générique `icons/svg/sun.svg` sur leurs avantages/désavantages de dévotion.
+
+**À concevoir quand on y reviendra** : un mécanisme (probablement un correctif
+`PACK_UPDATES` ou un script dédié) qui, pour chaque objet embarqué sur ces 7 PJ, retrouve
+son équivalent actuel dans le bon compendium (`avantages`/`desavantages`/`benedictions`/
+`sorts`/`equipement`/`armes`, par nom) et réaligne au minimum son icône (et potentiellement
+sa description/ses effets, à discuter) sur la version actuelle — sans écraser ce qui est
+propre au personnage (quantités, choix d'ingrédients, état "possédé", etc.). Ne pas
+commencer avant que l'utilisateur redemande explicitement.
+
+---
+
 ## 77. ~~Compendium dédié "Personnages Joueurs"~~ — CORRIGÉ (21 septembre 2026, v0.6.148, confirmé en jeu)
 
 Demande : "peut tu créer des pj à partir des json qui sont dans [...]\pj, ajoute les dans le
