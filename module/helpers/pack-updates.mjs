@@ -652,6 +652,53 @@ export const PACK_UPDATES = [
       "0.6.134 corrigeait déjà le contenu des deux sans les fusionner. N'en garde plus " +
       "qu'une seule, sur le compendium et toute copie déjà déployée (acteur, jeton non lié).",
     apply: applyFixAquaticFighterEffectDedup
+  },
+  {
+    id: "0.6.137-effect-icons-match-parent",
+    pack: "acteurs",
+    version: "0.6.137",
+    label: "Icône des effets embarqués désynchronisée de leur objet parent",
+    description:
+      "Demande de l'utilisateur : l'icône d'un effet embarqué (sort, trait, capacité de " +
+      "combat...) doit toujours être la même que celle de l'objet qui le porte. Audit " +
+      "statique du 21 septembre 2026 : 20 effets déjà déployés (13 avantages, 5 " +
+      "désavantages, \"Regard pétrifiant\" du bestiaire) utilisaient encore une icône " +
+      "générique (icons/svg/aura.svg ou hazard.svg) héritée d'anciens scripts de génération " +
+      "antérieurs au patron actuel — corrigé à la source. Ce correctif réaligne aussi " +
+      "génériquement toute autre copie déjà déployée dont l'icône de l'effet ne correspond " +
+      "plus à celle de son objet parent, y compris pour un contenu ajouté plus tard.",
+    apply: applyFixEffectIconsMatchParent
+  },
+  {
+    id: "0.6.138-dedupe-pack-folders",
+    pack: "armes",
+    version: "0.6.138",
+    label: "Dossiers en double dans les compendiums (Armes, Sorts, Avantages Divins, Alchimie)",
+    description:
+      "Signalé par l'utilisateur (capture d'écran du compendium natif \"Armes, Armures & " +
+      "Boucliers\") : des dossiers vides en double, différant seulement par un accent " +
+      "(\"Arme a deux mains\" / \"Arme à deux mains\") ou une majuscule (\"Arme de Jet\" / " +
+      "\"Arme de jet\"), à côté du vrai dossier contenant les objets. Dérive du monde " +
+      "déployé (jamais dans les données source) : la mise à jour des compendiums ne " +
+      "supprime jamais un dossier absent de la source, pour ne pas effacer un dossier créé " +
+      "par le MJ — un ancien dossier orphelin (avant un renommage/une réorganisation) reste " +
+      "donc indéfiniment. Fusionne chaque groupe de doublons (déplace d'abord tout objet " +
+      "encore présent dans un dossier en trop, puis le supprime), sur les 4 compendiums " +
+      "concernés (Armes, Sorts, Avantages Divins, Alchimie — les seuls à utiliser des " +
+      "dossiers).",
+    apply: applyDedupePackFolders
+  },
+  {
+    id: "0.6.138-weapon-images-unlinked-tokens",
+    pack: "armes",
+    version: "0.6.138",
+    label: "Vraies images des armes/armures — copies sur un jeton non lié",
+    description:
+      "Le correctif 0.6.101 (vraies images pour 60 armes/armures) ne parcourait que le " +
+      "compendium et les objets déjà possédés par un acteur — pas les copies sur un jeton " +
+      "non lié à sa fiche (même angle mort déjà corrigé ailleurs pour d'autres correctifs, " +
+      "ex. 0.6.105/0.6.131). Ajouté.",
+    apply: applyWeaponArmorImagesUnlinkedTokens
   }
 ];
 
@@ -2881,6 +2928,24 @@ async function applyWeaponArmorRealImages() {
   return fixed;
 }
 
+async function applyWeaponArmorImagesUnlinkedTokens() {
+  let fixed = 0;
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      for (const item of actor.items) {
+        if (item.type !== "weapon" && item.type !== "equipment") continue;
+        if (await setItemImage(item)) fixed++;
+      }
+    }
+  }
+
+  return fixed;
+}
+
 /** Same 2 spells as the direct edit to packs/sorts.db — kept in sync by hand. Reuses the
  *  existing area-template mechanism (hasTemplate/templateRadius/templateTexture, already
  *  used by "Brouillard") rather than inventing anything new — these are the only 2 sorts
@@ -3565,6 +3630,193 @@ async function applyRemoveEphiseBonusSexe() {
     }
   }
 
+  return fixed;
+}
+
+// User request (2026-09-21): every embedded effect's icon should always match the icon of
+// the Item that carries it (a spell's effect uses the spell's own icon, a trait's effect
+// uses the trait's own icon, etc.) — generic, not limited to any one item type. Static audit
+// found 20 already-deployed effects still using a leftover generic icon (icons/svg/aura.svg
+// / hazard.svg) from one-off scripts written before this project settled on always passing
+// the parent's own icon (see fixWaterIconsOnItem and applyEmbedEffetsSimple's
+// embedMissingEffect() above, both already correct). Fixed at the source in packs/*.db —
+// this generic pass reaches every already-deployed copy, and (being generic rather than a
+// fixed list of names) also catches any future content that drifts the same way.
+async function fixEffectIconsMatchParentOnItem(item) {
+  if (!item.img) return 0;
+  let fixed = 0;
+  for (const effect of item.effects ?? []) {
+    if (effect.img === item.img) continue;
+    await effect.update({ img: item.img });
+    fixed++;
+  }
+  return fixed;
+}
+
+async function fixEffectIconsMatchParentOnActor(actor) {
+  let fixed = 0;
+  for (const item of actor.items ?? []) {
+    fixed += await fixEffectIconsMatchParentOnItem(item);
+  }
+  return fixed;
+}
+
+// Every Item-type pack (system.json → packs[].type === "Item") — walked generically rather
+// than naming only the 3 packs the audit actually found mismatches in, so this stays correct
+// if a future pack gains the same drift.
+const EFFECT_ICON_ITEM_PACKS = [
+  "armes", "equipement", "avantages", "desavantages", "benedictions",
+  "avantages-divins", "alchimie", "sorts", "capacites-combat", "tresors"
+];
+// Every Actor-type pack, whose embedded Items can each carry their own effects.
+const EFFECT_ICON_ACTOR_PACKS = ["pnj", "dieux", "creatures"];
+
+async function applyFixEffectIconsMatchParent() {
+  let fixed = 0;
+
+  for (const packName of EFFECT_ICON_ITEM_PACKS) {
+    const pack = game.packs.get(`antique.${packName}`);
+    if (!pack) continue;
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      fixed += await fixEffectIconsMatchParentOnItem(doc);
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const packName of EFFECT_ICON_ACTOR_PACKS) {
+    const pack = game.packs.get(`antique.${packName}`);
+    if (!pack) continue;
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      fixed += await fixEffectIconsMatchParentOnActor(doc);
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await fixEffectIconsMatchParentOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixEffectIconsMatchParentOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixEffectIconsMatchParentOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+// User report (2026-09-21, screenshot of the native compendium sidebar for "armes"):
+// duplicate Folder documents — same category, differing only by a missing accent
+// ("Arme a deux mains" vs "Arme à deux mains") or capitalization ("Arme de jet" vs "Arme de
+// Jet") — sitting empty alongside the real one holding the actual weapons. `packs/*.db`'s
+// folder docs (the only source of truth for names/colors/ids) were never duplicated —
+// this is pure deployed-world drift: `overwriteSystemCompendiums()` (version-check.mjs)
+// upserts folders by `_id` and deliberately never deletes anything absent from the source,
+// so an old/renamed folder id from an earlier project era survives forever once orphaned,
+// even after its canonical replacement is created under a new id. Reaches every pack that
+// actually uses compendium folders (system.json's other Item packs have none).
+const PACK_CANONICAL_FOLDERS = {
+  armes: [
+    { id: "fArm000000000001", name: "Arme blanche", color: "#8B0000" },
+    { id: "fArm000000000002", name: "Arme de jet", color: "#8B0000" },
+    { id: "fArm000000000003", name: "Arme exotique", color: "#8B0000" },
+    { id: "fArm000000000004", name: "Arme à deux mains", color: "#8B0000" },
+    { id: "fArm000000000005", name: "Arme à distance", color: "#8B0000" },
+    { id: "fArm000000000006", name: "Armure", color: "#2F4F4F" },
+    { id: "fArm000000000007", name: "Bouclier", color: "#2F4F4F" },
+    { id: "fArm000000000120", name: "Munition", color: "#8B0000" }
+  ],
+  sorts: [
+    { id: "fSrt000000000001", name: "Rituels", color: "#6A0DAD" },
+    { id: "fSrt000000000002", name: "Sorts de Druide", color: "#2E8B57" },
+    { id: "fSrt000000000013", name: "Rituels d'Hécate", color: "#8B008B" },
+    { id: "fSrt000000000022", name: "Sorts de Berserk — Camulos", color: "#B22222" },
+    { id: "fSrt000000000030", name: "Sorts de Morrigan", color: "#1C1C1C" }
+  ],
+  "avantages-divins": [
+    { id: "fDiv000000000001", name: "Dieux Majeurs Grecs", color: "#DAA520" },
+    { id: "fDiv000000000068", name: "Dieux Majeurs Egyptiens", color: "#CD853F" },
+    { id: "fDiv000000000081", name: "Dieux Majeurs Celtes", color: "#2E8B57" },
+    { id: "fDiv000000000094", name: "Dieux Majeurs Nordique", color: "#4682B4" }
+  ],
+  alchimie: [
+    { id: "fAlc000000000001", name: "Ingrédients Communs", color: "#8B7355" },
+    { id: "fAlc000000000046", name: "Ingrédients Peu Communs", color: "#6A5ACD" },
+    { id: "fAlc000000000071", name: "Ingrédients Rares", color: "#B22222" },
+    { id: "fAlc000000000094", name: "Potions Bénéfiques", color: "#2E8B57" },
+    { id: "fAlc000000000108", name: "Potions Négatives", color: "#8B0000" }
+  ]
+};
+
+function normalizeFolderName(name) {
+  return name.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+async function dedupePackFolders(pack, canonicalFolders) {
+  let fixed = 0;
+  const canonicalByName = new Map(canonicalFolders.map(c => [normalizeFolderName(c.name), c]));
+  const canonicalIds = new Set(canonicalFolders.map(c => c.id));
+
+  const groups = new Map();
+  for (const folder of pack.folders) {
+    const key = normalizeFolderName(folder.name);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(folder);
+  }
+
+  // Fetched once, before any deletion below — each duplicate is checked against this same
+  // snapshot by its own (still-valid) id, so moving one duplicate's items doesn't affect
+  // the check for another.
+  const index = await pack.getIndex({ fields: ["folder"] });
+
+  for (const [key, folders] of groups) {
+    if (folders.length <= 1) continue;
+    const keep = folders.find(f => canonicalIds.has(f.id)) ?? folders[0];
+
+    const canonical = canonicalByName.get(key);
+    if (canonical && (keep.name !== canonical.name || keep.color !== canonical.color)) {
+      await keep.update({ name: canonical.name, color: canonical.color });
+      fixed++;
+    }
+
+    for (const folder of folders) {
+      if (folder === keep) continue;
+      const orphaned = index.filter(e => e.folder === folder.id);
+      for (const entry of orphaned) {
+        const doc = await pack.getDocument(entry._id);
+        await doc.update({ folder: keep.id });
+        fixed++;
+      }
+      await folder.delete();
+      fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+async function applyDedupePackFolders() {
+  let fixed = 0;
+  for (const [packName, canonicalFolders] of Object.entries(PACK_CANONICAL_FOLDERS)) {
+    const pack = game.packs.get(`antique.${packName}`);
+    if (!pack) continue;
+    await pack.configure({ locked: false });
+    fixed += await dedupePackFolders(pack, canonicalFolders);
+    await pack.configure({ locked: true });
+  }
   return fixed;
 }
 

@@ -2,6 +2,72 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 6) — Dossiers en double + vraies images sur jeton non lié (point 73, v0.6.137 → v0.6.138)
+
+Signalé avec capture d'écran du compendium natif "Armes, Armures & Boucliers" : dossiers
+vides en double (accent/majuscule différents, ex. "Arme a deux mains" vs "Arme à deux
+mains"), et "Double hache (Simple facture)" avec une icône blanche.
+
+**Dossiers en double** : audit des 4 packs à dossiers (`armes`/`sorts`/`avantages-divins`/
+`alchimie`) — source toujours à un seul dossier canonique par catégorie. Cause : le monde
+déployé accumule un dossier orphelin chaque fois qu'un dossier a été renommé/recréé sous un
+nouvel id au fil du projet — `overwriteSystemCompendiums()` upserte par `_id` et ne supprime
+jamais ce qui est absent de la source (pour ne jamais effacer un dossier créé par le MJ), donc
+l'ancien reste indéfiniment. Corrigé (`dedupePackFolders()`, nouveau correctif `PACK_UPDATES`
+`0.6.138-dedupe-pack-folders`) : regroupe par nom normalisé (accents/majuscules ignorés),
+déplace tout objet encore dans un doublon vers le dossier conservé, aligne son nom/couleur sur
+le canonique, supprime les autres.
+
+**Image manquante** : audit statique de toutes les références `systems/antique/img/...` dans
+tous les packs (99 au total) — 0 fichier manquant, y compris `double-hache-simple.jpg`
+(présent, vérifié identique en taille entre source et déployé). Cause probable : le correctif
+`0.6.101` pas encore coché par l'utilisateur pour cet objet. **Trouvé au passage** en relisant
+`applyWeaponArmorRealImages()` : ne parcourait jamais les jetons non liés — nouveau correctif
+dédié (`0.6.138-weapon-images-unlinked-tokens`) plutôt que retoucher un correctif déjà coché
+par certains utilisateurs.
+
+**À exécuter par l'utilisateur** : cocher `0.6.101` (si pas déjà fait) + les deux nouveaux
+correctifs, recharger le monde.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
+## Session du 21 septembre 2026 (suite 5) — Icône des effets désynchronisée de leur objet parent (point 72, v0.6.136 → v0.6.137)
+
+Demande de l'utilisateur : "il faudrait que tous les effets applicables aient la même image
+que l'objet parent. exemple : effet des sorts => lié au sort, effet des traits => lié au
+trait lui-même etc... peux-tu faire un correctif sur tout ça ?"
+
+Audit statique de tous les packs (221 paires effet/objet parent, y compris les objets
+embarqués sur les créatures du bestiaire) : 201 correspondaient déjà (le patron actuel —
+`applyCaBonus()`/`applyEffectChanges()` pour les sorts, point 70 ; `embedMissingEffect()`
+pour les avantages/désavantages ; les correctifs "Combattant aquatique" plus tôt dans cette
+session — transmet toujours la bonne icône). **20 mismatches** trouvés, tous hérités
+d'anciens scripts one-off antérieurs au patron actuel (`packs/_add-*-effects*.js`,
+`packs/_migrate-*-effects*.js`, jamais retouchés depuis) : 13 avantages + 5 désavantages avec
+une icône générique (`aura.svg`/`hazard.svg`) sur leur effet au lieu de leur propre icône, et
+"Regard pétrifiant" (effet "Pétrifié (Regard de Méduse)" — cas particulier, cet effet
+représente l'état infligé à la victime plutôt qu'un buff sur le porteur, mais aligné par
+cohérence avec la demande littérale).
+
+Corrigé à la source (`packs/avantages.db`, `packs/desavantages.db`,
+`packs/capacites-combat.db`, `packs/creatures.db`) + nouveau correctif `PACK_UPDATES`
+générique (`0.6.137-effect-icons-match-parent`) qui réaligne toute copie déjà déployée dont
+l'icône de l'effet diffère de celle de son objet parent — générique (pas une liste de noms),
+donc reste correct pour un futur contenu qui dériverait pareil. Aucun changement de code
+runtime nécessaire, seules d'anciennes données déployées avaient dérivé.
+
+**À exécuter par l'utilisateur** : cocher le correctif dans l'écran de mise à jour (MJ).
+
+**Fichiers modifiés** : `packs/avantages.db`, `packs/desavantages.db`,
+`packs/capacites-combat.db`, `packs/creatures.db`, `packs/_json-mirrors/*.json`,
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 4) — Point 15 clos sans changement
 
 L'utilisateur confirme que la disposition actuelle du header de la fiche Personnage lui

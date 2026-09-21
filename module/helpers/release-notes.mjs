@@ -5,6 +5,21 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.138": {
+    title: "Version 0.6.138 — Dossiers en double du compendium fusionnés",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : des dossiers vides en double dans les compendiums Armes/Sorts/Avantages Divins/Alchimie (différant par un accent ou une majuscule, ex. "Arme a deux mains" / "Arme à deux mains") — fusionnés, tout objet encore présent dans le doublon déplacé avant suppression.</li>
+        <li><strong>Corrigé</strong> : les copies d'armes/armures sur un jeton non lié à sa fiche ne recevaient jamais leur vraie image (le correctif 0.6.101 ne parcourait pas ce cas).</li>
+      </ul>`
+  },
+  "0.6.137": {
+    title: "Version 0.6.137 — L'icône d'un effet suit toujours celle de son objet parent",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : l'icône d'un effet embarqué (sur un sort, un trait, une capacité de combat...) correspond désormais toujours à celle de l'objet qui le porte. 20 effets déjà déployés utilisaient encore une icône générique héritée d'anciens scripts (13 avantages, 5 désavantages, "Regard pétrifiant") — corrigés. Le correctif réaligne aussi automatiquement toute autre copie déjà présente dans le monde.</li>
+      </ul>`
+  },
   "0.6.136": {
     title: "Version 0.6.136 — La CA/le bonus d'attaque du PNJ affichent aussi la valeur effective",
     html: `

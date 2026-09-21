@@ -4,6 +4,75 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
+
+Signalé avec capture d'écran du compendium natif "Armes, Armures & Boucliers" : dossiers
+vides en double (« Arme a deux mains » sans accent à côté de « Arme à deux mains », « Arme de
+Jet »/« Arme de jet », etc.), et "Double hache (Simple facture)" affichant une icône blanche
+au lieu de sa vraie image.
+
+**Dossiers en double** : vérifié dans les données source (`packs/armes.db`,
+`packs/sorts.db`, `packs/avantages-divins.db`, `packs/alchimie.db` — les 4 seuls packs à
+utiliser des dossiers de compendium) — un seul dossier canonique par catégorie, jamais de
+doublon. La duplication est donc une dérive du monde déjà déployé, pas un défaut des
+données : `overwriteSystemCompendiums()` (le mécanisme derrière "Écraser mes compendiums")
+met à jour par `_id` et ne supprime jamais un dossier absent de la source (pour ne pas
+effacer un dossier créé par le MJ) — un ancien dossier orphelin (avant un renommage ou une
+réorganisation, à un moment de l'historique du projet) reste donc indéfiniment, même une fois
+son remplaçant créé sous un nouvel id. Corrigé : nouveau correctif `PACK_UPDATES`
+(`0.6.138-dedupe-pack-folders`) qui fusionne chaque groupe de doublons (accent/majuscule
+ignorés pour le regroupement) sur les 4 compendiums concernés — déplace d'abord tout objet
+encore présent dans un dossier en trop vers le dossier conservé, avant de le supprimer.
+
+**Image manquante** : audit statique de toutes les références d'image custom
+(`systems/antique/img/...`) dans tous les packs — **99 références, 0 fichier manquant**, y
+compris "Double hache (Simple facture)" (`double-hache-simple.jpg`, présent et correctement
+déployé). Le défaut vient donc du monde de l'utilisateur : le correctif `0.6.101` (vraies
+images des armes/armures) n'a probablement pas encore été coché dans l'écran de mise à jour
+(MJ) pour cet objet précis — **à vérifier en premier avant toute autre piste**. Trouvé au
+passage en relisant ce correctif : il ne parcourait jamais les copies sur un jeton non lié
+(angle mort déjà connu, corrigé ailleurs pour d'autres correctifs) — corrigé avec un nouveau
+correctif dédié (`0.6.138-weapon-images-unlinked-tokens`), plutôt que de retoucher le
+correctif déjà appliqué par certains utilisateurs.
+
+**À exécuter par l'utilisateur** : cocher les deux nouveaux correctifs (et `0.6.101` s'il ne
+l'est pas déjà) dans l'écran de mise à jour (MJ), recharger le monde, revérifier le
+compendium Armes.
+
+## 72. ~~Icône d'un effet toujours identique à celle de son objet parent~~ — CORRIGÉ (21 septembre 2026, v0.6.137)
+
+Demande : "il faudrait que tous les effets applicables aient la même image que l'objet
+parent. exemple : effet des sorts => lié au sort, effet des traits => lié au trait lui-même
+etc... peux-tu faire un correctif sur tout ça ?"
+
+Audit statique de tous les packs (`packs/*.db`, y compris les objets embarqués sur les
+créatures du bestiaire) : sur 221 paires effet/objet parent, **201 correspondaient déjà**
+(le patron actuel — `applyCaBonus()`/`applyEffectChanges()` pour les sorts, point 70 ;
+`embedMissingEffect()` pour les avantages/désavantages ; les correctifs "Combattant
+aquatique" de cette même session — transmet toujours la bonne icône). **20 mismatches**
+trouvés, tous hérités d'anciens scripts one-off antérieurs au patron actuel (jamais
+retouchés depuis) :
+- 13 avantages (Sens aiguisé, Sens artistique, Sang froid, Peau dense, Vif, Cuir de Hero,
+  Pisteur, Protection d'Athéna, Voix enchanteresse, Force de Poséidon, Corps d'Arès, Visée
+  d'Apollon, Taille imposante) : icône `aura.svg` générique sur l'effet au lieu de l'icône
+  propre de l'avantage.
+- 5 désavantages (Sens défaïllant, Frêle, Distrait, Dépressif, Maladroit) : même défaut avec
+  `hazard.svg`.
+- "Regard pétrifiant" (capacité de combat PNJ, Méduse) : son effet embarqué "Pétrifié (Regard
+  de Méduse)" utilisait `downgrade.svg` au lieu de l'icône de la capacité (`eye.svg`) — cas
+  un peu particulier puisque cet effet représente l'état infligé à la **victime**, pas un
+  buff sur le porteur de la capacité lui-même, mais appliqué à l'identique par cohérence avec
+  la demande littérale de l'utilisateur.
+
+Corrigé à la source (`packs/avantages.db`, `packs/desavantages.db`,
+`packs/capacites-combat.db`, `packs/creatures.db`) + nouveau correctif `PACK_UPDATES`
+générique (`0.6.137-effect-icons-match-parent`, `module/helpers/pack-updates.mjs`) qui
+réaligne toute copie déjà déployée dont l'icône de l'effet diffère de celle de son objet
+parent — pas une liste de noms fixe, donc reste correct si un futur contenu introduit le même
+défaut. Aucun changement de code runtime nécessaire : les chemins de création d'effet actifs
+transmettaient déjà tous la bonne icône, seules d'anciennes données déployées avaient dérivé.
+**À exécuter par l'utilisateur** : cocher le correctif dans l'écran de mise à jour (MJ).
+
 ## 71. ~~Audit complet du code (cohérence + fonctionnement)~~ — CORRIGÉ (21 septembre 2026, v0.6.136, confirmé en jeu)
 
 Demande : "fait un audit de tout le code pour verrifier que tout est cohérent et fonctionel",
