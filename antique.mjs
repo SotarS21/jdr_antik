@@ -322,7 +322,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     // be resolved) — the button carries the item's UUID precisely so this lookup works.
     const sourceItem = btn.dataset.itemUuid ? await fromUuid(btn.dataset.itemUuid) : null;
     const description = sourceItem?.system.description || undefined;
-    const icon = sourceItem?.img || undefined;
+    const img = sourceItem?.img || undefined;
     const durationRounds = btn.dataset.durationRounds ? Number(btn.dataset.durationRounds) : undefined;
 
     let tokens = [...game.user.targets];
@@ -341,7 +341,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       // buff mechanism) — applyCaBonus() targets system.ca.temp/.total, so both must be
       // excluded here rather than crash into "undefined → undefined CA" on the chat card.
       if (actor.system.ca?.total === undefined) continue;
-      const result = await actor.applyCaBonus(amount, { name: spellName, icon, description, durationRounds });
+      const result = await actor.applyCaBonus(amount, { name: spellName, img, description, durationRounds });
       results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} CA`);
     }
 
@@ -386,7 +386,7 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     const changeLabels = spellEffect.changes.map(c => CONFIG.ANTIQUE.getEffectChangeLabel(c)).join(", ");
     const results = [];
     for (const actor of actors) {
-      await actor.applyEffectChanges(spellEffect.changes, { name: item.name, icon: item.img, description: spellEffect.description });
+      await actor.applyEffectChanges(spellEffect.changes, { name: item.name, img: item.img, description: spellEffect.description });
       results.push(`<b>${actor.name}</b> : ${changeLabels}`);
     }
 

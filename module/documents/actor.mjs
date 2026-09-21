@@ -258,7 +258,7 @@ export class AntiqueActor extends Actor {
    * Re-applying the same `name` refreshes the existing effect instead of stacking
    * duplicates (same idiom as the "Affamé" effect in longRest()).
    * @param {number} amount
-   * @param {{name: string, icon?: string, durationRounds?: number}} options - durationRounds,
+   * @param {{name: string, img?: string, durationRounds?: number}} options - durationRounds,
    *   when given (parsed from the spell's own "N tours" duration text, see castSpell()),
    *   auto-expires the effect after that many combat rounds — real Foundry combat-based
    *   duration (CONFIG.ActiveEffect.expiryAction = "delete", set in antique.mjs, actually
@@ -266,7 +266,7 @@ export class AntiqueActor extends Actor {
    *   outside combat (no round count to track against) or when omitted, same as before.
    * @returns {Promise<{before: number, after: number, amount: number}>}
    */
-  async applyCaBonus(amount, { name, icon = "icons/svg/upgrade.svg", description, durationRounds }) {
+  async applyCaBonus(amount, { name, img = "icons/svg/upgrade.svg", description, durationRounds }) {
     const before = this.system.ca.total;
     const changes = [{ key: "system.ca.temp", mode: 2, value: String(amount) }];
     // Falls back to a synthesized label (no rich text available at the CA-bonus call
@@ -285,16 +285,20 @@ export class AntiqueActor extends Actor {
     // Set on both branches: an effect created before this fix existed would
     // otherwise keep its stale CONDITIONAL default forever, only ever hitting the
     // update branch from here on.
-    // icon included on both branches too — same staleness risk as showIcon above: a
+    // img included on both branches too — same staleness risk as showIcon above: a
     // recast should pick up the caster item's current icon, not freeze whatever icon
     // was set the first time this named effect was created (e.g. before point 69 gave
-    // every spell its own icon instead of a shared generic one).
+    // every spell its own icon instead of a shared generic one). Was named/keyed "icon"
+    // until 2026-09-21 — ActiveEffect's real schema field is "img" (no "icon" field
+    // exists at all, see common/documents/active-effect.mjs), so every effect created or
+    // refreshed through this method silently fell back to Foundry's own default icon
+    // instead of the caster item's.
     const existing = this.effects.find(e => e.name === name);
-    const effectData = { changes, icon, description: effectDescription, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS };
+    const effectData = { changes, img, description: effectDescription, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS };
     if (duration) Object.assign(effectData, { duration, start });
     if (existing) await existing.update(effectData);
     else await this.createEmbeddedDocuments("ActiveEffect", [{
-      name, icon, transfer: true, ...effectData
+      name, img, transfer: true, ...effectData
     }]);
 
     const after = this.system.ca.total;
@@ -315,9 +319,9 @@ export class AntiqueActor extends Actor {
    * idiom: re-applying the same `name` updates the existing effect's changes
    * instead of stacking duplicates.
    * @param {object[]} changes - Raw ActiveEffect change data ({key, mode, value}).
-   * @param {{name: string, icon?: string}} options
+   * @param {{name: string, img?: string}} options
    */
-  async applyEffectChanges(changes, { name, icon = "icons/svg/upgrade.svg", description }) {
+  async applyEffectChanges(changes, { name, img = "icons/svg/upgrade.svg", description }) {
     // system.pointsChance is a plain, freely-editable counter, not a temporary buff —
     // a persistent ActiveEffect would defeat manually spending it (editing the number
     // down would do nothing, since the effect keeps re-adding its bonus every render),
@@ -334,10 +338,12 @@ export class AntiqueActor extends Actor {
     if (otherChanges.length) {
       // showIcon: ALWAYS on both branches — see the identical comment in
       // applyCaBonus() above (same reasoning, same fix for the same staleness risk).
+      // img (was "icon" until 2026-09-21 — see the same fix/comment in applyCaBonus()
+      // above): ActiveEffect has no "icon" field, only "img".
       const existing = this.effects.find(e => e.name === name);
-      if (existing) await existing.update({ changes: otherChanges, icon, description, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
+      if (existing) await existing.update({ changes: otherChanges, img, description, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS });
       else await this.createEmbeddedDocuments("ActiveEffect", [{
-        name, icon, changes: otherChanges, description, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+        name, img, changes: otherChanges, description, transfer: true, showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
       }]);
     }
     refreshSheet(this);

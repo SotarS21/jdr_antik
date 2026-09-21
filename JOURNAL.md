@@ -2,6 +2,56 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 15) — Vrai bug de code : "icon" n'est pas un champ ActiveEffect (v0.6.146 → v0.6.147)
+
+0.6.145 confirmé fonctionnel ("ça marche, effet visible sur les deux sorts"), mais nouveau
+signalement : "les effets actifs n'ont toujours pas l'image de leurs sorts" — partout
+(onglet Effets du sort lui-même, panneau flottant, jeton, onglet Traits de la fiche
+personnage). Vérifié par macro en direct : la donnée du compendium était déjà parfaitement
+correcte (`img` du sort et de ses deux effets identiques). Donc le problème n'était ni dans
+les données ni dans l'affichage — il fallait chercher dans le code qui crée l'effet AU
+MOMENT DU LANCER.
+
+**Cause, capture d'écran à l'appui** (fiche "Antalios", plusieurs lancers de "Bénédiction
+des Titans" dans le journal de chat, effet listé dans l'onglet Traits avec la mauvaise
+icône malgré des relances répétées) : `AntiqueActor#applyCaBonus()` et
+`#applyEffectChanges()` (`module/documents/actor.mjs`) — le mécanisme derrière les boutons
+"Appliquer l'effet"/"Appliquer sur un allié" — construisaient l'`ActiveEffect` avec un champ
+`icon`. Or `ActiveEffect` n'a **aucun** champ `icon` dans son schéma réel (vérifié à nouveau
+dans `common/documents/active-effect.mjs` : seul `img` existe) — la clé était donc
+silencieusement ignorée par Foundry à chaque création ET à chaque mise à jour (les deux
+branches du code étaient affectées), d'où l'icône de repli générique malgré des relances
+répétées (la branche "update", censée rafraîchir l'icône à chaque relance depuis le point
+70, mettait bien à jour un champ... qui n'existe pas).
+
+Hypothèse sur pourquoi ça a pu "marcher" par le passé (point 70, v0.6.130, confirmé par
+l'utilisateur à l'époque) : Foundry a probablement changé de comportement entre la version
+alors installée et la v14.368 actuelle (visible dans les logs console de cette session) —
+soit une ancienne tolérance/migration `icon`→`img` a été retirée, soit le point 70 n'a en
+fait jamais réellement fonctionné et la confirmation de l'utilisateur portait sur autre
+chose (les boutons/le mécanisme, pas l'icône précise) ; impossible de trancher sans accès
+navigateur à l'historique, mais peu importe — la vraie cause est désormais identifiée avec
+certitude (vérifiée contre le schéma Foundry réel, pas une supposition).
+
+**Corrigé dans le code** : `icon` → `img` dans les deux méthodes (`actor.mjs`) et leurs deux
+sites d'appel (`antique.mjs`, boutons `.apply-effect`/`.apply-spell-effect`) — corrige tout
+futur lancer immédiatement, sans redéploiement de données. Nouveau correctif `PACK_UPDATES`
+(`0.6.147-dynamic-buff-icons`) pour réaligner les effets **déjà créés sur un acteur du
+monde** (pas la copie de l'objet sort lui-même, déjà couverte par 0.6.141+ — celui-ci vise
+spécifiquement l'effet vivant directement sur l'acteur, créé au moment du clic) — 11 noms
+connus : les 8 sorts à effet embarqué (Bénédiction des Titans, Danse du Serpent, Résilience
+de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds
+Legers, Grâce des Astres Alignés, versions solo et groupe) + les 3 sorts à bonus de CA seul
+(Peau d'écorce, Rage Incontrôlable, Peau de Fer).
+
+**À exécuter par l'utilisateur** : cocher `0.6.147`, recharger, re-tester.
+
+**Fichiers modifiés** : `module/documents/actor.mjs`, `antique.mjs`,
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 14) — Collision de noms entre bénédictions et objets embarqués sur Éphise (v0.6.145 → v0.6.146)
 
 Retour de test sur 0.6.145 :

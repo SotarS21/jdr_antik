@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.147": {
+    title: "Version 0.6.147 — CRITIQUE : les buffs de sort créés en jeu gardaient une icône générique",
+    html: `
+      <ul>
+        <li><strong>Corrigé (critique)</strong> : les effets créés en jeu via "Appliquer l'effet"/"Appliquer sur un allié" (Bénédiction des Titans, Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés, Peau d'écorce, Rage Incontrôlable, Peau de Fer) gardaient toujours une icône générique au lieu de celle du sort — le code utilisait un champ "icon" qui n'existe pas dans le schéma réel de Foundry. Corrigé dans le code ; les effets déjà créés sur un personnage sont réalignés par ce correctif.</li>
+      </ul>`
+  },
   "0.6.146": {
     title: "Version 0.6.146 — Collision de noms résolue (Beauté divine / Corps d'Arès)",
     html: `

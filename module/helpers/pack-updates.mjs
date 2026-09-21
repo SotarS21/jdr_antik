@@ -827,6 +827,25 @@ export const PACK_UPDATES = [
       "porteur, pas seulement le nom de l'objet) — et toute copie en double déjà créée par " +
       "une tentative précédente est nettoyée avant recréation.",
     apply: applyFixLegacyEffectShape
+  },
+  {
+    id: "0.6.147-dynamic-buff-icons",
+    pack: "acteurs",
+    version: "0.6.147",
+    label: "CRITIQUE — les buffs de sort créés en jeu gardaient une icône générique",
+    description:
+      "Trouvé en re-testant \"Bénédiction des Titans\" en jeu (bouton \"Appliquer " +
+      "l'effet\") : la donnée du sort était bien correcte (vérifié par macro), mais " +
+      "l'effet créé sur le personnage gardait une icône générique. Cause : " +
+      "AntiqueActor#applyCaBonus()/applyEffectChanges() (module/documents/actor.mjs) " +
+      "construisaient l'effet avec un champ \"icon\" — qui n'existe pas dans le schéma " +
+      "ActiveEffect (seul \"img\" existe) — silencieusement ignoré par Foundry. Corrigé " +
+      "dans le code (icon → img) ; ce correctif réaligne tout effet de ce type déjà créé " +
+      "sur un acteur du monde ou un jeton non lié (Bénédiction des Titans, Danse du " +
+      "Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour " +
+      "Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés, Peau d'écorce, Rage " +
+      "Incontrôlable, Peau de Fer).",
+    apply: applyFixDynamicBuffIcons
   }
 ];
 
@@ -4446,6 +4465,67 @@ async function applyFixInvalidEffectTypeItems() {
       const actor = token.actor;
       if (!actor) continue;
       fixed += await fixInvalidEffectTypeItemsOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+// Found 2026-09-21 testing "Bénédiction des Titans" live: AntiqueActor#applyCaBonus()/
+// applyEffectChanges() (module/documents/actor.mjs) built every dynamically-created buff
+// effect with an "icon" key — ActiveEffect has no such field (only "img", see
+// resources/app/common/documents/active-effect.mjs), so it was silently dropped and the
+// effect fell back to Foundry's own default icon instead of the casting spell's. Fixed at
+// the source (actor.mjs now uses "img") — this reaches every already-created buff effect
+// sitting directly on a world actor (not the spell item's own copy, already covered by
+// 0.6.141+ above; this is the actor-level effect created when "Appliquer l'effet"/
+// "Appliquer sur un allié" is clicked).
+const DYNAMIC_BUFF_ICONS = {
+  "Bénédiction des Titans": "icons/magic/control/buff-strength-muscle-damage-red.webp",
+  "Bénédiction des Titans (Groupe)": "icons/magic/control/buff-strength-muscle-damage-red.webp",
+  "Danse du Serpent": "icons/creatures/reptiles/snake-poised-white.webp",
+  "Danse du Serpent (Groupe)": "icons/creatures/reptiles/snake-poised-white.webp",
+  "Résilience de l'Immortel": "icons/magic/defensive/armor-stone-skin.webp",
+  "Résilience de l'Immortel (Groupe)": "icons/magic/defensive/armor-stone-skin.webp",
+  "Eveil du Sage": "icons/sundries/books/book-open-purple.webp",
+  "Eveil du Sage (Groupe)": "icons/sundries/books/book-open-purple.webp",
+  "Méditation des Ancêtres": "icons/magic/holy/meditation-chi-focus-blue.webp",
+  "Méditation des Ancêtres (Groupe)": "icons/magic/holy/meditation-chi-focus-blue.webp",
+  "Glamour Divin": "icons/magic/life/heart-pink.webp",
+  "Glamour Divin (Groupe)": "icons/magic/life/heart-pink.webp",
+  "Souffle aux Pieds Legers": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "Souffle aux Pieds Legers (Groupe)": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "Grâce des Astres Alignés": "icons/magic/nature/symbol-moon-stars-white.webp",
+  "Grâce des Astres Alignés (Groupe)": "icons/magic/nature/symbol-moon-stars-white.webp",
+  "Peau d'écorce": "icons/commodities/wood/bark-brown.webp",
+  "Rage Incontrôlable": "icons/weapons/axes/axe-battle-eyes-red.webp",
+  "Peau de Fer": "icons/magic/defensive/armor-shield-barrier-steel.webp"
+};
+
+async function fixDynamicBuffIconsOnActor(actor) {
+  let fixed = 0;
+  for (const effect of actor.effects ?? []) {
+    const img = DYNAMIC_BUFF_ICONS[effect.name];
+    if (!img || effect.img === img) continue;
+    await effect.update({ img });
+    fixed++;
+  }
+  return fixed;
+}
+
+async function applyFixDynamicBuffIcons() {
+  let fixed = 0;
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixDynamicBuffIconsOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixDynamicBuffIconsOnActor(actor);
     }
   }
 

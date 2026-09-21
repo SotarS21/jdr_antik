@@ -101,10 +101,26 @@ sur la bénédiction. **Corrigé en v0.6.146** : chaque correctif est maintenant
 le nom de l'acteur porteur (pas seulement le nom de l'objet), et toute copie en double déjà
 créée par la tentative précédente est nettoyée avant recréation. `0.6.145` étant resté "en
 attente" (jamais marqué appliqué, la tentative ayant échoué), pas besoin de nouvel id — sa
-description a été mise à jour. Voir `JOURNAL.md`, session du 21 septembre 2026, pour le
-détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.145` (contenu
-corrigé), recharger, re-tester Bénédiction des Titans/Danse du Serpent (effet présent ET
-bouton "Appliquer l'effet") et le bonus de CA d'une armure.
+description a été mise à jour.
+
+**0.6.145 confirmé fonctionnel** : "effet visible sur les deux sorts". **Mais l'icône de
+l'effet ne correspondait toujours pas au sort**, partout (onglet Effets du sort, panneau
+flottant, jeton, fiche personnage) — y compris après vérification par macro que la donnée
+du compendium était bien correcte. **Vraie cause, un bug de code cette fois** :
+`AntiqueActor#applyCaBonus()`/`applyEffectChanges()` (`module/documents/actor.mjs`),
+utilisées par le bouton "Appliquer l'effet"/"Appliquer sur un allié", construisaient
+l'effet créé sur l'acteur avec un champ `"icon"` — qui n'existe pas dans le schéma réel
+`ActiveEffect` (seul `"img"` existe) — silencieusement ignoré par Foundry, d'où l'icône
+générique de repli. **Corrigé en v0.6.147** : renommé `icon` → `img` dans le code
+(`actor.mjs` + les deux sites d'appel dans `antique.mjs`) — corrige tout futur lancer ; +
+nouveau correctif `PACK_UPDATES` (`0.6.147-dynamic-buff-icons`) qui réaligne les effets déjà
+créés sur un acteur du monde pour les 11 sorts/effets concernés (Bénédiction des Titans,
+Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour
+Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés, Peau d'écorce, Rage Incontrôlable,
+Peau de Fer). Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail technique
+complet. **À exécuter par l'utilisateur** : cocher `0.6.147`, recharger, re-tester (l'icône
+de l'effet sur la fiche personnage/le jeton/le panneau flottant doit maintenant correspondre
+au sort).
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 
