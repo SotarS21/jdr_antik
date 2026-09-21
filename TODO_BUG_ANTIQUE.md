@@ -269,15 +269,17 @@ Champ de recherche ajouté en haut de l'onglet Compétences : la compétence cor
 surlignée (halo doré) pendant que les autres s'estompent, sans rien masquer. Voir `JOURNAL.md`,
 session du 9 septembre 2026 (suite). **À confirmer par l'utilisateur en jeu.**
 
-## 15. Colonnes en haut de la fiche de personnage — EN PAUSE (9 septembre 2026)
+## 15. ~~Colonnes en haut de la fiche de personnage~~ — CLOS SANS CHANGEMENT (21 septembre 2026)
 
 Demande d'origine : « ajouter des colonnes sur le haut de la fiche de perso » — concept flou, le
 header est actuellement en flex empilé. Clarifié le 9 septembre 2026 : il s'agit bien de
 réorganiser les champs déjà présents (Nom, Dévotion, Joueur, PV, PM, CA, Avantage temporaire,
 icônes de traits) en colonnes plutôt que d'en ajouter de nouveaux — mais la répartition précise
-reste à trancher, l'utilisateur ayant mis ce point en pause le temps de retrouver l'objectif
-d'origine. **Ne pas coder avant qu'il revienne avec une répartition précise.** Source :
-`todo_foundry.txt`, audit du 9 septembre 2026.
+restait à trancher, l'utilisateur ayant mis ce point en pause le temps de retrouver l'objectif
+d'origine. **Clos le 21 septembre 2026** : l'utilisateur a confirmé que la disposition actuelle
+lui convient telle quelle ("je pense que le point 15 est bon. Les colonnes sont bien pour le
+moment.") — aucun changement de code nécessaire. Source : `todo_foundry.txt`, audit du
+9 septembre 2026.
 
 ## 16. ~~« Charger en async la barre des favoris »~~ — DÉJÀ FAIT (confirmé 9 septembre 2026)
 

@@ -2,6 +2,17 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 4) — Point 15 clos sans changement
+
+L'utilisateur confirme que la disposition actuelle du header de la fiche Personnage lui
+convient telle quelle : "je pense que le point 15 est bon. Les colonnes sont bien pour le
+moment." Point 15 (mis en pause le 9 septembre 2026, faute de répartition précise) clos sans
+aucun changement de code. Avec ce point, `TODO_BUG_ANTIQUE.md` n'a plus aucun item ouvert.
+
+**Fichiers modifiés** : `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 3) — Le mécanisme fonctionnait déjà, seul l'affichage cachait la preuve (v0.6.135 → v0.6.136)
 
 Retour de test sur 0.6.135 : "non ça ne fonctionne pas", capture d'écran de la fiche complète
