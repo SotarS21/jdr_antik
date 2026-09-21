@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.142": {
+    title: "Version 0.6.142 — Nettoyage des résidus d'objets invalides",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : des objets résiduels d'un ancien type ("effect", retiré du système au point 71) provoquaient une erreur de chargement à chaque ouverture du monde. Détectés et supprimés automatiquement (compendium, acteurs, jetons non liés).</li>
+      </ul>`
+  },
   "0.6.141": {
     title: "Version 0.6.141 — CRITIQUE : 64 effets embarqués sans effet réel",
     html: `

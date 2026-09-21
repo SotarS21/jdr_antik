@@ -2,6 +2,44 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 10) — Résidus d'objets de type "effect" bloquant le chargement (point 76, v0.6.141 → v0.6.142)
+
+En essayant d'appliquer le correctif du point 75, l'utilisateur signale ne plus pouvoir
+appliquer de correctif du tout, avec des erreurs console au rechargement :
+```
+Error: Failed to initialize Item [Actor.vKP5amDpZu9Jqe4F.Item.oucRBmtrFjfLLDRi]:
+  type: "effect" is not a valid type for the Item Document class
+Error: Failed to initialize Item [Item.sSYQbofXEOMO9xTB]:
+  type: "effect" is not a valid type for the Item Document class
+```
+
+**Diagnostic** : résidu de l'ancien chantier "Effets comme type d'Item" (avant le vrai
+système d'ActiveEffect) — le type `"effect"` a été retiré des 3 manifestes au point 71
+(18 septembre, "type mort, retiré") sans qu'aucun objet réel de ce type n'existe alors dans
+le monde de l'utilisateur pour signaler le problème. Foundry (`common/documents/item.mjs`,
+schéma de type) rejette désormais la construction de tout objet qui a encore ce type stocké
+— sans planter le reste du monde (Foundry isole l'erreur par document via
+`EmbeddedCollection._handleInvalidDocument`), mais en polluant la console à chaque
+chargement.
+
+**Corrigé en deux temps** : une première macro ciblée (les 2 ids donnés par l'erreur de
+l'utilisateur) a laissé un **second** objet invalide sur le même acteur (id différent, pas
+dans le message d'erreur initial puisque Foundry ne signale qu'un document par passe tant
+qu'il n'a pas été retiré) — remplacée par une seconde macro générique, qui balaie tout le
+monde d'un coup via le mécanisme natif de Foundry pour les documents invalides
+(`collection.invalidDocumentIds` + lecture directe de `collection._source`, puisqu'un objet
+invalide n'apparaît jamais dans une boucle normale sur `actor.items`/`game.items`).
+**Confirmé par l'utilisateur** : plus aucune erreur au rechargement après la seconde macro.
+
+Intégré comme correctif permanent (`PACK_UPDATES`, `0.6.142-remove-invalid-effect-type-items`,
+même logique que la macro) pour que ce nettoyage soit repris par le système lui-même plutôt
+que de rester un script ponctuel non versionné.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 9) — CRITIQUE : format hérité sur 64 effets embarqués (point 75, v0.6.140 → v0.6.141)
 
 Signalé après la question initiale sur les icônes des sorts ("est-ce que tu peux ajouter les

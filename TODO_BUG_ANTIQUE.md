@@ -4,6 +4,32 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 76. ~~Résidus d'objets de type "effect" — erreur de chargement systématique~~ — CORRIGÉ (21 septembre 2026, v0.6.142)
+
+Trouvé en essayant d'appliquer le correctif du point 75 : l'utilisateur ne pouvait plus
+appliquer de correctif, et un rechargement (F5) affichait des erreurs console répétées
+(`type: "effect" is not a valid type for the Item Document class`) sur plusieurs objets du
+monde — un objet embarqué sur un acteur, un objet du répertoire d'Objets, puis un second
+objet trouvé sur le même acteur après un premier nettoyage.
+
+**Cause** : ces objets sont un résidu de l'ancien chantier "Effets comme type d'Item"
+(antérieur au vrai système d'ActiveEffect), et le type `"effect"` a été retiré des 3
+manifestes au point 71 (18 septembre) car mort/inutilisé — sans qu'il n'y ait jamais eu
+d'objet réel de ce type restant dans le monde de l'utilisateur pour l'alerter à ce moment-là.
+Foundry rejette maintenant la construction de tout objet ayant encore ce type, à chaque
+chargement.
+
+**Corrigé en urgence via une macro fournie à l'utilisateur** (exécutée deux fois, la
+première n'ayant trouvé qu'une partie des résidus) utilisant le mécanisme natif de Foundry
+pour les documents invalides (`collection.invalidDocumentIds`/`_source`, qui échappent à
+toute boucle normale sur `actor.items`) — supprime tout objet de type `"effect"` trouvé sur
+le monde entier (objets, acteurs, jetons non liés) en une seule passe.
+
+**Intégré comme correctif permanent** (`PACK_UPDATES`, `0.6.142-remove-invalid-effect-type-items`)
+reprenant exactement la même logique, pour que ce nettoyage fasse partie du système plutôt
+que de rester un script ponctuel. **Confirmé par l'utilisateur** : plus aucune erreur au
+rechargement après exécution de la macro.
+
 ## 75. ~~CRITIQUE — 64 effets embarqués dans un format hérité, sans effet réel~~ — CORRIGÉ (21 septembre 2026, v0.6.141)
 
 Signalé : "Bénédiction des Titans n'a plus d'effet applicable", puis "danse du serpent non

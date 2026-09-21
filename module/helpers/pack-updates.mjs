@@ -751,6 +751,23 @@ export const PACK_UPDATES = [
       "acteurs du monde, jetons non liés) — supprime explicitement les deux champs hérités " +
       "pour empêcher toute réintroduction future via la migration native de Foundry.",
     apply: applyFixLegacyEffectShape
+  },
+  {
+    id: "0.6.142-remove-invalid-effect-type-items",
+    pack: "acteurs",
+    version: "0.6.142",
+    label: "Résidus d'objets de type \"effect\" (invalides depuis le point 71)",
+    description:
+      "Trouvé en creusant le point 75 : plusieurs objets du monde de l'utilisateur (dont " +
+      "au moins 2 sur un même acteur) étaient encore de type \"effect\" — un type retiré " +
+      "des 3 manifestes au point 71 (résidu de l'ancien chantier Effets-comme-Item, " +
+      "remplacé depuis par les vrais ActiveEffect). Foundry rejette désormais leur " +
+      "construction à chaque chargement (erreur console systématique, sans bloquer le " +
+      "reste). Utilise le mécanisme natif de Foundry pour les documents invalides " +
+      "(`collection.invalidDocumentIds`/`_source`, qui échappent à toute boucle normale " +
+      "sur `actor.items`) pour les repérer et les supprimer, sur le monde entier (objets, " +
+      "acteurs, jetons non liés).",
+    apply: applyFixInvalidEffectTypeItems
   }
 ];
 
@@ -4295,6 +4312,54 @@ async function applyFixLegacyEffectShape() {
       const actor = token.actor;
       if (!actor) continue;
       fixed += await fixLegacyEffectShapeOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+// Foundry tracks any embedded/world document that fails schema validation in a collection's
+// own `invalidDocumentIds` Set (see common/abstract/document.mjs and client's
+// document-collection.mjs/embedded-collection.mjs) rather than exposing it through the
+// collection's normal iteration — a plain `for (const item of actor.items)` silently never
+// sees these, so they can't be found or deleted through the usual document APIs. Reading
+// `collection._source` directly (the raw stored array, always present regardless of
+// validation) is the only way to inspect what an invalid entry actually is.
+function findInvalidEffectTypeItemIds(collection) {
+  const ids = [];
+  for (const id of collection.invalidDocumentIds) {
+    const raw = collection._source.find(d => d._id === id);
+    if (raw?.type === "effect") ids.push(id);
+  }
+  return ids;
+}
+
+async function fixInvalidEffectTypeItemsOnActor(actor) {
+  const ids = findInvalidEffectTypeItemIds(actor.items);
+  if (!ids.length) return 0;
+  await actor.deleteEmbeddedDocuments("Item", ids);
+  return ids.length;
+}
+
+async function applyFixInvalidEffectTypeItems() {
+  let fixed = 0;
+
+  const worldIds = findInvalidEffectTypeItemIds(game.items);
+  if (worldIds.length) {
+    await Item.deleteDocuments(worldIds);
+    fixed += worldIds.length;
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixInvalidEffectTypeItemsOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixInvalidEffectTypeItemsOnActor(actor);
     }
   }
 
