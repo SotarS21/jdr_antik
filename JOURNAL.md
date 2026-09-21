@@ -45,6 +45,9 @@ ajoute plus tard son propre personnage dans ce même compendium.
 **À exécuter par l'utilisateur** : recharger le monde une première fois (le pack vide doit
 apparaître), puis cocher le correctif dans l'écran de mise à jour (MJ).
 
+**Confirmé par l'utilisateur en jeu** : "ça marche, les 7 personnages sont là." Point 77
+clos.
+
 **Fichiers modifiés** : `packs/personnages.db` (nouveau), `packs/_json-mirrors/
 personnages.json` (nouveau), `system.json`, `module/helpers/pack-updates.mjs`,
 `module/helpers/release-notes.mjs`, `TODO_BUG_ANTIQUE.md`, ce journal.

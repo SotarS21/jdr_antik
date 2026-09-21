@@ -4,7 +4,7 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
-## 77. Compendium dédié "Personnages Joueurs" — EN ATTENTE (21 septembre 2026, v0.6.148)
+## 77. ~~Compendium dédié "Personnages Joueurs"~~ — CORRIGÉ (21 septembre 2026, v0.6.148, confirmé en jeu)
 
 Demande : "peut tu créer des pj à partir des json qui sont dans [...]\pj, ajoute les dans le
 systeme". 7 fichiers d'export Foundry (Adresthea, Antalios, Eosyne, Hydriss, Kallisto, Lyra,
@@ -28,6 +28,9 @@ après déploiement (pack déclaré dans `system.json`, jamais chargé avant) ; 
 jamais un doublon si un MJ ajoute son propre personnage dans ce même compendium par la
 suite. **À exécuter par l'utilisateur** : recharger le monde une première fois (pour que
 Foundry crée le dossier vide), puis cocher le correctif dans l'écran de mise à jour (MJ).
+
+**Confirmé par l'utilisateur en jeu (21 septembre 2026)** : "ça marche, les 7 personnages
+sont là."
 
 ## 76. ~~Résidus d'objets de type "effect" — erreur de chargement systématique~~ — CORRIGÉ (21 septembre 2026, v0.6.142)
 
