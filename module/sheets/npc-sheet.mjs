@@ -77,6 +77,13 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     const rawSystem = this.actor._source.system;
     context.pvSource = rawSystem.pv;
     context.pmSource = rawSystem.pm;
+    // Same bug class as pv/pm above: system.ca.value and system.attackBonuses.*.total are
+    // both directly editable (GM sets them as flat numbers) AND valid ActiveEffect targets
+    // (e.g. "Combattant aquatique") — unlike the character sheet, the NPC schema has no
+    // separate base/total split for either, so the *displayed* value must be the raw
+    // persisted one or resubmitting the form on any other field change bakes the effect's
+    // bonus back in as the new raw value (compounding on every subsequent apply).
+    context.caSource = rawSystem.ca.value;
 
     context.abilityLabels = {};
     for (const [key, locKey] of Object.entries(CONFIG.ANTIQUE.abilities)) {
@@ -89,7 +96,8 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         key,
         label: game.i18n.localize(cfg.label),
         icon: cfg.icon ?? "",
-        total: system.attackBonuses[key]?.total ?? 0
+        total: system.attackBonuses[key]?.total ?? 0,
+        totalSource: rawSystem.attackBonuses[key]?.total ?? 0
       };
     }
 

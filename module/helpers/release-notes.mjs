@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.133": {
+    title: "Version 0.6.133 — Combattant aquatique sur toutes les catégories + fiabilité de la CA/des bonus d'attaque PNJ",
+    html: `
+      <ul>
+        <li><strong>Modifié</strong> : "Combattant aquatique" (Triton) donnait +3 à l'attaque uniquement aux armes de corps à corps — s'applique désormais à toutes les catégories d'attaque (mains nues, arme de jet, exotique, deux mains, à distance comprises), le +2 CA restant inchangé.</li>
+        <li><strong>Corrigé</strong> : la CA et les bonus d'attaque par catégorie d'un PNJ (onglets Statistiques/Combat) affichaient la valeur déjà modifiée par un effet actif (comme "Combattant aquatique") — resoumettre le formulaire en modifiant n'importe quel autre champ de la fiche la persistait comme nouvelle valeur de base, la faisant grossir à chaque effet réappliqué (même défaut déjà corrigé pour les PV/PM). Les champs affichent désormais la valeur brute, non affectée par les effets actifs.</li>
+      </ul>`
+  },
   "0.6.132": {
     title: "Version 0.6.132 — Bonus d'attaque par catégorie invisible sur la fiche PNJ",
     html: `

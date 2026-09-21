@@ -95,14 +95,32 @@ attaques)". Deux infos nouvelles, pas encore expliquées :
 Vérifié statiquement (source `packs/capacites-combat.db` et `packs/creatures.db`, les deux
 copies de l'effet) : **un seul effet embarqué**, un seul jeu de `changes`
 (`system.attackBonuses.armeBlanche.total` ADD 3, `system.ca.value` ADD 2) — pas de duplication
-dans les données source. Le doublement de CA (+4 au lieu de +2) et l'absence totale du bonus
-d'attaque viennent donc soit de l'état déjà déployé dans le monde de l'utilisateur (ex. une
-deuxième copie de l'effet/capacité déjà présente sur son PNJ avant ce chantier, ou un
-mécanisme séparé qui touche aussi CA), soit d'un problème plus profond pas encore identifié.
-**Pas encore corrigé — à reprendre lundi.** Prochaines étapes : demander à l'utilisateur
-d'ouvrir l'onglet Effets de son Triton (ou du PNJ concerné) et de compter combien de fois
-"Combattant aquatique" apparaît, et clarifier la portée voulue du bonus d'attaque (toutes
-catégories vs armes blanches seulement).
+dans les données source. **Pas encore corrigé — à reprendre lundi.**
+
+**Repris le 21 septembre 2026 (v0.6.133).** Réponses de l'utilisateur : l'onglet Effets du PNJ
+ne montre "Combattant aquatique" **qu'une fois** (écarte la duplication), et le bonus doit
+viser **toutes les catégories d'attaque**, pas seulement le corps à corps.
+
+- **Portée du bonus, corrigée** : l'effet embarqué cible désormais les 6 catégories
+  (`mainNue`/`armeBlanche`/`armeDeJet`/`armeExotique`/`combatDeuxMains`/`armeADistance`, ADD 3
+  chacune), le +2 CA inchangé. Nouveau correctif `PACK_UPDATES`
+  (`0.6.133-aquatic-fighter-all-categories`) pour la copie déjà sur le Triton du monde.
+- **Cause probable de la CA +4 (au lieu de +2), trouvée** : `system.ca.value` et
+  `system.attackBonuses.*.total` du PNJ sont à la fois éditables par le MJ ET des cibles
+  d'ActiveEffect valides, sans aucun champ "base" séparé (contrairement à la fiche Personnage)
+  — les deux inputs concernés affichaient la valeur déjà bonifiée par l'effet actif avec un vrai
+  `name=`, donc réintégrée comme nouvelle valeur brute à chaque changement d'un AUTRE champ de
+  la fiche (`submitOnChange`). Même défaut que les points 1/35/59, jamais corrigé pour ces deux
+  champs côté PNJ. Corrigé (`npc-sheet.mjs`/`.hbs`, patron `pvSource`/`pmSource`) — **ne répare
+  pas une valeur déjà faussée dans le monde de l'utilisateur**, à vérifier/ajuster manuellement
+  une fois le correctif chargé (le champ est désormais sûr à modifier directement, il ne se
+  resoumet plus tout seul).
+- Le bonus d'attaque "totalement absent" signalé vendredi n'a pas de cause distincte trouvée
+  statiquement — la nouvelle portée + la fiche corrigée devraient suffire.
+
+Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail. **À confirmer par
+l'utilisateur en jeu** (rechargement complet du monde, correctif coché dans l'écran de mise à
+jour MJ, re-tester CA et jet d'attaque sur le Triton concerné).
 
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 

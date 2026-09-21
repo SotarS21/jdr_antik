@@ -2,6 +2,62 @@
 
 ---
 
+## Session du 21 septembre 2026 — Reprise de "Combattant aquatique" (point 71, v0.6.132 → v0.6.133)
+
+Reprise du point laissé en pause vendredi ("on retravaillera le reste lundi"). Deux réponses
+obtenues de l'utilisateur avant de coder :
+- L'onglet Effets du PNJ concerné ne montre l'effet "Combattant aquatique" **qu'une seule
+  fois** — élimine l'hypothèse d'une capacité dupliquée sur son acteur.
+- Le bonus d'attaque doit s'appliquer à **toutes les catégories d'attaque**, pas seulement au
+  corps à corps (`armeBlanche`, ce que ciblait le code jusqu'ici) — confirme que le "manque de
+  bonus pour toute attaque" qu'il observait était (au moins en partie) le comportement voulu
+  qui manquait, pas juste un bug d'affichage.
+
+**Corrigé : portée du bonus.** `packs/capacites-combat.db`/`creatures.db` (+ miroirs JSON) et
+`CAPACITES_BESTIAIRE`/`pack-updates.mjs` : l'effet embarqué de "Combattant aquatique" ne pose
+plus qu'un seul `changes` (`system.attackBonuses.armeBlanche.total` ADD 3) mais un par
+catégorie (`mainNue`, `armeBlanche`, `armeDeJet`, `armeExotique`, `combatDeuxMains`,
+`armeADistance`, chacun ADD 3), le `system.ca.value` ADD 2 restant inchangé. Nouveau correctif
+`PACK_UPDATES` (`0.6.133-aquatic-fighter-all-categories`) pour la copie déjà déployée sur le
+Triton du monde de l'utilisateur (et toute copie sur un jeton non lié).
+
+**Cause probable trouvée pour la CA +4 (au lieu de +2) : jamais expliquée vendredi, la
+réponse "1 fois" ci-dessus écartant la duplication d'effet.** Relecture de `npc-sheet.mjs`/
+`.hbs` : `system.ca.value` et `system.attackBonuses.*.total` sont, pour un PNJ, à la fois
+directement éditables par le MJ (aucun champ "base" séparé, contrairement à la fiche
+Personnage — `ca.total`/`attackBonuses.*.total` y sont entièrement recalculés à chaque
+`prepareDerivedData()`) ET des cibles d'ActiveEffect valides. Les deux inputs concernés
+(`system.ca.value` en onglet Statistiques, `system.attackBonuses.{cat}.total` en onglet
+Combat) affichaient directement `system.ca.value`/`cat.total` — la valeur déjà bonifiée par
+l'effet actif — avec un vrai `name=`, donc réintégrée dans le formulaire (`submitOnChange:
+true`) à **chaque** changement d'un AUTRE champ de la fiche ailleurs. Exactement le même défaut
+que les points 1 (CA Personnage)/35 (PV/PM)/59 (Points de Chance), jamais corrigé pour ces deux
+champs côté PNJ faute de split base/total. Un seul évènement de ce type explique précisément
+"+4 au lieu de +2" (le +2 de l'effet, déjà réintégré une fois comme base, plus le +2 de l'effet
+qui continue de s'appliquer par-dessus).
+
+**Corrigé** (`npc-sheet.mjs`/`.hbs`, même patron que `pvSource`/`pmSource`) : nouveaux
+`context.caSource`/`cat.totalSource` lisant `actor._source.system` — les deux inputs affichent
+désormais la valeur brute, non affectée par un effet actif, empêchant toute réintégration
+future. **Ne corrige pas rétroactivement une valeur déjà faussée dans le monde de
+l'utilisateur** — à vérifier/corriger manuellement une fois le correctif déployé (rouvrir la
+fiche du Triton, comparer la CA affichée à sa valeur de base attendue — 15 au compendium —,
+ajuster si besoin ; le champ est désormais sûr à modifier directement puisqu'il ne se resoumet
+plus tout seul).
+
+Le bonus d'attaque "totalement absent, pour toute attaque" signalé vendredi n'a pas
+d'explication définitive trouvée statiquement (les données source n'ont jamais montré de
+duplication ni d'anomalie) — la nouvelle portée à 6 catégories et la fiche corrigée devraient
+suffire ; **à confirmer par l'utilisateur en jeu** après rechargement complet du monde et
+application du correctif `0.6.133-aquatic-fighter-all-categories`.
+
+**Fichiers modifiés** : `packs/capacites-combat.db`, `packs/creatures.db`,
+`packs/_json-mirrors/{capacites-combat,creatures}.json`, `module/helpers/pack-updates.mjs`,
+`module/sheets/npc-sheet.mjs`, `templates/actor/npc-sheet.hbs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 18 septembre 2026 (suite 2) — Bonus d'attaque par catégorie invisible sur la fiche PNJ (v0.6.131 → v0.6.132)
 
 Retour de test immédiat sur "Combattant aquatique" (point 71) : "combatant aquatique ne semble

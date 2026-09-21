@@ -80,7 +80,7 @@
         <div class="npc-stat-box">
           <label>{{localize "ANTIQUE.Combat.CA"}}</label>
           {{#if isGM}}
-          <input type="number" name="system.ca.value" value="{{system.ca.value}}" class="npc-big-input" />
+          <input type="number" name="system.ca.value" value="{{caSource}}" class="npc-big-input" />
           {{else}}
           <div class="npc-big-input npc-ca-hidden" title="{{localize 'ANTIQUE.Combat.CAHiddenFromPlayers'}}"><i class="fas fa-eye-slash"></i></div>
           {{/if}}
@@ -117,7 +117,7 @@
       <div class="npc-combat-quick">
         <div class="npc-stat-box">
           <label>{{localize "ANTIQUE.Combat.CA"}}</label>
-          <input type="number" data-field="system.ca.value" value="{{system.ca.value}}" class="npc-big-input" />
+          <input type="number" data-field="system.ca.value" value="{{caSource}}" class="npc-big-input" />
         </div>
         <div class="npc-stat-box npc-rollable initiative-roll" title="Lancer l'initiative (1d20 + {{system.initiative.value}})">
           <label><i class="fas fa-dice-d20"></i> {{localize "ANTIQUE.Combat.Initiative"}}</label>
@@ -159,7 +159,7 @@
             {{#each weaponCatsData as |cat key|}}
             <tr>
               <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
-              <td><input type="number" name="system.attackBonuses.{{cat.key}}.total" value="{{cat.total}}" /></td>
+              <td><input type="number" name="system.attackBonuses.{{cat.key}}.total" value="{{cat.totalSource}}" /></td>
             </tr>
             {{/each}}
           </tbody>

@@ -615,6 +615,18 @@ export const PACK_UPDATES = [
       "d'une mécanique abandonnée absente du schéma actuel (sans effet, Foundry l'ignore " +
       "déjà silencieusement — pur nettoyage de données).",
     apply: applyRemoveEphiseBonusSexe
+  },
+  {
+    id: "0.6.133-aquatic-fighter-all-categories",
+    pack: "acteurs",
+    version: "0.6.133",
+    label: "Combattant aquatique — bonus d'attaque étendu à toutes les catégories",
+    description:
+      "Le bonus d'attaque de \"Combattant aquatique\" (Triton) ne visait que les armes de " +
+      "corps à corps (system.attackBonuses.armeBlanche.total) — étendu aux 6 catégories " +
+      "d'attaque (choix confirmé par l'utilisateur : le bonus doit s'appliquer à toute " +
+      "attaque, pas seulement au corps à corps). Le +2 CA n'est pas concerné.",
+    apply: applyFixAquaticFighterScope
   }
 ];
 
@@ -1357,7 +1369,7 @@ const CAPACITES_BESTIAIRE = [
   { id: "aNca000000000013", creature: "Scylla", name: "Attaque éclair", img: "icons/svg/lightning.svg", description: "<p>Ses cous s'allongent à une vitesse fulgurante — la victime n'a droit qu'à un jet de Réflexes pour esquiver.</p>", saveAbility: "reflexes", saveDC: 16, changes: null, transfer: null, effectDesc: null },
   { id: "aNca000000000014", creature: "Charybde", name: "Maelström", img: "icons/svg/hazard.svg", description: "<p>Trois fois par jour, aspire tout dans un rayon de 30m (Navigation diff 22 pour y échapper). Un navire pris dans le tourbillon est détruit en 3 tours.</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
   { id: "aNca000000000015", creature: "Sirène", name: "Chant envoûtant", img: "icons/svg/sound.svg", description: "<p>Échec = la victime est charmée et se dirige vers la Sirène. Portée 200m. Se boucher les oreilles avec de la cire annule l'effet.</p>", saveAbility: "volonte", saveDC: 20, changes: null, transfer: null, effectDesc: null },
-  { id: "aNca000000000016", creature: "Triton", name: "Combattant aquatique", img: "icons/svg/water.svg", description: "<p><strong>+3 à l'attaque et +2 à la CA</strong> (effet ci-dessous, actif en permanence) quand il combat dans l'eau.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }, { key: "system.ca.value", type: "add", value: "2" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps) et +2 à la CA, tant que cet effet est actif." },
+  { id: "aNca000000000016", creature: "Triton", name: "Combattant aquatique", img: "icons/svg/waterfall.svg", description: "<p><strong>+3 à l'attaque et +2 à la CA</strong> (effet ci-dessous, actif en permanence) quand il combat dans l'eau.</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.mainNue.total", type: "add", value: "3" }, { key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }, { key: "system.attackBonuses.armeDeJet.total", type: "add", value: "3" }, { key: "system.attackBonuses.armeExotique.total", type: "add", value: "3" }, { key: "system.attackBonuses.combatDeuxMains.total", type: "add", value: "3" }, { key: "system.attackBonuses.armeADistance.total", type: "add", value: "3" }, { key: "system.ca.value", type: "add", value: "2" }], transfer: true, effectDesc: "+3 à l'attaque (toutes catégories) et +2 à la CA, tant que cet effet est actif." },
   { id: "aNca000000000017", creature: "Centaure guerrier", name: "Charge de cavalerie", img: "icons/svg/sword.svg", description: "<p><strong>+3 à l'attaque</strong> (effet ci-dessous, actif en permanence) et +4 aux dégâts (à ajouter manuellement) en charge directe (5m minimum en ligne droite).</p>", saveAbility: "", saveDC: 0, changes: [{ key: "system.attackBonuses.armeBlanche.total", type: "add", value: "3" }], transfer: true, effectDesc: "+3 à l'attaque (armes de corps à corps), tant que cet effet est actif." },
   { id: "aNca000000000018", creature: "Centaure guerrier", name: "Piétinement", img: "icons/svg/combat.svg", description: "<p>Peut piétiner un adversaire au sol (1d8+4 contondant).</p>", saveAbility: "", saveDC: 0, changes: null, transfer: null, effectDesc: null },
   { id: "aNca000000000019", creature: "Satyre", name: "Musique de Pan", img: "icons/svg/sound.svg", description: "<p>Joue de la flûte (syrinx) : peut charmer, effrayer ou endormir, au choix du MJ.</p>", saveAbility: "volonte", saveDC: 14, changes: null, transfer: null, effectDesc: null },
@@ -3240,6 +3252,95 @@ async function applyFixWaterIcons() {
       const actor = token.actor;
       if (!actor) continue;
       fixed += await fixWaterIconsOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+const AQUATIC_FIGHTER_NAME = "Combattant aquatique";
+// All 6 attack categories (see actor-npc.mjs's attackBonuses schema) — the ability
+// originally only targeted armeBlanche (melee), confirmed too narrow by the user
+// (2026-09-21): the bonus should apply to every attack, not just melee weapons.
+const AQUATIC_FIGHTER_CATEGORIES = [
+  "mainNue", "armeBlanche", "armeDeJet", "armeExotique", "combatDeuxMains", "armeADistance"
+];
+
+function buildAquaticFighterChanges() {
+  const changes = AQUATIC_FIGHTER_CATEGORIES.map(cat => (
+    { key: `system.attackBonuses.${cat}.total`, type: "add", value: "3" }
+  ));
+  changes.push({ key: "system.ca.value", type: "add", value: "2" });
+  return changes;
+}
+
+// Same 3-level nesting as fixWaterIconsOnItem/OnActor above: the ability is embedded
+// (as an Item, with its own embedded effect) on every copy of the Triton.
+async function fixAquaticFighterScopeOnItem(item) {
+  if (item.name !== AQUATIC_FIGHTER_NAME) return 0;
+  let fixed = 0;
+  for (const effect of item.effects ?? []) {
+    if (effect.name !== AQUATIC_FIGHTER_NAME) continue;
+    const alreadyAllCategories = AQUATIC_FIGHTER_CATEGORIES.every(cat =>
+      effect.changes.some(c => c.key === `system.attackBonuses.${cat}.total`)
+    );
+    if (alreadyAllCategories) continue;
+    await effect.update({
+      changes: buildAquaticFighterChanges(),
+      description: "+3 à l'attaque (toutes catégories) et +2 à la CA, tant que cet effet est actif."
+    });
+    fixed++;
+  }
+  return fixed;
+}
+
+async function fixAquaticFighterScopeOnActor(actor) {
+  let fixed = 0;
+  for (const item of actor.items ?? []) {
+    fixed += await fixAquaticFighterScopeOnItem(item);
+  }
+  return fixed;
+}
+
+async function applyFixAquaticFighterScope() {
+  let fixed = 0;
+
+  const abilityPack = game.packs.get("antique.capacites-combat");
+  if (abilityPack) {
+    await abilityPack.configure({ locked: false });
+    const index = await abilityPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await abilityPack.getDocument(indexEntry._id);
+      fixed += await fixAquaticFighterScopeOnItem(doc);
+    }
+    await abilityPack.configure({ locked: true });
+  }
+
+  const creaturesPack = game.packs.get("antique.creatures");
+  if (creaturesPack) {
+    await creaturesPack.configure({ locked: false });
+    const index = await creaturesPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await creaturesPack.getDocument(indexEntry._id);
+      fixed += await fixAquaticFighterScopeOnActor(doc);
+    }
+    await creaturesPack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await fixAquaticFighterScopeOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixAquaticFighterScopeOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixAquaticFighterScopeOnActor(actor);
     }
   }
 
