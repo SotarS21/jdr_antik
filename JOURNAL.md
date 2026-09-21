@@ -2,6 +2,55 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 16) — Nouveau compendium "Personnages Joueurs" (point 77, v0.6.147 → v0.6.148)
+
+Demande : "peut tu créer des pj à partir des json qui sont dans
+`C:\projet\VTT_Foundry\projet_antique_system\pj` ajoute les dans le systeme". 7 fichiers
+`fvtt-Actor-*.json` (exports natifs Foundry) : Adresthea, Antalios (38 objets embarqués —
+manifestement le PJ actuellement joué, vu dans les captures d'écran plus tôt cette session),
+Eosyne, Hydriss, Kallisto, Lyra, Xeno.
+
+**Deux points bloquants soulevés avant d'agir** :
+- Chaque fichier référence un portrait/jeton sous `Imagerie/<dossier>/<fichier>` — dossier
+  introuvable nulle part (ni le projet, ni la racine `Data` du serveur Foundry, qui contient
+  pourtant des centaines d'assets d'autres campagnes/systèmes). Utilisateur confirme : icône
+  générique (`icons/svg/mystery-man.svg`) en attendant qu'il fournisse les vraies images.
+- Choix du compendium : `pnj.db` (étiquette déjà "Personnages & PNJ", contient déjà Éphise
+  de type "character" à côté de vrais PNJ) semblait un bon candidat — premier essai fait
+  dans ce pack, mais l'utilisateur a explicitement demandé un compendium séparé après coup
+  ("attention ce ne sont pas des pnj, mais des pj" → "sépare-les dans un compendium
+  dédié"). `pnj.db` restauré à son état d'origine (`git checkout`, aucune commit intermédiaire
+  n'avait eu lieu) ; nouveau pack `personnages` créé à la place.
+
+**Conversion** : chaque export Foundry passé tel quel dans le format plat NDJSON de ce
+projet, avec seulement `_id` (nouveau, préfixe `aPj0`, 16 caractères — leçon du point 75
+appliquée dès le départ : vérifié programmatiquement que chaque id d'acteur ET de chaque
+objet embarqué respecte bien ce format avant tout déploiement), `img`/`prototypeToken.
+texture.src` (icône générique), et `folder` (mis à `null` — l'id de dossier d'origine
+référence un monde qui n'existe pas ici) modifiés. Le reste (caractéristiques, compétences,
+objets embarqués avec leurs propres avantages/désavantages/sorts) conservé intégralement.
+Vérifié au passage : aucun résidu de type `"effect"` invalide (point 76) ni de forme
+d'effet héritée (point 75) dans les objets importés.
+
+**Nouveau pack, cas "structurellement neuf"** (voir mémoire `antique-system-overview`) :
+`packs/personnages.db` (source, committée) + nouvelle entrée dans `system.json` — Foundry
+crée le dossier LevelDB vide au premier chargement suivant le déploiement (jamais vu ce nom
+de pack avant), rien ne le peuple tout seul. Correctif `PACK_UPDATES`
+(`0.6.148-create-personnages-pj`) qui lit le miroir JSON (`packs/_json-mirrors/
+personnages.json`, ~130 Ko — trop volumineux pour être dupliqué en littéral JS dans
+`pack-updates.mjs`, d'où la lecture via `fetch()`, même mécanisme que "Écraser mes
+compendiums") et ne crée que les documents absents de l'index — sûr à rejouer si le MJ
+ajoute plus tard son propre personnage dans ce même compendium.
+
+**À exécuter par l'utilisateur** : recharger le monde une première fois (le pack vide doit
+apparaître), puis cocher le correctif dans l'écran de mise à jour (MJ).
+
+**Fichiers modifiés** : `packs/personnages.db` (nouveau), `packs/_json-mirrors/
+personnages.json` (nouveau), `system.json`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 15) — Vrai bug de code : "icon" n'est pas un champ ActiveEffect (v0.6.146 → v0.6.147)
 
 0.6.145 confirmé fonctionnel ("ça marche, effet visible sur les deux sorts"), mais nouveau

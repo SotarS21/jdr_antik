@@ -2,7 +2,7 @@
   "id": "antique",
   "title": "Antique",
   "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.147",
+  "version": "0.6.148",
   "compatibility": {
     "minimum": "12",
     "verified": "14"
@@ -105,6 +105,12 @@
       "name": "pnj",
       "label": "Personnages & PNJ",
       "path": "packs/pnj.db",
+      "type": "Actor"
+    },
+    {
+      "name": "personnages",
+      "label": "Personnages Joueurs",
+      "path": "packs/personnages.db",
       "type": "Actor"
     },
     {

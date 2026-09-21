@@ -4,6 +4,31 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 77. Compendium dédié "Personnages Joueurs" — EN ATTENTE (21 septembre 2026, v0.6.148)
+
+Demande : "peut tu créer des pj à partir des json qui sont dans [...]\pj, ajoute les dans le
+systeme". 7 fichiers d'export Foundry (Adresthea, Antalios, Eosyne, Hydriss, Kallisto, Lyra,
+Xeno), avec leurs traits/sorts/équipement déjà embarqués (jusqu'à 38 objets pour Antalios).
+
+Deux clarifications avec l'utilisateur avant d'agir :
+- Les portraits/jetons référencent un dossier `Imagerie/...` introuvable sur cette
+  installation (ni dans le projet, ni dans le dossier `Data` du serveur Foundry) — remplacés
+  par une icône générique (`icons/svg/mystery-man.svg`) à la demande explicite de
+  l'utilisateur, en attendant qu'il fournisse les vraies images.
+- Ajoutés dans un **compendium dédié** ("Personnages Joueurs", `packs/personnages.db`,
+  nouveau dans `system.json`) plutôt que dans le compendium existant "Personnages & PNJ"
+  (`pnj.db`, qui mélangeait déjà PJ et PNJ pour Éphise) — l'utilisateur a explicitement
+  demandé la séparation après un premier essai dans `pnj.db`.
+
+Nouveau compendium pack (cas "structurellement neuf", voir mémoire
+`antique-system-overview`) : Foundry crée le dossier LevelDB vide au premier chargement
+après déploiement (pack déclaré dans `system.json`, jamais chargé avant) ; nouveau correctif
+`PACK_UPDATES` (`0.6.148-create-personnages-pj`) qui le peuple en lisant le miroir JSON
+(`packs/_json-mirrors/personnages.json`) — ne crée que ce qui manque encore à l'index,
+jamais un doublon si un MJ ajoute son propre personnage dans ce même compendium par la
+suite. **À exécuter par l'utilisateur** : recharger le monde une première fois (pour que
+Foundry crée le dossier vide), puis cocher le correctif dans l'écran de mise à jour (MJ).
+
 ## 76. ~~Résidus d'objets de type "effect" — erreur de chargement systématique~~ — CORRIGÉ (21 septembre 2026, v0.6.142)
 
 Trouvé en essayant d'appliquer le correctif du point 75 : l'utilisateur ne pouvait plus

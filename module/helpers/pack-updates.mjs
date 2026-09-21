@@ -846,6 +846,24 @@ export const PACK_UPDATES = [
       "Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés, Peau d'écorce, Rage " +
       "Incontrôlable, Peau de Fer).",
     apply: applyFixDynamicBuffIcons
+  },
+  {
+    id: "0.6.148-create-personnages-pj",
+    pack: "personnages",
+    version: "0.6.148",
+    label: "7 personnages joueurs (compendium dédié \"Personnages Joueurs\")",
+    description:
+      "Ajoute Adresthea, Antalios, Eosyne, Hydriss, Kallisto, Lyra et Xeno — fournis par " +
+      "l'utilisateur sous forme d'exports Foundry (JSON), importés dans un nouveau " +
+      "compendium dédié \"Personnages Joueurs\" (distinct de \"Personnages & PNJ\", à la " +
+      "demande explicite de l'utilisateur). Portraits/jetons temporairement remplacés par " +
+      "une icône générique (icons/svg/mystery-man.svg) — les fichiers originaux " +
+      "référençaient un dossier \"Imagerie/...\" introuvable sur cette installation. " +
+      "Compendium neuf : Foundry crée un dossier LevelDB vide au prochain chargement " +
+      "(déclaré dans system.json), ce correctif le peuple depuis le miroir JSON — ne crée " +
+      "que ce qui manque encore, sûr à rejouer si un MJ ajoute son propre 8e personnage " +
+      "dans ce même compendium par la suite.",
+    apply: applyCreatePersonnagesPJ
   }
 ];
 
@@ -4530,6 +4548,34 @@ async function applyFixDynamicBuffIcons() {
   }
 
   return fixed;
+}
+
+// Brand-new pack case (see antique-system-overview memory): a pack just added to
+// system.json's manifest gets an empty LevelDB folder auto-created by Foundry on next
+// load, but nothing ever populates it just from packs/personnages.db existing as a build
+// source — that file is only ever read by this project's own Node tooling, never by
+// Foundry directly. Fetches the JSON mirror (same mechanism as "Écraser mes compendiums",
+// version-check.mjs's overwriteSystemCompendiums()) rather than embedding ~130KB of actor
+// data as a JS literal here, and only creates whatever the pack's index doesn't already
+// have (idempotent, safe to rerun — e.g. after a GM added their own 8th character to this
+// same pack by hand, re-running this must never touch or duplicate that one).
+async function applyCreatePersonnagesPJ() {
+  const pack = game.packs.get("antique.personnages");
+  if (!pack) return 0;
+
+  const response = await fetch("systems/antique/packs/_json-mirrors/personnages.json");
+  if (!response.ok) throw new Error(`Impossible de lire le miroir personnages.json (HTTP ${response.status})`);
+  const text = await response.text();
+  const entries = text.split("\n").map(line => line.trim()).filter(Boolean).map(line => JSON.parse(line));
+
+  const existingIds = new Set((await pack.getIndex()).map(entry => entry._id));
+  const missing = entries.filter(entry => !existingIds.has(entry._id));
+  if (!missing.length) return 0;
+
+  await pack.configure({ locked: false });
+  await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  await pack.configure({ locked: true });
+  return missing.length;
 }
 
 const SETTING_KEY = "appliedPackFixes";

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.148": {
+    title: "Version 0.6.148 — Nouveau compendium \"Personnages Joueurs\"",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : nouveau compendium "Personnages Joueurs" avec 7 personnages (Adresthea, Antalios, Eosyne, Hydriss, Kallisto, Lyra, Xeno), distinct du compendium "Personnages & PNJ". Portraits/jetons en icône générique temporaire, à remplacer manuellement.</li>
+      </ul>`
+  },
   "0.6.147": {
     title: "Version 0.6.147 — CRITIQUE : les buffs de sort créés en jeu gardaient une icône générique",
     html: `
