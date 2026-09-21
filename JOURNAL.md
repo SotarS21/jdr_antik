@@ -38,6 +38,8 @@ code/affichage, prend effet au rechargement).
 `css/antique.css`, `lang/fr.json`, `lang/en.json`, `module/helpers/release-notes.mjs`,
 `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
 
+**Confirmé par l'utilisateur en jeu** : "c'est bon, ça marche maintenant". Point 71 clos.
+
 ---
 
 ## Session du 21 septembre 2026 (suite 2) — Vraie cause du doublon trouvée (v0.6.134 → v0.6.135)

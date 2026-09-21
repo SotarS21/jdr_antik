@@ -4,7 +4,7 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
-## 71. ~~Audit complet du code (cohérence + fonctionnement)~~ — CORRIGÉ (18 septembre 2026, v0.6.131)
+## 71. ~~Audit complet du code (cohérence + fonctionnement)~~ — CORRIGÉ (21 septembre 2026, v0.6.136, confirmé en jeu)
 
 Demande : "fait un audit de tout le code pour verrifier que tout est cohérent et fonctionel",
 avec mot-clé "ultracode" (autorise l'orchestration multi-agents). Workflow à 12 agents (un par
@@ -147,6 +147,9 @@ preuve visuelle. **Corrigé (v0.6.136)** : petit indicateur "(valeur effective)"
 des champs CA et bonus d'attaque, affiché seulement quand elle diffère de la base — pur
 changement d'affichage, aucun correctif de compendium à cocher. **À confirmer par
 l'utilisateur en jeu** (la CA devrait afficher "15 (17)" tant que l'effet est actif).
+
+**Confirmé par l'utilisateur en jeu (21 septembre 2026, v0.6.136)** : "c'est bon, ça marche
+maintenant". Point 71 clos.
 
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 
