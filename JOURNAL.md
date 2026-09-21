@@ -2,6 +2,48 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 8) — Vraies images fournies par l'utilisateur pour 65 avantages (v0.6.139 → v0.6.140)
+
+Suite immédiate du point 74 : "j'ai ajouté des icônes pour les avantages, peux-tu les
+prendre en compte ?" — l'utilisateur avait déposé 94 fichiers dans `img/aventage/` (un par
+avantage). Correspondance automatique par nom normalisé (accents/casse/apostrophes ignorés,
+préfixe de coût `(-N)` retiré) : 83/94 directs, 11 résolus à la main (coquilles de
+frappe dans les noms de fichier : pluriels, "talen"/"eteincelle"/"démététer"...), 3
+supplémentaires pour la série "Faveur"/"Faveur +"/"Faveur ++" une fois la fonction de
+normalisation corrigée pour ne plus effacer le signe "+" (bug qui aurait fait pointer les 3
+paliers vers le même fichier). **94/94 appariés, aucun fichier laissé de côté.**
+
+**Revue de droits d'auteur avant intégration** — même discipline que le point 47 (images
+d'armes), où 16/74 images fournies s'étaient révélées protégées. Un premier survol manuel de
+5 fichiers a déjà trouvé 3 filigranes visibles (yodibujo.com, Dreamstime, un filigrane en
+mosaïque) sur seulement 5 échantillons — taux d'alerte bien plus élevé que le point 47, donc
+revue complète (pas un simple sondage) déléguée à un agent (lecture visuelle une par une des
+94 fichiers). Résultat : **65 propres, 29 exclues** (22 avec un filigrane de banque d'images
+identifiable — Dreamstime, Shutterstock, Adobe Stock, Alamy, jedessine.com, yodibujo.com — 7
+fichiers corrompus/illisibles, probablement une erreur de téléchargement).
+
+Appliqué : les 65 images propres remplacent l'icône générique posée au point 74 (table
+`TRAIT_ICONS`, `module/helpers/pack-updates.mjs`, mise à jour par script plutôt qu'à la main
+vu le volume) — icône de l'avantage ET de son propre effet embarqué, même patron que
+partout ailleurs cette session. Nouveau correctif `PACK_UPDATES`
+(`0.6.140-advantage-real-images`) qui réutilise `applyFixTraitIcons()` sans code
+supplémentaire (mécanisme déjà générique par nom). Les 29 avantages exclus gardent leur
+icône Foundry générique du point 74, inchangée.
+
+**Suppression des 29 fichiers exclus, demandée explicitement par l'utilisateur** ("ne prend
+pas ceux qui ont un filigrane et supprime les du dépôt") : supprimés du disque
+(`img/aventage/`) — jamais commités au préalable (fichiers non suivis par git), donc aucune
+perte d'historique.
+
+**Fichiers modifiés** : `packs/avantages.db`, `packs/_json-mirrors/*.json`,
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`, ce journal, + 65 nouveaux fichiers `img/aventage/*.{jpg,png}`.
+
+**À exécuter par l'utilisateur** : cocher les correctifs `0.6.139`/`0.6.140` dans l'écran de
+mise à jour (MJ).
+
+---
+
 ## Session du 21 septembre 2026 (suite 7) — Icônes distinctes pour avantages/désavantages/bénédictions (point 74, v0.6.138 → v0.6.139)
 
 Point 73 (dossiers en double du compendium Armes) **confirmé par l'utilisateur en jeu** dans

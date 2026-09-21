@@ -69,8 +69,19 @@ Corrigé à la source (`packs/avantages.db`, `packs/desavantages.db`,
 `TRAIT_ICONS` par nom, plus robuste qu'un id puisqu'un objet glissé sur une fiche depuis le
 compendium change généralement d'`_id`) qui réaligne toute copie déjà déployée (compendium,
 objets/acteurs du monde, jetons non liés). Voir `JOURNAL.md`, session du 21 septembre 2026,
-pour le détail dieu-par-dieu. **À exécuter par l'utilisateur** : cocher le correctif dans
-l'écran de mise à jour (MJ).
+pour le détail dieu-par-dieu.
+
+**Suite (21 septembre 2026, v0.6.140)** : l'utilisateur a fourni ses propres images pour les
+94 avantages (`img/aventage/`). Revue systématique déléguée à un agent (lecture visuelle de
+chacune des 94, une par une) — **29 exclues** : 22 avec un filigrane visible d'une banque
+d'images (Dreamstime, Shutterstock, Adobe Stock, Alamy, jedessine.com, yodibujo.com — même
+défaut que 16/74 images d'armes au point 47), 7 fichiers corrompus/illisibles. Les 65
+restantes correspondent (nom normalisé, quelques coquilles résolues à la main) à leur
+avantage et sont intégrées (`TRAIT_ICONS`, correctif `0.6.140-advantage-real-images`) ; les
+29 exclues gardent l'icône générique du point 74. **Les 29 fichiers exclus ont été supprimés
+du dépôt** (demande explicite de l'utilisateur) — jamais commités, uniquement locaux avant
+suppression. **À exécuter par l'utilisateur** : cocher les correctifs `0.6.139`/`0.6.140`
+dans l'écran de mise à jour (MJ).
 
 ## 72. ~~Icône d'un effet toujours identique à celle de son objet parent~~ — CORRIGÉ (21 septembre 2026, v0.6.137)
 

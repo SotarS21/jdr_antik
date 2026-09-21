@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.140": {
+    title: "Version 0.6.140 — Vraies images pour 65 avantages",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : 65 avantages ont désormais une vraie image (fournie par l'utilisateur) au lieu d'une icône générique.</li>
+        <li><strong>Exclu volontairement</strong> : 29 des 94 images fournies (7 fichiers corrompus, 22 avec un filigrane visible de banque d'images — Dreamstime, Shutterstock, Adobe Stock, Alamy, jedessine.com, yodibujo.com) — ces avantages gardent leur icône générique.</li>
+      </ul>`
+  },
   "0.6.139": {
     title: "Version 0.6.139 — Icônes distinctes pour avantages, désavantages et bénédictions",
     html: `
