@@ -2,6 +2,39 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite) — "Combattant aquatique" en double + remise à zéro (v0.6.133 → v0.6.134)
+
+Retour de test immédiat sur le correctif précédent : "ça ne fonctionne pas du tout" + "dans
+les effets actifs, Combattant aquatique est présent mais en double" — contredit la réponse
+"1 fois" obtenue avant de coder (voir session précédente ci-dessous). Les données source
+(compendium) restent vérifiées à une seule copie de l'effet — la duplication vient donc de
+l'état déjà présent sur l'acteur/le monde de l'utilisateur, pas des données livrées.
+
+**Corrigé** (`applyFixAquaticFighterDuplicates()`, `module/helpers/pack-updates.mjs`), nouveau
+correctif `PACK_UPDATES` (`0.6.134-aquatic-fighter-duplicates-and-reset`), sans savoir
+laquelle des deux causes possibles s'est produite — traite les deux :
+- Si l'objet capacité "Combattant aquatique" lui-même existe en double sur un acteur (chaque
+  copie transférant son propre effet, doublant le bonus), les copies en trop sont supprimées
+  (une seule conservée).
+- Si un effet "Combattant aquatique" existe directement sur l'acteur, hors de l'objet capacité
+  (ne devrait jamais arriver — cette capacité n'existe légitimement que via l'effet transféré
+  de l'objet), il est supprimé sans condition.
+- La CA et les bonus d'attaque par catégorie du Triton sont remis de force à leur valeur de
+  base canonique (15 / 0 chacun) via `actor.update()` sur les champs bruts — au cas où le
+  défaut corrigé en 0.6.133 (réintégration d'une valeur déjà bonifiée comme nouvelle base) se
+  serait déjà produit sur cet acteur avant le correctif de fiche. Scope volontairement limité
+  aux acteurs nommés exactement "Triton" (le seul concerné jusqu'ici) pour ne jamais toucher un
+  PNJ personnalisé par erreur.
+
+**À exécuter par l'utilisateur** : cocher le nouveau correctif dans l'écran de mise à jour
+(MJ), recharger complètement le monde, puis revérifier le nombre de copies dans l'onglet Effets
+et la CA/le bonus d'attaque affichés.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 — Reprise de "Combattant aquatique" (point 71, v0.6.132 → v0.6.133)
 
 Reprise du point laissé en pause vendredi ("on retravaillera le reste lundi"). Deux réponses

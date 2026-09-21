@@ -627,6 +627,19 @@ export const PACK_UPDATES = [
       "d'attaque (choix confirmé par l'utilisateur : le bonus doit s'appliquer à toute " +
       "attaque, pas seulement au corps à corps). Le +2 CA n'est pas concerné.",
     apply: applyFixAquaticFighterScope
+  },
+  {
+    id: "0.6.134-aquatic-fighter-duplicates-and-reset",
+    pack: "acteurs",
+    version: "0.6.134",
+    label: "Combattant aquatique en double + remise à zéro de la CA/attaque du Triton",
+    description:
+      "Retire les copies en double de \"Combattant aquatique\" (objet capacité ou effet " +
+      "isolé) trouvées sur un acteur ou jeton du monde, et remet la CA/les bonus d'attaque " +
+      "par catégorie du Triton à leur valeur de base (15 / 0), au cas où un effet actif " +
+      "aurait été réintégré comme valeur brute par l'ancien défaut de la fiche PNJ (voir " +
+      "0.6.133).",
+    apply: applyFixAquaticFighterDuplicates
   }
 ];
 
@@ -3341,6 +3354,87 @@ async function applyFixAquaticFighterScope() {
       const actor = token.actor;
       if (!actor) continue;
       fixed += await fixAquaticFighterScopeOnActor(actor);
+    }
+  }
+
+  return fixed;
+}
+
+// Cleanup for drift found in the user's own world (2026-09-21): "Combattant aquatique"
+// showed up twice in the Effects panel on their Triton, which the source compendium data
+// never had (verified single copy) — either the npcability Item itself got duplicated on
+// that actor (each transferred copy doubling the bonus) at some earlier point, or a stray
+// ActiveEffect was created directly on the actor outside of the Item (this ability should
+// ONLY ever exist via the Item's transferred effect, never as a bare actor-level effect).
+// Also resets the Triton's own base CA/attack-bonus fields back to their canonical values,
+// since the pre-0.6.133 npc-sheet.mjs bug (see that entry) could have permanently baked an
+// already-buffed number in as the new "raw" base on that actor (system.ca.value/
+// attackBonuses.*.total have no separate base/total split for NPCs, unlike the character
+// sheet — see npc-sheet.mjs's caSource/totalSource comment).
+const TRITON_BASE_RESET = {
+  "system.ca.value": 15,
+  ...Object.fromEntries(AQUATIC_FIGHTER_CATEGORIES.map(cat => [`system.attackBonuses.${cat}.total`, 0]))
+};
+
+async function fixAquaticFighterDuplicatesOnActor(actor) {
+  let fixed = 0;
+
+  const abilityItems = actor.items?.filter(i => i.name === AQUATIC_FIGHTER_NAME) ?? [];
+  if (abilityItems.length > 1) {
+    const [, ...extras] = abilityItems;
+    await actor.deleteEmbeddedDocuments("Item", extras.map(i => i.id));
+    fixed += extras.length;
+  }
+
+  // Stray direct effects on the actor itself (not the item's transferred copy) — this
+  // ability has no legitimate reason to exist there, so any found are simply removed.
+  const strayEffects = actor.effects?.filter(e => e.name === AQUATIC_FIGHTER_NAME) ?? [];
+  if (strayEffects.length) {
+    await actor.deleteEmbeddedDocuments("ActiveEffect", strayEffects.map(e => e.id));
+    fixed += strayEffects.length;
+  }
+
+  for (const item of actor.items ?? []) {
+    fixed += await fixAquaticFighterScopeOnItem(item);
+  }
+
+  if (actor.name === "Triton") {
+    const rawSystem = actor._source.system;
+    const needsReset = rawSystem.ca.value !== 15
+      || AQUATIC_FIGHTER_CATEGORIES.some(cat => rawSystem.attackBonuses[cat]?.total !== 0);
+    if (needsReset) {
+      await actor.update(TRITON_BASE_RESET);
+      fixed++;
+    }
+  }
+
+  return fixed;
+}
+
+async function applyFixAquaticFighterDuplicates() {
+  let fixed = 0;
+
+  const creaturesPack = game.packs.get("antique.creatures");
+  if (creaturesPack) {
+    await creaturesPack.configure({ locked: false });
+    const index = await creaturesPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await creaturesPack.getDocument(indexEntry._id);
+      fixed += await fixAquaticFighterDuplicatesOnActor(doc);
+    }
+    await creaturesPack.configure({ locked: true });
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixAquaticFighterDuplicatesOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixAquaticFighterDuplicatesOnActor(actor);
     }
   }
 

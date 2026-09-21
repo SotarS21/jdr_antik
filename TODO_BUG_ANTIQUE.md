@@ -118,9 +118,16 @@ viser **toutes les catégories d'attaque**, pas seulement le corps à corps.
 - Le bonus d'attaque "totalement absent" signalé vendredi n'a pas de cause distincte trouvée
   statiquement — la nouvelle portée + la fiche corrigée devraient suffire.
 
-Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail. **À confirmer par
-l'utilisateur en jeu** (rechargement complet du monde, correctif coché dans l'écran de mise à
-jour MJ, re-tester CA et jet d'attaque sur le Triton concerné).
+Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail.
+
+**Retour de test immédiat — toujours cassé** : "ça ne fonctionne pas du tout" + "Combattant
+aquatique est présent en double dans les effets actifs" (contredit la réponse "1 fois" donnée
+juste avant). Corrigé (v0.6.134, nouveau correctif `PACK_UPDATES`
+`0.6.134-aquatic-fighter-duplicates-and-reset`) : supprime les copies en double (objet
+capacité ou effet isolé) trouvées sur un acteur/jeton du monde, et remet de force la CA/les
+bonus d'attaque du Triton à leur valeur de base (15 / 0). **À confirmer par l'utilisateur en
+jeu** (cocher le correctif, recharger le monde, revérifier le nombre de copies dans l'onglet
+Effets et les valeurs CA/attaque).
 
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 

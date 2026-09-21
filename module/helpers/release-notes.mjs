@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.134": {
+    title: "Version 0.6.134 — Combattant aquatique en double + remise à zéro du Triton",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : "Combattant aquatique" apparaissait en double dans le panneau d'effets sur au moins un Triton du monde (objet capacité ou effet isolé dupliqué) — corrigé, une seule copie conservée avec le bon effet (toutes catégories, voir 0.6.133).</li>
+        <li><strong>Corrigé</strong> : la CA et les bonus d'attaque par catégorie du Triton sont remis à leur valeur de base (15 / 0) au cas où l'ancien défaut de la fiche PNJ (0.6.133) aurait déjà réintégré un effet actif comme valeur brute.</li>
+      </ul>`
+  },
   "0.6.133": {
     title: "Version 0.6.133 — Combattant aquatique sur toutes les catégories + fiabilité de la CA/des bonus d'attaque PNJ",
     html: `
