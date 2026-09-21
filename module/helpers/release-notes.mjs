@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.139": {
+    title: "Version 0.6.139 — Icônes distinctes pour avantages, désavantages et bénédictions",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : chaque avantage et désavantage a désormais sa propre icône (au lieu des 2 icônes génériques partagées par tous), y compris les 60+60 liés à une dévotion (un icône par dieu, cohérent entre bénédiction et malédiction du même dieu). 2 bénédictions ajustées au passage.</li>
+      </ul>`
+  },
   "0.6.138": {
     title: "Version 0.6.138 — Dossiers en double du compendium fusionnés",
     html: `

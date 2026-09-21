@@ -39,6 +39,39 @@ correctif déjà appliqué par certains utilisateurs.
 l'est pas déjà) dans l'écran de mise à jour (MJ), recharger le monde, revérifier le
 compendium Armes.
 
+**Confirmé par l'utilisateur en jeu (21 septembre 2026)** : "le compendium armes, armures &
+bouclier est bien corrigé."
+
+## 74. ~~Icônes distinctes pour avantages, désavantages et bénédictions~~ — CORRIGÉ (21 septembre 2026, v0.6.139)
+
+Demande : "peux-tu trouver des icônes pour les avantages, les désavantages et les
+bénédictions ?"
+
+Audit : `avantages.db`/`desavantages.db` (94/95 items) partageaient chacun seulement 2
+icônes génériques (`upgrade.svg`/`sun.svg` et `downgrade.svg`/`sun.svg`) ; `benedictions.db`
+(12 items) était déjà largement varié (11 icônes distinctes), 1 seule à corriger. Repéré au
+passage : les items partagés `sun.svg` forment en fait deux tables structurellement
+identiques de 60 items chacune (15 dieux olympiens × 4 paliers de dévotion — bénédiction
+dans `avantages.db`, malédiction miroir dans `desavantages.db`).
+
+Recherche déléguée à un agent avec accès à la bibliothèque d'icônes Foundry locale
+(`resources/app/public/icons`, 7104 fichiers) : un icône par dieu (réutilisé sur les 4
+paliers, bénédiction ET malédiction du même dieu) + un icône distinct par avantage/
+désavantage générique. **Chaque chemin revérifié indépendamment par une seconde passe avant
+application** (même discipline que l'historique potion.svg/water.svg/flask.svg) — 0 chemin
+manquant sur 80 candidats distincts. Appliqué : 94 avantages + 95 désavantages + 1
+bénédiction changés (icône de l'objet ET de son propre effet embarqué, cohérent avec le
+point 72), diversité passée de 2→47 icônes (avantages), 2→48 (désavantages), 11→12
+(bénédictions).
+
+Corrigé à la source (`packs/avantages.db`, `packs/desavantages.db`,
+`packs/benedictions.db`) + nouveau correctif `PACK_UPDATES` (`0.6.139-trait-icons`, table
+`TRAIT_ICONS` par nom, plus robuste qu'un id puisqu'un objet glissé sur une fiche depuis le
+compendium change généralement d'`_id`) qui réaligne toute copie déjà déployée (compendium,
+objets/acteurs du monde, jetons non liés). Voir `JOURNAL.md`, session du 21 septembre 2026,
+pour le détail dieu-par-dieu. **À exécuter par l'utilisateur** : cocher le correctif dans
+l'écran de mise à jour (MJ).
+
 ## 72. ~~Icône d'un effet toujours identique à celle de son objet parent~~ — CORRIGÉ (21 septembre 2026, v0.6.137)
 
 Demande : "il faudrait que tous les effets applicables aient la même image que l'objet

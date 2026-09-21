@@ -2,6 +2,55 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 7) — Icônes distinctes pour avantages/désavantages/bénédictions (point 74, v0.6.138 → v0.6.139)
+
+Point 73 (dossiers en double du compendium Armes) **confirmé par l'utilisateur en jeu** dans
+la foulée : "le compendium armes, armures & bouclier est bien corrigé."
+
+Nouvelle demande : "peux-tu trouver des icônes pour les avantages, les désavantages et les
+bénédictions ?" Audit : `avantages.db`/`desavantages.db` (94/95 items chacun) ne partageaient
+que 2 icônes génériques ; `benedictions.db` (12 items) déjà largement varié, 1 seul à revoir
+("Beauté divine", `sun.svg` sans lien thématique). Repéré en creusant : les items `sun.svg`
+forment deux tables structurellement identiques de 60 items — un système de "dévotion" à 15
+dieux olympiens × 4 paliers (`(-1)`/`(-2)`/`(-3)`/`(-5)` bénédiction dans `avantages.db`,
+`(1)`/`(2)`/`(3)`/`(5)` malédiction miroir dans `desavantages.db`, ex. "Colère de Zeus" /
+"Etincelle de Zeus" / "Aura de Zeus" / "Sang de Zeus" côté bénédiction, "Moquerie de Zeus" /
+"Présence de Zeus" / "Syndrome de Zeus" / "Danse de Zeus" côté malédiction).
+
+**Recherche déléguée à un agent** (fork) avec accès à la bibliothèque d'icônes Foundry v14
+locale (`D:\FoundryVTT\Foundry Virtual Tabletop\resources\app\public\icons`, 7104 fichiers,
+trouvée via `resources/app/public/icons` — jamais explorée avant dans ce projet malgré des
+lectures précédentes du code client Foundry) : un icône par dieu (réutilisé sur les 4
+paliers, bénédiction ET malédiction du même dieu — Zeus/éclair, Héra/corbeau, Poséidon/
+vague, Athéna/chouette, Arès/sang, Déméter/blé, Apollon/rayons de lumière, Artémis/arc,
+Héphaïstos/enclume, Aphrodite/cœur, Hermès/bottes ailées, Dionysos/amphore de vin, Hestia/
+flamme, Hécate/clé, Hadès/crâne) + un icône distinct par avantage/désavantage générique (34 +
+35 items).
+
+**Chaque chemin revérifié indépendamment dans cette session avant application** (même
+discipline que l'historique potion.svg/water.svg/flask.svg — jamais faire confiance à un
+chemin d'icône sans le vérifier) : premier essai de vérification à 0/80 dû à un bug de
+chemin Windows (le node de cette machine est le node Windows natif, `path.join` sur un
+chemin façon Git Bash `/d/...` produit un chemin invalide plutôt qu'un chemin `D:\...`) —
+corrigé, 80/80 chemins confirmés présents. Appliqué : 94 avantages + 95 désavantages + 1
+bénédiction changés (icône de l'objet ET de son propre effet embarqué — cohérent avec le
+patron du point 72 de cette même session), diversité passée de 2→47 icônes (avantages), 2→48
+(désavantages), 11→12 (bénédictions).
+
+Corrigé à la source (`packs/avantages.db`, `packs/desavantages.db`, `packs/benedictions.db`)
++ nouveau correctif `PACK_UPDATES` (`0.6.139-trait-icons`, table `TRAIT_ICONS` indexée par
+**nom** plutôt que par `_id` — un objet glissé sur une fiche depuis le compendium change
+généralement d'`_id`, contrairement à son nom) qui réaligne toute copie déjà déployée
+(compendium, objets/acteurs du monde, jetons non liés).
+
+**À exécuter par l'utilisateur** : cocher le correctif dans l'écran de mise à jour (MJ).
+
+**Fichiers modifiés** : `packs/avantages.db`, `packs/desavantages.db`,
+`packs/benedictions.db`, `packs/_json-mirrors/*.json`, `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 6) — Dossiers en double + vraies images sur jeton non lié (point 73, v0.6.137 → v0.6.138)
 
 Signalé avec capture d'écran du compendium natif "Armes, Armures & Boucliers" : dossiers

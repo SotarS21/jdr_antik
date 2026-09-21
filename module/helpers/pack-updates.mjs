@@ -699,6 +699,21 @@ export const PACK_UPDATES = [
       "non lié à sa fiche (même angle mort déjà corrigé ailleurs pour d'autres correctifs, " +
       "ex. 0.6.105/0.6.131). Ajouté.",
     apply: applyWeaponArmorImagesUnlinkedTokens
+  },
+  {
+    id: "0.6.139-trait-icons",
+    pack: "avantages",
+    version: "0.6.139",
+    label: "Icônes distinctes pour les avantages, désavantages et bénédictions",
+    description:
+      "Demande de l'utilisateur. Les avantages/désavantages partageaient tous l'une de 2 " +
+      "icônes génériques (upgrade.svg/downgrade.svg), et les 60 avantages + 60 " +
+      "désavantages liés à une dévotion partageaient tous sun.svg — remplacés par une " +
+      "icône propre par item (un icône par dieu, partagé entre bénédiction et malédiction " +
+      "du même dieu, sur les 4 paliers), toutes vérifiées présentes dans l'installation " +
+      "Foundry locale avant usage. Corrige le compendium et toute copie déjà possédée par " +
+      "un acteur ou un jeton non lié.",
+    apply: applyFixTraitIcons
   }
 ];
 
@@ -3817,6 +3832,280 @@ async function applyDedupePackFolders() {
     fixed += await dedupePackFolders(pack, canonicalFolders);
     await pack.configure({ locked: true });
   }
+  return fixed;
+}
+
+
+// User request (2026-09-21): "peux-tu trouver des icônes pour les avantages, les
+// désavantages et les bénédictions ?" — almost every advantage/disadvantage shared one of
+// only 2 generic icons (icons/svg/upgrade.svg / downgrade.svg), and the 15-god x 4-tier
+// "devotion" subset (60 in each pack) all shared icons/svg/sun.svg. Every path below was
+// verified to exist in the local Foundry v14 install before being committed here (same
+// discipline as the historical potion.svg/water.svg/flask.svg bugs this project keeps
+// re-learning from) — see JOURNAL.md for the full god/theme reasoning. Devotion items for
+// the same god (both the blessing track in avantages.db and the mirrored curse track in
+// desavantages.db) intentionally share one icon per god across all 4 tiers.
+const TRAIT_ICONS = {
+  "(-1) Guerrier Aguerri": "icons/skills/melee/swords-parry-block-blue.webp",
+  "(-1) Sens aiguisé": "icons/magic/perception/eye-ringed-green.webp",
+  "(-1) Equilibre félin": "icons/svg/jump.svg",
+  "(-1) Fetard": "icons/consumables/drinks/alcohol-beer-mug-yellow.webp",
+  "(-1) Bon sens": "icons/magic/perception/third-eye-blue-red.webp",
+  "(-1) Sens artistique": "icons/skills/trades/music-notes-sound-blue.webp",
+  "(-1) Athléte": "icons/skills/movement/figure-running-gray.webp",
+  "(-1) Sang froid": "icons/svg/frozen.svg",
+  "(-1) Commercant": "icons/skills/trades/academics-merchant-scribe.webp",
+  "(-1) Visage passe partout": "icons/svg/mystery-man.svg",
+  "(-1) Peau dense": "icons/svg/shield.svg",
+  "(-1) Mule": "icons/svg/item-bag.svg",
+  "(-1) Vif": "icons/skills/movement/arrow-upward-white.webp",
+  "(-1) Cuir de Hero": "icons/svg/holy-shield.svg",
+  "(-1) Pisteur": "icons/svg/pawprint.svg",
+  "(-1) Sommeil leger": "icons/svg/eye.svg",
+  "(-1) Faveur": "icons/svg/coins.svg",
+  "(-1) Colère de Zeus": "icons/svg/lightning.svg",
+  "(-1) Respect d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(-1) Branchies de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(-1) Protection d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(-1) Rage d'Arès": "icons/svg/blood.svg",
+  "(-1) Cuisine de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(-1) Soin d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(-1) Chasse d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(-1) Connaissance d'Héphaistos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(-1) Beauté d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(-1) Mains d'Hèrmès": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(-1) Ivresse de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(-1) Chaleur d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(-1) Vue d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(-1) Don d'Hadès": "icons/svg/skull.svg",
+  "(-2) Orientation": "icons/svg/direction.svg",
+  "(-2) Porte bouclier": "icons/skills/melee/shield-block-bash-blue.webp",
+  "(-2) Chrono sens": "icons/magic/time/hourglass-brown-orange.webp",
+  "(-2) Don des langues": "icons/skills/trades/academics-study-reading-book.webp",
+  "(-2) Voix enchanteresse": "icons/skills/trades/music-singing-voice-blue.webp",
+  "(-2) Volonté de fer": "icons/svg/mage-shield.svg",
+  "(-2) Ami des animaux": "icons/magic/nature/wolf-paw-glow-green.webp",
+  "(-2) Maitre d'Arme": "icons/skills/melee/maneuver-greatsword-yellow.webp",
+  "(-2) Maitre des forges": "icons/skills/trades/smithing-tongs-metal-red.webp",
+  "(-2) Ambidextrie": "icons/skills/melee/maneuver-daggers-paired-orange.webp",
+  "(-2) Faveur +": "icons/svg/coins.svg",
+  "(-2) Etincelle de Zeus": "icons/svg/lightning.svg",
+  "(-2) Vision d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(-2) Force de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(-2) Voix d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(-2) Corps d'Arès": "icons/svg/blood.svg",
+  "(-2) Moisson de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(-2) Visée d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(-2) Mire d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(-2) Talent d'Héphaistos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(-2) Charme d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(-2) Pieds d'Hermes": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(-2) Talent de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(-2) Flamme d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(-2) Lanterne d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(-2) Casque d'Hadès": "icons/svg/skull.svg",
+  "(-3) Taille imposante": "icons/svg/statue.svg",
+  "(-3) Dieu de l'esquive": "icons/svg/invisible.svg",
+  "(-3) Dieu du stade": "icons/svg/walk.svg",
+  "(-3) Dieu de la guerre": "icons/skills/melee/weapons-crossed-swords-yellow.webp",
+  "(-3) Rageux": "icons/skills/wounds/blood-spurt-spray-red.webp",
+  "(-3) Faveur ++": "icons/svg/coins.svg",
+  "(-3) Aura de Zeus": "icons/svg/lightning.svg",
+  "(-3) Aura d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(-3) Aura de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(-3) Aura d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(-3) Aura d'Arès": "icons/svg/blood.svg",
+  "(-3) Aura de Demeter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(-3) Aura d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(-3) Aura d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(-3) Aura d'Héphaïstos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(-3) Aura d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(-3) Aura d'Hermes": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(-3) Aura de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(-3) Aura d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(-3) Aura d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(-3) Aura d'Hadès": "icons/svg/skull.svg",
+  "(-5) Sang de Zeus": "icons/svg/lightning.svg",
+  "(-5) Faveur de la Dame": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(-5) Paume de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(-5) Esprit d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(-5) Armure d'Arès": "icons/svg/blood.svg",
+  "(-5) Blé de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(-5) Oeil d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(-5) Compagnon d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(-5) Yeux d'Héphaistos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(-5) Murmure d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(-5) Message d'Hermes": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(-5) Amphore de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(-5) Bucher d'Héstia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(-5) Lune d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(-5) Peau d'Hadès": "icons/svg/skull.svg",
+  "(1) Phobie": "icons/svg/terror.svg",
+  "(1) Sens défaïllant": "icons/magic/perception/eye-slit-red-orange.webp",
+  "(1) Dépendance légal": "icons/consumables/drinks/alcohol-jug-spirits-brown.webp",
+  "(1) Marmotte": "icons/magic/nature/moon-crescent.webp",
+  "(1) Cauchemards": "icons/magic/death/undead-ghost-scream-teal.webp",
+  "(1) Coeur sensible": "icons/magic/life/heart-pink.webp",
+  "(1) Sosie": "icons/svg/mystery-man-black.svg",
+  "(1) Dette": "icons/skills/social/trading-injustice-scale-gray.webp",
+  "(1) Frêle": "icons/skills/wounds/bone-broken-marrow-yellow.webp",
+  "(1) Petite nature": "icons/svg/poison.svg",
+  "(1) Enfant": "icons/skills/social/thumbs-down.webp",
+  "(1) Distrait": "icons/magic/perception/eye-slit-pink.webp",
+  "(1) Dépressif": "icons/svg/daze.svg",
+  "(1) Maladroit": "icons/svg/falling.svg",
+  "(1) Superstitieux": "icons/magic/symbols/clover-luck-white-green.webp",
+  "(1) Introverti": "icons/skills/social/wave-halt-stop.webp",
+  "(1) Sinistre": "icons/magic/unholy/silhouette-robe-evil-glow.webp",
+  "(1) Moquerie de Zeus": "icons/svg/lightning.svg",
+  "(1) Paranoïa d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(1) Tempête de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(1) Chouette d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(1) Poigne d'Arès": "icons/svg/blood.svg",
+  "(1) Carence de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(1) Arc d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(1) Proie d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(1) Confiance d'Héphaïstos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(1) Outrage d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(1) Geste d'Hermès": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(1) Coupe de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(1) Destin d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(1) Perte d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(1) Horde d'Hadès": "icons/svg/skull.svg",
+  "(2) Gravement malade": "icons/skills/wounds/illness-disease-glowing-green.webp",
+  "(2) Hostilité animal": "icons/magic/nature/wolf-paw-glow-orange.webp",
+  "(2) Phobie majeur": "icons/magic/death/skull-horned-white-purple.webp",
+  "(2) Loi d'Atrée": "icons/sundries/scrolls/scroll-runed-brown.webp",
+  "(2) Dette +": "icons/skills/social/trading-injustice-scale-gray.webp",
+  "(2) Hanté": "icons/magic/death/undead-ghosts-trio-blue.webp",
+  "(2) Culpabilité écrasante": "icons/magic/holy/prayer-hands-glowing-yellow.webp",
+  "(2) Amnésie": "icons/skills/trades/academics-investigation-puzzles.webp",
+  "(2) Blessure permanente": "icons/skills/wounds/injury-body-pain-gray.webp",
+  "(2) Impétueux": "icons/svg/explosion.svg",
+  "(2) Amoureux transit": "icons/magic/life/heart-broken-red.webp",
+  "(2) Présence de Zeus": "icons/svg/lightning.svg",
+  "(2) Présence d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(2) Présence de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(2) Présence d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(2) Présence d'Arès": "icons/svg/blood.svg",
+  "(2) Présence de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(2) Présence d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(2) Présence d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(2) Présence d'Héphaïstos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(2) Présence d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(2) Présence d'Hermès": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(2) Présence de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(2) Présence d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(2) Présence d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(2) Présence d'Hadès": "icons/svg/skull.svg",
+  "(3) Dépendance illégal": "icons/consumables/drinks/alcohol-spirits-bottle-green.webp",
+  "(3) Tache de naissance": "icons/magic/symbols/circled-gem-pink.webp",
+  "(3) Némésis": "icons/svg/tower-flag.svg",
+  "(3) Recherché": "icons/sundries/documents/document-sealed-red-tan.webp",
+  "(3) Chat Noir": "icons/creatures/mammals/cat-hunched-glowing-red.webp",
+  "(3) Zélé": "icons/svg/temple.svg",
+  "(3) Dette ++": "icons/skills/social/trading-injustice-scale-gray.webp",
+  "(3) Syndrome de Zeus": "icons/svg/lightning.svg",
+  "(3) Jugement d'Héra": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(3) Maladie de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(3) Sens d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(3) Serment d'Arès": "icons/svg/blood.svg",
+  "(3) Pollen de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(3) Diagnostique d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(3) Marche d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(3) Defaut d'Héphaïstos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(3) Ragot d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(3) Lubie d'Hermès": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(3) Insertion de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(3) Honte d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(3) Marque d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(3) Prix d'Hadès": "icons/svg/skull.svg",
+  "(5) Danse de Zeus": "icons/svg/lightning.svg",
+  "(5) Jalousie d'Hera": "icons/creatures/birds/corvid-watchful-glowing-green.webp",
+  "(5) Lignée de Poséidon": "icons/magic/water/wave-water-blue.webp",
+  "(5) Défi d'Athéna": "icons/creatures/birds/raptor-owl-flying-moon.webp",
+  "(5) Fureur d'Arès": "icons/svg/blood.svg",
+  "(5) Tristesse de Déméter": "icons/skills/trades/farming-wheat-circle-yellow.webp",
+  "(5) Maux d'Apollon": "icons/magic/light/beam-rays-yellow.webp",
+  "(5) Chatiment d'Artèmis": "icons/skills/ranged/archery-bow-attack-yellow.webp",
+  "(5) Poursuite d'Héphaïstos": "icons/skills/trades/smithing-anvil-brown.webp",
+  "(5) Déni d'Aphrodite": "icons/magic/life/heart-glowing-red.webp",
+  "(5) Bande d'Hermès": "icons/skills/movement/feet-winged-boots-blue.webp",
+  "(5) Folie de Dionysos": "icons/consumables/drinks/wine-amphora-clay-red.webp",
+  "(5) Déception d'Hestia": "icons/magic/fire/flame-burning-campfire-orange.webp",
+  "(5) Terreur d'Hécate": "icons/sundries/misc/key-ornate-iron-black.webp",
+  "(5) Jugement d'Hadès": "icons/svg/skull.svg",
+  "Faveur d'Athéna": "icons/svg/eye.svg",
+  "Force d'Héraclès": "icons/svg/combat.svg",
+  "Vitesse d'Hermès": "icons/svg/lightning.svg",
+  "Regard d'Apollon": "icons/svg/sun.svg",
+  "Protection de Poséidon": "icons/svg/frozen.svg",
+  "Ruse d'Ulysse": "icons/svg/cowled.svg",
+  "Grâce d'Artémis": "icons/svg/target.svg",
+  "Forge d'Héphaïstos": "icons/svg/clockwork.svg",
+  "Terreur d'Arès": "icons/svg/terror.svg",
+  "Sagesse de Chiron": "icons/svg/book.svg",
+  "Beauté divine": "icons/magic/life/heart-glowing-red.webp",
+  "Corps d'Arès": "icons/svg/fire-shield.svg",
+};
+
+async function applyTraitIconOnItem(item) {
+  const img = TRAIT_ICONS[item.name];
+  if (!img) return 0;
+  let fixed = 0;
+  if (item.img !== img) {
+    await item.update({ img });
+    fixed++;
+  }
+  for (const effect of item.effects ?? []) {
+    if (effect.img !== img) {
+      await effect.update({ img });
+      fixed++;
+    }
+  }
+  return fixed;
+}
+
+async function applyTraitIconOnActor(actor) {
+  let fixed = 0;
+  for (const item of actor.items ?? []) {
+    fixed += await applyTraitIconOnItem(item);
+  }
+  return fixed;
+}
+
+async function applyFixTraitIcons() {
+  let fixed = 0;
+
+  for (const packName of ["avantages", "desavantages", "benedictions"]) {
+    const pack = game.packs.get(`antique.${packName}`);
+    if (!pack) continue;
+    await pack.configure({ locked: false });
+    const index = await pack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await pack.getDocument(indexEntry._id);
+      fixed += await applyTraitIconOnItem(doc);
+    }
+    await pack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await applyTraitIconOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await applyTraitIconOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await applyTraitIconOnActor(actor);
+    }
+  }
+
   return fixed;
 }
 
