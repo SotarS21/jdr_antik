@@ -137,6 +137,17 @@ hypothèses précédentes). Corrigé (v0.6.135, nouveau correctif `PACK_UPDATES`
 compendium et toute copie déjà déployée. **À confirmer par l'utilisateur en jeu** (cocher le
 correctif, recharger, vérifier "EFFETS (1)" sur la capacité, puis re-tester CA et attaque).
 
+**Retour de test — "EFFETS (1)" confirmé, mais "ça ne fonctionne toujours pas"** (capture
+d'écran fournie). En réalité **le mécanisme fonctionne** : la ligne d'arme "Trident" affiche
+ATT BONUS = 12 = 9 (arme) + 3 (effet "Combattant aquatique" sur `armeBlanche`) — preuve que le
+bonus s'applique. Le champ CA affichait 15 (pas 17) uniquement parce que le correctif 0.6.133
+(protection contre la réintégration) l'a rendu volontairement aveugle à la valeur avec effet —
+l'utilisateur regardait exactement le champ que ce correctif a délibérément privé de cette
+preuve visuelle. **Corrigé (v0.6.136)** : petit indicateur "(valeur effective)" ajouté à côté
+des champs CA et bonus d'attaque, affiché seulement quand elle diffère de la base — pur
+changement d'affichage, aucun correctif de compendium à cocher. **À confirmer par
+l'utilisateur en jeu** (la CA devrait afficher "15 (17)" tant que l'effet est actif).
+
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 
 Cause : les inputs "Temp" (CA + Sauvegardes) affichaient la valeur déjà modifiée par un ActiveEffect

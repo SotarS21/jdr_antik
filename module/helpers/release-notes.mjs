@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.136": {
+    title: "Version 0.6.136 — La CA/le bonus d'attaque du PNJ affichent aussi la valeur effective",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : depuis 0.6.133, les champs CA et bonus d'attaque par catégorie de la fiche PNJ affichaient volontairement la valeur de base (pour éviter le bug de réintégration) — mais ça masquait aussi la preuve qu'un effet actif ("Combattant aquatique" par exemple) fonctionne réellement. Un petit indicateur entre parenthèses affiche désormais la valeur effective (avec les effets actifs) à côté du champ, quand elle diffère de la base.</li>
+      </ul>`
+  },
   "0.6.135": {
     title: "Version 0.6.135 — Combattant aquatique : vraie cause du doublon trouvée",
     html: `

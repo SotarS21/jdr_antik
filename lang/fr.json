@@ -118,6 +118,7 @@
 
   "ANTIQUE.Combat.CA": "Classe d'armure",
   "ANTIQUE.Combat.CAHiddenFromPlayers": "Classe d'armure masquée aux joueurs",
+  "ANTIQUE.Combat.EffectiveValueHint": "Valeur effective avec les effets actifs (ce champ n'affiche et ne modifie que la valeur de base)",
   "ANTIQUE.Combat.CABase": "Base",
   "ANTIQUE.Combat.Armure": "Armure",
   "ANTIQUE.Combat.Bouclier": "Bouclier",

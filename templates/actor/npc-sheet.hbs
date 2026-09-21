@@ -81,6 +81,9 @@
           <label>{{localize "ANTIQUE.Combat.CA"}}</label>
           {{#if isGM}}
           <input type="number" name="system.ca.value" value="{{caSource}}" class="npc-big-input" />
+          {{#ifEquals caSource system.ca.value}}{{else}}
+          <span class="npc-stat-effective" title="{{localize 'ANTIQUE.Combat.EffectiveValueHint'}}">({{system.ca.value}})</span>
+          {{/ifEquals}}
           {{else}}
           <div class="npc-big-input npc-ca-hidden" title="{{localize 'ANTIQUE.Combat.CAHiddenFromPlayers'}}"><i class="fas fa-eye-slash"></i></div>
           {{/if}}
@@ -118,6 +121,9 @@
         <div class="npc-stat-box">
           <label>{{localize "ANTIQUE.Combat.CA"}}</label>
           <input type="number" data-field="system.ca.value" value="{{caSource}}" class="npc-big-input" />
+          {{#ifEquals caSource system.ca.value}}{{else}}
+          <span class="npc-stat-effective" title="{{localize 'ANTIQUE.Combat.EffectiveValueHint'}}">({{system.ca.value}})</span>
+          {{/ifEquals}}
         </div>
         <div class="npc-stat-box npc-rollable initiative-roll" title="Lancer l'initiative (1d20 + {{system.initiative.value}})">
           <label><i class="fas fa-dice-d20"></i> {{localize "ANTIQUE.Combat.Initiative"}}</label>
@@ -159,7 +165,12 @@
             {{#each weaponCatsData as |cat key|}}
             <tr>
               <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
-              <td><input type="number" name="system.attackBonuses.{{cat.key}}.total" value="{{cat.totalSource}}" /></td>
+              <td>
+                <input type="number" name="system.attackBonuses.{{cat.key}}.total" value="{{cat.totalSource}}" />
+                {{#ifEquals cat.totalSource cat.total}}{{else}}
+                <span class="npc-stat-effective" title="{{localize 'ANTIQUE.Combat.EffectiveValueHint'}}">({{cat.total}})</span>
+                {{/ifEquals}}
+              </td>
             </tr>
             {{/each}}
           </tbody>

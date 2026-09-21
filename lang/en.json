@@ -118,6 +118,7 @@
 
   "ANTIQUE.Combat.CA": "Armor Class",
   "ANTIQUE.Combat.CAHiddenFromPlayers": "Armor Class hidden from players",
+  "ANTIQUE.Combat.EffectiveValueHint": "Effective value with active effects (this field only shows and edits the base value)",
   "ANTIQUE.Combat.CABase": "Base",
   "ANTIQUE.Combat.Armure": "Armor",
   "ANTIQUE.Combat.Bouclier": "Shield",

@@ -2,6 +2,44 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 3) — Le mécanisme fonctionnait déjà, seul l'affichage cachait la preuve (v0.6.135 → v0.6.136)
+
+Retour de test sur 0.6.135 : "non ça ne fonctionne pas", capture d'écran de la fiche complète
+du Triton (onglet Combat) avec la fiche de la capacité ouverte en superposition, confirmant
+"EFFETS (1)" (le dédoublonnage a bien fonctionné) mais la CA affichée reste à 15 (pas 17).
+
+**Analyse de la capture** : la ligne d'arme "Trident" affiche **ATT BONUS = 12**. Le Trident a
+`attBonus: 9` (donnée fixe de la créature) — 9 + 3 (le bonus de "Combattant aquatique" sur
+`armeBlanche`) = **12, exactement la valeur affichée**. Cette colonne lit la valeur *dérivée*
+de `system.attackBonuses` (post-effets), pas la source brute — la preuve que le bonus d'attaque
+s'applique bel et bien, malgré ce que suggérait le rapport de l'utilisateur.
+
+**Cause de la confusion, pas un bug du mécanisme** : le correctif 0.6.133
+(`caSource`/`totalSource`, pour éviter que la valeur déjà bonifiée soit réintégrée comme base)
+a pour effet secondaire de masquer complètement, dans les champs CA et bonus d'attaque par
+catégorie, toute preuve visuelle qu'un effet actif s'applique — ils affichent désormais
+volontairement la base, jamais la valeur avec effet. L'utilisateur regardait exactement le
+champ que ce correctif a rendu volontairement "aveugle" aux effets pour tester si l'effet
+fonctionnait — ce qui ne pouvait que donner l'impression que rien n'avait changé, même quand
+tout fonctionne (comme le confirme le calcul du Trident ci-dessus).
+
+**Corrigé** (`npc-sheet.mjs`/`.hbs`/`antique.css`/`lang/*.json`) : un petit indicateur entre
+parenthèses, à côté de chaque champ CA et bonus d'attaque par catégorie, affiche désormais la
+valeur *effective* (avec les effets actifs) quand elle diffère de la base — utilise le helper
+Handlebars `ifEquals` déjà existant. Le champ lui-même reste sur la base (toujours sûr à
+modifier directement).
+
+**À confirmer par l'utilisateur en jeu** : la CA devrait maintenant afficher "15 (17)" et les
+bonus d'attaque "0 (3)" sur les catégories concernées, tant que "Combattant aquatique" est
+actif — sans avoir besoin de recocher de nouveau correctif de compendium (pur changement de
+code/affichage, prend effet au rechargement).
+
+**Fichiers modifiés** : `module/sheets/npc-sheet.mjs`, `templates/actor/npc-sheet.hbs`,
+`css/antique.css`, `lang/fr.json`, `lang/en.json`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 2) — Vraie cause du doublon trouvée (v0.6.134 → v0.6.135)
 
 Retour de test immédiat sur 0.6.134 : "ça ne change rien", avec une capture d'écran de la

@@ -2398,6 +2398,13 @@
   border-radius: 4px;
 }
 
+.antique.npc .npc-stat-effective {
+  font-size: 0.75em;
+  color: var(--antique-brown);
+  font-style: italic;
+  margin-top: 2px;
+}
+
 .antique.npc .npc-description {
   margin-top: 8px;
   /* Only actually stretches inside a flex-column parent (the Stats tab, see
