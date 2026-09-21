@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.143": {
+    title: "Version 0.6.143 — CRITIQUE : le correctif 0.6.141 vidait les effets au lieu de les réparer",
+    html: `
+      <ul>
+        <li><strong>Corrigé (critique)</strong> : le correctif 0.6.141 (format hérité des effets) a été confirmé bogué — au lieu de réparer les 64 effets concernés, il les vidait complètement sur une copie déjà déployée. Réparé dans l'immédiat via "Écraser mes compendiums" ; ce nouveau correctif reprend le même travail avec un mécanisme plus sûr (suppression puis recréation de l'effet, jamais une mise à jour partielle).</li>
+      </ul>`
+  },
   "0.6.142": {
     title: "Version 0.6.142 — Nettoyage des résidus d'objets invalides",
     html: `

@@ -2,6 +2,44 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 11) — Le correctif 0.6.141 vidait les effets au lieu de les réparer (v0.6.142 → v0.6.143)
+
+Après avoir débloqué le chargement (point 76), retour de test : "c'est super, mais ça n'a
+pas corrigé mon problème avec les effets qui ont disparu sur les sorts et les rituels".
+Diagnostic demandé via une macro read-only sur "Bénédiction des Titans" dans le compendium
+`sorts` : `"effects":[]` — **complètement vide**, alors que le correctif `0.6.141` avait été
+appliqué avec succès annoncé ("1 correctif(s) appliqué(s)", aucune erreur console au moment
+de l'application).
+
+**Cause probable** : `applyFixLegacyEffectShape()` (v1) appelait `effect.update({type:
+"base", "system.changes": [...], "-=changes": null, "-=icon": null, ...})` en un seul appel
+— changement de `"type"` ET champ `"system"` imbriqué dans la même mise à jour. Sans lever
+d'erreur, Foundry a fini par vider l'effet plutôt que le corriger. Aucune preuve directe de
+l'ordre d'opérations exact côté client (pas d'accès navigateur pour tracer pas à pas), mais
+le résultat empirique — un correctif qui "réussit" sans erreur tout en vidant sa cible — est
+sans ambiguïté sur ce qu'il fallait changer : ne plus jamais mélanger un changement de type
+et une mise à jour de champ imbriqué dans le même `update()`.
+
+**Réparation immédiate** : "Écraser mes compendiums" (remplace le document entier à partir
+du miroir JSON déjà corrigé — un simple `existing.update(data)` avec la totalité de l'objet,
+y compris son tableau `effects` complet, sans passer par un `update()` partiel sur un effet
+individuel) — recommandé à l'utilisateur pour restaurer l'état déjà correct.
+
+**Corrigé en profondeur** (`fixLegacyEffectShapeOnItem()` réécrite) : supprime l'effet mal
+formé (`item.deleteEmbeddedDocuments`) puis en recrée un tout neuf avec le bon contenu
+(`item.createEmbeddedDocuments(..., {keepId: true})`) — jamais de mise à jour partielle sur
+un document existant quand la forme change. Nouveau correctif `PACK_UPDATES`
+(`0.6.143-legacy-effect-shape-v2`, id neuf — `0.6.141` reste marquée cochée chez
+l'utilisateur, ne serait pas réappliquée sous son ancien id) réutilisant cette version
+corrigée. `0.6.141` reste dans la liste, description mise à jour pour documenter le bug.
+
+**À exécuter par l'utilisateur** : cocher `0.6.143`, recharger, re-tester.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 10) — Résidus d'objets de type "effect" bloquant le chargement (point 76, v0.6.141 → v0.6.142)
 
 En essayant d'appliquer le correctif du point 75, l'utilisateur signale ne plus pouvoir

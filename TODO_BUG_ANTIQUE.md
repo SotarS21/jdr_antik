@@ -60,11 +60,21 @@ Corrigé à la source (`packs/avantages.db`, `packs/benedictions.db`,
 `packs/desavantages.db`, `packs/equipement.db`, `packs/pnj.db`, `packs/sorts.db`) + nouveau
 correctif `PACK_UPDATES` (`0.6.141-legacy-effect-shape`) qui réaligne toute copie déjà
 déployée — supprime explicitement les deux champs hérités (`-=changes`/`-=icon`) pour ne pas
-laisser la migration native de Foundry les réappliquer au prochain chargement. Voir
-`JOURNAL.md`, session du 21 septembre 2026, pour le détail technique complet. **À exécuter
-par l'utilisateur** : cocher le correctif (marqué critique) dans l'écran de mise à jour (MJ),
-recharger le monde, re-tester Bénédiction des Titans/Danse du Serpent (bouton "Appliquer
-l'effet" doit réapparaître) et vérifier que le bonus de CA d'une armure s'applique bien.
+laisser la migration native de Foundry les réappliquer au prochain chargement.
+
+**Retour de test — le correctif 0.6.141 a empiré les choses au lieu de les réparer** :
+"Bénédiction des Titans" affichait `effects: []` (complètement vide) après application,
+confirmé par une macro de diagnostic. Cause probable : combiner un changement de `"type"`
+et un champ `"system"` imbriqué dans le même appel `effect.update()` a un effet de bord non
+documenté chez Foundry (aucune erreur levée, mais l'effet finit vide). Réparé dans
+l'immédiat via **"Écraser mes compendiums"** (remplace le document entier depuis le miroir
+déjà correct). **Corrigé en v0.6.143** (nouveau correctif `0.6.143-legacy-effect-shape-v2`,
+id neuf puisque `0.6.141` reste cochée chez l'utilisateur) : supprime l'effet mal formé puis
+en recrée un neuf (`keepId`) au lieu d'une mise à jour partielle — jamais les deux
+opérations dans le même appel. Voir `JOURNAL.md`, session du 21 septembre 2026, pour le
+détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.143` dans l'écran
+de mise à jour (MJ), recharger, re-tester Bénédiction des Titans/Danse du Serpent (effet
+présent ET bouton "Appliquer l'effet") et le bonus de CA d'une armure.
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 
