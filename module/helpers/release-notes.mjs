@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.146": {
+    title: "Version 0.6.146 — Collision de noms résolue (Beauté divine / Corps d'Arès)",
+    html: `
+      <ul>
+        <li><strong>Corrigé (critique)</strong> : le correctif précédent (0.6.145) échouait avec "The _id [...] already exists" — "Beauté divine" et "Corps d'Arès" existent à la fois comme bénédiction et, séparément, embarqués sur Éphise, et une correspondance par nom seul appliquait par erreur l'effet d'Éphise sur la bénédiction. Distingué par le nom de l'acteur porteur, doublons résiduels nettoyés automatiquement.</li>
+      </ul>`
+  },
   "0.6.145": {
     title: "Version 0.6.145 — Un id d'effet invalide corrigé (Colère de Zeus)",
     html: `

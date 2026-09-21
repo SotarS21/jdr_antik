@@ -90,10 +90,21 @@ longtemps, sur l'effet secondaire "+3 dégâts" de "Colère de Zeus" (pas Béné
 Titans/Danse du Serpent — ceux-là n'ont pas d'id malformé, ils devraient être réparés).
 Foundry n'interrompt pas tout un `createEmbeddedDocuments()` pour un seul document rejeté,
 il logue juste une erreur pour celui-là. **Corrigé en v0.6.145** (id valide généré, source +
-table de correctifs). Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail
-technique complet. **À exécuter par l'utilisateur** : cocher `0.6.145`, recharger, re-tester
-Bénédiction des Titans/Danse du Serpent (effet présent ET bouton "Appliquer l'effet") et le
-bonus de CA d'une armure.
+table de correctifs).
+
+**0.6.145 a lui aussi échoué** ("The _id [eEph000000000006] already exists within the
+parent collection: Item [aBls000000000011] effects", répété pour plusieurs items) : "Beauté
+divine" et "Corps d'Arès" existent à la fois comme bénédiction à part entière
+(`benedictions.db`) ET, séparément, embarqués sur Éphise (`pnj.db`) avec un id d'effet
+différent — une correspondance par nom d'objet seul appliquait par erreur l'effet d'Éphise
+sur la bénédiction. **Corrigé en v0.6.146** : chaque correctif est maintenant distingué par
+le nom de l'acteur porteur (pas seulement le nom de l'objet), et toute copie en double déjà
+créée par la tentative précédente est nettoyée avant recréation. `0.6.145` étant resté "en
+attente" (jamais marqué appliqué, la tentative ayant échoué), pas besoin de nouvel id — sa
+description a été mise à jour. Voir `JOURNAL.md`, session du 21 septembre 2026, pour le
+détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.145` (contenu
+corrigé), recharger, re-tester Bénédiction des Titans/Danse du Serpent (effet présent ET
+bouton "Appliquer l'effet") et le bonus de CA d'une armure.
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 

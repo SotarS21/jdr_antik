@@ -2,6 +2,53 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 14) — Collision de noms entre bénédictions et objets embarqués sur Éphise (v0.6.145 → v0.6.146)
+
+Retour de test sur 0.6.145 :
+```
+Error: The _id [eEph000000000006] already exists within the parent collection: Item [aBls000000000011] effects
+Error: The _id [eEph000000000007] already exists within the parent collection: Item [aBls000000000012] effects
+Error: The _id [eEph000000000006] already exists within the parent collection: Item [iEph000000000015] effects
+Antique – 0 correctif(s) appliqué(s), 1 échec(s) (voir console).
+```
+
+**Diagnostic** : `LEGACY_EFFECT_SHAPE_FIXES` contenait deux entrées nommées "Beauté divine"
+et deux nommées "Corps d'Arès" — une par item réel `benedictions.db` (`aBls000000000011`/
+`aBls000000000012`, effets `eBle000000000011`/`eBle000000000012`) et une par la copie
+embarquée sur Éphise (`pnj.db`, effets `eEph000000000006`/`eEph000000000007`, item Éphise
+`iEph000000000015`). `fixLegacyEffectShapeOnItem()` (v3) filtrait uniquement par **nom
+d'objet** (`f.itemName === item.name`) — en traitant l'item `benedictions.db` "Beauté
+divine", il ramassait AUSSI l'entrée destinée à l'item d'Éphise (même nom), créant les DEUX
+effets sur le mauvais item. Ça avait dû déjà se produire sans erreur lors du tour précédent
+(0.6.144, avant que ce bug ne soit identifié) — la deuxième tentative (0.6.145) a buté sur
+l'id déjà créé la première fois, d'où l'erreur "already exists".
+
+**Corrigé** : `LEGACY_EFFECT_SHAPE_FIXES` porte désormais un champ `scope` (`"item"` ou
+`"actor"`), déduit à la génération par ordre d'apparition (première occurrence d'un
+(nom d'objet, nom d'effet) = le document `benedictions.db` lui-même, toute occurrence
+suivante = une copie embarquée sur un acteur). `fixLegacyEffectShapeOnItem(item, actorName)`
+ne retient une entrée `scope: "actor"` que si `actorName === "Éphise - fils d'Eros"` — tout
+autre acteur (y compris un joueur qui aurait glissé la vraie bénédiction "Corps d'Arès" sur
+son propre personnage) reçoit toujours l'entrée `scope: "item"` correcte, qu'il s'agisse
+d'un item embarqué ou autonome. Nettoyage défensif ajouté au passage : la recherche des
+effets à remplacer utilise désormais `.filter()` au lieu de `.find()`, pour supprimer
+**toute** copie en double laissée par la tentative précédente, pas seulement la première
+trouvée.
+
+`0.6.145` étant resté "en attente" (jamais marqué appliqué puisque la tentative avait
+échoué), pas besoin de nouvel id — sa description a simplement été mise à jour pour
+documenter cette suite. L'id "Colère de Zeus" corrigé au tour précédent avait été
+régénéré par erreur avec l'ancien id invalide lors de cette réécriture (donnée mise en
+cache) — revérifié et recorrigé au passage.
+
+**À exécuter par l'utilisateur** : cocher `0.6.145` (contenu mis à jour), recharger,
+re-tester.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 13) — Un id d'effet invalide bloquait sa recréation (v0.6.144 → v0.6.145)
 
 Retour de test sur 0.6.144, avec log console cette fois :
