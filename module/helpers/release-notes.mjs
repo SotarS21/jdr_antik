@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.135": {
+    title: "Version 0.6.135 — Combattant aquatique : vraie cause du doublon trouvée",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : la capacité "Combattant aquatique" portait deux copies du même effet embarqué sur elle-même (visible dans l'onglet Effets de sa propre fiche, "2" au lieu de "1") — les correctifs précédents (0.6.133/0.6.134) corrigeaient déjà le contenu des deux sans jamais les fusionner en une seule. N'en garde plus qu'une, sur le compendium et toute copie déjà déployée.</li>
+      </ul>`
+  },
   "0.6.134": {
     title: "Version 0.6.134 — Combattant aquatique en double + remise à zéro du Triton",
     html: `

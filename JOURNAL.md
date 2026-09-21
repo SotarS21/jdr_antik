@@ -2,6 +2,38 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 2) — Vraie cause du doublon trouvée (v0.6.134 → v0.6.135)
+
+Retour de test immédiat sur 0.6.134 : "ça ne change rien", avec une capture d'écran de la
+fiche de la capacité "Combattant aquatique" elle-même — onglet Effets, "EFFETS (2)" : **deux
+copies identiques du même effet embarqué directement sur la capacité**, toutes deux déjà avec
+les bonnes valeurs (6 catégories +3, +2 CA). Ni l'hypothèse du 0.6.134 (objet capacité dupliqué
+sur l'acteur) ni celle d'un effet isolé posé directement sur l'acteur n'était la bonne — les
+deux corrections précédentes réparaient déjà le *contenu* de chaque copie (`effect.update()`
+sur toute correspondance par nom trouvée dans `item.effects`) sans jamais vérifier qu'il n'y en
+avait qu'une. D'où "ça ne change rien" : le nombre restait 2, juste avec le bon contenu sur les
+deux.
+
+Cause probable : ce doublon existait déjà dans le compendium/creatures déployé (LevelDB) avant
+cette session, indépendamment des données source (`packs/*.db` n'a toujours montré qu'un seul
+effet, vérifié à plusieurs reprises) — cohérent avec la mémoire `antique-system-overview` :
+éditer le contenu d'un pack ne propage jamais automatiquement vers le LevelDB déjà déployé.
+
+**Corrigé** (`fixAquaticFighterEffectDedupOnItem()`, nouveau correctif `PACK_UPDATES`
+`0.6.135-aquatic-fighter-effect-dedup`) : pour toute capacité "Combattant aquatique" (objet),
+si elle porte plusieurs effets embarqués nommés "Combattant aquatique", toutes les copies en
+trop sont supprimées, une seule conservée. Même balayage à 3 niveaux que les correctifs
+précédents (compendium `capacites-combat`, compendium `creatures` via ses acteurs embarqués,
+objets/acteurs du monde, jetons non liés).
+
+**À exécuter par l'utilisateur** : cocher le correctif, recharger le monde, rouvrir la fiche
+de la capacité et vérifier "EFFETS (1)".
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite) — "Combattant aquatique" en double + remise à zéro (v0.6.133 → v0.6.134)
 
 Retour de test immédiat sur le correctif précédent : "ça ne fonctionne pas du tout" + "dans

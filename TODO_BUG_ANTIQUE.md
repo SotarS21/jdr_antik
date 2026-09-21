@@ -129,6 +129,14 @@ bonus d'attaque du Triton à leur valeur de base (15 / 0). **À confirmer par l'
 jeu** (cocher le correctif, recharger le monde, revérifier le nombre de copies dans l'onglet
 Effets et les valeurs CA/attaque).
 
+**Retour de test immédiat — toujours en double, capture d'écran fournie** : la fiche de la
+capacité elle-même montre "EFFETS (2)" — deux copies identiques du même effet embarqué
+directement sur la capacité (ni un objet dupliqué, ni un effet isolé sur l'acteur, les deux
+hypothèses précédentes). Corrigé (v0.6.135, nouveau correctif `PACK_UPDATES`
+`0.6.135-aquatic-fighter-effect-dedup`) : fusionne les deux copies en une seule, sur le
+compendium et toute copie déjà déployée. **À confirmer par l'utilisateur en jeu** (cocher le
+correctif, recharger, vérifier "EFFETS (1)" sur la capacité, puis re-tester CA et attaque).
+
 ## 1. ~~CA qui augmente à l'update d'une fiche (PNJ "Ephise")~~ — CORRIGÉ (31 août 2026, v0.6.38)
 
 Cause : les inputs "Temp" (CA + Sauvegardes) affichaient la valeur déjà modifiée par un ActiveEffect

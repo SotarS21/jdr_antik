@@ -640,6 +640,18 @@ export const PACK_UPDATES = [
       "aurait été réintégré comme valeur brute par l'ancien défaut de la fiche PNJ (voir " +
       "0.6.133).",
     apply: applyFixAquaticFighterDuplicates
+  },
+  {
+    id: "0.6.135-aquatic-fighter-effect-dedup",
+    pack: "acteurs",
+    version: "0.6.135",
+    label: "Combattant aquatique — 2 effets embarqués au lieu d'un sur la capacité elle-même",
+    description:
+      "La capacité \"Combattant aquatique\" portait deux copies du même effet embarqué " +
+      "(visible dans l'onglet Effets de sa propre fiche, \"EFFETS (2)\") — le correctif " +
+      "0.6.134 corrigeait déjà le contenu des deux sans les fusionner. N'en garde plus " +
+      "qu'une seule, sur le compendium et toute copie déjà déployée (acteur, jeton non lié).",
+    apply: applyFixAquaticFighterEffectDedup
   }
 ];
 
@@ -3312,6 +3324,80 @@ async function fixAquaticFighterScopeOnActor(actor) {
   for (const item of actor.items ?? []) {
     fixed += await fixAquaticFighterScopeOnItem(item);
   }
+  return fixed;
+}
+
+// Found 2026-09-21 via a screenshot of the ability's own sheet: the "Combattant aquatique"
+// npcability Item itself carries TWO embedded ActiveEffects both named "Combattant
+// aquatique" (not two copies of the Item, and not a stray effect directly on an actor —
+// both of the earlier hypotheses in 0.6.133/0.6.134 above, neither of which actually
+// touches this case). Predates this session's work — the deployed compendium/creatures
+// LevelDB never matched the single-effect packs/*.db build source (see
+// antique-system-overview memory: editing pack content never auto-propagates), so this was
+// very likely already 2 on the live compendium item itself, not something introduced here.
+// 0.6.133's fixAquaticFighterScopeOnItem() looped over every matching-named effect and
+// corrected each one's `changes` individually, which is exactly why both already show the
+// right 6-category values in the screenshot — it fixed the content of both duplicates
+// without ever recognizing there were two to begin with.
+async function fixAquaticFighterEffectDedupOnItem(item) {
+  if (item.name !== AQUATIC_FIGHTER_NAME) return 0;
+  const matching = item.effects?.filter(e => e.name === AQUATIC_FIGHTER_NAME) ?? [];
+  if (matching.length <= 1) return 0;
+  const [, ...extras] = matching;
+  await item.deleteEmbeddedDocuments("ActiveEffect", extras.map(e => e.id));
+  return extras.length;
+}
+
+async function fixAquaticFighterEffectDedupOnActor(actor) {
+  let fixed = 0;
+  for (const item of actor.items ?? []) {
+    fixed += await fixAquaticFighterEffectDedupOnItem(item);
+  }
+  return fixed;
+}
+
+async function applyFixAquaticFighterEffectDedup() {
+  let fixed = 0;
+
+  const abilityPack = game.packs.get("antique.capacites-combat");
+  if (abilityPack) {
+    await abilityPack.configure({ locked: false });
+    const index = await abilityPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await abilityPack.getDocument(indexEntry._id);
+      fixed += await fixAquaticFighterEffectDedupOnItem(doc);
+    }
+    await abilityPack.configure({ locked: true });
+  }
+
+  const creaturesPack = game.packs.get("antique.creatures");
+  if (creaturesPack) {
+    await creaturesPack.configure({ locked: false });
+    const index = await creaturesPack.getIndex();
+    for (const indexEntry of index) {
+      const doc = await creaturesPack.getDocument(indexEntry._id);
+      fixed += await fixAquaticFighterEffectDedupOnActor(doc);
+    }
+    await creaturesPack.configure({ locked: true });
+  }
+
+  for (const item of game.items ?? []) {
+    fixed += await fixAquaticFighterEffectDedupOnItem(item);
+  }
+
+  for (const actor of game.actors ?? []) {
+    fixed += await fixAquaticFighterEffectDedupOnActor(actor);
+  }
+
+  for (const scene of game.scenes ?? []) {
+    for (const token of scene.tokens) {
+      if (token.actorLink) continue;
+      const actor = token.actor;
+      if (!actor) continue;
+      fixed += await fixAquaticFighterEffectDedupOnActor(actor);
+    }
+  }
+
   return fixed;
 }
 
