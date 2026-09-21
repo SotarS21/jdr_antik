@@ -50,6 +50,13 @@ Legers, Grâce des Astres Alignés, versions solo et groupe) + les 3 sorts à bo
 `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
 `TODO_BUG_ANTIQUE.md`, ce journal.
 
+**Confirmé par l'utilisateur en jeu** : "ça marche, l'icône est bonne partout." Point 75
+clos (v0.6.132 → v0.6.147) — trois causes distinctes empilées, chacune trouvée seulement
+après que la précédente ait été corrigée et retestée : le format hérité des données
+(icon/changes mal placés), une collision de noms entre deux contextes (Éphise vs.
+bénédiction), puis un vrai bug de code (`icon` au lieu de `img`) dans le mécanisme de lancer
+de sort lui-même.
+
 ---
 
 ## Session du 21 septembre 2026 (suite 14) — Collision de noms entre bénédictions et objets embarqués sur Éphise (v0.6.145 → v0.6.146)

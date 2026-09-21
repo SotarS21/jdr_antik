@@ -30,7 +30,7 @@ reprenant exactement la même logique, pour que ce nettoyage fasse partie du sys
 que de rester un script ponctuel. **Confirmé par l'utilisateur** : plus aucune erreur au
 rechargement après exécution de la macro.
 
-## 75. ~~CRITIQUE — 64 effets embarqués dans un format hérité, sans effet réel~~ — CORRIGÉ (21 septembre 2026, v0.6.141)
+## 75. ~~CRITIQUE — 64 effets embarqués dans un format hérité, sans effet réel~~ — CORRIGÉ (21 septembre 2026, v0.6.147, confirmé en jeu)
 
 Signalé : "Bénédiction des Titans n'a plus d'effet applicable", puis "danse du serpent non
 plus", puis "check les autres".
@@ -118,9 +118,13 @@ créés sur un acteur du monde pour les 11 sorts/effets concernés (Bénédictio
 Danse du Serpent, Résilience de l'Immortel, Eveil du Sage, Méditation des Ancêtres, Glamour
 Divin, Souffle aux Pieds Legers, Grâce des Astres Alignés, Peau d'écorce, Rage Incontrôlable,
 Peau de Fer). Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail technique
-complet. **À exécuter par l'utilisateur** : cocher `0.6.147`, recharger, re-tester (l'icône
-de l'effet sur la fiche personnage/le jeton/le panneau flottant doit maintenant correspondre
-au sort).
+complet.
+
+**Confirmé par l'utilisateur en jeu (21 septembre 2026)** : "ça marche, l'icône est bonne
+partout." Point 75 clos — chantier le plus long de la session (v0.6.132 → v0.6.147),
+plusieurs causes distinctes empilées (format hérité des données, collision de noms entre
+deux contextes, puis un vrai bug de code `icon`/`img`) découvertes une à une au fil des
+retours de test successifs de l'utilisateur.
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 
