@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.144": {
+    title: "Version 0.6.144 — Le correctif fonctionne maintenant sans étape préalable",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : le correctif précédent (0.6.143) ne savait réparer un effet que s'il était encore présent (mal formé) — pas s'il avait déjà été vidé par l'ancien bug de 0.6.141. Recherche désormais chaque effet par nom qu'il existe ou pas, et le recrée dans les deux cas. "Écraser mes compendiums" n'est plus nécessaire au préalable.</li>
+      </ul>`
+  },
   "0.6.143": {
     title: "Version 0.6.143 — CRITIQUE : le correctif 0.6.141 vidait les effets au lieu de les réparer",
     html: `

@@ -71,10 +71,19 @@ l'immédiat via **"Écraser mes compendiums"** (remplace le document entier depu
 déjà correct). **Corrigé en v0.6.143** (nouveau correctif `0.6.143-legacy-effect-shape-v2`,
 id neuf puisque `0.6.141` reste cochée chez l'utilisateur) : supprime l'effet mal formé puis
 en recrée un neuf (`keepId`) au lieu d'une mise à jour partielle — jamais les deux
-opérations dans le même appel. Voir `JOURNAL.md`, session du 21 septembre 2026, pour le
-détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.143` dans l'écran
-de mise à jour (MJ), recharger, re-tester Bénédiction des Titans/Danse du Serpent (effet
-présent ET bouton "Appliquer l'effet") et le bonus de CA d'une armure.
+opérations dans le même appel.
+
+**Retour de test — 0.6.143 appliqué sans erreur, mais toujours "rien n'a changé"** : cause
+trouvée — 0.6.143 ne réparait un effet que s'il était **encore présent** (juste mal formé),
+pas s'il avait déjà été vidé à zéro par le bug de 0.6.141. Sur le compendium de
+l'utilisateur, "Bénédiction des Titans" avait déjà `effects: []` (vide) au moment où
+0.6.143 tournait — rien à réparer trouvé, donc rien fait. **Corrigé en v0.6.144**
+(`0.6.144-legacy-effect-shape-v3`) : cherche désormais chaque effet attendu par nom sur
+l'objet qu'il existe encore ou pas du tout, et le (re)crée dans les deux cas — "Écraser mes
+compendiums" n'est plus un prérequis. Voir `JOURNAL.md`, session du 21 septembre 2026, pour
+le détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.144` dans
+l'écran de mise à jour (MJ), recharger, re-tester Bénédiction des Titans/Danse du Serpent
+(effet présent ET bouton "Appliquer l'effet") et le bonus de CA d'une armure.
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 

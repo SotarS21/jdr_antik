@@ -2,6 +2,35 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 12) — 0.6.143 insuffisant : l'effet était déjà vide, pas juste mal formé (v0.6.143 → v0.6.144)
+
+Retour de test sur 0.6.143 : "j'ai cliqué sur appliquer les correctifs, mais rien n'a
+changé" — log confirmant "1 correctif(s) appliqué(s)", sans erreur.
+
+**Cause** : `fixLegacyEffectShapeOnItem()` (v2, 0.6.143) itérait `item.effects` et ne
+réparait un effet que s'il correspondait par nom à une entrée trouvée **dans la collection
+actuelle** — mais l'effet de "Bénédiction des Titans" n'était déjà plus dans cette
+collection à ce moment-là (vidé par le bug de 0.6.141, jamais réparé puisque l'utilisateur
+n'avait pas encore eu l'occasion de confirmer avoir lancé "Écraser mes compendiums" avant
+d'appliquer 0.6.143). Résultat : 0 effet trouvé à réparer, 0 changement, mais aucune erreur
+non plus (ce n'est pas un cas d'échec pour le code, juste "rien à faire").
+
+**Corrigé** (`fixLegacyEffectShapeOnItem()`, v3) : parcourt désormais `LEGACY_EFFECT_SHAPE_FIXES`
+**par nom d'objet** plutôt que par ce qui est effectivement présent dans `item.effects` —
+pour chaque effet attendu, vérifie s'il existe encore (mal formé, à remplacer) ou pas du
+tout (déjà vidé, à créer) et couvre les deux cas avec le même appel
+`createEmbeddedDocuments(..., {keepId: true})`. "Écraser mes compendiums" n'est plus un
+prérequis pour que ce correctif fonctionne. Nouveau correctif
+(`0.6.144-legacy-effect-shape-v3`), id neuf puisque `0.6.143` est déjà cochée chez
+l'utilisateur — `findLegacyEffectShapeFix()` (devenu mort avec ce changement) supprimé.
+
+**À exécuter par l'utilisateur** : cocher `0.6.144`, recharger, re-tester.
+
+**Fichiers modifiés** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`,
+`system.json`, `TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 11) — Le correctif 0.6.141 vidait les effets au lieu de les réparer (v0.6.142 → v0.6.143)
 
 Après avoir débloqué le chargement (point 76), retour de test : "c'est super, mais ça n'a

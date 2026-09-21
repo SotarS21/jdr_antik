@@ -787,6 +787,21 @@ export const PACK_UPDATES = [
       "reste déjà cochée chez l'utilisateur) pour être proposé même à qui l'aurait déjà " +
       "coché.",
     apply: applyFixLegacyEffectShape
+  },
+  {
+    id: "0.6.144-legacy-effect-shape-v3",
+    pack: "acteurs",
+    version: "0.6.144",
+    label: "CRITIQUE — correctif 0.6.143 insuffisant : l'effet était déjà vidé, pas juste mal formé",
+    description:
+      "0.6.143 a été appliqué sans erreur mais \"rien n'a changé\" côté utilisateur — cause : " +
+      "0.6.143 ne savait réparer un effet que s'il était encore présent (juste mal formé), " +
+      "pas s'il avait déjà été vidé par le bug de 0.6.141. La fonction cherche désormais " +
+      "chaque effet attendu par NOM sur l'objet, qu'il existe encore (mal formé) ou pas du " +
+      "tout (déjà vidé), et le (re)crée dans les deux cas — \"Écraser mes compendiums\" " +
+      "n'est plus un prérequis. Même mécanisme (suppression puis recréation, keepId), id " +
+      "neuf puisque 0.6.143 est déjà cochée chez l'utilisateur.",
+    apply: applyFixLegacyEffectShape
   }
 ];
 
@@ -4268,23 +4283,26 @@ const LEGACY_EFFECT_SHAPE_FIXES = [
   { itemName: "Corps d'Arès", effectName: "Corps d'Arès", data: {"_id":"eEph000000000007","name":"Corps d'Arès","img":"icons/svg/fire-shield.svg","type":"base","system":{"changes":[{"key":"system.ca.temp","mode":2,"value":"2","priority":null}]},"description":"","transfer":true,"disabled":false,"flags":{}} },
 ];
 
-function findLegacyEffectShapeFix(itemName, effectName) {
-  return LEGACY_EFFECT_SHAPE_FIXES.find(f => f.itemName === itemName && f.effectName === effectName);
-}
-
+// Handles both cases found on the user's world: an effect still present but in the legacy
+// shape (delete + recreate), AND an effect missing entirely — the state 0.6.141's buggy
+// effect.update() actually left behind (wiped to an empty effects array, not just malformed)
+// — by checking every fix that applies to this item BY NAME rather than only looking at
+// what's currently in item.effects. Running "Écraser mes compendiums" first is no longer a
+// prerequisite for this to work.
 async function fixLegacyEffectShapeOnItem(item) {
+  const itemFixes = LEGACY_EFFECT_SHAPE_FIXES.filter(f => f.itemName === item.name);
+  if (!itemFixes.length) return 0;
+
   const toDeleteIds = [];
   const toCreateData = [];
-  for (const effect of item.effects ?? []) {
-    const fix = findLegacyEffectShapeFix(item.name, effect.name);
-    if (!fix) continue;
-    toDeleteIds.push(effect.id);
+  for (const fix of itemFixes) {
+    const existing = item.effects.find(e => e.name === fix.effectName);
+    if (existing) toDeleteIds.push(existing.id);
     toCreateData.push(fix.data);
   }
-  if (!toDeleteIds.length) return 0;
-  await item.deleteEmbeddedDocuments("ActiveEffect", toDeleteIds);
+  if (toDeleteIds.length) await item.deleteEmbeddedDocuments("ActiveEffect", toDeleteIds);
   await item.createEmbeddedDocuments("ActiveEffect", toCreateData, { keepId: true });
-  return toDeleteIds.length;
+  return toCreateData.length;
 }
 
 async function fixLegacyEffectShapeOnActor(actor) {
