@@ -80,10 +80,20 @@ l'utilisateur, "Bénédiction des Titans" avait déjà `effects: []` (vide) au m
 0.6.143 tournait — rien à réparer trouvé, donc rien fait. **Corrigé en v0.6.144**
 (`0.6.144-legacy-effect-shape-v3`) : cherche désormais chaque effet attendu par nom sur
 l'objet qu'il existe encore ou pas du tout, et le (re)crée dans les deux cas — "Écraser mes
-compendiums" n'est plus un prérequis. Voir `JOURNAL.md`, session du 21 septembre 2026, pour
-le détail technique complet. **À exécuter par l'utilisateur** : cocher `0.6.144` dans
-l'écran de mise à jour (MJ), recharger, re-tester Bénédiction des Titans/Danse du Serpent
-(effet présent ET bouton "Appliquer l'effet") et le bonus de CA d'une armure.
+compendiums" n'est plus un prérequis.
+
+**Retour de test — 0.6.144 a tourné ("1 correctif appliqué"), avec une erreur console pour
+un seul item non bloquante pour le reste** : `[...ActiveEffect.eAdv000000000035_01]
+validation errors: _id: must be a valid 16-character alphanumeric ID` — un id d'effet
+malformé (un "_01" en trop), déjà présent tel quel dans les données source depuis
+longtemps, sur l'effet secondaire "+3 dégâts" de "Colère de Zeus" (pas Bénédiction des
+Titans/Danse du Serpent — ceux-là n'ont pas d'id malformé, ils devraient être réparés).
+Foundry n'interrompt pas tout un `createEmbeddedDocuments()` pour un seul document rejeté,
+il logue juste une erreur pour celui-là. **Corrigé en v0.6.145** (id valide généré, source +
+table de correctifs). Voir `JOURNAL.md`, session du 21 septembre 2026, pour le détail
+technique complet. **À exécuter par l'utilisateur** : cocher `0.6.145`, recharger, re-tester
+Bénédiction des Titans/Danse du Serpent (effet présent ET bouton "Appliquer l'effet") et le
+bonus de CA d'une armure.
 
 ## 73. ~~Dossiers vides en double + vérification des images du compendium~~ — CORRIGÉ (21 septembre 2026, v0.6.138)
 

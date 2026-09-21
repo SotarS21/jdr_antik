@@ -802,6 +802,23 @@ export const PACK_UPDATES = [
       "n'est plus un prérequis. Même mécanisme (suppression puis recréation, keepId), id " +
       "neuf puisque 0.6.143 est déjà cochée chez l'utilisateur.",
     apply: applyFixLegacyEffectShape
+  },
+  {
+    id: "0.6.145-legacy-effect-shape-v4",
+    pack: "acteurs",
+    version: "0.6.145",
+    label: "Un id d'effet invalide faisait échouer sa recréation (Colère de Zeus)",
+    description:
+      "0.6.144 a bien tourné (\"1 correctif appliqué\", aucun échec signalé — Foundry " +
+      "n'interrompt pas tout un createEmbeddedDocuments() pour un seul document rejeté, il " +
+      "logue juste une erreur console pour celui-là), mais la console montrait : " +
+      "\"[...ActiveEffect.eAdv000000000035_01] validation errors: _id: must be a valid " +
+      "16-character alphanumeric ID\" — sur le compendium ET sur une copie déjà possédée. " +
+      "Cet id (avec un \"_01\" en trop) était déjà présent tel quel dans les données " +
+      "source, jamais un id généré par ce chantier — probablement toléré par une ancienne " +
+      "version de Foundry à la création, mais rejeté aujourd'hui par une vraie création " +
+      "via l'API. Corrigé à la source (nouvel id valide) et dans la table de correctifs.",
+    apply: applyFixLegacyEffectShape
   }
 ];
 
@@ -4225,7 +4242,7 @@ const LEGACY_EFFECT_SHAPE_FIXES = [
   { itemName: "(-1) Vif", effectName: "Vif", data: {"_id":"bfdca7587860d398","name":"Vif","img":"systems/antique/img/aventage/vif.png","type":"base","system":{"changes":[{"key":"system.saves.reflexes.bonus","type":"add","value":"2"}]},"description":"Réflexe base+2","transfer":true,"disabled":false,"flags":{}} },
   { itemName: "(-1) Cuir de Hero", effectName: "Cuir de Hero", data: {"_id":"4dca7a1996d4803b","name":"Cuir de Hero","img":"systems/antique/img/aventage/cuir_de_hero.png","type":"base","system":{"changes":[{"key":"system.saves.robustesse.bonus","type":"add","value":"2"}]},"description":"Robustesse base+2","transfer":true,"disabled":false,"flags":{}} },
   { itemName: "(-1) Pisteur", effectName: "Pisteur", data: {"_id":"c5bf303ebbc36892","name":"Pisteur","img":"systems/antique/img/aventage/pisteur.png","type":"base","system":{"changes":[{"key":"system.skills.vigueur.bonus","type":"add","value":"2"},{"key":"system.skills.nature.bonus","type":"add","value":"2"}]},"description":"La chasse n'as pas de secret pour vous +2 vig et nature/ dans la nature","transfer":true,"disabled":false,"flags":{}} },
-  { itemName: "(-1) Colère de Zeus", effectName: "Colère de Zeus (+3 dégâts)", data: {"_id":"eAdv000000000035_01","name":"Colère de Zeus (+3 dégâts)","img":"icons/svg/lightning.svg","type":"base","system":{"changes":[{"key":"system.attackBonuses.armeBlanche.damageBonus","type":"add","value":"3","priority":20}]},"description":"Dégats aux corps à corps +3","transfer":true,"disabled":false,"flags":{}} },
+  { itemName: "(-1) Colère de Zeus", effectName: "Colère de Zeus (+3 dégâts)", data: {"_id":"eAdv0000000350a1","name":"Colère de Zeus (+3 dégâts)","img":"icons/svg/lightning.svg","type":"base","system":{"changes":[{"key":"system.attackBonuses.armeBlanche.damageBonus","type":"add","value":"3","priority":20}]},"description":"Dégats aux corps à corps +3","transfer":true,"disabled":false,"flags":{}} },
   { itemName: "(-1) Protection d'Athéna", effectName: "Protection d'Athéna", data: {"_id":"514e468f96aee99f","name":"Protection d'Athéna","img":"systems/antique/img/aventage/protection_d'athéna.jpg","type":"base","system":{"changes":[{"key":"system.ca.base","type":"add","value":"2"}]},"description":"Augmente la CA de +2","transfer":true,"disabled":false,"flags":{}} },
   { itemName: "(-2) Voix enchanteresse", effectName: "Voix enchanteresse", data: {"_id":"0fb0d53d5a4891b3","name":"Voix enchanteresse","img":"icons/skills/trades/music-singing-voice-blue.webp","type":"base","system":{"changes":[{"key":"system.skills.seduction.bonus","type":"add","value":"2"},{"key":"system.skills.baratin.bonus","type":"add","value":"2"}]},"description":"Auriez vous du sang de sirène, car votre voix est hypnotique (+2 certaines comp Char)","transfer":true,"disabled":false,"flags":{}} },
   { itemName: "(-2) Force de Poséidon", effectName: "Force de Poséidon", data: {"_id":"333057f8380d7c03","name":"Force de Poséidon","img":"icons/magic/water/wave-water-blue.webp","type":"base","system":{"changes":[{"key":"system.ca.base","type":"add","value":"1"}]},"description":"Augmente la CA de +1 de l'équipe (+2 si proche de la mer)","transfer":true,"disabled":false,"flags":{}} },

@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.145": {
+    title: "Version 0.6.145 — Un id d'effet invalide corrigé (Colère de Zeus)",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : "Colère de Zeus" avait un effet secondaire ("+3 dégâts") avec un identifiant invalide, déjà présent dans les données depuis longtemps — Foundry refusait de le recréer. Corrigé à la source.</li>
+      </ul>`
+  },
   "0.6.144": {
     title: "Version 0.6.144 — Le correctif fonctionne maintenant sans étape préalable",
     html: `

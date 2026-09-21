@@ -2,6 +2,49 @@
 
 ---
 
+## Session du 21 septembre 2026 (suite 13) — Un id d'effet invalide bloquait sa recréation (v0.6.144 → v0.6.145)
+
+Retour de test sur 0.6.144, avec log console cette fois :
+```
+DataModelValidationError: [Compendium.antique.avantages.Item.aAdv000000000035.ActiveEffect.eAdv000000000035_01]
+  validation errors: SchemaField#_validateRecursive
+  _id: must be a valid 16-character alphanumeric ID
+[...]
+Antique – 1 correctif(s) appliqué(s).
+```
+même erreur répétée pour la copie déjà possédée par un acteur du monde (`Actor.PcY3.../Item.5fd7.../ActiveEffect.eAdv000000000035_01`).
+
+**Diagnostic** : `"eAdv000000000035_01"` — 20 caractères avec un underscore, alors que
+Foundry exige exactement 16 caractères alphanumériques pour un `_id` (`DocumentIdField`).
+Cet id était déjà présent tel quel dans `packs/avantages.db` **avant même ce chantier** (pas
+un id que j'ai généré) — sur l'effet secondaire "Colère de Zeus (+3 dégâts)", distinct de
+l'effet principal de dévotion du même item (déjà corrigé plus tôt cette session). Toléré à
+la lecture (Foundry affichait cet effet normalement jusqu'ici, cf. la capture du point 72),
+mais rejeté par une vraie création via l'API (`createEmbeddedDocuments`, utilisée par
+0.6.143/0.6.144's delete-then-recreate) — d'où l'erreur.
+
+**Non bloquant pour le reste** : Foundry n'interrompt pas tout un `createEmbeddedDocuments()`
+batch pour un seul document rejeté — il logue une erreur console pour celui-là et continue
+les autres, ce qui explique "1 correctif appliqué" sans mention d'échec malgré cette erreur.
+Les 8 sorts du signalement initial (Bénédiction des Titans, Danse du Serpent, etc.) n'ont
+pas d'id malformé — ils devraient être correctement réparés par 0.6.144, à confirmer par
+l'utilisateur.
+
+**Corrigé** : nouvel id valide généré (`eAdv0000000350a1`) pour cet effet, à la source
+(`packs/avantages.db`) et dans la table `LEGACY_EFFECT_SHAPE_FIXES`
+(`module/helpers/pack-updates.mjs`) — vérifié qu'aucun autre id malformé n'existe ailleurs
+dans les packs (scan systématique de tous les `_id` de documents/effets contre le motif
+16 caractères alphanumériques, 0 autre trouvé). Nouveau correctif
+(`0.6.145-legacy-effect-shape-v4`, id neuf), même fonction déjà idempotente.
+
+**À exécuter par l'utilisateur** : cocher `0.6.145`, recharger, re-tester.
+
+**Fichiers modifiés** : `packs/avantages.db`, `packs/_json-mirrors/avantages.json`,
+`module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`,
+`TODO_BUG_ANTIQUE.md`, ce journal.
+
+---
+
 ## Session du 21 septembre 2026 (suite 12) — 0.6.143 insuffisant : l'effet était déjà vide, pas juste mal formé (v0.6.143 → v0.6.144)
 
 Retour de test sur 0.6.143 : "j'ai cliqué sur appliquer les correctifs, mais rien n'a
