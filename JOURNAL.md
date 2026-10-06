@@ -20,8 +20,10 @@ création). Contrôle à la main : Bénédiction des Titans d'Antalios (icône, 
 1 → 0 selon le compendium), Vêtement en Lin (équipé / emplacement / quantité gardés, prix « 10 po »), Casque d'Hadès
 (icône propre au lieu de `icons/svg/sun.svg`, effet ajouté).
 
-**Non testé en jeu** : le monde Antique n'était pas lancé (Foundry tournait sur Galactic Wars). À vérifier : appliquer
-les deux correctifs au prochain chargement, ouvrir quelques PJ.
+**Vérifié en jeu** (Playwright, compte MJ « claude », `testantique`) : correctifs déjà appliqués par l'utilisateur au
+rechargement ; compendium et copies du monde à jour, correctif rejoué sans effet, PJ importé dont la fiche s'ouvre.
+Écart hors point 78 : « (-2) Casque d'Hadès » sans effet dans le compendium « Avantages » installé, alors que la
+source en a un (voir point 78 dans `TODO_BUG_ANTIQUE.md`).
 
 **Fichiers** : `module/helpers/realignement-objets.mjs` (nouveau), `module/helpers/pack-updates.mjs`,
 `module/helpers/release-notes.mjs`, `packs/_build-realigner-pj.mjs` (nouveau), `packs/personnages.db`,

@@ -4,7 +4,7 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
-## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — CORRIGÉ (7 octobre 2026, v0.6.149, à confirmer en jeu)
+## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — CORRIGÉ (7 octobre 2026, v0.6.149, vérifié en jeu)
 
 **Fait le 7 octobre 2026** (demande de l'utilisateur ; portée choisie : « règles à jour, état du PJ gardé ») :
 `module/helpers/realignement-objets.mjs` (fonctions pures, même règle pour la source et le monde) — icône, effets
@@ -16,6 +16,13 @@ vide du compendium ne remplace pas celle du PJ ; ingrédients d'un sort = liste 
 Mains, Soin de la mer, Respiration aquatique, Rage, Oeil de la Corneille). Monde : correctifs `0.6.149-pj-objets-compendium`
 (compendium déployé) et `0.6.149-pj-objets-monde` (copies des PJ dans le monde, par `compendiumSource` ou nom).
 À noter : Bénédiction des Titans (Antalios) passe de 1 utilisation à 0, valeur du compendium actuel.
+**Vérifié en jeu le 7 octobre 2026** (Playwright, compte MJ « claude », monde `testantique`) : les deux correctifs
+avaient déjà été appliqués par l'utilisateur au rechargement ; PJ du compendium à jour (Bénédiction des Titans : icône,
+2 effets, durée « 1 Jour » gardée ; Vêtement en Lin : prix « 10 po », équipé / quantité gardés ; plus aucune icône
+`icons/svg/sun.svg`), correctif rejoué = 0, PJ importé du compendium dont la fiche s'ouvre, copies du monde : plus
+rien à réaligner. **Écart trouvé, hors point 78** : dans le compendium « Avantages » installé, « (-2) Casque d'Hadès »
+n'a pas l'effet présent dans la source `packs/avantages.db` (le correctif suit le compendium installé, donc le PJ
+Adresthea non plus) — à régler par « Écraser mes compendiums » ou un correctif, si l'utilisateur le souhaite.
 
 Demande d'origine :
 
