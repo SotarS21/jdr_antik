@@ -2,6 +2,33 @@
 
 ---
 
+## Session du 7 octobre 2026 — Point 78 : objets des 7 PJ réalignés sur les compendiums (v0.6.148 → v0.6.149)
+
+Session menée depuis le dossier de Mer des Pirates. **Avant** : 21 commits locaux poussés sur GitHub à la demande de
+l'utilisateur (v0.6.125 → v0.6.148, `master` = `origin/master`). Todo du Bureau vérifiée : tout est déjà traité (dont
+la palette des caractéristiques et les 3 blocs de compétences côte à côte, note de Mélo) ; restait le point 78, reporté.
+
+**Analyse** (lecture seule) : 104 objets embarqués sur les 7 PJ (26 avantages, 22 désavantages, 43 sorts, 12
+équipements, 1 arme) ; 97 retrouvés dans les compendiums par type + nom ; parmi eux 92 icônes, 71 descriptions et 63
+listes d'effets différentes ; nombreux champs `system` absents des anciennes copies (gabarits de sort, bonus de CA…).
+L'utilisateur a choisi « règles à jour, état du PJ gardé ».
+
+**Mise en œuvre** : `module/helpers/realignement-objets.mjs` (pur, partagé) ; `packs/_build-realigner-pj.mjs` pour la
+source (97 objets, relancé : 0) ; deux correctifs `PACK_UPDATES` (compendium « Personnages Joueurs » déployé, et copies
+du monde) qui lisent les compendiums d'objets du système en jeu et remplacent les effets des objets (suppression puis
+création). Contrôle à la main : Bénédiction des Titans d'Antalios (icône, 2 effets, durée « 1 Jour » gardée, limite
+1 → 0 selon le compendium), Vêtement en Lin (équipé / emplacement / quantité gardés, prix « 10 po »), Casque d'Hadès
+(icône propre au lieu de `icons/svg/sun.svg`, effet ajouté).
+
+**Non testé en jeu** : le monde Antique n'était pas lancé (Foundry tournait sur Galactic Wars). À vérifier : appliquer
+les deux correctifs au prochain chargement, ouvrir quelques PJ.
+
+**Fichiers** : `module/helpers/realignement-objets.mjs` (nouveau), `module/helpers/pack-updates.mjs`,
+`module/helpers/release-notes.mjs`, `packs/_build-realigner-pj.mjs` (nouveau), `packs/personnages.db`,
+`packs/_json-mirrors/personnages.json`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 21 septembre 2026 (suite 16) — Nouveau compendium "Personnages Joueurs" (point 77, v0.6.147 → v0.6.148)
 
 Demande : "peut tu créer des pj à partir des json qui sont dans

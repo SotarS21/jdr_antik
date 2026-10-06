@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.149": {
+    title: "Version 0.6.149 — Objets des personnages joueurs mis à jour",
+    html: `
+      <ul>
+        <li><strong>Mis à jour</strong> : les avantages, désavantages, sorts et équipements des 7 personnages joueurs (Adresthea, Antalios, Eosyne, Hydriss, Kallisto, Lyra, Xeno) reprennent leur version actuelle des compendiums — icône, effets actifs, description et règles. L'état de chaque personnage est gardé : objet équipé, emplacement, quantité, ingrédients possédés, utilisations restantes, notes du MJ.</li>
+        <li>Deux correctifs sont proposés : l'un pour le compendium "Personnages Joueurs", l'autre pour les copies de ces personnages déjà dans le monde (à ne pas cocher si leurs objets ont été personnalisés à la main).</li>
+        <li>Sans équivalent dans les compendiums, donc inchangés : Kepresh, Bouclier camouflage, Imposition des Mains, Soin de la mer, Respiration aquatique, Rage, Oeil de la Corneille.</li>
+      </ul>`
+  },
   "0.6.148": {
     title: "Version 0.6.148 — Nouveau compendium \"Personnages Joueurs\"",
     html: `

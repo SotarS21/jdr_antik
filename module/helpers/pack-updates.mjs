@@ -1,3 +1,5 @@
+import { cleObjet, donneesRealignees, realignementUtile } from "./realignement-objets.mjs";
+
 /**
  * Registre des correctifs de contenu de compendium en attente de propagation vers un
  * monde déjà déployé — remplace, pour les futures sessions, l'écriture d'un script
@@ -864,6 +866,32 @@ export const PACK_UPDATES = [
       "que ce qui manque encore, sûr à rejouer si un MJ ajoute son propre 8e personnage " +
       "dans ce même compendium par la suite.",
     apply: applyCreatePersonnagesPJ
+  },
+  {
+    id: "0.6.149-pj-objets-compendium",
+    pack: "personnages",
+    version: "0.6.149",
+    label: "Objets des 7 personnages joueurs mis à jour (compendium)",
+    description:
+      "Point 78 : les avantages, désavantages, sorts et équipements des 7 PJ du compendium \"Personnages Joueurs\" " +
+      "étaient des copies figées d'un ancien export (anciennes icônes, effets et descriptions). Chacun reprend sa " +
+      "version actuelle de compendium (même type, même nom) : icône, effets actifs, description et règles. L'état " +
+      "propre au personnage est gardé (équipé, emplacement, quantité, ingrédients possédés, utilisations restantes, " +
+      "notes du MJ). Les objets sans équivalent (Kepresh, Bouclier camouflage, Imposition des Mains, Soin de la mer, " +
+      "Respiration aquatique, Rage, Oeil de la Corneille) ne changent pas.",
+    apply: applyRealignerPJCompendium
+  },
+  {
+    id: "0.6.149-pj-objets-monde",
+    pack: "acteurs",
+    version: "0.6.149",
+    label: "Objets des personnages joueurs du monde mis à jour",
+    description:
+      "Même mise à jour que le correctif précédent, appliquée aux copies de ces 7 PJ déjà présentes dans le monde " +
+      "(importées du compendium, ou portant le même nom) : icône, effets actifs, description et règles de leurs " +
+      "objets ; état du personnage gardé (équipé, emplacement, quantité, ingrédients possédés, utilisations restantes, " +
+      "notes du MJ). À ne pas cocher si des objets ont été personnalisés à la main en cours de campagne.",
+    apply: applyRealignerPJMonde
   }
 ];
 
@@ -4559,6 +4587,71 @@ async function applyFixDynamicBuffIcons() {
 // data as a JS literal here, and only creates whatever the pack's index doesn't already
 // have (idempotent, safe to rerun — e.g. after a GM added their own 8th character to this
 // same pack by hand, re-running this must never touch or duplicate that one).
+/* Point 78 — réalignement des objets des PJ (règle : module/helpers/realignement-objets.mjs). */
+
+/** Documents de référence des compendiums d'objets du système, par type + nom (premier trouvé). */
+async function referencesObjetsSysteme() {
+  const references = new Map();
+  for (const pack of game.packs) {
+    if (pack.documentName !== "Item" || pack.metadata.packageType !== "system" || pack.metadata.packageName !== "antique") continue;
+    for (const doc of await pack.getDocuments()) {
+      const cle = cleObjet(doc.type, doc.name);
+      if (!references.has(cle)) references.set(cle, doc.toObject());
+    }
+  }
+  return references;
+}
+
+/** Réaligne les objets d'un acteur ; renvoie le nombre d'objets modifiés. Effets : supprimés puis recréés. */
+async function realignerObjetsActeur(actor, references) {
+  const misesAJour = [];
+  const effets = [];
+  for (const item of actor.items) {
+    const reference = references.get(cleObjet(item.type, item.name));
+    if (!reference) continue;
+    const source = item.toObject();
+    const donnees = donneesRealignees(source, reference);
+    if (!realignementUtile(source, donnees)) continue;
+    misesAJour.push({ _id: item.id, img: donnees.img, system: donnees.system });
+    effets.push([item.id, donnees.effects]);
+  }
+  if (!misesAJour.length) return 0;
+  await actor.updateEmbeddedDocuments("Item", misesAJour);
+  for (const [id, liste] of effets) {
+    const item = actor.items.get(id);
+    if (!item) continue;
+    if (item.effects.size) await item.deleteEmbeddedDocuments("ActiveEffect", item.effects.map((e) => e.id));
+    if (liste.length) await item.createEmbeddedDocuments("ActiveEffect", liste.map(({ _id, ...e }) => e));
+  }
+  return misesAJour.length;
+}
+
+async function applyRealignerPJCompendium() {
+  const pack = game.packs.get("antique.personnages");
+  if (!pack) return 0;
+  const references = await referencesObjetsSysteme();
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  let total = 0;
+  try {
+    for (const actor of await pack.getDocuments()) total += await realignerObjetsActeur(actor, references);
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return total;
+}
+
+async function applyRealignerPJMonde() {
+  const pack = game.packs.get("antique.personnages");
+  const noms = new Set(pack ? (await pack.getIndex()).map((e) => e.name) : []);
+  const copies = game.actors.filter((a) => a._stats?.compendiumSource?.startsWith("Compendium.antique.personnages.") || noms.has(a.name));
+  if (!copies.length) return 0;
+  const references = await referencesObjetsSysteme();
+  let total = 0;
+  for (const actor of copies) total += await realignerObjetsActeur(actor, references);
+  return total;
+}
+
 async function applyCreatePersonnagesPJ() {
   const pack = game.packs.get("antique.personnages");
   if (!pack) return 0;

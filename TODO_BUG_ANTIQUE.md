@@ -4,7 +4,20 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
-## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — EN ATTENTE, reporté (21 septembre 2026)
+## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — CORRIGÉ (7 octobre 2026, v0.6.149, à confirmer en jeu)
+
+**Fait le 7 octobre 2026** (demande de l'utilisateur ; portée choisie : « règles à jour, état du PJ gardé ») :
+`module/helpers/realignement-objets.mjs` (fonctions pures, même règle pour la source et le monde) — icône, effets
+actifs et champs `system` renseignés par le compendium (même type + nom sans accents) ; jamais repris :
+`quantity`, `slot`, `equipped`, `linkedAmmoId`, `gmNotes`, `limitationValue`, `isIngredientBag` ; une valeur
+vide du compendium ne remplace pas celle du PJ ; ingrédients d'un sort = liste du compendium avec la case
+« possédé » du PJ. Source : `packs/_build-realigner-pj.mjs` → 97 objets sur 104 réalignés dans
+`packs/personnages.db` (idempotent), 7 sans équivalent inchangés (Kepresh, Bouclier camouflage, Imposition des
+Mains, Soin de la mer, Respiration aquatique, Rage, Oeil de la Corneille). Monde : correctifs `0.6.149-pj-objets-compendium`
+(compendium déployé) et `0.6.149-pj-objets-monde` (copies des PJ dans le monde, par `compendiumSource` ou nom).
+À noter : Bénédiction des Titans (Antalios) passe de 1 utilisation à 0, valeur du compendium actuel.
+
+Demande d'origine :
 
 Demande explicite de l'utilisateur, à traiter plus tard (pas maintenant) : "il faut ajouter
 le traitement pour mettre à jour traits et les objets dans chaque personnage PJ de la base
