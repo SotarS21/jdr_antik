@@ -2,6 +2,15 @@
 
 ---
 
+## Fin de session du 7 octobre 2026 (« on s'arrête là pour ce soir »)
+
+Bilan : 21 commits en retard poussés ; point 78 (v0.6.149) et point 79 (v0.6.150) faits, vérifiés en jeu et poussés.
+**À la reprise** : point 80 de `TODO_BUG_ANTIQUE.md` — l'utilisateur doit valider le document « Antique — effets
+classiques et compétences des PNJ » (https://claude.ai/code/artifact/4b1ba1d5-e214-46f0-872e-edca7b3ad484) avant tout
+code ; relire le document (modifications, commentaires) d'abord. Constats annexes listés dans le point 80.
+
+---
+
 ## Session du 7 octobre 2026 (suite) — Point 79 : effets manquants et doublons (v0.6.149 → v0.6.150)
 
 Demande : « corrige le Casque d'Hadès avec un correctif ». Un balayage en jeu (Playwright, compendiums installés de
