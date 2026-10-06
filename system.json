@@ -2,7 +2,7 @@
   "id": "antique",
   "title": "Antique",
   "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.149",
+  "version": "0.6.150",
   "compatibility": {
     "minimum": "12",
     "verified": "14"

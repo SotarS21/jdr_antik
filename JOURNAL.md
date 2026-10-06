@@ -2,6 +2,22 @@
 
 ---
 
+## Session du 7 octobre 2026 (suite) — Point 79 : effets manquants et doublons (v0.6.149 → v0.6.150)
+
+Demande : « corrige le Casque d'Hadès avec un correctif ». Un balayage en jeu (Playwright, compendiums installés de
+`testantique` comparés aux miroirs JSON de la source) a montré un écart général : 152 avantages / désavantages sans leur
+effet, 6 capacités de combat avec un effet en double. L'utilisateur a choisi de tout corriger, doublons compris.
+
+Quatre correctifs `PACK_UPDATES` (voir point 79 de `TODO_BUG_ANTIQUE.md`), lisant les miroirs JSON
+(`documentsSource()`) ; aucun écrasement : ajout seulement là où il n'y a aucun effet, suppression seulement des doublons
+de même nom. Appliqués en jeu via le sélecteur, rejoués sans effet, plus aucun écart d'effets entre compendiums installés
+et source. Cause probable de la dérive : correctifs « effets simples » (v0.6.55 et suivants) marqués appliqués dans ce
+monde avant une réinstallation des compendiums — non établie avec certitude.
+
+**Fichiers** : `module/helpers/pack-updates.mjs`, `module/helpers/release-notes.mjs`, `system.json`, `TODO_BUG_ANTIQUE.md`.
+
+---
+
 ## Session du 7 octobre 2026 — Point 78 : objets des 7 PJ réalignés sur les compendiums (v0.6.148 → v0.6.149)
 
 Session menée depuis le dossier de Mer des Pirates. **Avant** : 21 commits locaux poussés sur GitHub à la demande de

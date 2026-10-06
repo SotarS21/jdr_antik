@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.150": {
+    title: "Version 0.6.150 — Effets des avantages et désavantages rétablis",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les avantages et désavantages du compendium qui avaient perdu leur effet (Guerrier Aguerri, Mule, Casque d'Hadès, Phobie, Dette, Jugement d'Hadès…) le retrouvent ; même chose pour ces traits portés par les personnages (monde et compendium "Personnages Joueurs") quand ils n'en ont aucun.</li>
+        <li><strong>Corrigé</strong> : 6 capacités de combat (Attaque en piqué, Charge de cavalerie, Charge dévastatrice, Charge du Taureau…) portaient leur effet en double — leur bonus d'attaque comptait deux fois. Un seul effet est gardé, y compris sur les créatures et PNJ.</li>
+      </ul>`
+  },
   "0.6.149": {
     title: "Version 0.6.149 — Objets des personnages joueurs mis à jour",
     html: `

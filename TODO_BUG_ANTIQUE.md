@@ -4,6 +4,24 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 79. ~~Effets manquants des avantages / désavantages, effets en double des capacités de combat~~ — CORRIGÉ (7 octobre 2026, v0.6.150, vérifié en jeu)
+
+Trouvé en vérifiant le point 78 (le « Casque d'Hadès » d'Adresthea n'avait pas d'effet). Demande : « corrige le Casque
+d'Hadès avec un correctif » ; l'écart étant général, l'utilisateur a choisi de corriger **tous** les effets manquants et
+les doublons. Constat dans le monde `testantique` (compendiums installés comparés aux miroirs JSON de la source) : 76
+avantages et 76 désavantages sans l'effet de la source (ceux des anciens correctifs « effets simples ») ; 6 capacités
+de combat (Regard pétrifiant, Attaque en piqué, Attaque en piqué (Griffon), Charge de cavalerie, Charge dévastatrice,
+Charge du Taureau) avec leur effet en double — une ancienne copie et celle du système, bonus d'attaque compté deux fois.
+
+Correctifs `PACK_UPDATES` : `0.6.150-effets-avantages` / `-effets-desavantages` (effet de la source ajouté, `keepId`,
+seulement là où il n'y a aucun effet), `0.6.150-effets-traits-personnages` (traits des personnages du monde et du
+compendium « Personnages Joueurs » sans effet, par type + nom), `0.6.150-doublons-capacites-combat` (un effet par nom :
+celui dont l'id est celui du système ; compendium, créatures et PNJ, monde). **Vérifié en jeu** (Playwright, MJ « claude ») :
+4 correctifs appliqués via le sélecteur, rejoués = 0, plus aucun écart d'effets avec la source, Casque d'Hadès d'Adresthea
+0 → 1 effet (Banane, qui en avait déjà un, inchangé), Attaque en piqué : 1 seul effet.
+
+---
+
 ## 78. Mettre à jour traits/objets des 7 PJ du compendium "Personnages Joueurs" — CORRIGÉ (7 octobre 2026, v0.6.149, vérifié en jeu)
 
 **Fait le 7 octobre 2026** (demande de l'utilisateur ; portée choisie : « règles à jour, état du PJ gardé ») :

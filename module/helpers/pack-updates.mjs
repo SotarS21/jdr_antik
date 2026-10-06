@@ -892,6 +892,50 @@ export const PACK_UPDATES = [
       "objets ; état du personnage gardé (équipé, emplacement, quantité, ingrédients possédés, utilisations restantes, " +
       "notes du MJ). À ne pas cocher si des objets ont été personnalisés à la main en cours de campagne.",
     apply: applyRealignerPJMonde
+  },
+  {
+    id: "0.6.150-effets-avantages",
+    pack: "avantages",
+    version: "0.6.150",
+    label: "Effets manquants des avantages",
+    description:
+      "Point 79 : dans certains mondes, les avantages du compendium n'ont plus l'effet que le système leur donne " +
+      "(Guerrier Aguerri, Mule, Casque d'Hadès… 76 constatés). Ajoute l'effet d'origine à chaque avantage qui n'en a " +
+      "aucun ; ceux qui ont déjà un effet ne sont pas touchés.",
+    apply: () => applyEffetsTraitsCompendium("avantages")
+  },
+  {
+    id: "0.6.150-effets-desavantages",
+    pack: "desavantages",
+    version: "0.6.150",
+    label: "Effets manquants des désavantages",
+    description:
+      "Point 79 : même correction pour les désavantages du compendium (Phobie, Dette, Jugement d'Hadès… 76 constatés) : " +
+      "l'effet d'origine est ajouté à chaque désavantage qui n'en a aucun.",
+    apply: () => applyEffetsTraitsCompendium("desavantages")
+  },
+  {
+    id: "0.6.150-effets-traits-personnages",
+    pack: "acteurs",
+    version: "0.6.150",
+    label: "Effets manquants des avantages / désavantages des personnages",
+    description:
+      "Point 79 : les avantages et désavantages portés par les personnages du monde et du compendium \"Personnages " +
+      "Joueurs\" qui n'ont aucun effet reçoivent l'effet d'origine du trait (même type, même nom). Un trait qui a déjà " +
+      "un effet n'est pas touché. Attention : un effet chiffré (ex. Mule) s'applique alors au personnage.",
+    apply: applyEffetsTraitsPersonnages
+  },
+  {
+    id: "0.6.150-doublons-capacites-combat",
+    pack: "capacites-combat",
+    version: "0.6.150",
+    label: "Effets en double des capacités de combat",
+    description:
+      "Point 79 : 6 capacités (Regard pétrifiant, Attaque en piqué, Attaque en piqué (Griffon), Charge de cavalerie, " +
+      "Charge dévastatrice, Charge du Taureau) portaient deux fois le même effet — le bonus d'attaque comptait double. " +
+      "Garde un seul effet par nom (celui du système), dans le compendium et sur les créatures / PNJ qui portent ces " +
+      "capacités (monde et compendiums).",
+    apply: applyDoublonsCapacitesCombat
   }
 ];
 
@@ -4587,6 +4631,118 @@ async function applyFixDynamicBuffIcons() {
 // data as a JS literal here, and only creates whatever the pack's index doesn't already
 // have (idempotent, safe to rerun — e.g. after a GM added their own 8th character to this
 // same pack by hand, re-running this must never touch or duplicate that one).
+/* Point 79 — effets manquants des avantages / désavantages, doublons des capacités de combat. */
+
+/** Documents d'un pack tels que livrés par le système (miroir JSON de packs/<nom>.db, voir version-check.mjs). */
+async function documentsSource(nom) {
+  const reponse = await fetch(`systems/antique/packs/_json-mirrors/${nom}.json`);
+  if (!reponse.ok) throw new Error(`Impossible de lire le miroir ${nom}.json (HTTP ${reponse.status})`);
+  return (await reponse.text()).split("\n").map((l) => l.trim()).filter(Boolean).map((l) => JSON.parse(l))
+    .filter((d) => !("sorting" in d));
+}
+
+/** Effets d'un document source, prêts à créer (sans la comptabilité _stats de Foundry). */
+const effetsSource = (doc) => (doc?.effects ?? []).map(({ _stats, ...effet }) => effet);
+
+async function applyEffetsTraitsCompendium(nom) {
+  const pack = game.packs.get(`antique.${nom}`);
+  if (!pack) return 0;
+  const source = new Map((await documentsSource(nom)).map((d) => [d._id, d]));
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  let fixed = 0;
+  try {
+    for (const doc of await pack.getDocuments()) {
+      const effets = effetsSource(source.get(doc.id));
+      if (doc.effects.size || !effets.length) continue;
+      await doc.createEmbeddedDocuments("ActiveEffect", effets, { keepId: true });
+      fixed++;
+    }
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return fixed;
+}
+
+async function applyEffetsTraitsPersonnages() {
+  const references = new Map();
+  for (const nom of ["avantages", "desavantages"]) {
+    for (const doc of await documentsSource(nom)) {
+      const cle = cleObjet(doc.type, doc.name);
+      if (!references.has(cle)) references.set(cle, doc);
+    }
+  }
+  const completer = async (actor) => {
+    let n = 0;
+    for (const item of actor.items) {
+      if (!["advantage", "disadvantage"].includes(item.type) || item.effects.size) continue;
+      const effets = effetsSource(references.get(cleObjet(item.type, item.name))).map(({ _id, ...e }) => e);
+      if (!effets.length) continue;
+      await item.createEmbeddedDocuments("ActiveEffect", effets);
+      n++;
+    }
+    return n;
+  };
+  let fixed = 0;
+  for (const actor of game.actors) fixed += await completer(actor);
+  const pack = game.packs.get("antique.personnages");
+  if (pack) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    try {
+      for (const actor of await pack.getDocuments()) fixed += await completer(actor);
+    } finally {
+      if (wasLocked) await pack.configure({ locked: true });
+    }
+  }
+  return fixed;
+}
+
+/** Garde un effet par nom : celui dont l'id est celui du système, sinon le plus récemment modifié. */
+async function dedoublonnerEffets(doc, idsSysteme) {
+  const parNom = new Map();
+  for (const effet of doc.effects) {
+    if (!parNom.has(effet.name)) parNom.set(effet.name, []);
+    parNom.get(effet.name).push(effet);
+  }
+  const aSupprimer = [];
+  for (const liste of parNom.values()) {
+    if (liste.length < 2) continue;
+    const garde = liste.find((e) => idsSysteme.has(e.id))
+      ?? liste.reduce((a, b) => ((b._stats?.modifiedTime ?? 0) > (a._stats?.modifiedTime ?? 0) ? b : a));
+    aSupprimer.push(...liste.filter((e) => e !== garde).map((e) => e.id));
+  }
+  if (aSupprimer.length) await doc.deleteEmbeddedDocuments("ActiveEffect", aSupprimer);
+  return aSupprimer.length ? 1 : 0;
+}
+
+async function applyDoublonsCapacitesCombat() {
+  const source = await documentsSource("capacites-combat");
+  const idsSysteme = new Set(source.flatMap((d) => (d.effects ?? []).map((e) => e._id)));
+  const nomsCapacites = new Set(source.map((d) => d.name));
+  let fixed = 0;
+  const parPack = async (nom, traiter) => {
+    const pack = game.packs.get(`antique.${nom}`);
+    if (!pack) return;
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    try {
+      for (const doc of await pack.getDocuments()) await traiter(doc);
+    } finally {
+      if (wasLocked) await pack.configure({ locked: true });
+    }
+  };
+  const capacitesDeLActeur = async (actor) => {
+    for (const item of actor.items) {
+      if (item.type === "npcability" && nomsCapacites.has(item.name)) fixed += await dedoublonnerEffets(item, idsSysteme);
+    }
+  };
+  await parPack("capacites-combat", async (doc) => { fixed += await dedoublonnerEffets(doc, idsSysteme); });
+  for (const nom of ["creatures", "pnj"]) await parPack(nom, capacitesDeLActeur);
+  for (const actor of game.actors) await capacitesDeLActeur(actor);
+  return fixed;
+}
+
 /* Point 78 — réalignement des objets des PJ (règle : module/helpers/realignement-objets.mjs). */
 
 /** Documents de référence des compendiums d'objets du système, par type + nom (premier trouvé). */
