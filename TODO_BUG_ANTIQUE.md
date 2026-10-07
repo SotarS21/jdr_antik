@@ -4,6 +4,15 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
+## 81. Passer le dépôt GitHub en public pour partager le manifest — À FAIRE (8 octobre 2026)
+
+Demande : passer le projet GitHub (`SotarS21/jdr_antik`, actuellement privé) en public, pour partager plus facilement
+le manifest sur Foundry VTT (installation du système par URL de manifest). État actuel : `system.json` a `url` renseigné
+mais `manifest` et `download` vides — à remplir (URL du `system.json` et de l'archive de la dernière release) une fois
+le dépôt public, avec une publication de release comme pour Galactic Wars.
+
+---
+
 ## 80. Effets classiques (dont « Peur : −1 à tout test ») et compétences des PNJ — EN ATTENTE de validation (7 octobre 2026)
 
 Demandes anciennes reprises de `TODO_cette_semaine.txt` (Bureau, mai 2026) : « Ajouter un effet : Peur : −1 à tout test »,
