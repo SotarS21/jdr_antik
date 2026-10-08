@@ -18,6 +18,7 @@ import { AntiqueNpcAbility } from "./module/data-models/items/item-npcability.mj
 // Import Document classes
 import { AntiqueActor } from "./module/documents/actor.mjs";
 import { AntiqueItem } from "./module/documents/item.mjs";
+import { AntiqueActiveEffect } from "./module/documents/active-effect.mjs";
 
 // Import Sheet classes
 import { AntiqueActorSheet } from "./module/sheets/actor-sheet.mjs";
@@ -75,6 +76,9 @@ Hooks.once("init", function () {
   // Define custom Document classes
   CONFIG.Actor.documentClass = AntiqueActor;
   CONFIG.Item.documentClass = AntiqueItem;
+  // Modificateurs de caractéristique toujours appliqués dans la phase "abilities", clés
+  // obsolètes redirigées (saves.<k>.base → bonus) — voir module/documents/active-effect.mjs.
+  CONFIG.ActiveEffect.documentClass = AntiqueActiveEffect;
 
   // Register DataModels
   CONFIG.Actor.dataModels.character = AntiqueCharacter;

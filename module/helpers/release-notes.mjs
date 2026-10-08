@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.152": {
+    title: "Version 0.6.152 — Effets sans action réparés",
+    html: `
+      <ul>
+        <li><strong>Corrigé</strong> : les désavantages Frêle, Dépressif et Maladroit n'appliquaient pas leur −1 de sauvegarde (Robustesse, Volonté, Réflexes) — y compris sur les personnages qui les possèdent déjà, sans rien refaire.</li>
+        <li><strong>Corrigé</strong> : les effets qui modifient directement un modificateur de caractéristique n'avaient aucun effet — bénédictions Faveur d'Athéna, Force d'Héraclès, Vitesse d'Hermès, Beauté divine, et l'état Affamé après un repos sans ration. Ils s'appliquent maintenant, ainsi qu'à tout ce qui en dépend (compétences, sauvegardes, CA, initiative, attaques).</li>
+        <li><strong>Corrigé</strong> : la Rage de Xeno donne CA +1 quand le sort est lancé ; le +1d6 aux dégâts est indiqué dans l'effet (à ajouter à la main). Une ligne d'effet vide retirée d'Imposition des Mains (Eosyne). Deux correctifs proposés : compendium "Personnages Joueurs" et copies dans le monde.</li>
+      </ul>`
+  },
   "0.6.151": {
     title: "Version 0.6.151 — Statuts classiques et compétences des PNJ",
     html: `

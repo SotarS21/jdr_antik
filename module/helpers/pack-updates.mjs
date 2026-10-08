@@ -947,6 +947,27 @@ export const PACK_UPDATES = [
       "Entravé, Empoisonné, Saignement, Endormi, Inconscient, Béni, Mort), avec leurs bonus / malus " +
       "automatiques — les mêmes que dans le menu des statuts du jeton. Aucun effet existant n'est modifié.",
     apply: applyStatutsEffets
+  },
+  {
+    id: "0.6.152-pj-effets-invalides",
+    pack: "personnages",
+    version: "0.6.152",
+    label: "Effets invalides de Xeno (Rage) et Eosyne (Imposition des Mains)",
+    description:
+      "Rage (Xeno) : ses deux changements avaient des clés inconnues (« Ca », « Dégats ») et ne faisaient rien — le sort " +
+      "donne maintenant CA +1 quand il est lancé (comme Rage Incontrôlable), le +1d6 aux dégâts est indiqué dans la " +
+      "description de l'effet, à ajouter à la main. Imposition des Mains (Eosyne) : une ligne de changement vide retirée. " +
+      "Compendium \"Personnages Joueurs\".",
+    apply: applyPjEffetsInvalidesCompendium
+  },
+  {
+    id: "0.6.152-pj-effets-invalides-monde",
+    pack: "acteurs",
+    version: "0.6.152",
+    label: "Effets invalides de Xeno (Rage) et Eosyne (Imposition des Mains) — monde",
+    description:
+      "Même correction que le correctif précédent, sur les copies de ces personnages déjà présentes dans le monde.",
+    apply: applyPjEffetsInvalidesMonde
   }
 ];
 
@@ -4920,3 +4941,58 @@ async function applyStatutsEffets() {
   }
   return missing.length;
 }
+
+/**
+ * Constats annexes du point 80 : changements d'effet à clé invalide sur les objets d'un PJ.
+ * - changement à clé vide ("") : retiré (Imposition des Mains d'Eosyne) ;
+ * - sort « Rage » (Xeno) : changements « Ca » / « Dégats » retirés, caBonus 1 (CA +1 au
+ *   lancement, comme Rage Incontrôlable), +1d6 aux dégâts dans la description de l'effet.
+ * Ne touche que ces cas ; renvoie le nombre d'objets corrigés.
+ */
+const RAGE_EFFET_DESCRIPTION = "<p>État de rage du berserk. <strong>CA +1</strong> : automatique quand le sort est lancé (bouton d'effet du tchat). <strong>+1d6 aux dégâts</strong> : à ajouter à la main au jet de dégâts.</p>";
+
+async function corrigerEffetsInvalidesActeur(actor) {
+  let corriges = 0;
+  for (const item of actor.items) {
+    const effets = [];
+    for (const effet of item.effects) {
+      const changes = effet.system?.changes ?? [];
+      const estRage = item.type === "spell" && item.name === "Rage";
+      const invalides = changes.filter(c => c.key === "" || (estRage && ["Ca", "Dégats"].includes(c.key)));
+      if (!invalides.length) continue;
+      const maj = { _id: effet.id, "system.changes": changes.filter(c => !invalides.includes(c)) };
+      if (estRage && !effet.description) maj.description = RAGE_EFFET_DESCRIPTION;
+      effets.push(maj);
+    }
+    if (!effets.length) continue;
+    await item.updateEmbeddedDocuments("ActiveEffect", effets);
+    if (item.type === "spell" && item.name === "Rage" && !item.system.caBonus) await item.update({ "system.caBonus": 1 });
+    corriges++;
+  }
+  return corriges;
+}
+
+async function applyPjEffetsInvalidesCompendium() {
+  const pack = game.packs.get("antique.personnages");
+  if (!pack) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  let total = 0;
+  try {
+    for (const actor of await pack.getDocuments()) total += await corrigerEffetsInvalidesActeur(actor);
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return total;
+}
+
+async function applyPjEffetsInvalidesMonde() {
+  const pack = game.packs.get("antique.personnages");
+  const noms = new Set(pack ? (await pack.getIndex()).map((e) => e.name) : []);
+  const copies = game.actors.filter((a) => a._stats?.compendiumSource?.startsWith("Compendium.antique.personnages.") || noms.has(a.name));
+  let total = 0;
+  for (const actor of copies) total += await corrigerEffetsInvalidesActeur(actor);
+  return total;
+}
+
+export { corrigerEffetsInvalidesActeur };
