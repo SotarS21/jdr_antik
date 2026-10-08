@@ -31,7 +31,7 @@ compétence, sauvegarde, esquive / parade, attaque par catégorie, attaque d'arm
 `CONFIG.statusEffects` (Mort = statut natif "dead") ; correctif `0.6.151-statuts-effets` (12 documents du compendium
 « Effets », ids `eStatut0000000NN`, aussi dans `packs/effets.db`) ; compétences des PNJ (`system.competences`, onglet
 Statistiques : « + » → choix parmi les compétences des PJ ou personnalisée, total prérempli avec le modificateur de la
-caractéristique, jet, corbeille). Test en direct `packs/_test-point80.mjs` : 77/77 OK. Constats annexes de l'exploration, non
+caractéristique, jet, corbeille). Test en direct `packs/_test-point80.mjs` : 77/77 OK ; tests complémentaires `packs/_test-point80b.mjs` : 34/34 OK. Constats annexes de l'exploration, non
 traités : effets de désavantages (Frêle, Dépressif, Maladroit) visant `system.saves.<k>.base` (écrasé par SAVE_BASE) ;
 bénédictions avec `system.abilities.<k>.mod` sans `phase: "abilities"` ; clés invalides (`""`, `"Ca"`, `"Dégats"`) dans
 `packs/personnages.db` ; `avantageTemporaire` sans effet mécanique.

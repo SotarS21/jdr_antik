@@ -27,6 +27,13 @@ avec total saisi à la main.
   compétence, attaque par catégorie, arme, attaque du PNJ ; retrait → retour à la normale), cumul, CA saisie du PNJ
   inchangée, compétences des PNJ (ajout PJ / personnalisée, saisie, jet avec Peur, corbeille), icône sur le jeton et
   panneau d'effets. Titre « Compétences » restylé après capture (presque invisible sur le parchemin).
+- **Tests complémentaires** demandés par l'utilisateur (`packs/_test-point80b.mjs`) : **34/34 OK**, aucune erreur,
+  nettoyage complet — les 12 statuts de `packs/effets.db` conformes à la liste validée ; jets d'esquive et de parade
+  (PJ et PNJ) avec Peur (−1) et Entravé (−2), la pénalité de réaction −1 restant appliquée ; arme à distance du PJ, arme
+  et attaque par catégorie du PNJ (Aveuglé + Béni = −3) ; effet construit comme le correctif de compendium et posé sur un
+  acteur (statut reconnu, retiré en décochant le statut du jeton) ; description sur l'effet créé ; jeton de PNJ non lié
+  (statut propre au jeton) ; retrait par clic dans le panneau d'effets ; initiative du suivi de combat (Terrorisé −3,
+  « Lancer l'initiative »). Le correctif de compendium lui-même n'a pas été appliqué (à faire par l'utilisateur).
 
 ---
 
