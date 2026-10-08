@@ -23,7 +23,7 @@ async function verify(dir, label) {
 }
 
 (async () => {
-  const deployed = 'C:/Users/jarthemise/AppData/Local/FoundryVTT/Data/systems/antique/packs';
+  const deployed = `${process.env.LOCALAPPDATA}/FoundryVTT/Data/systems/antique/packs`;
   await verify(path.join(deployed, 'avantages'), 'AVANTAGES (deployed)');
   await verify(path.join(deployed, 'desavantages'), 'DESAVANTAGES (deployed)');
 })();

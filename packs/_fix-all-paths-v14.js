@@ -79,7 +79,7 @@ async function fixCompendium(compendiumName) {
 // Fonction pour copier un fichier .db vers le dossier Foundry
 function copyToFoundry(compendiumName) {
   const source = path.join(__dirname, compendiumName + '.db');
-  const destDir = path.join(__dirname, '..', '..', '..', 'Users', 'arthe', 'AppData', 'Local', 'FoundryVTT', 'Data', 'systems', 'antique', 'packs');
+  const destDir = path.join(process.env.LOCALAPPDATA, 'FoundryVTT', 'Data', 'systems', 'antique', 'packs');
   const dest = path.join(destDir, compendiumName + '.db');
   
   if (fs.existsSync(source)) {
@@ -116,7 +116,7 @@ async function main() {
   for (const compendium of COMPENDIUMS) {
     const source = path.join(__dirname, compendium);
     if (fs.existsSync(source + '.db')) {
-      const destDir = path.join('C:', 'Users', 'arthe', 'AppData', 'Local', 'FoundryVTT', 'Data', 'systems', 'antique', 'packs');
+      const destDir = path.join(process.env.LOCALAPPDATA, 'FoundryVTT', 'Data', 'systems', 'antique', 'packs');
       const dest = path.join(destDir, compendium + '.db');
       if (fs.existsSync(destDir)) {
         fs.copyFileSync(source + '.db', dest);

@@ -1,8 +1,8 @@
-const { ClassicLevel } = require('C:\Users\arthe\AppData\Local\FoundryVTT\Data\systems\antique\packs\node_modules\classic-level');
+const { ClassicLevel } = require(`${process.env.LOCALAPPDATA}/FoundryVTT/Data/systems/antique/packs/node_modules/classic-level`);
 const path = require('path');
 
 (async () => {
-  const db = new ClassicLevel(path.join('C:', 'Users', 'arthe', 'AppData', 'Local', 'FoundryVTT', 'Data', 'systems', 'antique', 'packs', 'avantages'), { 
+  const db = new ClassicLevel(path.join(process.env.LOCALAPPDATA, 'FoundryVTT', 'Data', 'systems', 'antique', 'packs', 'avantages'), { 
     keyEncoding: 'utf8', 
     valueEncoding: 'utf8' 
   });

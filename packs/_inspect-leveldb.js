@@ -23,7 +23,7 @@ async function inspect(dir, label, limit) {
 }
 
 (async () => {
-  const deployed = 'C:/Users/jarthemise/AppData/Local/FoundryVTT/Data/systems/antique/packs';
+  const deployed = `${process.env.LOCALAPPDATA}/FoundryVTT/Data/systems/antique/packs`;
   // Inspect a working compendium
   await inspect(path.join(deployed, 'armes'), 'ARMES (working)', 5);
   // Inspect our generated compendium

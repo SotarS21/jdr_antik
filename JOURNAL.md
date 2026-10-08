@@ -2842,7 +2842,7 @@ aussi en lecture seule.
 ## Session du 9 septembre 2026 — Audit `todo_foundry.txt` + correctif focus/scroll effet (v0.6.67 → v0.6.68)
 
 Demande utilisateur : reprendre le travail, en repartant du fichier de suivi personnel
-`C:\Users\arthe\Desktop\todo_foundry.txt` (hors du dépôt, jamais vu par Claude avant cette
+`todo_foundry.txt` (Bureau) (hors du dépôt, jamais vu par Claude avant cette
 session — mélange les projets "antique" et un projet "pirate" séparé, avec des items marqués
 `done`/`[X]` de façon inconsistante). Audit croisé contre `JOURNAL.md` et le code réel (pas de
 confiance aveugle aux marqueurs du fichier) : la quasi-totalité des items antique étaient déjà
