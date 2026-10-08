@@ -2,7 +2,28 @@
 
 ---
 
-## Session du 9 octobre 2026 — Point 81 : dépôt public, manifest partageable (v0.6.151)
+## Session du 9 octobre 2026 (suite) — Constats annexes du point 80 : effets sans action (v0.6.151 → v0.6.152)
+
+Demande : corriger les quatre constats annexes notés au point 80.
+
+- **Analyse des compendiums** : Frêle, Dépressif, Maladroit (+ copie de Dépressif sur Antalios) visent
+  `system.saves.<k>.base`, champ inexistant (la base est recalculée) ; 4 bénédictions (Faveur d'Athéna, Force d'Héraclès,
+  Vitesse d'Hermès, Beauté divine, + copie sur Éphise) et l'effet **Affamé** créé par le code au repos long visent
+  `system.abilities.<k>.mod` en phase "initial" → recalculé ensuite, sans effet ; clés invalides seulement sur Xeno (Rage :
+  « Ca », « Dégats ») et Eosyne (ligne vide).
+- **Correction en code** (`module/documents/active-effect.mjs`, `CONFIG.ActiveEffect.documentClass`) :
+  `shouldApplyChange` force la phase "abilities" pour tout mod de caractéristique ; `applyChange` redirige
+  `saves.<k>.base` → `saves.<k>.bonus`. Couvre compendiums, objets possédés et jetons non liés sans migration.
+- **Rage / Imposition des Mains** : choix de l'utilisateur — CA +1 via `caBonus` du sort (appliqué au lancement, comme
+  Rage Incontrôlable ; un changement permanent aurait donné +1 CA en continu), +1d6 aux dégâts dans la description ;
+  ligne vide retirée. Source `packs/personnages.db` + 2 correctifs `0.6.152-pj-effets-invalides(-monde)` à cocher (Eosyne est
+  dans le monde, pas Xeno).
+- **Avantage** : laissé en badge manuel (choix de l'utilisateur).
+- **Tests** : `packs/_test-effets-reparés.mjs` 23/23 OK (désavantages, bénédictions PJ et PNJ + répercussions, effet déjà en
+  phase "abilities" compté une fois, Affamé, correctif Rage sur une copie de l'ancienne Xeno, rejoué sans effet) ; point 80
+  relancé 77/77 et 34/34. Déployé sans les dossiers LevelDB du dépôt ; utilisateur connecté (F5 suffit côté code).
+
+ : dépôt public, manifest partageable (v0.6.151)
 
 But (utilisateur) : que le manifest soit accessible à quelqu'un d'extérieur. Point 80 fusionné et poussé avant.
 

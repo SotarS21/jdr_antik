@@ -41,7 +41,16 @@ compétence, sauvegarde, esquive / parade, attaque par catégorie, attaque d'arm
 `CONFIG.statusEffects` (Mort = statut natif "dead") ; correctif `0.6.151-statuts-effets` (12 documents du compendium
 « Effets », ids `eStatut0000000NN`, aussi dans `packs/effets.db`) ; compétences des PNJ (`system.competences`, onglet
 Statistiques : « + » → choix parmi les compétences des PJ ou personnalisée, total prérempli avec le modificateur de la
-caractéristique, jet, corbeille). Test en direct `packs/_test-point80.mjs` : 77/77 OK ; tests complémentaires `packs/_test-point80b.mjs` : 34/34 OK. Constats annexes de l'exploration, non
+caractéristique, jet, corbeille). Test en direct `packs/_test-point80.mjs` : 77/77 OK ; tests complémentaires `packs/_test-point80b.mjs` : 34/34 OK.
+**Constats annexes traités le 9 octobre 2026 (v0.6.152)** : (1) Frêle / Dépressif / Maladroit et (2) modificateurs de
+caractéristique sans phase "abilities" (4 bénédictions, Affamé) corrigés EN CODE par `AntiqueActiveEffect`
+(`module/documents/active-effect.mjs` : mod de caractéristique toujours appliqué en phase "abilities", clé
+`saves.<k>.base` redirigée vers `bonus`) — valable pour toutes les copies sans réécrire les données ; (3) clés invalides :
+Rage de Xeno (sort) → caBonus 1 (CA +1 au lancement), +1d6 aux dégâts dans la description (choix de l'utilisateur), ligne
+vide d'Imposition des Mains (Eosyne) retirée — source `packs/personnages.db` + correctifs `0.6.152-pj-effets-invalides`
+(compendium) et `…-monde` (copies du monde), à cocher par l'utilisateur ; (4) `avantageTemporaire` : **laissé en badge
+manuel** (choix de l'utilisateur, règle « relancer un jet raté une fois par session » appliquée à la main). Test
+`packs/_test-effets-reparés.mjs` : 23/23 OK ; tests du point 80 relancés sans régression (77/77, 34/34). Constats annexes de l'exploration, non
 traités : effets de désavantages (Frêle, Dépressif, Maladroit) visant `system.saves.<k>.base` (écrasé par SAVE_BASE) ;
 bénédictions avec `system.abilities.<k>.mod` sans `phase: "abilities"` ; clés invalides (`""`, `"Ca"`, `"Dégats"`) dans
 `packs/personnages.db` ; `avantageTemporaire` sans effet mécanique.
