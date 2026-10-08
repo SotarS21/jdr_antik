@@ -41,6 +41,14 @@ import { registerEffectsPanel } from "./module/apps/effects-panel.mjs";
 /*  Foundry VTT Initialization                  */
 /* -------------------------------------------- */
 
+// Descriptions des statuts Antique traduites une fois les langues chargées (copiées dans
+// l'effet créé depuis le menu du jeton).
+Hooks.once("i18nInit", () => {
+  for (const s of CONFIG.statusEffects) {
+    if (s.description?.startsWith("ANTIQUE.")) s.description = game.i18n.localize(s.description);
+  }
+});
+
 Hooks.once("init", function () {
   console.log("Antique | Initialisation du système Antique");
 
@@ -99,6 +107,19 @@ Hooks.once("init", function () {
     makeDefault: true,
     label: "ANTIQUE.Sheet.Deity"
   });
+
+  // Statuts Antique (point 80) ajoutés à la suite des statuts de Foundry (choix de
+  // l'utilisateur). Effet automatique via system.changes ; icône toujours sur le jeton.
+  for (const statut of ANTIQUE.statuts) {
+    if (statut.natif) continue;
+    CONFIG.statusEffects.push({
+      id: statut.id,
+      name: `ANTIQUE.Statut.${statut.id}`,
+      img: statut.img,
+      description: `ANTIQUE.StatutDesc.${statut.id}`,
+      system: { changes: statut.changes }
+    });
+  }
 
   // Configure initiative formula for the combat tracker
   CONFIG.Combat.initiative = {

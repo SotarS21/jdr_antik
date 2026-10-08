@@ -13,7 +13,7 @@ le dépôt public, avec une publication de release comme pour Galactic Wars.
 
 ---
 
-## 80. Effets classiques (dont « Peur : −1 à tout test ») et compétences des PNJ — EN ATTENTE de validation (7 octobre 2026)
+## 80. ~~Effets classiques (dont « Peur : −1 à tout test ») et compétences des PNJ~~ — CORRIGÉ (8 octobre 2026, v0.6.151, testé en jeu ; correctif de compendium à appliquer par l'utilisateur)
 
 Demandes anciennes reprises de `TODO_cette_semaine.txt` (Bureau, mai 2026) : « Ajouter un effet : Peur : −1 à tout test »,
 « Faire une liste des effets classiques », « Sur les PNJ, ajouter la possibilité d'avoir des compétences par rapport à la
@@ -22,7 +22,16 @@ validation dans le document Claude « Antique — effets classiques et compéten
 (https://claude.ai/code/artifact/4b1ba1d5-e214-46f0-872e-edca7b3ad484) : modificateur « tous les tests » (nouveau champ PJ
 + PNJ, lu par tous les jets 1d20), 12 statuts Antique remplaçant `CONFIG.statusEffects` (valeurs proposées par Claude
 sauf Peur et Mort), compétences des PNJ au choix du MJ avec total saisi à la main (liste des PJ + personnalisées).
-**L'utilisateur valide demain (« on verra demain ») — ne rien coder avant.** Constats annexes de l'exploration, non
+**Validé le 8 octobre 2026** : « tous les tests » sur tous les jets, initiative comprise ; les 12 statuts tels quels ;
+statuts **ajoutés à la suite** de ceux de Foundry (pas de remplacement, comme pour Mer des Pirates) ; compétences des PNJ
+avec total saisi à la main. **Fait (v0.6.151)** : bloc `system.modificateurs` (tousTests, attaque, ca, esquive) PJ + PNJ
+(`module/data-models/modificateurs.mjs`) ; `modificateurJet()` (`helpers/rolls.mjs`) ajouté à tous les jets (caractéristique,
+compétence, sauvegarde, esquive / parade, attaque par catégorie, attaque d'arme, attaque du PNJ, initiative via
+`getRollData`) avec le détail dans le tchat (« Peur −1 ») ; CA et Esquive dérivées ; `ANTIQUE.statuts` (config.mjs) ajoutés à
+`CONFIG.statusEffects` (Mort = statut natif "dead") ; correctif `0.6.151-statuts-effets` (12 documents du compendium
+« Effets », ids `eStatut0000000NN`, aussi dans `packs/effets.db`) ; compétences des PNJ (`system.competences`, onglet
+Statistiques : « + » → choix parmi les compétences des PJ ou personnalisée, total prérempli avec le modificateur de la
+caractéristique, jet, corbeille). Test en direct `packs/_test-point80.mjs` : 77/77 OK ; tests complémentaires `packs/_test-point80b.mjs` : 34/34 OK. Constats annexes de l'exploration, non
 traités : effets de désavantages (Frêle, Dépressif, Maladroit) visant `system.saves.<k>.base` (écrasé par SAVE_BASE) ;
 bénédictions avec `system.abilities.<k>.mod` sans `phase: "abilities"` ; clés invalides (`""`, `"Ca"`, `"Dégats"`) dans
 `packs/personnages.db` ; `avantageTemporaire` sans effet mécanique.

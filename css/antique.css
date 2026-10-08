@@ -3883,3 +3883,35 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* ── Compétences des PNJ (point 80) ─────────────────────────── */
+.antique.npc .npc-competences { margin-bottom: 16px; }
+.antique.npc .npc-competences h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 4px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--antique-dark-gold);
+}
+.antique.npc .npc-competences h3 a { cursor: pointer; color: var(--antique-dark-gold); font-size: 1.1em; }
+.antique.npc .npc-competences h3 a:hover { color: var(--antique-gold); }
+.antique.npc .npc-competence-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 130px 60px 24px;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--antique-border);
+}
+.antique.npc .npc-competence-roll { cursor: pointer; color: var(--antique-dark-gold); }
+.antique.npc .npc-competence-roll:hover { color: var(--antique-gold); }
+.antique.npc .npc-competence-total { text-align: center; font-weight: bold; }
+.antique.npc .npc-competence-delete { cursor: pointer; color: var(--antique-brown); text-align: center; }
+.antique.npc .npc-competences-vide { font-style: italic; opacity: .7; margin: 4px 0; }
+.antique-roll-mods { font-style: italic; opacity: .85; }

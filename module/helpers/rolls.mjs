@@ -1,4 +1,29 @@
 /**
+ * Modificateurs de statut d'un jet (point 80) : somme de system.modificateurs.<clé> pour les
+ * clés demandées (toujours "tousTests", plus "attaque" pour un jet d'attaque), et détail des
+ * effets actifs qui les portent, pour le tchat (« Peur −1, Béni +1 »).
+ * @param {Actor} actor
+ * @param {string[]} [cles]
+ * @returns {{value: number, flavor: string}} flavor = texte à ajouter au libellé du jet
+ */
+export function modificateurJet(actor, cles = ["tousTests"]) {
+  const mods = actor?.system?.modificateurs;
+  const value = mods ? cles.reduce((sum, k) => sum + (Number(mods[k]) || 0), 0) : 0;
+  if (!value) return { value: 0, flavor: "" };
+  const keys = new Set(cles.map(k => `system.modificateurs.${k}`));
+  const details = [];
+  for (const effect of actor.appliedEffects ?? []) {
+    for (const change of effect.system?.changes ?? []) {
+      if (!keys.has(change.key)) continue;
+      const v = Number(change.value) || 0;
+      if (v) details.push(`${effect.name} ${v > 0 ? "+" : "−"}${Math.abs(v)}`);
+    }
+  }
+  const text = details.length ? details.join(", ") : `${value > 0 ? "+" : "−"}${Math.abs(value)}`;
+  return { value, flavor: ` <span class="antique-roll-mods">(${text})</span>` };
+}
+
+/**
  * Retrieve the CA (armor class) of an actor regardless of type.
  * Characters store it in system.ca.total, NPCs in system.ca.value.
  * @param {Actor} actor

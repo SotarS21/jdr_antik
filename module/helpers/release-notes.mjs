@@ -5,6 +5,15 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.151": {
+    title: "Version 0.6.151 — Statuts classiques et compétences des PNJ",
+    html: `
+      <ul>
+        <li><strong>Ajouté</strong> : 12 statuts Antique dans le menu des statuts du jeton (à la suite de ceux de Foundry) et dans le compendium "Effets" : Peur (−1 à tous les tests), Terrorisé (−3), Étourdi (−2 aux tests, −2 CA), Aveuglé (−4 aux attaques, −2 CA), À terre (−2 aux attaques, −2 CA), Entravé (déplacement 0, −2 à l'esquive), Empoisonné (−1), Saignement, Endormi (−4 CA), Inconscient (−4 CA), Béni (+1) et Mort. Leurs bonus / malus s'appliquent automatiquement ; le MJ les retire.</li>
+        <li><strong>Ajouté</strong> : un modificateur « tous les tests », PJ et PNJ, appliqué à chaque jet (caractéristique, compétence, sauvegarde, attaque, esquive / parade, initiative). Le tchat indique les statuts en jeu (« Peur −1 »).</li>
+        <li><strong>Ajouté</strong> : compétences des PNJ et créatures (onglet Statistiques) : bouton « + » pour choisir une compétence des PJ ou une compétence personnalisée, total prérempli avec le modificateur de la caractéristique puis modifiable, jet d'un clic, corbeille pour retirer.</li>
+      </ul>`
+  },
   "0.6.150": {
     title: "Version 0.6.150 — Effets des avantages et désavantages rétablis",
     html: `

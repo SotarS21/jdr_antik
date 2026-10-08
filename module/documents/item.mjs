@@ -1,4 +1,4 @@
-import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { buildAttackFlavor, modificateurJet } from "../helpers/rolls.mjs";
 import { refreshSheet } from "../helpers/sheet-utils.mjs";
 import { findIngredientItems, getIngredientStock } from "../helpers/actor-utils.mjs";
 
@@ -86,11 +86,13 @@ export class AntiqueItem extends Item {
     const itemBonus = mode === "distance" ? this.system.attBonusDistance : this.system.attBonus;
     const category = mode === "distance" ? this.system.categoryDistance : this.system.category;
     const catTotal = this.actor?.system.attackBonuses?.[category]?.total ?? 0;
-    const attBonus = itemBonus + catTotal;
+    // Statuts (point 80) : tous les tests + attaques.
+    const mods = modificateurJet(this.actor, ["tousTests", "attaque"]);
+    const attBonus = itemBonus + catTotal + mods.value;
     const roll = new Roll("1d20 + @attBonus", { attBonus });
     await roll.evaluate();
     const modeLabel = game.i18n.localize(mode === "distance" ? "ANTIQUE.Weapon.AttackDistance" : "ANTIQUE.Weapon.AttackMelee");
-    const flavor = buildAttackFlavor(`${this.name} (${modeLabel}) - Jet d'attaque`, roll.total);
+    const flavor = buildAttackFlavor(`${this.name} (${modeLabel}) - Jet d'attaque${mods.flavor}`, roll.total);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this.actor }),
       flavor

@@ -98,6 +98,35 @@
         </div>
       </div>
 
+      {{!-- Compétences (point 80) : au choix du MJ, total saisi à la main --}}
+      <div class="npc-competences">
+        <h3>{{localize "ANTIQUE.Npc.Competences"}}
+          {{#if isEditable}}<a class="npc-competence-add" title="{{localize 'ANTIQUE.Npc.CompetenceAdd'}}"><i class="fas fa-plus"></i></a>{{/if}}
+        </h3>
+        {{#each npcCompetences as |c|}}
+        <div class="npc-competence-row">
+          <a class="npc-competence-roll" data-index="{{c.index}}" title="1d20 + {{c.total}}"><i class="fas fa-dice-d20"></i></a>
+          <input type="hidden" name="system.competences.{{c.index}}.cle" value="{{c.cle}}" />
+          {{#if c.cle}}
+          <span class="npc-competence-nom npc-competence-roll" data-index="{{c.index}}">{{c.label}}</span>
+          <input type="hidden" name="system.competences.{{c.index}}.nom" value="{{c.nom}}" />
+          {{else}}
+          <input type="text" class="npc-competence-nom" name="system.competences.{{c.index}}.nom" value="{{c.nom}}"
+                 placeholder="{{localize 'ANTIQUE.Npc.CompetenceNom'}}" />
+          {{/if}}
+          <select name="system.competences.{{c.index}}.caracteristique">
+            {{#each @root.abilityLabels as |lab key|}}
+            <option value="{{key}}" {{#ifEquals key c.caracteristique}}selected{{/ifEquals}}>{{lab}}</option>
+            {{/each}}
+          </select>
+          <input type="number" class="npc-competence-total" name="system.competences.{{c.index}}.total" value="{{c.total}}" />
+          {{#if @root.isEditable}}<a class="npc-competence-delete" data-index="{{c.index}}" title="{{localize 'ANTIQUE.Npc.CompetenceDelete'}}"><i class="fas fa-trash"></i></a>{{/if}}
+        </div>
+        {{else}}
+        <p class="npc-competences-vide">{{localize "ANTIQUE.Npc.CompetencesVide"}}</p>
+        {{/each}}
+      </div>
+
       {{!-- Description --}}
       <div class="npc-description">
         <label>{{localize "ANTIQUE.Description"}}</label>

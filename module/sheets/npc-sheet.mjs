@@ -1,4 +1,4 @@
-import { buildAttackFlavor } from "../helpers/rolls.mjs";
+import { buildAttackFlavor, modificateurJet } from "../helpers/rolls.mjs";
 import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
 import { captureFocusState, restoreFocusState, preventEnterSubmit } from "../helpers/sheet-utils.mjs";
 import { stackOrCreateDroppedItem } from "../apps/browser-shared.mjs";
@@ -123,6 +123,13 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
       };
     });
     context.npcAbilities = this._prepareNpcAbilityItems();
+
+    // Compétences du PNJ (point 80) : nom traduit pour une compétence de PJ, nom libre sinon.
+    context.npcCompetences = (system.competences ?? []).map((c, index) => ({
+      ...c,
+      index,
+      label: c.cle ? game.i18n.localize(CONFIG.ANTIQUE.skills[c.cle]?.label ?? c.cle) : c.nom
+    }));
     context.equipment = this.actor.items.filter(i => i.type === "equipment");
     context.treasures = this.actor.items.filter(i => i.type === "treasure");
 
@@ -187,6 +194,17 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
         if (ev.target.tagName === "INPUT") return;
         this._rollNpcAttack();
       });
+    });
+
+    // Compétences du PNJ (point 80)
+    this.element.querySelectorAll(".npc-competence-roll").forEach(el => {
+      el.addEventListener("click", ev => this.actor.rollNpcSkill(Number(ev.currentTarget.dataset.index)));
+    });
+    this.element.querySelectorAll(".npc-competence-add").forEach(el => {
+      el.addEventListener("click", () => this._onAddCompetence());
+    });
+    this.element.querySelectorAll(".npc-competence-delete").forEach(el => {
+      el.addEventListener("click", ev => this._onDeleteCompetence(Number(ev.currentTarget.dataset.index)));
     });
 
     this.element.querySelectorAll(".dodge-roll").forEach(el => {
@@ -314,10 +332,47 @@ export class AntiqueNpcSheet extends HandlebarsApplicationMixin(foundry.applicat
     });
   }
 
+  /**
+   * Ajoute une compétence au PNJ (point 80) : choix parmi les compétences des PJ ou
+   * « Compétence personnalisée » ; total prérempli avec le modificateur de la
+   * caractéristique liée. Le tableau est toujours réécrit en entier (jamais un seul index).
+   */
+  async _onAddCompetence() {
+    const skills = Object.entries(CONFIG.ANTIQUE.skills)
+      .map(([key, cfg]) => ({ key, label: game.i18n.localize(cfg.label) }))
+      .sort((a, b) => a.label.localeCompare(b.label, "fr"));
+    const options = [`<option value="">${game.i18n.localize("ANTIQUE.Npc.CompetencePerso")}</option>`]
+      .concat(skills.map(s => `<option value="${s.key}">${s.label}</option>`)).join("");
+    const cle = await foundry.applications.api.DialogV2.prompt({
+      window: { title: game.i18n.localize("ANTIQUE.Npc.CompetenceAdd") },
+      content: `<div class="form-group"><label>${game.i18n.localize("ANTIQUE.Npc.CompetenceChoix")}</label>
+        <select name="cle" autofocus>${options}</select></div>`,
+      ok: { callback: (event, button) => button.form.elements.cle.value },
+      rejectClose: false
+    });
+    if (cle === null || cle === undefined) return;
+    const caracteristique = cle ? (CONFIG.ANTIQUE.skills[cle]?.ability ?? "for") : "for";
+    const competences = foundry.utils.deepClone(this.actor._source.system.competences ?? []);
+    competences.push({
+      cle,
+      nom: cle ? "" : game.i18n.localize("ANTIQUE.Npc.CompetencePerso"),
+      caracteristique,
+      total: this.actor.system.abilities[caracteristique]?.mod ?? 0
+    });
+    await this.actor.update({ "system.competences": competences });
+  }
+
+  async _onDeleteCompetence(index) {
+    const competences = foundry.utils.deepClone(this.actor._source.system.competences ?? []);
+    competences.splice(index, 1);
+    await this.actor.update({ "system.competences": competences });
+  }
+
   async _rollNpcAttack() {
-    const roll = new Roll("1d20 + @atk", { atk: this.actor.system.attaque.value });
+    const mods = modificateurJet(this.actor, ["tousTests", "attaque"]);   // statuts (point 80)
+    const roll = new Roll("1d20 + @atk", { atk: this.actor.system.attaque.value + mods.value });
     await roll.evaluate();
-    const flavor = buildAttackFlavor(`${this.actor.name} - Jet d'attaque`, roll.total);
+    const flavor = buildAttackFlavor(`${this.actor.name} - Jet d'attaque${mods.flavor}`, roll.total);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this.actor }),
       flavor
