@@ -2,6 +2,34 @@
 
 ---
 
+## Session du 8 octobre 2026 — Point 80 : statuts classiques et compétences des PNJ (v0.6.150 → v0.6.151)
+
+Session menée depuis le dossier de Galactic Wars, après Mer des Pirates. Document de proposition relu (aucune
+modification ni commentaire de l'utilisateur), puis 4 choix validés par l'utilisateur : « tous les tests » sur tous les
+jets, initiative comprise ; les 12 statuts tels quels ; **ajoutés à la suite** des statuts de Foundry ; compétences des PNJ
+avec total saisi à la main.
+
+- **Modificateurs** : nouveau bloc `system.modificateurs` (tousTests, attaque, ca, esquive), PJ et PNJ, toujours 0 en
+  base, modifié par les effets (`add`). Lu par `modificateurJet()` (helpers/rolls.mjs) dans tous les jets ; CA (PJ :
+  `ca.total`, PNJ : `ca.value` effective, la valeur saisie reste affichée) et Esquive dérivées. Le tchat liste les
+  statuts en jeu (« Peur −1, Béni +1 »).
+- **Statuts** : `ANTIQUE.statuts` (config.mjs) ajoutés à `CONFIG.statusEffects` à l'init (description traduite au
+  `i18nInit`) ; Entravé = déplacement 0 (`override`) + esquive −2 ; Mort = statut natif "dead" déjà géré à 0 PV.
+- **Compendium « Effets »** : correctif `0.6.151-statuts-effets` (12 documents avec leur statut de jeton), **à appliquer
+  par l'utilisateur** dans l'écran des correctifs ; mêmes documents ajoutés à `packs/effets.db` (+ miroir JSON).
+- **Compétences des PNJ** : `system.competences` (cle, nom, caracteristique, total), section de l'onglet Statistiques ;
+  tableau toujours réécrit en entier (ajout, suppression) ; saisie par le formulaire de la fiche (vérifiée).
+- **Déploiement** : copie sans les dossiers LevelDB du dépôt (`packs/avantages`, `desavantages`, `effets`, `sorts`,
+  anciens du 31 août) — les recopier risquait d'écraser les compendiums installés. L'utilisateur était connecté à
+  `testantique` : pas de redémarrage (le serveur annonce encore 0.6.150 ; code, fiches et textes pris au F5).
+- **Test en direct** `packs/_test-point80.mjs` (compte Gamemaster, acteurs « [TEST] » supprimés) : **77/77 OK**, aucune
+  erreur — 11 statuts × PJ et PNJ (CA, esquive, déplacement, initiative, jets de caractéristique, sauvegarde,
+  compétence, attaque par catégorie, arme, attaque du PNJ ; retrait → retour à la normale), cumul, CA saisie du PNJ
+  inchangée, compétences des PNJ (ajout PJ / personnalisée, saisie, jet avec Peur, corbeille), icône sur le jeton et
+  panneau d'effets. Titre « Compétences » restylé après capture (presque invisible sur le parchemin).
+
+---
+
 ## Fin de session du 7 octobre 2026 (« on s'arrête là pour ce soir »)
 
 Bilan : 21 commits en retard poussés ; point 78 (v0.6.149) et point 79 (v0.6.150) faits, vérifiés en jeu et poussés.

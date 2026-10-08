@@ -936,6 +936,17 @@ export const PACK_UPDATES = [
       "Garde un seul effet par nom (celui du système), dans le compendium et sur les créatures / PNJ qui portent ces " +
       "capacités (monde et compendiums).",
     apply: applyDoublonsCapacitesCombat
+  },
+  {
+    id: "0.6.151-statuts-effets",
+    pack: "effets",
+    version: "0.6.151",
+    label: "12 statuts classiques (Peur, Étourdi, À terre…)",
+    description:
+      "Point 80 : ajoute au compendium les 12 statuts Antique (Peur, Terrorisé, Étourdi, Aveuglé, À terre, " +
+      "Entravé, Empoisonné, Saignement, Endormi, Inconscient, Béni, Mort), avec leurs bonus / malus " +
+      "automatiques — les mêmes que dans le menu des statuts du jeton. Aucun effet existant n'est modifié.",
+    apply: applyStatutsEffets
   }
 ];
 
@@ -4875,4 +4886,37 @@ export async function checkPendingPackUpdates() {
 
   const { AntiquePackUpdatePicker } = await import("../apps/pack-update-picker.mjs");
   AntiquePackUpdatePicker.open();
+}
+
+/**
+ * Point 80 : crée dans le compendium « Effets » les 12 statuts de ANTIQUE.statuts (config.mjs)
+ * absents, avec leur statut de jeton (statuses) et leurs changements — même contenu que
+ * packs/effets.db. Ne modifie aucun document existant.
+ */
+async function applyStatutsEffets() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+  const index = await pack.getIndex();
+  const existingIds = new Set(index.map(e => e._id));
+  const missing = CONFIG.ANTIQUE.statuts.filter(s => !existingIds.has(s.effectId)).map(s => ({
+    _id: s.effectId,
+    name: game.i18n.localize(`ANTIQUE.Statut.${s.id}`),
+    img: s.img,
+    type: "base",
+    system: { changes: s.changes },
+    disabled: false,
+    description: game.i18n.localize(`ANTIQUE.StatutDesc.${s.id}`),
+    transfer: true,
+    statuses: [s.id],
+    showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON.ALWAYS
+  }));
+  if (!missing.length) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  try {
+    await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return missing.length;
 }

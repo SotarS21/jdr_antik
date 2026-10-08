@@ -192,6 +192,38 @@ ANTIQUE.getEffectChangeLabel = function(change) {
     return `${sign}${value} ${label}`;
   }
 
+  // Modificateurs des statuts (point 80) : tous les tests, CA, attaques, esquive
+  const modMatch = key.match(/^system\.modificateurs\.(\w+)$/);
+  if (modMatch) {
+    return `${sign}${value} ${game.i18n.localize(`ANTIQUE.Modificateur.${modMatch[1]}`)}`;
+  }
+
   // Default
   return `${sign}${value} ${key}`;
 };
+
+/**
+ * Statuts Antique (point 80, liste validée par l'utilisateur le 8 octobre 2026), ajoutés à la
+ * suite des statuts de Foundry dans le menu du jeton (voir antique.mjs) et présents dans le
+ * compendium « Effets » (correctif 0.6.151-statuts-effets). `changes` : modificateurs
+ * automatiques — system.modificateurs.* (voir data-models/modificateurs.mjs) ou
+ * system.deplacement. « Mort » reste le statut natif "dead", déjà posé à 0 PV par le
+ * système (`natif`) : seule son entrée de compendium est ajoutée. Les statuts ne portent pas
+ * de durée : le MJ les retire. `effectId` : identifiant fixe du document de compendium.
+ */
+const modStatut = (key, value) => ({ key: `system.modificateurs.${key}`, type: "add", value: String(value) });
+ANTIQUE.statuts = [
+  { id: "peur",        effectId: "eStatut000000001", img: "icons/svg/terror.svg",      changes: [modStatut("tousTests", -1)] },
+  { id: "terrorise",   effectId: "eStatut000000002", img: "icons/svg/hazard.svg",      changes: [modStatut("tousTests", -3)] },
+  { id: "etourdi",     effectId: "eStatut000000003", img: "icons/svg/daze.svg",        changes: [modStatut("tousTests", -2), modStatut("ca", -2)] },
+  { id: "aveugle",     effectId: "eStatut000000004", img: "icons/svg/blind.svg",       changes: [modStatut("attaque", -4), modStatut("ca", -2)] },
+  { id: "aTerre",      effectId: "eStatut000000005", img: "icons/svg/falling.svg",     changes: [modStatut("attaque", -2), modStatut("ca", -2)] },
+  { id: "entrave",     effectId: "eStatut000000006", img: "icons/svg/net.svg",
+    changes: [{ key: "system.deplacement", type: "override", value: "0" }, modStatut("esquive", -2)] },
+  { id: "empoisonne",  effectId: "eStatut000000007", img: "icons/svg/poison.svg",      changes: [modStatut("tousTests", -1)] },
+  { id: "saignement",  effectId: "eStatut000000008", img: "icons/svg/blood.svg",       changes: [] },
+  { id: "endormi",     effectId: "eStatut000000009", img: "icons/svg/sleep.svg",       changes: [modStatut("ca", -4)] },
+  { id: "inconscient", effectId: "eStatut000000010", img: "icons/svg/unconscious.svg", changes: [modStatut("ca", -4)] },
+  { id: "beni",        effectId: "eStatut000000011", img: "icons/svg/angel.svg",       changes: [modStatut("tousTests", 1)] },
+  { id: "dead",        effectId: "eStatut000000012", img: "icons/svg/skull.svg",       changes: [], natif: true }
+];

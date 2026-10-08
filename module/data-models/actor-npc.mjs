@@ -1,4 +1,5 @@
 import { ANTIQUE } from "../helpers/config.mjs";
+import { modificateursField } from "./modificateurs.mjs";
 
 export class AntiqueNpc extends foundry.abstract.TypeDataModel {
 
@@ -83,6 +84,20 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
         tempPenalty: new fields.NumberField({ initial: 0, integer: true })
       }),
 
+      // --- Statuts (point 80) : voir data-models/modificateurs.mjs ---
+      modificateurs: modificateursField(),
+
+      // --- Compétences (point 80) : liste au choix du MJ, total saisi à la main ---
+      // cle = clé d'une compétence de PJ (ANTIQUE.skills) ou "" pour une compétence
+      // personnalisée (nom libre) ; caracteristique = caractéristique liée ; total = valeur
+      // ajoutée au 1d20 (préremplie avec le modificateur de la caractéristique, modifiable).
+      competences: new fields.ArrayField(new fields.SchemaField({
+        cle: new fields.StringField({ initial: "" }),
+        nom: new fields.StringField({ initial: "" }),
+        caracteristique: new fields.StringField({ initial: "for" }),
+        total: new fields.NumberField({ initial: 0, integer: true })
+      })),
+
       // --- Currency ---
       or: new fields.NumberField({ initial: 0 }),
 
@@ -105,7 +120,9 @@ export class AntiqueNpc extends foundry.abstract.TypeDataModel {
     }
     // See actor-character.mjs for why this can't just use Foundry's built-in "final" phase.
     this.parent?.applyActiveEffects("abilities");
-    this.esquive.total = this.esquive.value + this.esquive.tempPenalty;
+    this.esquive.total = this.esquive.value + this.esquive.tempPenalty + (this.modificateurs?.esquive ?? 0);
+    // Statuts (point 80) : CA effective (la fiche affiche la valeur saisie et l'effective).
+    this.ca.value += this.modificateurs?.ca ?? 0;
     this.parade.total = this.parade.value + this.parade.tempPenalty;
   }
 }

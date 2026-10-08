@@ -1,4 +1,4 @@
-import { buildAttackFlavor, buildSaveFlavor } from "../helpers/rolls.mjs";
+import { buildAttackFlavor, buildSaveFlavor, modificateurJet } from "../helpers/rolls.mjs";
 import { isOrphanedTokenActor } from "../helpers/actor-utils.mjs";
 import { refreshSheet } from "../helpers/sheet-utils.mjs";
 
@@ -34,6 +34,8 @@ export class AntiqueActor extends Actor {
     } else if (this.type === "npc") {
       data.init = this.system.initiative?.value ?? 0;
     }
+    // Statuts (point 80) : « tous les tests » compte aussi pour l'initiative.
+    if (data.init !== undefined) data.init += modificateurJet(this).value;
     return data;
   }
 
@@ -86,9 +88,10 @@ export class AntiqueActor extends Actor {
     const cat = this.system.attackBonuses[catKey];
     if (!cat) return;
     const label = game.i18n.localize(CONFIG.ANTIQUE.weaponCategories[catKey]?.label ?? catKey);
-    const roll = new Roll("1d20 + @total", { total: cat.total });
+    const mods = modificateurJet(this, ["tousTests", "attaque"]);
+    const roll = new Roll("1d20 + @total", { total: cat.total + mods.value });
     await roll.evaluate();
-    const flavor = buildAttackFlavor(`${label} - Jet d'attaque`, roll.total);
+    const flavor = buildAttackFlavor(`${label} - Jet d'attaque${mods.flavor}`, roll.total);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
       flavor
@@ -104,11 +107,12 @@ export class AntiqueActor extends Actor {
     const ability = this.system.abilities[abilityKey];
     if (!ability) return;
     const label = game.i18n.localize(`ANTIQUE.Ability.${abilityKey.charAt(0).toUpperCase() + abilityKey.slice(1)}`);
-    const roll = new Roll("1d20 + @mod", { mod: ability.mod });
+    const mods = modificateurJet(this);
+    const roll = new Roll("1d20 + @mod", { mod: ability.mod + mods.value });
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${label} - Jet de caractéristique`
+      flavor: `${label} - Jet de caractéristique${mods.flavor}`
     });
     return roll;
   }
@@ -121,11 +125,33 @@ export class AntiqueActor extends Actor {
     const skill = this.system.skills[skillKey];
     if (!skill) return;
     const label = game.i18n.localize(CONFIG.ANTIQUE.skills[skillKey]?.label ?? skillKey);
-    const roll = new Roll("1d20 + @total", { total: skill.total });
+    const mods = modificateurJet(this);
+    const roll = new Roll("1d20 + @total", { total: skill.total + mods.value });
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${label} - Jet de compétence`
+      flavor: `${label} - Jet de compétence${mods.flavor}`
+    });
+    return roll;
+  }
+
+  /**
+   * Jet d'une compétence de PNJ (point 80) : 1d20 + total saisi par le MJ (+ « tous les
+   * tests »). Liste system.competences, voir actor-npc.mjs.
+   * @param {number} index - position dans system.competences
+   */
+  async rollNpcSkill(index) {
+    const comp = this.system.competences?.[index];
+    if (!comp) return;
+    const label = comp.cle
+      ? game.i18n.localize(CONFIG.ANTIQUE.skills[comp.cle]?.label ?? comp.cle)
+      : (comp.nom || game.i18n.localize("ANTIQUE.Npc.CompetencePerso"));
+    const mods = modificateurJet(this);
+    const roll = new Roll("1d20 + @total", { total: comp.total + mods.value });
+    await roll.evaluate();
+    await roll.toMessage({
+      speaker: ChatMessage.getSpeaker({ actor: this }),
+      flavor: `${label} - Jet de compétence${mods.flavor}`
     });
     return roll;
   }
@@ -145,11 +171,12 @@ export class AntiqueActor extends Actor {
     if (!data) return;
     const path = isCharacter ? `system.skills.${skillKey}` : `system.${skillKey}`;
     const label = game.i18n.localize(CONFIG.ANTIQUE.skills[skillKey]?.label ?? skillKey);
-    const roll = new Roll("1d20 + @total", { total: data.total });
+    const mods = modificateurJet(this);
+    const roll = new Roll("1d20 + @total", { total: data.total + mods.value });
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: `${label} - ${game.i18n.localize("ANTIQUE.Dodge.ReactionFlavor")}`
+      flavor: `${label} - ${game.i18n.localize("ANTIQUE.Dodge.ReactionFlavor")}${mods.flavor}`
     });
     await this.update({ [`${path}.tempPenalty`]: (data.tempPenalty ?? 0) - 1 });
     refreshSheet(this);
@@ -173,11 +200,12 @@ export class AntiqueActor extends Actor {
       : this.system.saves?.[saveKey]?.total;
     if (total === undefined) return;
     const label = game.i18n.localize(saveConfig?.label ?? saveKey);
-    const roll = new Roll("1d20 + @total", { total });
+    const mods = modificateurJet(this);
+    const roll = new Roll("1d20 + @total", { total: total + mods.value });
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this }),
-      flavor: buildSaveFlavor(`${label} - Jet de sauvegarde`, roll.total, dc)
+      flavor: buildSaveFlavor(`${label} - Jet de sauvegarde${mods.flavor}`, roll.total, dc)
     });
     return roll;
   }

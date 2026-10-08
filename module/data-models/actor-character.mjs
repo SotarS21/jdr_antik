@@ -1,4 +1,5 @@
 import { ANTIQUE } from "../helpers/config.mjs";
+import { modificateursField } from "./modificateurs.mjs";
 
 export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
 
@@ -188,7 +189,8 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       ...backgroundFields,
       ...favoriteFields,
       ...magicFields,
-      ...apothicaireFields
+      ...apothicaireFields,
+      modificateurs: modificateursField()
     };
   }
 
@@ -255,6 +257,9 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
       skill.total = abilityMod + skill.bonus + trainedPenalty + equipmentBonus + (skill.tempPenalty ?? 0);
     }
 
+    // Statuts (point 80) : bonus / malus d'Esquive.
+    if (this.skills.esquive) this.skills.esquive.total += this.modificateurs?.esquive ?? 0;
+
     // --- Save totals ---
     const SAVE_BASE = 1;
     for (const [key, saveCfg] of Object.entries(ANTIQUE.saves)) {
@@ -280,7 +285,8 @@ export class AntiqueCharacter extends foundry.abstract.TypeDataModel {
     ca.bouclier = bouclierBonus;
     ca.equipmentBonus = equipmentCaBonus;
     ca.bonusVigueur = this.skills.vigueur?.total ?? 0;
-    ca.total = ca.base + ca.armure + ca.bouclier + conMod + ca.bonusVigueur + ca.temp + equipmentCaBonus;
+    ca.total = ca.base + ca.armure + ca.bouclier + conMod + ca.bonusVigueur + ca.temp + equipmentCaBonus
+      + (this.modificateurs?.ca ?? 0);   // statuts (point 80)
 
     // --- Initiative ---
     const dexMod = abilities.dex?.mod ?? 0;
