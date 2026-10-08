@@ -4,12 +4,22 @@ Liste de points remontés par l'utilisateur, à traiter. Créé le 31 août 2026
 
 ---
 
-## 81. Passer le dépôt GitHub en public pour partager le manifest — À FAIRE (8 octobre 2026)
+## 81. ~~Passer le dépôt GitHub en public pour partager le manifest~~ — FAIT (9 octobre 2026, v0.6.151)
 
 Demande : passer le projet GitHub (`SotarS21/jdr_antik`, actuellement privé) en public, pour partager plus facilement
 le manifest sur Foundry VTT (installation du système par URL de manifest). État actuel : `system.json` a `url` renseigné
 mais `manifest` et `download` vides — à remplir (URL du `system.json` et de l'archive de la dernière release) une fois
 le dépôt public, avec une publication de release comme pour Galactic Wars.
+
+**Fait le 9 octobre 2026** : historique vérifié (aucun secret ; e-mail professionnel auteur des 130 commits, noms
+d'utilisateur Windows dans des chemins) ; sur choix de l'utilisateur, e-mail réécrit en `3081213+SotarS21@users.noreply.github.com`
+dans tous les commits et tags (`git filter-branch`, envoi forcé ; sauvegarde complète
+`../sauvegarde-jdr_antik-avant-reecriture-2026-10-09.bundle`), chemins personnels retirés des fichiers actuels, e-mail
+noreply fixé dans la config locale du dépôt. Dépôt passé en **public**. Le workflow de release existait déjà (manifest /
+download remplis à la release, vides dans le dépôt exprès) ; l'archive ne contenait ni `img/` ni
+`packs/_json-mirrors` → ajoutés. Release **v0.6.151** publiée. **Lien d'installation à partager :**
+`https://github.com/SotarS21/jdr_antik/releases/latest/download/system.json` — vérifié sans connexion GitHub (manifest et
+archive en HTTP 200, version 0.6.151, images présentes).
 
 ---
 

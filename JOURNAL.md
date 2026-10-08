@@ -2,7 +2,25 @@
 
 ---
 
-## Session du 8 octobre 2026 — Point 80 : statuts classiques et compétences des PNJ (v0.6.150 → v0.6.151)
+## Session du 9 octobre 2026 — Point 81 : dépôt public, manifest partageable (v0.6.151)
+
+But (utilisateur) : que le manifest soit accessible à quelqu'un d'extérieur. Point 80 fusionné et poussé avant.
+
+- **Vérification de l'historique** (130 commits) : aucun mot de passe, jeton ni clé (les « password » viennent de la
+  bibliothèque `xlsx` de `packs/node_modules`) ; à protéger : e-mail professionnel auteur de tous les commits, noms
+  d'utilisateur Windows dans des chemins (anciens scripts de `packs/`, une ligne du journal).
+- **Choix de l'utilisateur : réécrire l'historique.** Sauvegarde `../sauvegarde-jdr_antik-avant-reecriture-2026-10-09.bundle`
+  (vérifiée) ; `git filter-branch --env-filter` (e-mail → `3081213+SotarS21@users.noreply.github.com`, nom gardé), master et
+  7 tags ; contenu identique vérifié ; envoi forcé (`--force-with-lease` sur l'ancien master) ; aucune PR ni fork. Chemins
+  personnels remplacés par `LOCALAPPDATA` / « Bureau ». E-mail noreply dans la config locale du dépôt.
+- **Dépôt passé en public.** Workflow de release existant ; archive complétée avec `img/` (241 références) et
+  `packs/_json-mirrors`. Tag **v0.6.151** → release publiée (workflow vert).
+- **Vérifié sans connexion GitHub** : `https://github.com/SotarS21/jdr_antik/releases/latest/download/system.json` (HTTP 200,
+  version 0.6.151, liens manifest / download corrects), archive (HTTP 200, 45 Mo, images présentes).
+- Les anciennes releases (v0.6.14 → v0.6.124) gardent leurs anciennes archives (sans images) ; les anciens commits peuvent
+  rester consultables un temps sur GitHub par leur identifiant exact (non référencés).
+
+ : statuts classiques et compétences des PNJ (v0.6.150 → v0.6.151)
 
 Session menée depuis le dossier de Galactic Wars, après Mer des Pirates. Document de proposition relu (aucune
 modification ni commentaire de l'utilisateur), puis 4 choix validés par l'utilisateur : « tous les tests » sur tous les
