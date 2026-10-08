@@ -2,6 +2,17 @@
 
 ---
 
+## Fin de session du 9 octobre 2026 (« on s'arrête là pour ce soir »)
+
+Bilan : point 80 (v0.6.151), point 81 (dépôt public, historique réécrit avec l'e-mail noreply), constats annexes du
+point 80 (v0.6.152) ; tout fusionné, poussé, releases v0.6.151 et v0.6.152 publiées et vérifiées sans connexion.
+**À la reprise** : l'utilisateur doit faire F5 et cocher dans l'écran des correctifs « 12 statuts classiques » et les deux
+« Effets invalides de Xeno / Eosyne » ; revérifier point par point la section « BUG Antique » de `todo_foundry.txt`
+(Bureau). Comptes : MJ « Gamemaster » sans mot de passe dans `testantique` (le mot de passe de « claude » n'est pas
+connu). Déploiement : exclure les dossiers LevelDB du dépôt (`packs/avantages`, `desavantages`, `effets`, `sorts`).
+
+---
+
 ## Session du 9 octobre 2026 (suite) — Constats annexes du point 80 : effets sans action (v0.6.151 → v0.6.152)
 
 Demande : corriger les quatre constats annexes notés au point 80.
