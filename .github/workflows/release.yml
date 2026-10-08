@@ -37,10 +37,12 @@ jobs:
 
       - name: Build package archive
         run: |
+          # img/ : images référencées par les compendiums et le code (systems/antique/img/…) ;
+          # packs/_json-mirrors : lus par les correctifs de compendium (pack-updates.mjs).
           zip -r system.zip \
             system.json template.json antique.mjs \
-            css lang module templates fonts \
-            packs/*.db packs/token
+            css lang module templates fonts img \
+            packs/*.db packs/token packs/_json-mirrors
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
