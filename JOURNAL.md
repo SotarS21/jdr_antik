@@ -4,6 +4,8 @@
 
 ## Session du 9 novembre 2026 (suite 2) — Vérification de toutes les fonctions, corrections (v0.6.154 → v0.6.155, branche `fix/verification-fonctions`)
 
+**Publiée** à la demande de l'utilisateur : fusion dans `master`, tag **v0.6.155**. Les trois correctifs 0.6.155 restent à cocher par l'utilisateur ; le serveur local annonce 0.6.154 jusqu'au prochain redémarrage (fichiers déjà déployés).
+
 - **Vérification** demandée par l'utilisateur : inventaire des fonctions (agent, lecture du code), puis parcours en direct
   `../audit/t4-fonctions.mjs` (compte `claude`, acteurs « [TEST] t4 » supprimés) : fiches PJ / PNJ / divinité / 9 fiches
   d'objets, jets, statuts, combat, armes et munitions, dégâts / soins / mort, inventaire, traits, magie, repos long,
