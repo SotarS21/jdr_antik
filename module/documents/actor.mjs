@@ -391,6 +391,8 @@ export class AntiqueActor extends Actor {
       && i.system.consumable
       && i.name.toLowerCase().includes("ration")
       && i.system.quantity > 0
+      // Les rations qui soignent (Rations régénératrices de Déméter, healAmount) se gardent pour leur soin.
+      && !(Number(i.system.healAmount) > 0)
     );
 
     let rationConsumed = false;

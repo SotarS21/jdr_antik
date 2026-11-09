@@ -27,55 +27,42 @@ export class AntiqueItem extends Item {
   }
 
   async _doRollAttack() {
-    // Consumable weapons: consume linked ammo
-    if (this.system.consumable) {
-      const linkedAmmo = this.system.linkedAmmoId && this.actor
-        ? this.actor.items.get(this.system.linkedAmmoId)
-        : null;
-
-      if (linkedAmmo) {
-        if (linkedAmmo.system.quantity <= 0) {
-          await ChatMessage.create({
-            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-            content: `<p><strong>${this.name}</strong> — ${game.i18n.localize("ANTIQUE.Weapon.NoAmmoLeft")} (${linkedAmmo.name})</p>`
-          });
-          return;
-        }
-        await linkedAmmo.update({ "system.quantity": linkedAmmo.system.quantity - 1 });
-        refreshSheet(this.actor);
-        refreshSheet(linkedAmmo);
-        refreshSheet(this);
-      }
+    // Consumable weapons: linked ammo is checked first (no pointless dialog when empty), but only spent once the
+    // attack is really made — closing the melee / distance dialog no longer costs ammo (vérification du 9 novembre).
+    const linkedAmmo = this.system.consumable && this.system.linkedAmmoId && this.actor
+      ? this.actor.items.get(this.system.linkedAmmoId)
+      : null;
+    if (linkedAmmo && linkedAmmo.system.quantity <= 0) {
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        content: `<p><strong>${this.name}</strong> — ${game.i18n.localize("ANTIQUE.Weapon.NoAmmoLeft")} (${linkedAmmo.name})</p>`
+      });
+      return;
     }
 
     // Ranged weapons can also be used in melee — ask which attack bonus applies.
     // Melee-only weapons skip straight to the roll, unchanged.
+    let mode = "melee";
     if (this.system.hasPortee) {
-      return new Promise(resolve => {
-        foundry.applications.api.DialogV2.wait({
-          window: { title: game.i18n.format("ANTIQUE.Weapon.ChooseAttackType", { name: this.name }) },
-          content: `<p>${game.i18n.localize("ANTIQUE.Weapon.ChooseAttackTypeHint")}</p>`,
-          buttons: [
-            {
-              action: "distance",
-              icon: "fas fa-bullseye",
-              label: game.i18n.localize("ANTIQUE.Weapon.AttackDistance"),
-              default: true,
-              callback: () => resolve(this._executeAttackRoll("distance"))
-            },
-            {
-              action: "melee",
-              icon: "fas fa-khanda",
-              label: game.i18n.localize("ANTIQUE.Weapon.AttackMelee"),
-              callback: () => resolve(this._executeAttackRoll("melee"))
-            }
-          ],
-          rejectClose: false
-        }).then(result => { if (result === null) resolve(null); });
+      mode = await foundry.applications.api.DialogV2.wait({
+        window: { title: game.i18n.format("ANTIQUE.Weapon.ChooseAttackType", { name: this.name }) },
+        content: `<p>${game.i18n.localize("ANTIQUE.Weapon.ChooseAttackTypeHint")}</p>`,
+        buttons: [
+          { action: "distance", icon: "fas fa-bullseye", label: game.i18n.localize("ANTIQUE.Weapon.AttackDistance"), default: true },
+          { action: "melee", icon: "fas fa-khanda", label: game.i18n.localize("ANTIQUE.Weapon.AttackMelee") }
+        ],
+        rejectClose: false
       });
+      if (mode !== "distance" && mode !== "melee") return null;
     }
 
-    return this._executeAttackRoll("melee");
+    if (linkedAmmo) {
+      await linkedAmmo.update({ "system.quantity": linkedAmmo.system.quantity - 1 });
+      refreshSheet(this.actor);
+      refreshSheet(linkedAmmo);
+      refreshSheet(this);
+    }
+    return this._executeAttackRoll(mode);
   }
 
   /**
@@ -83,6 +70,8 @@ export class AntiqueItem extends Item {
    * @param {"melee"|"distance"} mode
    */
   async _executeAttackRoll(mode) {
+    // Retenu (en mémoire) pour le jet de dégâts qui suit : bonus de la catégorie à distance après un tir.
+    this._dernierModeAttaque = mode;
     const itemBonus = mode === "distance" ? this.system.attBonusDistance : this.system.attBonus;
     const category = mode === "distance" ? this.system.categoryDistance : this.system.category;
     const catTotal = this.actor?.system.attackBonuses?.[category]?.total ?? 0;
@@ -105,7 +94,12 @@ export class AntiqueItem extends Item {
    */
   async rollDamage() {
     if (this.type !== "weapon") return;
-    const damageBonus = this.actor?.system.attackBonuses?.[this.system.category]?.damageBonus ?? 0;
+    // Catégorie du dernier mode d'attaque : après un tir à distance, bonus de la catégorie à distance
+    // (vérification du 9 novembre : le bonus de corps à corps était toujours pris).
+    const category = this._dernierModeAttaque === "distance" && this.system.hasPortee
+      ? (this.system.categoryDistance || this.system.category)
+      : this.system.category;
+    const damageBonus = this.actor?.system.attackBonuses?.[category]?.damageBonus ?? 0;
     const formula = damageBonus ? `${this.system.damage} + @damageBonus` : this.system.damage;
     const roll = new Roll(formula, { damageBonus });
     await roll.evaluate();

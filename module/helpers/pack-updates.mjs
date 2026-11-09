@@ -993,6 +993,39 @@ export const PACK_UPDATES = [
       "et « +2 » pour Force de Poséidon (le porteur garde son +1). Glisser le lien sur un personnage lui donne l'effet. " +
       "Seuls les avantages qui n'ont pas déjà ce lien sont modifiés.",
     apply: applyLiensEffetsADonner
+  },
+  {
+    id: "0.6.155-faveur-de-la-dame-charges",
+    pack: "avantages",
+    version: "0.6.155",
+    label: "Faveur de la Dame : 3 charges",
+    description:
+      "Vérification du 9 novembre : dans ce monde, Faveur de la Dame avait 0 charge (compendium réinitialisé), donc " +
+      "aucun bouton « Utiliser / Réinitialiser » sur la fiche. Remet 3 charges sur 3. Ne fait rien si elle en a déjà.",
+    apply: applyFaveurDeLaDameCharges
+  },
+  {
+    id: "0.6.155-historique-tables-vides",
+    pack: "historique",
+    version: "0.6.155",
+    label: "Historique : deux tables vides retirées",
+    description:
+      "« Origine » et « Bonus/Malus aléatoire » (formule 1d0, aucun résultat) sont d'anciens dossiers changés en tables " +
+      "vides lors d'une réinitialisation ; elles s'affichent en tête du navigateur et le tirage ne donne rien. Supprime " +
+      "ces deux tables vides ; les vraies tables (Origine du personnage, Bonus/Malus aléatoire 1 à 4) ne sont pas touchées.",
+    apply: applyHistoriqueTablesVides
+  },
+  {
+    id: "0.6.155-peau-hades-ponctuel",
+    pack: "avantages",
+    version: "0.6.155",
+    label: "Peau d'Hadès : PV doublés une seule fois",
+    description:
+      "Règle choisie le 9 novembre : Peau d'Hadès double les PV actuels une seule fois, quand l'avantage est acquis. " +
+      "Retire le « PV × 2 » permanent de l'avantage (compendium et personnages du monde qui l'ont), qui faisait remonter " +
+      "les PV à chaque dégât. Les personnages concernés gardent les PV affichés, plafonnés au double de leur maximum " +
+      "(dans ce monde : Banane garde 20 PV ; AntaliosV1, gonflé à 672 pour un maximum de 84, revient à 168).",
+    apply: applyPeauHadesPonctuel
   }
 ];
 
@@ -4741,6 +4774,74 @@ async function applyLiensEffetsADonner() {
     }
   } finally {
     if (wasLocked) await pack.configure({ locked: true });
+  }
+  return total;
+}
+
+/** 0.6.155 : Faveur de la Dame à 3 charges si elle n'en a plus (compendium réinitialisé). */
+async function applyFaveurDeLaDameCharges() {
+  const pack = game.packs.get("antique.avantages");
+  const doc = pack ? await pack.getDocument("aAdv000000000042") : null;
+  if (!doc || (doc.system.limitation ?? 0) > 0) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  try {
+    await doc.update({ "system.limitation": 3, "system.limitationValue": 3 });
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return 1;
+}
+
+/** 0.6.155 : supprime les tables vides nées des anciens dossiers de l'Historique (aucun résultat, ids fHist…). */
+async function applyHistoriqueTablesVides() {
+  const pack = game.packs.get("antique.historique");
+  if (!pack) return 0;
+  const vides = (await pack.getDocuments()).filter((t) => t.id.startsWith("fHist") && t.results.size === 0).map((t) => t.id);
+  if (!vides.length) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  try {
+    await pack.documentClass.deleteDocuments(vides, { pack: pack.collection });
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return vides.length;
+}
+
+/** 0.6.155 : Peau d'Hadès sans effet permanent sur les PV (compendium + avantages possédés dans le monde). */
+async function applyPeauHadesPonctuel() {
+  const viderEffets = async (item) => {
+    const maj = item.effects.filter((e) => e.changes.some((c) => c.key === "system.pv.value"))
+      .map((e) => ({ _id: e.id, "system.changes": [], description: "PV actuels ×2, une seule fois, à l'acquisition de l'avantage." }));
+    if (maj.length) await item.updateEmbeddedDocuments("ActiveEffect", maj);
+    return maj.length;
+  };
+  let total = 0;
+  const pack = game.packs.get("antique.avantages");
+  const doc = pack ? await pack.getDocument("aAdv000000000094") : null;
+  if (doc) {
+    const wasLocked = pack.locked;
+    if (wasLocked) await pack.configure({ locked: false });
+    try {
+      total += await viderEffets(doc);
+      if (/Multiplie les PV/.test(doc.system.description ?? "")) {
+        await doc.update({ "system.description": "<p><strong>Dévotion :</strong> Hadès</p><p>Double les PV actuels, une seule fois, quand l'avantage est acquis.</p>" });
+      }
+    } finally {
+      if (wasLocked) await pack.configure({ locked: true });
+    }
+  }
+  for (const actor of game.actors) {
+    const items = actor.items.filter((i) => i.type === "advantage" && /Peau d'Had[eè]s/i.test(i.name));
+    if (!items.length) continue;
+    // PV affichés gardés (le doublement est considéré comme acquis), plafonnés au double du maximum : le « × 2 »
+    // permanent avait pu les gonfler à chaque dégât (ex. 672 PV pour un maximum de 84).
+    const pvAffiches = actor.system.pv?.value ?? 0;
+    const pvMax = actor.system.pv?.max ?? 0;
+    for (const item of items) total += await viderEffets(item);
+    const pv = pvMax > 0 ? Math.min(pvAffiches, pvMax * 2) : pvAffiches;
+    if (actor._source.system.pv?.value !== pv) await actor.update({ "system.pv.value": pv });
   }
   return total;
 }
