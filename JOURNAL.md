@@ -2,6 +2,40 @@
 
 ---
 
+## Session du 9 novembre 2026 — Todo du Bureau, lignes « fix … » (v0.6.152 → v0.6.153, branche `fix/todo-mise-en-page`)
+
+Bilan de la section « BUG Antique » de `todo_foundry.txt` (Bureau) fait point par point : presque tout était déjà
+traité (voir `TODO_BUG_ANTIQUE.md`) ; restaient les 7 lignes « fix … » ajoutées le 8 octobre. Points 1 à 5 traités à la
+demande de l'utilisateur :
+
+- **Fiche PJ, onglet Combat** : armes **au-dessus** de la table des bonus d'attaque ; table à largeur de contenu
+  (`width: auto`, min 60 %) au lieu de 100 %.
+- **Fiche PNJ** : nom réduit (`.antique.npc .charname input`, 0.7em ≈ 34 px contre 67 px sur le PJ) ; **type et
+  taille** sortis de l'en-tête vers l'onglet « Notes », **renommé « Identité »** (`ANTIQUE.Npc.Tab.Notes`, `data-tab`
+  inchangé).
+- **Navigateur de compendium et boutique d'alchimie** : l'en-tête « Cible : X — n or » suit la sélection des jetons,
+  l'or de la cible et le personnage assigné, **sans re-rendre** la fenêtre (`suivreCibleBoutique` /
+  `arreterSuiviCible` dans `browser-shared.mjs` : hooks `controlToken`, `updateActor`, `updateUser`, désabonnés à la
+  fermeture ; partie variable de l'en-tête dans `.shop-target-texte`). Note : assigner ou retirer un personnage peut
+  faire sélectionner un jeton par Foundry (Lyra sur la scène « Boubou ») ; la sélection reste prioritaire, comme avant.
+- **Deux colonnes de compétences dès l'ouverture** sans changer la largeur (800 px) : la cause était
+  `repeat(auto-fit, minmax(220px, 320px))`, qui compte les colonnes sur le maximum (320 px) → une seule colonne dans un
+  panneau de 594 px ; passé à `minmax(220px, 1fr)`.
+- **Liens d'effets dans les descriptions d'avantages** : le compendium **installé n'en a déjà plus aucun** (nettoyé en
+  jeu par le passé) ; seule la source était en retard. Nettoyage de `packs/avantages.db` et du miroir JSON (63 liens
+  redondants retirés ; gardés dans la source : les 15 Auras et Connaissance d'Héphaistos). Un correctif à cocher a été
+  écrit puis **retiré** (il n'aurait rien changé).
+- **Déploiement** : robocopy sans les dossiers LevelDB du dépôt (`packs/avantages`, `desavantages`, `effets`, `sorts`),
+  ni `.git` / `node_modules` ; le serveur annonce 0.6.152 jusqu'au prochain redémarrage.
+- **Tests en direct** (compte `claude`, mot de passe 1234 donné par l'utilisateur le 9 novembre) :
+  `../audit/t1-todo-mise-en-page.mjs` **12/12**, captures `t1-*.png` vérifiées, aucune erreur JS. 88 images du monde
+  introuvables (404, `/Imagerie/Panthéon/…`, portraits des divinités) : sans rapport avec le système.
+- **Restent de la todo** : Force de Poséidon (effets +1 / +2 à donner aux alliés) et « image de base des compendiums »
+  (demande à préciser) ; validations en jeu listées dans le bilan (points 1, 2, 4, 13, 14, Faveur de la Dame, capacité
+  de port / Mule, Colère de Zeus).
+
+---
+
 ## Fin de session du 9 octobre 2026 (« on s'arrête là pour ce soir »)
 
 Bilan : point 80 (v0.6.151), point 81 (dépôt public, historique réécrit avec l'e-mail noreply), constats annexes du

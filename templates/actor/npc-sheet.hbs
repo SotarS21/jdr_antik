@@ -8,18 +8,6 @@
         <input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'ANTIQUE.Npc.Name'}}" />
       </h1>
       {{#if isGM}}
-      <div class="header-row">
-        <div class="field">
-          <label>{{localize "ANTIQUE.Npc.Type"}}</label>
-          <input type="text" name="system.type" value="{{system.type}}" placeholder="Humain, Créature, Divinité..." />
-        </div>
-        <div class="field">
-          <label>{{localize "ANTIQUE.Identity.Taille"}}</label>
-          <input type="text" name="system.taille" value="{{system.taille}}" />
-        </div>
-      </div>
-      {{/if}}
-      {{#if isGM}}
       <div class="pv-bar">
         <label>{{localize "ANTIQUE.PV"}}</label>
         <input type="number" name="system.pv.value" value="{{pvSource.value}}" class="pv-current" />
@@ -469,9 +457,19 @@
     {{/if}}
     {{/if}}
 
-    {{!-- ===================== NOTES TAB ===================== --}}
+    {{!-- ===================== IDENTITÉ TAB (ex-Notes, todo 2026-10-08 : type et taille sortis de l'en-tête) ===================== --}}
     <div class="tab" data-group="primary" data-tab="notes">
       {{#if isGM}}
+      <div class="header-row npc-identite">
+        <div class="field">
+          <label>{{localize "ANTIQUE.Npc.Type"}}</label>
+          <input type="text" name="system.type" value="{{system.type}}" placeholder="Humain, Créature, Divinité..." />
+        </div>
+        <div class="field">
+          <label>{{localize "ANTIQUE.Identity.Taille"}}</label>
+          <input type="text" name="system.taille" value="{{system.taille}}" />
+        </div>
+      </div>
       <div class="bg-field bg-magic-practitioner">
         <label>
           <input type="checkbox" name="system.isMagicPractitioner" {{#if system.isMagicPractitioner}}checked{{/if}} />

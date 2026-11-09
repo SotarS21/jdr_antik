@@ -2,6 +2,8 @@
 
   <div class="shop-header">
     <div class="shop-target">
+      {{!-- Réécrit en place quand la sélection ou l'or de la cible change (suivreCibleBoutique, browser-shared.mjs). --}}
+      <span class="shop-target-texte">
       {{#if targetCount}}
         {{#ifEquals targetCount 1}}
         {{localize "ANTIQUE.Shop.Target"}} : <strong>{{targetNames}}</strong>
@@ -12,6 +14,7 @@
       {{else}}
       <span class="shop-no-target">{{localize "ANTIQUE.Shop.NoTarget"}}</span>
       {{/if}}
+      </span>
       <a class="shop-refresh-target" title="{{localize 'ANTIQUE.Shop.RefreshTarget'}}"><i class="fas fa-sync"></i></a>
     </div>
     <div class="shop-toolbar">

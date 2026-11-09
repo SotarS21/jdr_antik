@@ -125,6 +125,11 @@
   padding: 0;
 }
 
+/* Nom du PNJ plus petit (todo 2026-10-08) : la fiche PNJ est étroite (0.7 × 48px ≈ 34px, contre 67px sur le PJ). */
+.antique.npc .charname input {
+  font-size: 0.7em;
+}
+
 .antique .charname input {
   font-size: 1.4em;
   font-weight: bold;
@@ -158,6 +163,11 @@
   letter-spacing: 0.05em;
   color: var(--antique-dark-gold);
   font-weight: bold;
+}
+
+/* Type et taille du PNJ, en tête de l'onglet Identité. */
+.antique .npc-identite {
+  margin-bottom: 10px;
 }
 
 /* ---- Header Stats (PV + CA) ---- */
@@ -784,7 +794,9 @@
   flex: 1;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 320px));
+  /* minmax(220px, 1fr) et non (220px, 320px) : avec un maximum fixe, auto-fit compte les colonnes sur 320px et la
+     fiche à sa largeur d'ouverture (panneau ~594px) n'en avait qu'une. Todo 2026-10-08 : deux colonnes dès l'ouverture. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   justify-content: start;
   gap: 4px 16px;
   align-content: start;
@@ -1137,8 +1149,11 @@
   margin-bottom: 16px;
 }
 
+/* Table compacte (todo 2026-10-08) : largeur selon le contenu, plus étirée sur toute la fiche. */
 .antique .attack-table {
-  width: 100%;
+  width: auto;
+  min-width: 60%;
+  max-width: 100%;
   border-collapse: collapse;
   font-size: 0.85em;
   background: transparent;

@@ -1,4 +1,4 @@
-import { resolveShopTargetActors, grantItemToActor, grantEffectToActor, attachBrowserRowInteractions, refreshBrowserRowVisibility, withRowLock } from "./browser-shared.mjs";
+import { resolveShopTargetActors, grantItemToActor, grantEffectToActor, attachBrowserRowInteractions, refreshBrowserRowVisibility, withRowLock, suivreCibleBoutique, arreterSuiviCible } from "./browser-shared.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -297,6 +297,7 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
   _onRender(context, options) {
     super._onRender(context, options);
     attachBrowserRowInteractions(this);
+    suivreCibleBoutique(this);
 
     this._activateTab(this._activeTab);
     this.element.querySelectorAll(".compendium-browser-tabs .item[data-tab]").forEach(btn => {
@@ -334,6 +335,7 @@ export class AntiqueCompendiumBrowser extends HandlebarsApplicationMixin(Applica
 
   _onClose(options) {
     super._onClose(options);
+    arreterSuiviCible(this);
     if (AntiqueCompendiumBrowser._instance === this) AntiqueCompendiumBrowser._instance = null;
   }
 
