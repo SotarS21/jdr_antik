@@ -4,6 +4,8 @@
 
 ## Session du 9 novembre 2026 (suite) — Force de Poséidon, effets manquants, bannières (v0.6.153 → v0.6.154, branche `feat/poseidon-effets`)
 
+**Publiée** à la demande de l'utilisateur : Foundry redémarré sur `testantique` (0.6.154, 16 bannières affichées et chargées), fusion dans `master`, tag **v0.6.154**. Les deux correctifs 0.6.154 restent à cocher par l'utilisateur dans l'écran de mise à jour.
+
 Derniers points de la todo du Bureau, choix de l'utilisateur :
 
 - **Force de Poséidon** (« +1 / +2 à donner, porteur inclus ») : deux effets dans le compendium Effets,
