@@ -2,6 +2,33 @@
 
 ---
 
+## Session du 9 novembre 2026 (suite) — Force de Poséidon, effets manquants, bannières (v0.6.153 → v0.6.154, branche `feat/poseidon-effets`)
+
+Derniers points de la todo du Bureau, choix de l'utilisateur :
+
+- **Force de Poséidon** (« +1 / +2 à donner, porteur inclus ») : deux effets dans le compendium Effets,
+  `eEft000000000174` « Équipé d'une force de Poséidon +1 » et `…175` « +2 » (`system.ca.base` add 1 / 2), liés dans la
+  description de l'avantage (`aAdv000000000044`) ; le porteur garde son +1 embarqué.
+- **Constat important** : le compendium **Effets installé ne contenait plus que 15 effets sur 187** (les 12 statuts +
+  Cuir de Héros, Athlète, Connaissance d'Héphaistos), alors que tous les correctifs de création sont marqués appliqués
+  → réinitialisé après coup (sans doute une recopie du dossier LevelDB `packs/effets` du dépôt). Les avantages ont
+  leurs effets embarqués, mais rien n'était à donner (Allié de l'aura…, Mule, Charge furieuse…), et les liens des
+  Auras avaient aussi disparu des descriptions installées.
+- **Deux correctifs à cocher** (dans cet ordre) : `0.6.154-effets-compendium-manquants` (recrée depuis le miroir les
+  effets absents, identifiants d'origine, présents intacts) et `0.6.154-avantages-liens-a-donner` (ajoute le paragraphe
+  de lien de la source quand il manque : 15 Auras, Connaissance d'Héphaistos, Force de Poséidon). Testés : création
+  172/172 dans un **compendium temporaire** du monde (supprimé), liens à blanc → 17 avantages complétés.
+- **Bannières des compendiums** (« bannière par compendium ») : 16 images 600 × 140 (carte de la barre latérale
+  300 × 70) dans `img/bannieres/`, branchées en `packs[].banner` de `system.json` (**visibles après redémarrage** de
+  Foundry, `system.json` n'étant relu qu'au démarrage). Générées dans la page Foundry (canvas) par
+  `../audit/t3-bannieres.mjs` : frise grecque dorée en haut et en bas, voile central pour le titre ; **bandes** de
+  peintures (Armes, Dieux, Créatures, Bénédictions, Avantages divins, Capacités de combat, Historique) ou **médaillons**
+  cerclés d'or (Avantages — pictogrammes au trait —, Équipement, Désavantages, Alchimie, Sorts, Trésors, Effets ;
+  Personnages et PNJ en bustes recadrés des peintures divines, seules peintures de personnages du système). Planche :
+  `../audit/t3-planche.png`.
+
+---
+
 ## Session du 9 novembre 2026 — Todo du Bureau, lignes « fix … » (v0.6.152 → v0.6.153, branche `fix/todo-mise-en-page`)
 
 **Publiée** à la demande de l'utilisateur : fusion dans `master`, tag **v0.6.153**, release publiée (workflow vert, `system.json` + `system.zip`), branche supprimée.

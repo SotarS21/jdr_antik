@@ -69,97 +69,113 @@
       "name": "armes",
       "label": "Armes, Armures & Boucliers",
       "path": "packs/armes.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/armes.jpg"
     },
     {
       "name": "equipement",
       "label": "\u00c9quipement & Potions",
       "path": "packs/equipement.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/equipement.jpg"
     },
     {
       "name": "avantages",
       "label": "Avantages",
       "path": "packs/avantages.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/avantages.jpg"
     },
     {
       "name": "desavantages",
       "label": "D\u00e9savantages",
       "path": "packs/desavantages.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/desavantages.jpg"
     },
     {
       "name": "effets",
       "label": "Effets",
       "path": "packs/effets.db",
-      "type": "ActiveEffect"
+      "type": "ActiveEffect",
+      "banner": "systems/antique/img/bannieres/effets.jpg"
     },
     {
       "name": "benedictions",
       "label": "B\u00e9n\u00e9dictions",
       "path": "packs/benedictions.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/benedictions.jpg"
     },
     {
       "name": "pnj",
       "label": "Personnages & PNJ",
       "path": "packs/pnj.db",
-      "type": "Actor"
+      "type": "Actor",
+      "banner": "systems/antique/img/bannieres/pnj.jpg"
     },
     {
       "name": "personnages",
       "label": "Personnages Joueurs",
       "path": "packs/personnages.db",
-      "type": "Actor"
+      "type": "Actor",
+      "banner": "systems/antique/img/bannieres/personnages.jpg"
     },
     {
       "name": "dieux",
       "label": "Divinités Grecques",
       "path": "packs/dieux.db",
-      "type": "Actor"
+      "type": "Actor",
+      "banner": "systems/antique/img/bannieres/dieux.jpg"
     },
     {
       "name": "creatures",
       "label": "Créatures Mythologiques",
       "path": "packs/creatures.db",
-      "type": "Actor"
+      "type": "Actor",
+      "banner": "systems/antique/img/bannieres/creatures.jpg"
     },
     {
       "name": "historique",
       "label": "Historique aléatoire",
       "path": "packs/historique.db",
-      "type": "RollTable"
+      "type": "RollTable",
+      "banner": "systems/antique/img/bannieres/historique.jpg"
     },
     {
       "name": "avantages-divins",
       "label": "Avantages Divins",
       "path": "packs/avantages-divins.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/avantages-divins.jpg"
     },
     {
       "name": "alchimie",
       "label": "Alchimie",
       "path": "packs/alchimie.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/alchimie.jpg"
     },
     {
       "name": "sorts",
       "label": "Sorts & Rituels",
       "path": "packs/sorts.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/sorts.jpg"
     },
     {
       "name": "capacites-combat",
       "label": "Capacités de Combat (PNJ)",
       "path": "packs/capacites-combat.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/capacites-combat.jpg"
     },
     {
       "name": "tresors",
       "label": "Trésors",
       "path": "packs/tresors.db",
-      "type": "Item"
+      "type": "Item",
+      "banner": "systems/antique/img/bannieres/tresors.jpg"
     }
   ],
   "url": "https://github.com/SotarS21/jdr_antik",
