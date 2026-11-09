@@ -396,6 +396,7 @@
   "ANTIQUE.StatutDesc.dead": "<p>Mort. Posé automatiquement à 0 PV, retiré au soin.</p>",
   "ANTIQUE.Npc.Attaque": "Attaque",
   "ANTIQUE.Npc.Tab.Stats": "Statistiques",
+  "ANTIQUE.PeauHades.Applique": "{nom} : Peau d'Hadès — PV actuels doublés ({avant} → {apres}).",
   "ANTIQUE.Npc.Tab.Notes": "Identité",
 
   "ANTIQUE.Sheet.Deity": "Fiche de divinité Antique",

@@ -94,6 +94,35 @@ export function registerIngredientStockSyncHook() {
  * to be embedded on a character whose changes exclusively target system.pointsChance,
  * applies it directly and permanently instead, and cancels the effect's own creation.
  */
+/**
+ * Peau d'Hadès (règle de l'auteur du 9 novembre 2026, option B) : les PV actuels sont doublés UNE fois, quand
+ * l'avantage arrive sur un personnage ou un PNJ, ou quand l'effet « Peau d'Hadès » du compendium Effets y est glissé
+ * (l'effet n'est alors pas créé, même principe que les Points de Chance). Plus aucun effet permanent sur les PV : avant,
+ * un « × 2 » permanent sur pv.value faisait remonter les PV à chaque dégât (la valeur doublée était réécrite en base).
+ */
+const PEAU_HADES = /Peau d'Had[eè]s/i;
+
+async function doublerPvUneFois(actor) {
+  const avant = actor._source.system?.pv?.value ?? 0;
+  await actor.update({ "system.pv.value": avant * 2 });
+  ui.notifications.info(game.i18n.format("ANTIQUE.PeauHades.Applique", { nom: actor.name, avant, apres: avant * 2 }));
+}
+
+export function registerPeauHadesHooks() {
+  Hooks.on("createItem", (item, options, userId) => {
+    if (userId !== game.user.id || item.type !== "advantage" || !PEAU_HADES.test(item.name)) return;
+    const actor = item.parent;
+    if (actor?.documentName === "Actor" && ["character", "npc"].includes(actor.type)) doublerPvUneFois(actor);
+  });
+  Hooks.on("preCreateActiveEffect", (effect, data, options, userId) => {
+    const actor = effect.parent;
+    if (userId !== game.user.id || actor?.documentName !== "Actor" || !["character", "npc"].includes(actor.type)) return;
+    if (!PEAU_HADES.test(effect.name) || !effect.changes.some((c) => c.key === "system.pv.value")) return;
+    doublerPvUneFois(actor);
+    return false;
+  });
+}
+
 export function registerPointsChanceEffectHook() {
   Hooks.on("preCreateActiveEffect", (effect, data, options, userId) => {
     const actor = effect.parent;

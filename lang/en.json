@@ -396,6 +396,7 @@
   "ANTIQUE.StatutDesc.dead": "<p>Dead. Set automatically at 0 HP, removed when healed.</p>",
   "ANTIQUE.Npc.Attaque": "Attack",
   "ANTIQUE.Npc.Tab.Stats": "Statistics",
+  "ANTIQUE.PeauHades.Applique": "{nom}: Peau d'Hadès — current HP doubled ({avant} → {apres}).",
   "ANTIQUE.Npc.Tab.Notes": "Identity",
 
   "ANTIQUE.Sheet.Deity": "Antique Deity Sheet",

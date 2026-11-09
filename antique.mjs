@@ -35,7 +35,7 @@ import { registerCompendiumBrowserFooterButton } from "./module/apps/compendium-
 import { registerAlchemyShopContextMenu } from "./module/apps/alchemy-shop.mjs";
 import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
 import { registerDodgeResetHook } from "./module/helpers/dodge-reset.mjs";
-import { registerIngredientStockSyncHook, registerPointsChanceEffectHook } from "./module/helpers/actor-utils.mjs";
+import { registerIngredientStockSyncHook, registerPointsChanceEffectHook, registerPeauHadesHooks } from "./module/helpers/actor-utils.mjs";
 import { registerEffectsPanel } from "./module/apps/effects-panel.mjs";
 
 /* -------------------------------------------- */
@@ -157,6 +157,7 @@ Hooks.once("init", function () {
   registerDodgeResetHook();
   registerIngredientStockSyncHook();
   registerPointsChanceEffectHook();
+  registerPeauHadesHooks();
   registerEffectsPanel();
   registerCharacterTokenLinkDefault();
 

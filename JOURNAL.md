@@ -2,6 +2,36 @@
 
 ---
 
+## Session du 9 novembre 2026 (suite 2) — Vérification de toutes les fonctions, corrections (v0.6.154 → v0.6.155, branche `fix/verification-fonctions`)
+
+- **Vérification** demandée par l'utilisateur : inventaire des fonctions (agent, lecture du code), puis parcours en direct
+  `../audit/t4-fonctions.mjs` (compte `claude`, acteurs « [TEST] t4 » supprimés) : fiches PJ / PNJ / divinité / 9 fiches
+  d'objets, jets, statuts, combat, armes et munitions, dégâts / soins / mort, inventaire, traits, magie, repos long,
+  navigateur et boutique, macros, cartes de tchat. Premier passage 99 OK / 9 KO ; 3 KO venaient du test (la fiche ne se
+  redessine que sur ses propres actions, pas sur un `update` d'API : refaits au vrai clic). Comparaison champ par champ
+  compendiums installés ↔ source : écarts bénins (valeurs par défaut, documents ajoutés par l'auteur), sauf ci-dessous.
+- **Corrigé (code)** :
+  - **Peau d'Hadès** (règle choisie : **option B**, PV actuels doublés **une seule fois** à l'acquisition) : le « × 2 »
+    permanent sur `pv.value` faisait remonter les PV à chaque dégât (40 → 72 pour 4 dégâts ; AntaliosV1 à 672 PV pour
+    un max de 84). Hooks `registerPeauHadesHooks` (actor-utils) : `createItem` d'un avantage Peau d'Hadès → PV bruts × 2
+    + notification ; l'effet seul du compendium glissé sur un personnage → même doublement, effet non créé (principe
+    des Points de Chance). Avantage sans changement d'effet ; textes mis à jour (source).
+  - **Munitions** : vérifiées avant la fenêtre corps à corps / distance, consommées seulement après le choix (fermer
+    la fenêtre coûtait une flèche). La fenêtre renvoie l'action (`DialogV2.wait`) au lieu de callbacks.
+  - **Dégâts après un tir à distance** : l'arme retient le mode de sa dernière attaque (`_dernierModeAttaque`, en
+    mémoire) ; `rollDamage` prend le bonus de `categoryDistance` après un tir (toujours celui de `category` avant).
+  - **Repos long** : une ration qui soigne (`healAmount`, Rations régénératrices de Déméter) n'est plus mangée comme
+    ration de voyage.
+- **Correctifs à cocher** (testés sur des copies dans des compendiums temporaires, puis supprimés) :
+  `0.6.155-faveur-de-la-dame-charges` (0 → 3 charges, compendium réinitialisé : plus de bouton de charges),
+  `0.6.155-historique-tables-vides` (« Origine » et « Bonus/Malus aléatoire », anciens dossiers devenus tables vides
+  `1d0` en tête du navigateur ; les 5 vraies tables intactes), `0.6.155-peau-hades-ponctuel` (retire le « × 2 » du
+  compendium et des avantages possédés ; garde les PV affichés plafonnés au double du max : Banane 20, AntaliosV1 168).
+- **Tests** : t4 **114 OK / 0 KO**, aucune erreur JS. Non testable ici : vues Joueur, combat à tours (fin du malus
+  d'esquive, durées), canvas (gabarits, panneau d'effets avec jeton), glisser-déposer.
+
+---
+
 ## Session du 9 novembre 2026 (suite) — Force de Poséidon, effets manquants, bannières (v0.6.153 → v0.6.154, branche `feat/poseidon-effets`)
 
 **Publiée** à la demande de l'utilisateur : Foundry redémarré sur `testantique` (0.6.154, 16 bannières affichées et chargées), fusion dans `master`, tag **v0.6.154**. Les deux correctifs 0.6.154 restent à cocher par l'utilisateur dans l'écran de mise à jour.
