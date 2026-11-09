@@ -2,6 +2,27 @@
 
 ---
 
+## Session du 9 novembre 2026 (suite 3) — Tests restants (scène, combat, compte Joueur) et relai MJ (v0.6.155 → v0.6.156, branche `feat/relai-mj`)
+
+- **Tests** `../audit/t5-scene-combat-joueur.mjs` (scène « [TEST] » jamais activée, joueur temporaire, tout supprimé) :
+  malus d'esquive remis à 0 au tour suivant (MJ actif), panneau d'effets, « Appliquer les dégâts » sur jeton sélectionné,
+  CA d'une copie d'Éphise stable après 4 modifications, empilement au glisser-déposer ; côté Joueur : fiche PNJ réduite à
+  l'onglet Identité (PV / type / taille cachés), pas d'onglet Capacités de combat dans le navigateur, CA du PNJ cachée dans
+  l'attaque. **17 OK**, aucune erreur JS.
+- **Constat → relai MJ** (choix de l'utilisateur) : un joueur qui appliquait dégâts / soin / effet à un acteur non
+  possédé échouait (« lacks permission to update Actor »). Nouveau `module/helpers/gm-relay.mjs` : requête Foundry
+  `antique.actionActeur` (`CONFIG.queries`, `User#query` vers le MJ actif — pas de socket, donc rien dans system.json ni
+  redémarrage), limitée à applyDamage / applyHeal / applyCaBonus / applyEffectChanges ; `actionActeur()` agit directement
+  si l'acteur est possédé, sinon demande au MJ (avertissement s'il n'y en a pas). Les 4 boutons du tchat passent par là ;
+  changements d'effet copiés en objets simples (`changementsSimples`, en v14 ils référencent leur effet). Testé : le joueur
+  applique dégâts (9 → 8) et soin (8 → 10) au PNJ via le client du MJ.
+- **Piège du monde de test** : un combat sans scène, actif (Antalios seul, round 11, `iRDBxaHAtZ7qU6Bx`), reste le
+  `game.combat` de toutes les scènes : l'initiative lancée depuis une fiche et le départ des durées d'effets
+  (`getEffectStart()`) s'y rattachent. Les tests t4 / t5 y avaient ajouté 6 combattants de test, retirés (orphelins).
+  À signaler à l'auteur ; t5 saute désormais ces deux vérifications quand le combat courant n'est pas le sien.
+
+---
+
 ## Session du 9 novembre 2026 (suite 2) — Vérification de toutes les fonctions, corrections (v0.6.154 → v0.6.155, branche `fix/verification-fonctions`)
 
 **Publiée** à la demande de l'utilisateur : fusion dans `master`, tag **v0.6.155**. Les trois correctifs 0.6.155 restent à cocher par l'utilisateur ; le serveur local annonce 0.6.154 jusqu'au prochain redémarrage (fichiers déjà déployés).

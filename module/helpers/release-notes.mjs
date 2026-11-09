@@ -5,6 +5,40 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.156": {
+    title: "Version 0.6.156 — Les joueurs appliquent dégâts et soins aux monstres",
+    html: `
+      <ul>
+        <li><strong>Nouveau</strong> : un joueur peut cliquer sur « Appliquer les dégâts », un soin ou un effet de sort pour un monstre ou le personnage d'un autre joueur — le MJ connecté l'applique automatiquement. Sans MJ connecté, le joueur est prévenu.</li>
+      </ul>`
+  },
+  "0.6.155": {
+    title: "Version 0.6.155 — Corrections après vérification complète",
+    html: `
+      <ul>
+        <li><strong>Peau d'Hadès</strong> : double les PV actuels une seule fois, quand l'avantage est acquis (avant, les PV remontaient à chaque coup reçu).</li>
+        <li><strong>Corrigé</strong> : annuler le choix corps à corps / distance ne consomme plus de munition ; après un tir à distance, les dégâts utilisent le bonus de dégâts à distance ; le repos long ne mange plus les Rations régénératrices de Déméter.</li>
+        <li>Correctifs proposés au MJ : Faveur de la Dame retrouve ses 3 charges, deux tables vides retirées de l'Historique, Peau d'Hadès sans « × 2 » permanent (PV conservés, plafonnés au double du maximum).</li>
+      </ul>`
+  },
+  "0.6.154": {
+    title: "Version 0.6.154 — Force de Poséidon, effets restaurés, bannières",
+    html: `
+      <ul>
+        <li><strong>Force de Poséidon</strong> : effets « +1 / +2 CA » à glisser sur les alliés depuis la description de l'avantage.</li>
+        <li>Correctifs proposés au MJ : les effets manquants du compendium « Effets » sont recréés (Allié de l'aura…, Mule, Charge furieuse…) et les liens des effets à donner reviennent dans les descriptions (Auras, Connaissance d'Héphaistos, Force de Poséidon).</li>
+        <li>Chaque compendium a sa bannière grecque.</li>
+      </ul>`
+  },
+  "0.6.153": {
+    title: "Version 0.6.153 — Mise en page des fiches et navigateur",
+    html: `
+      <ul>
+        <li>Fiche de personnage : les armes passent au-dessus de la table des bonus d'attaque ; les compétences s'affichent sur deux colonnes dès l'ouverture.</li>
+        <li>Fiche de PNJ : nom plus compact ; type et taille déplacés dans l'onglet « Identité ».</li>
+        <li>Navigateur de compendium et boutique d'alchimie : la cible et son or se mettent à jour en direct.</li>
+      </ul>`
+  },
   "0.6.152": {
     title: "Version 0.6.152 — Effets sans action réparés",
     html: `
