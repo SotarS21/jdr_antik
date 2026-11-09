@@ -968,6 +968,31 @@ export const PACK_UPDATES = [
     description:
       "Même correction que le correctif précédent, sur les copies de ces personnages déjà présentes dans le monde.",
     apply: applyPjEffetsInvalidesMonde
+  },
+  {
+    id: "0.6.154-effets-compendium-manquants",
+    pack: "effets",
+    version: "0.6.154",
+    label: "Effets manquants du compendium « Effets »",
+    description:
+      "Dans ce monde, le compendium « Effets » ne contenait plus que 15 effets sur 187 (les correctifs qui les avaient " +
+      "créés sont pourtant marqués appliqués : le compendium a été réinitialisé depuis). Recrée chaque effet absent tel que " +
+      "le système le livre (Allié de l'aura…, Mule, Charge furieuse, effets simples des avantages et désavantages…), avec " +
+      "son identifiant d'origine, plus les deux nouveaux effets « Équipé d'une force de Poséidon +1 / +2 ». Les effets " +
+      "déjà présents ne sont pas touchés. À appliquer avant le correctif suivant.",
+    apply: applyEffetsCompendiumManquants
+  },
+  {
+    id: "0.6.154-avantages-liens-a-donner",
+    pack: "avantages",
+    version: "0.6.154",
+    label: "Liens des effets à donner aux alliés (Auras, Force de Poséidon…)",
+    description:
+      "Remet dans la description le lien vers l'effet à poser sur quelqu'un d'autre : « Allié de l'aura… » pour les 15 " +
+      "Auras, l'effet de Connaissance d'Héphaistos (sur l'adversaire) et, nouveau, « Équipé d'une force de Poséidon +1 » " +
+      "et « +2 » pour Force de Poséidon (le porteur garde son +1). Glisser le lien sur un personnage lui donne l'effet. " +
+      "Seuls les avantages qui n'ont pas déjà ce lien sont modifiés.",
+    apply: applyLiensEffetsADonner
   }
 ];
 
@@ -4671,6 +4696,53 @@ async function documentsSource(nom) {
   if (!reponse.ok) throw new Error(`Impossible de lire le miroir ${nom}.json (HTTP ${reponse.status})`);
   return (await reponse.text()).split("\n").map((l) => l.trim()).filter(Boolean).map((l) => JSON.parse(l))
     .filter((d) => !("sorting" in d));
+}
+
+/** 0.6.154 : recrée dans le compendium « Effets » les effets livrés par le système qui n'y sont plus (idempotent). */
+async function applyEffetsCompendiumManquants() {
+  const pack = game.packs.get("antique.effets");
+  if (!pack) return 0;
+  const presents = new Set((await pack.getIndex()).map((e) => e._id));
+  const manquants = (await documentsSource("effets"))
+    .filter((d) => d._id && !presents.has(d._id))
+    .map(({ _stats, ...effet }) => effet);
+  if (!manquants.length) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  try {
+    await pack.documentClass.createDocuments(manquants, { pack: pack.collection, keepId: true });
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return manquants.length;
+}
+
+/** Avantages dont la description doit porter le lien de l'effet à donner (alliés ou adversaire). */
+const LIEN_A_DONNER = /Aura d|Connaissance d'H|Force de Pos/;
+const PARAGRAPHE_LIEN_EFFET = /<p>\s*@UUID\[Compendium\.antique\.effets\.[^\]]+\](\{[^}]*\})?\s*<\/p>/g;
+
+/** 0.6.154 : ajoute à la description les paragraphes de lien de la source qui manquent (rien n'est retiré). */
+async function applyLiensEffetsADonner() {
+  const pack = game.packs.get("antique.avantages");
+  if (!pack) return 0;
+  const source = new Map((await documentsSource("avantages")).map((d) => [d._id, d]));
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  let total = 0;
+  try {
+    for (const doc of await pack.getDocuments()) {
+      if (!LIEN_A_DONNER.test(doc.name)) continue;
+      const description = doc.system?.description ?? "";
+      const liens = (source.get(doc.id)?.system?.description ?? "").match(PARAGRAPHE_LIEN_EFFET) ?? [];
+      const ajouts = liens.filter((p) => !description.includes(p.match(/@UUID\[[^\]]+\]/)[0]));
+      if (!ajouts.length) continue;
+      await doc.update({ "system.description": description + ajouts.join("") });
+      total++;
+    }
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return total;
 }
 
 /** Effets d'un document source, prêts à créer (sans la comptabilité _stats de Foundry). */
