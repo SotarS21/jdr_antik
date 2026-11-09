@@ -17,6 +17,47 @@ export function resolveShopTargetActors() {
   return [];
 }
 
+/**
+ * En-tête « Cible : X — n or » des boutiques (navigateur de compendium, alchimie), réécrit en place à partir des
+ * cibles actuelles : même texte que le gabarit, sans re-rendre la fenêtre (ni perdre défilement, filtres, recherche).
+ */
+export function rafraichirCibleBoutique(app) {
+  const conteneur = app.element?.querySelector(".shop-target-texte");
+  if (!conteneur) return;
+  const actors = resolveShopTargetActors();
+  const esc = foundry.utils.escapeHTML;
+  const noms = esc(actors.map(a => a.name).join(", "));
+  if (!actors.length) {
+    conteneur.innerHTML = `<span class="shop-no-target">${game.i18n.localize("ANTIQUE.Shop.NoTarget")}</span>`;
+  } else if (actors.length === 1) {
+    conteneur.innerHTML = `${game.i18n.localize("ANTIQUE.Shop.Target")} : <strong>${noms}</strong>
+        — <i class="fas fa-coins"></i> <span class="shop-gold-value">${actors[0].system.or ?? 0}</span> ${game.i18n.localize("ANTIQUE.Currency.Or")}`;
+  } else {
+    conteneur.innerHTML = `${game.i18n.localize("ANTIQUE.Shop.Targets")} (${actors.length}) : <strong>${noms}</strong>`;
+  }
+}
+
+/**
+ * Todo du 2026-10-08 : l'or affiché ne suivait ni la sélection des tokens ni les changements d'or faits ailleurs (fiche,
+ * autre joueur, MJ). Abonne la fenêtre aux hooks utiles tant qu'elle est ouverte ; arreterSuiviCible à la fermeture.
+ */
+export function suivreCibleBoutique(app) {
+  if (app._suiviCible) return;
+  const maj = foundry.utils.debounce(() => { if (app.rendered) rafraichirCibleBoutique(app); }, 50);
+  app._suiviCible = {
+    controlToken: Hooks.on("controlToken", maj),
+    updateActor: Hooks.on("updateActor", (actor, changes) => {
+      if (foundry.utils.hasProperty(changes, "system.or") || "name" in changes) maj();
+    }),
+    updateUser: Hooks.on("updateUser", (user, changes) => { if (user.isSelf && "character" in changes) maj(); })
+  };
+}
+
+export function arreterSuiviCible(app) {
+  for (const [hook, id] of Object.entries(app._suiviCible ?? {})) Hooks.off(hook, id);
+  app._suiviCible = null;
+}
+
 /** Item types that track a stackable system.quantity — everything else (advantage,
  *  disadvantage, blessing, spell) is a trait, always added as a fresh copy, never stacked. */
 export const STACKABLE_TYPES = new Set(["weapon", "equipment"]);

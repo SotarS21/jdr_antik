@@ -262,31 +262,6 @@
         </div>
       </div>
 
-      {{!-- Attack Bonuses --}}
-      <div class="attack-bonuses">
-        <h2>{{localize "ANTIQUE.Combat.AttackBonuses"}}</h2>
-        <table class="attack-table">
-          <thead>
-            <tr>
-              <th>{{localize "ANTIQUE.Combat.Category"}}</th>
-              <th>{{localize "ANTIQUE.Combat.AbilityMod"}}</th>
-              <th>{{localize "ANTIQUE.Combat.SkillBonus"}}</th>
-              <th>{{localize "ANTIQUE.Saves.Total"}}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{#each weaponCatsData as |cat key|}}
-            <tr>
-              <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
-              <td class="computed ability-mod-cell {{#unless cat.trained}}inactive{{/unless}}" title="{{#unless cat.trained}}{{localize 'ANTIQUE.Combat.AbilityModUntrained'}}{{/unless}}">{{cat.abilityLabel}} {{signedNum cat.abilityMod}}</td>
-              <td class="computed">{{signedNum cat.skillBonus}}</td>
-              <td class="computed total">{{signedNum cat.total}}</td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
-      </div>
-
       {{!-- Weapons List --}}
       <div class="weapons-section">
         <h2>{{localize "ANTIQUE.Combat.Weapons"}}
@@ -343,6 +318,31 @@
                 <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
                 <a class="item-delete" title="Delete"><i class="fas fa-trash"></i></a>
               </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      {{!-- Attack Bonuses (sous les armes, todo 2026-10-08 : les armes servent plus souvent) --}}
+      <div class="attack-bonuses">
+        <h2>{{localize "ANTIQUE.Combat.AttackBonuses"}}</h2>
+        <table class="attack-table">
+          <thead>
+            <tr>
+              <th>{{localize "ANTIQUE.Combat.Category"}}</th>
+              <th>{{localize "ANTIQUE.Combat.AbilityMod"}}</th>
+              <th>{{localize "ANTIQUE.Combat.SkillBonus"}}</th>
+              <th>{{localize "ANTIQUE.Saves.Total"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each weaponCatsData as |cat key|}}
+            <tr>
+              <td class="clickable attack-cat-roll" data-cat="{{cat.key}}">{{#if cat.icon}}<i class="{{cat.icon}}"></i> {{/if}}{{cat.label}}</td>
+              <td class="computed ability-mod-cell {{#unless cat.trained}}inactive{{/unless}}" title="{{#unless cat.trained}}{{localize 'ANTIQUE.Combat.AbilityModUntrained'}}{{/unless}}">{{cat.abilityLabel}} {{signedNum cat.abilityMod}}</td>
+              <td class="computed">{{signedNum cat.skillBonus}}</td>
+              <td class="computed total">{{signedNum cat.total}}</td>
             </tr>
             {{/each}}
           </tbody>

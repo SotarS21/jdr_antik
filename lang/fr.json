@@ -396,7 +396,7 @@
   "ANTIQUE.StatutDesc.dead": "<p>Mort. Posé automatiquement à 0 PV, retiré au soin.</p>",
   "ANTIQUE.Npc.Attaque": "Attaque",
   "ANTIQUE.Npc.Tab.Stats": "Statistiques",
-  "ANTIQUE.Npc.Tab.Notes": "Notes",
+  "ANTIQUE.Npc.Tab.Notes": "Identité",
 
   "ANTIQUE.Sheet.Deity": "Fiche de divinité Antique",
   "ANTIQUE.Deity.Name": "Nom de la divinité",

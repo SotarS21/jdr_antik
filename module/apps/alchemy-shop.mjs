@@ -1,4 +1,4 @@
-import { resolveShopTargetActors, grantItemToActor, attachBrowserRowInteractions, withRowLock } from "./browser-shared.mjs";
+import { resolveShopTargetActors, grantItemToActor, attachBrowserRowInteractions, withRowLock, suivreCibleBoutique, arreterSuiviCible } from "./browser-shared.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
@@ -94,6 +94,7 @@ export class AntiqueAlchemyShop extends HandlebarsApplicationMixin(ApplicationV2
   _onRender(context, options) {
     super._onRender(context, options);
     attachBrowserRowInteractions(this);
+    suivreCibleBoutique(this);
 
     this.element.querySelectorAll(".shop-take").forEach(el => {
       el.addEventListener("click", ev => this._onTake(ev));
@@ -105,6 +106,7 @@ export class AntiqueAlchemyShop extends HandlebarsApplicationMixin(ApplicationV2
 
   _onClose(options) {
     super._onClose(options);
+    arreterSuiviCible(this);
     if (AntiqueAlchemyShop._instance === this) AntiqueAlchemyShop._instance = null;
   }
 

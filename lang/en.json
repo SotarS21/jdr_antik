@@ -396,7 +396,7 @@
   "ANTIQUE.StatutDesc.dead": "<p>Dead. Set automatically at 0 HP, removed when healed.</p>",
   "ANTIQUE.Npc.Attaque": "Attack",
   "ANTIQUE.Npc.Tab.Stats": "Statistics",
-  "ANTIQUE.Npc.Tab.Notes": "Notes",
+  "ANTIQUE.Npc.Tab.Notes": "Identity",
 
   "ANTIQUE.Sheet.Deity": "Antique Deity Sheet",
   "ANTIQUE.Deity.Name": "Deity Name",
