@@ -4,6 +4,8 @@
 
 ## Session du 9 novembre 2026 — Todo du Bureau, lignes « fix … » (v0.6.152 → v0.6.153, branche `fix/todo-mise-en-page`)
 
+**Publiée** à la demande de l'utilisateur : fusion dans `master`, tag **v0.6.153**, release publiée (workflow vert, `system.json` + `system.zip`), branche supprimée.
+
 Bilan de la section « BUG Antique » de `todo_foundry.txt` (Bureau) fait point par point : presque tout était déjà
 traité (voir `TODO_BUG_ANTIQUE.md`) ; restaient les 7 lignes « fix … » ajoutées le 8 octobre. Points 1 à 5 traités à la
 demande de l'utilisateur :
