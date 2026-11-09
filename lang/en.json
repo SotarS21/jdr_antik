@@ -490,6 +490,8 @@
   "ANTIQUE.Effect.Applied": "Effect applied",
   "ANTIQUE.Damage.ApplyButton": "Apply damage ({amount})",
   "ANTIQUE.Damage.Applied": "Damage applied",
+  "ANTIQUE.Relay.NoGM": "No GM connected: cannot modify {nom}, which you do not own.",
+  "ANTIQUE.Relay.Echec": "The GM could not apply the action to {nom} (see console).",
   "ANTIQUE.Damage.NoTarget": "No target! Target or select one or more tokens.",
   "ANTIQUE.Damage.HalvedByIronSkin": "halved by Peau de Fer",
 

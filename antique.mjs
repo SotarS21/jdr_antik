@@ -37,6 +37,7 @@ import { registerHotbarMacroDrop } from "./module/helpers/hotbar-macros.mjs";
 import { registerDodgeResetHook } from "./module/helpers/dodge-reset.mjs";
 import { registerIngredientStockSyncHook, registerPointsChanceEffectHook, registerPeauHadesHooks } from "./module/helpers/actor-utils.mjs";
 import { registerEffectsPanel } from "./module/apps/effects-panel.mjs";
+import { registerGmRelay, actionActeur, changementsSimples } from "./module/helpers/gm-relay.mjs";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -158,6 +159,7 @@ Hooks.once("init", function () {
   registerIngredientStockSyncHook();
   registerPointsChanceEffectHook();
   registerPeauHadesHooks();
+  registerGmRelay();
   registerEffectsPanel();
   registerCharacterTokenLinkDefault();
 
@@ -275,7 +277,9 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     for (const token of tokens) {
       const actor = token.actor;
       if (!actor || actor.system.pv === undefined) continue;
-      const result = await actor.applyDamage(damage);
+      // Acteur non possédé (monstre, PJ d'un autre) : appliqué par le MJ actif (gm-relay.mjs).
+      const result = await actionActeur(actor, "applyDamage", damage);
+      if (!result) continue;
       const halvedNote = result.halved ? ` (${game.i18n.localize("ANTIQUE.Damage.HalvedByIronSkin")})` : "";
       results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} (-${result.amount})${halvedNote}`);
     }
@@ -315,7 +319,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     const results = [];
     for (const actor of actors) {
       if (actor.system.pv === undefined) continue;
-      const result = await actor.applyHeal(heal);
+      const result = await actionActeur(actor, "applyHeal", heal);
+      if (!result) continue;
       results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} (+${heal})`);
     }
 
@@ -367,7 +372,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       // buff mechanism) — applyCaBonus() targets system.ca.temp/.total, so both must be
       // excluded here rather than crash into "undefined → undefined CA" on the chat card.
       if (actor.system.ca?.total === undefined) continue;
-      const result = await actor.applyCaBonus(amount, { name: spellName, img, description, durationRounds });
+      const result = await actionActeur(actor, "applyCaBonus", amount, { name: spellName, img, description, durationRounds });
+      if (!result) continue;
       results.push(`<b>${actor.name}</b> : ${result.before} → ${result.after} CA`);
     }
 
@@ -411,8 +417,11 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 
     const changeLabels = spellEffect.changes.map(c => CONFIG.ANTIQUE.getEffectChangeLabel(c)).join(", ");
     const results = [];
+    const changes = changementsSimples(spellEffect.changes);
     for (const actor of actors) {
-      await actor.applyEffectChanges(spellEffect.changes, { name: item.name, img: item.img, description: spellEffect.description });
+      const fait = actor.isOwner || game.users.activeGM;
+      await actionActeur(actor, "applyEffectChanges", changes, { name: item.name, img: item.img, description: spellEffect.description });
+      if (!fait) continue;
       results.push(`<b>${actor.name}</b> : ${changeLabels}`);
     }
 

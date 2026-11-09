@@ -490,6 +490,8 @@
   "ANTIQUE.EffectsPanel.RemoveHint": "Clic gauche pour retirer l'effet.",
   "ANTIQUE.Damage.ApplyButton": "Appliquer les d\u00e9g\u00e2ts ({amount})",
   "ANTIQUE.Damage.Applied": "D\u00e9g\u00e2ts appliqu\u00e9s",
+  "ANTIQUE.Relay.NoGM": "Aucun MJ connecté : impossible de modifier {nom}, qui ne vous appartient pas.",
+  "ANTIQUE.Relay.Echec": "Le MJ n'a pas pu appliquer l'action sur {nom} (voir la console).",
   "ANTIQUE.Damage.NoTarget": "Aucune cible ! Ciblez ou s\u00e9lectionnez un ou plusieurs tokens.",
   "ANTIQUE.Damage.HalvedByIronSkin": "r\u00e9duit de moiti\u00e9 par Peau de Fer",
 
