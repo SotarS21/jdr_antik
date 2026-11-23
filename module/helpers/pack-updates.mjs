@@ -1026,6 +1026,18 @@ export const PACK_UPDATES = [
       "les PV à chaque dégât. Les personnages concernés gardent les PV affichés, plafonnés au double de leur maximum " +
       "(dans ce monde : Banane garde 20 PV ; AntaliosV1, gonflé à 672 pour un maximum de 84, revient à 168).",
     apply: applyPeauHadesPonctuel
+  },
+  {
+    id: "0.6.157-dieux-images-introuvables",
+    pack: "dieux",
+    version: "0.6.157",
+    label: "Divinités : images introuvables remplacées",
+    description:
+      "Dans ce monde, les divinités du compendium pointaient vers un dossier « Imagerie/Panthéon/… » absent de cette " +
+      "machine (image cassée sur la fiche et le jeton). Les 24 divinités qui ont un portrait fourni par le système " +
+      "(Zeus, Héra, Athéna…) le reprennent ; les autres reçoivent la silhouette par défaut, à remplacer à la main au " +
+      "besoin. Seules les images introuvables (« Imagerie/… ») sont modifiées.",
+    apply: applyDieuxImagesIntrouvables
   }
 ];
 
@@ -5030,6 +5042,43 @@ async function applyCreatePersonnagesPJ() {
   await pack.documentClass.createDocuments(missing, { pack: pack.collection, keepId: true });
   await pack.configure({ locked: true });
   return missing.length;
+}
+
+/** Portraits de divinités fournis par le système, par nom normalisé (sans accents ni ponctuation). */
+const PORTRAITS_DIVINITES = {
+  zeus: "zeus.jpg", hera: "hera.jpg", poseidon: "poseidon.jpg", athena: "athena.jpg", apollon: "appolon.jpg",
+  artemis: "artemis.jpg", ares: "ares.jpg", aphrodite: "aphrodite.jpg", hephaistos: "hephaistos.jpg",
+  hermes: "hermes.jpg", demeter: "demetère.jpg", dionysos: "dionisos.jpg", hades: "hades.jpg", hestia: "hestia.jpg",
+  persephone: "persephone.jpg", amphitrite: "Amphitrite.jpg", cronos: "cronus.jpg", eros: "cupidon.jpg",
+  gaia: "gaia.jpg", hecate: "hecate.jpg", helios: "helios.jpg", nike: "niké.jpg", nyx: "nyx.jpg",
+  oceanos: "oceanus.jpg", rhea: "rhea.jpg", tethys: "Tethys.jpg"
+};
+const IMAGE_DIVINITE_PAR_DEFAUT = "icons/svg/mystery-man.svg";
+
+/** 0.6.157 : remplace les images « Imagerie/… » (dossier absent) des divinités par le portrait système ou la silhouette. */
+async function applyDieuxImagesIntrouvables() {
+  const pack = game.packs.get("antique.dieux");
+  if (!pack) return 0;
+  const introuvable = (src) => typeof src === "string" && /^\/?Imagerie\//.test(src);
+  const cle = (nom) => nom.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+  const maj = [];
+  for (const doc of await pack.getDocuments()) {
+    const fichier = PORTRAITS_DIVINITES[cle(doc.name)];
+    const image = fichier ? `systems/antique/packs/token/divinity/${fichier}` : IMAGE_DIVINITE_PAR_DEFAUT;
+    const changes = { _id: doc.id };
+    if (introuvable(doc.img)) changes.img = image;
+    if (introuvable(doc.prototypeToken?.texture?.src)) changes["prototypeToken.texture.src"] = image;
+    if (Object.keys(changes).length > 1) maj.push(changes);
+  }
+  if (!maj.length) return 0;
+  const wasLocked = pack.locked;
+  if (wasLocked) await pack.configure({ locked: false });
+  try {
+    await pack.documentClass.updateDocuments(maj, { pack: pack.collection });
+  } finally {
+    if (wasLocked) await pack.configure({ locked: true });
+  }
+  return maj.length;
 }
 
 const SETTING_KEY = "appliedPackFixes";

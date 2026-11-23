@@ -2,6 +2,24 @@
 
 ---
 
+## Session du 24 novembre 2026 — Tests sous Foundry 14.369, images du panthéon (v0.6.156 → v0.6.157, branche `fix/images-pantheon`)
+
+- **Fausse alerte « liens d'avantages »** : `../audit/t1` attendait 0 lien d'effet dans le compendium Avantages, alors que
+  le correctif `0.6.154-avantages-liens-a-donner` en pose 17 (15 Auras, Connaissance d'Héphaistos, Force de Poséidon).
+  Vérifié en jeu : correctif appliqué, liens complets par rapport à la source, aucun lien cassé. t1 corrigé (12/12).
+- **Images du panthéon** : le compendium Divinités installé de `testantique` compte 115 divinités, les 27 de la source
+  (`packs/dieux.db`, portraits `packs/token/divinity/`) et 88 autres dont l'image et le jeton pointent vers
+  `Imagerie/Panthéon/…`, dossier absent de cette machine (88 erreurs 404). 24 de ces 88 sont des doublons de divinités
+  de la source (Zeus, Héra…), les 64 autres n'existent que dans le compendium installé (pas dans le dépôt).
+  Choix de l'auteur : remapper. Correctif `0.6.157-dieux-images-introuvables` : portrait système par nom normalisé
+  (sans accents), sinon `icons/svg/mystery-man.svg` ; ne touche que les chemins `Imagerie/…`, idempotent.
+  Test `../audit/t6-images-pantheon.mjs` (copie temporaire du compendium, puis `--reel`) : 11/11, appliqué et marqué
+  appliqué dans `testantique` ; t1 ne voit plus aucun 404.
+- **À noter** : les 88 divinités (dont les 24 doublons) ne sont pas dans `packs/dieux.db` — une réinstallation du
+  compendium depuis le dépôt les effacerait.
+
+---
+
 ## Session du 9 novembre 2026 (suite 3) — Tests restants (scène, combat, compte Joueur) et relai MJ (v0.6.155 → v0.6.156, branche `feat/relai-mj`)
 
 - **Tests** `../audit/t5-scene-combat-joueur.mjs` (scène « [TEST] » jamais activée, joueur temporaire, tout supprimé) :
