@@ -5,6 +5,13 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.157": {
+    title: "Version 0.6.157 — Images des divinités",
+    html: `
+      <ul>
+        <li><strong>Correction</strong> : les divinités du compendium dont l'image était introuvable (dossier « Imagerie/Panthéon ») reprennent le portrait fourni par le système (Zeus, Héra, Athéna…) ou, à défaut, la silhouette par défaut. Correctif de compendium à cocher par le MJ.</li>
+      </ul>`
+  },
   "0.6.156": {
     title: "Version 0.6.156 — Les joueurs appliquent dégâts et soins aux monstres",
     html: `
