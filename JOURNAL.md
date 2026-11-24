@@ -17,6 +17,16 @@
   appliqué dans `testantique` ; t1 ne voit plus aucun 404.
 - **À noter** : les 88 divinités (dont les 24 doublons) ne sont pas dans `packs/dieux.db` — une réinstallation du
   compendium depuis le dépôt les effacerait.
+- **Avertissements de démarrage (v0.6.159, branche `fix/manifeste-v14`)** : `template.json` supprimé (types déjà déclarés
+  dans `documentTypes` de system.json, tous avec un DataModel ; support retiré en V16) — aussi retiré du zip de
+  `release.yml` et du dossier déployé (robocopy ne supprime pas). Clé `fonts` de system.json (inconnue de Foundry, donc
+  Cinzel jamais chargée, repli Georgia) remplacée par `CONFIG.fontDefinitions.Cinzel` au hook `init`. Vérifié en jeu :
+  `game.data.packageWarnings` sans Antique, Cinzel chargée, 12 types intacts ; t4 114/114, t1 12/12, t5 17/17.
+- **Incident de publication** : une commande enchaînée a échoué au `git add` (template.json déjà indexé comme supprimé)
+  mais la ligne suivante a quand même fusionné / tagué / poussé → release **v0.6.158 publiée avec le code de 0.6.157**
+  (seul le numéro forcé par la CI). Suppression de la release refusée sans accord de l'auteur ; les changements sont
+  publiés en **v0.6.159**. v0.6.158 reste à supprimer par l'auteur. Leçon : une commande par étape git, vérifier avant
+  de taguer.
 
 ---
 

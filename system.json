@@ -2,7 +2,7 @@
   "id": "antique",
   "title": "Antique",
   "description": "Système de jeu de rôle dans l'univers de la Grèce antique mythologique.",
-  "version": "0.6.157",
+  "version": "0.6.159",
   "compatibility": {
     "minimum": "12",
     "verified": "14"
@@ -17,15 +17,6 @@
   ],
   "esmodules": ["antique.mjs"],
   "styles": ["css/antique.css"],
-  "fonts": {
-    "Cinzel": {
-      "editor": true,
-      "fonts": [
-        { "urls": ["fonts/Cinzel-Regular.ttf"] },
-        { "urls": ["fonts/Cinzel-Bold.ttf"], "weight": 700 }
-      ]
-    }
-  },
   "languages": [
     {
       "lang": "en",
