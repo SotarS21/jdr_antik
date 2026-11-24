@@ -5,6 +5,14 @@
  * French-only (this system has no English-facing audience).
  */
 export const RELEASE_NOTES = {
+  "0.6.159": {
+    title: "Version 0.6.159 — Police Cinzel et manifeste",
+    html: `
+      <ul>
+        <li><strong>Correction</strong> : la police Cinzel des titres est enfin chargée (elle était ignorée, les titres s'affichaient en Georgia). Elle est aussi proposée dans l'éditeur de texte.</li>
+        <li><strong>Technique</strong> : plus d'avertissements au démarrage de Foundry pour Antique (« template.json is deprecated », clé « fonts » inconnue), avant leur suppression en V16.</li>
+      </ul>`
+  },
   "0.6.157": {
     title: "Version 0.6.157 — Images des divinités",
     html: `

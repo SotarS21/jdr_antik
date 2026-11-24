@@ -57,6 +57,15 @@ Hooks.once("init", function () {
   // Store config on the global CONFIG object
   CONFIG.ANTIQUE = ANTIQUE;
 
+  // Police Cinzel (titres, css/antique.css) — « fonts » n'est pas une clé de system.json, Foundry l'ignorait.
+  CONFIG.fontDefinitions.Cinzel = {
+    editor: true,
+    fonts: [
+      { urls: ["systems/antique/fonts/Cinzel-Regular.ttf"] },
+      { urls: ["systems/antique/fonts/Cinzel-Bold.ttf"], weight: 700 }
+    ]
+  };
+
   // Custom ActiveEffect application phase, applied mid-way through prepareDerivedData()
   // (see actor-character.mjs/actor-npc.mjs) — Foundry's own built-in "final" phase runs
   // only after prepareDerivedData() completes entirely, too late for a change targeting
